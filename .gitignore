@@ -4,6 +4,7 @@ project/*
 !axis_uart_top.cst
 obj_dir
 work
+transcript
 *.vvp
 *.vcd
 *.wlf

@@ -47,10 +47,13 @@ clean:
 ifeq ($(OS), Windows_NT)
 	rmdir /s /q $(PROJECT_DIR)\$(TOP)
 	rmdir /s /q work
+	del transcript
 	del *.vcd
+	del *.wlf
 else
 	rm -rf $(PROJECT_DIR)/$(TOP)
 	rm -rf obj_dir
 	rm -rf work
 	rm *.vcd
+	rm *.wlf
 endif
