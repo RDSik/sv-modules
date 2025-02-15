@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module axis_uart_tx #(
     parameter CLK_FREQ   = 27_000_000,
     parameter BAUD_RATE  = 115_200,
@@ -99,8 +100,10 @@ end
 
 always_comb begin
     s_axis.tready = (state == IDLE) ? 1'b1 : 1'b0;
+    /* verilator lint_off WIDTHEXPAND */
     bit_done      = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
     baud_done     = (baud_cnt == RATIO - 1) ? 1'b1 : 1'b0;
+    /* verilator lint_on WIDTHEXPAND */
 end
 
 endmodule

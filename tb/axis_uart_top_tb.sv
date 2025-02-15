@@ -19,7 +19,11 @@ initial begin
         env.clk_gen();
         env.run();
     join_any
+    `ifdef VERILATOR
+    $finish();
+    `else
     $stop();
+    `endif
 end
 
 initial begin

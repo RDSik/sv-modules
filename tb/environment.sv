@@ -35,7 +35,9 @@ class environment;
                 #((ratio/2)*clk_per);
                 $display("Data transmission start in %t ps\n", $time);
                 for (int i = 0; i < data_width; i++) begin
+                    /* verilator lint_off WIDTHTRUNC */
                     dut_if.rx_i = $urandom_range(0, 1);
+                    /* verilator lint_on WIDTHTRUNC */
                     $display("%d bit detected in %t ps\n", i, $time);
                     #(ratio*clk_per);
                 end
