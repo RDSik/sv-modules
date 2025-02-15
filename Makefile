@@ -54,6 +54,7 @@ else
 	rm -rf $(PROJECT_DIR)/$(TOP)
 	rm -rf obj_dir
 	rm -rf work
+	rm transcript
 	rm *.vcd
 	rm *.wlf
 endif
