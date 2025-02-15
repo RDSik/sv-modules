@@ -1,0 +1,9 @@
+project/*
+!project.tcl
+!axis_uart_top.sdc
+!axis_uart_top.cst
+obj_dir
+work
+*.vvp
+*.vcd
+*.wlf
