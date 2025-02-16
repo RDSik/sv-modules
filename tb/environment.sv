@@ -22,7 +22,7 @@ class environment;
         begin
             rst_gen();
             data_gen(10);
-            $display("Stop simulation at: %t ns\n", $time);
+            $display("Stop simulation at: %t ps\n", $time);
         end
     endtask
 
@@ -31,7 +31,7 @@ class environment;
         begin
             repeat (n) begin
                 dut_if.rx_i = 1'b0;
-                $display("Start bit detected at: %t ns\n", $time);
+                $display("Start bit detected at: %t ps\n", $time);
                 #((ratio/2)*clk_per);
                 $display("Data transmission start in %t ps\n", $time);
                 for (int i = 0; i < data_width; i++) begin
@@ -52,7 +52,7 @@ class environment;
     task rst_gen();
         begin
             dut_if.arstn_i = 1'b0;
-            $display("Reset at %t ns\n.", $time);
+            $display("Reset at %t ps\n.", $time);
             @(posedge dut_if.clk_i);
             dut_if.arstn_i = 1'b1;
         end
