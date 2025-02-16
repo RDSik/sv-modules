@@ -4,9 +4,8 @@ SRC_DIR     := src
 TB_DIR      := tb
 PROJECT_DIR := project
 
-SIM     ?= verilator
-BOARD   ?= tangprimer20k
-PROGRAM := openFPGALoader
+SIM   ?= verilator
+BOARD ?= tangprimer20k
 
 MACRO_FILE := wave.do
 TCL        := project.tcl
@@ -41,7 +40,7 @@ project:
 	gw_sh $(PROJECT_DIR)/$(TCL)
 
 program:
-	$(PROGRAM) -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs
+	openFPGALoader -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs
 
 clean:
 ifeq ($(OS), Windows_NT)
