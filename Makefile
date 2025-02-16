@@ -5,7 +5,7 @@ TB_DIR      := tb
 PROJECT_DIR := project
 
 SIM   ?= verilator
-BOARD ?= tangprimer20k
+BOARD := tangprimer20k
 
 MACRO_FILE := wave.do
 TCL        := project.tcl
