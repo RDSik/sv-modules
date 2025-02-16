@@ -22,7 +22,7 @@ class environment;
         begin
             rst_gen();
             data_gen(10);
-            $display("Stop simulation at: %t ps\n", $time);
+            $display("Stop simulation at: %g ns\n", $time);
         end
     endtask
 
@@ -31,19 +31,19 @@ class environment;
         begin
             repeat (n) begin
                 dut_if.rx_i = 1'b0;
-                $display("Start bit detected at: %t ps\n", $time);
+                $display("Start bit detected at: %g ns\n", $time);
                 #((ratio/2)*clk_per);
-                $display("Data transmission start in %t ps\n", $time);
+                $display("Data transmission start in %g ns\n", $time);
                 for (int i = 0; i < data_width; i++) begin
                     /* verilator lint_off WIDTHTRUNC */
                     dut_if.rx_i = $urandom_range(0, 1);
                     /* verilator lint_on WIDTHTRUNC */
-                    $display("%d bit detected in %t ps\n", i, $time);
+                    $display("%0d bit detected in %g ns\n", i, $time);
                     #(ratio*clk_per);
                 end
                 @(posedge dut_if.clk_i);
                 dut_if.rx_i = 1'b1;
-                $display("Stop bit detected in %g ps", $time);
+                $display("Stop bit detected in %g ns", $time);
                 #(ratio*clk_per);
             end
         end
@@ -52,7 +52,7 @@ class environment;
     task rst_gen();
         begin
             dut_if.arstn_i = 1'b0;
-            $display("Reset at %t ps\n.", $time);
+            $display("Reset at %g ns\n.", $time);
             @(posedge dut_if.clk_i);
             dut_if.arstn_i = 1'b1;
         end
