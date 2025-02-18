@@ -28,4 +28,5 @@ jobs:
             image: fpga_tools:latest
             run: |
               git clone https://github.com/RDSik/axis-uart.git
+              cd axis-uart
               make
