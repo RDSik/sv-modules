@@ -67,34 +67,28 @@ end
 always @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         baud_cnt <= '0;
-    end else begin
-        if (baud_done) begin
-            baud_cnt <= '0;
-        end else if ((state == DATA) || (state == START) || (state == STOP)) begin
-            baud_cnt <= baud_cnt + 1;
-        end
+    end else if (baud_done) begin
+        baud_cnt <= '0;
+    end else if ((state == DATA) || (state == START) || (state == STOP)) begin
+        baud_cnt <= baud_cnt + 1;
     end
 end
 
 always @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         bit_cnt <= '0;
-    end else begin
-        if (bit_done) begin
-            bit_cnt <= '0;
-        end else if ((state == DATA) && (baud_done)) begin
-            bit_cnt <= bit_cnt + 1;
-        end
+    end else if (bit_done) begin
+        bit_cnt <= '0;
+    end else if ((state == DATA) && (baud_done)) begin
+        bit_cnt <= bit_cnt + 1;
     end
 end
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         tx_reg <= '0;
-    end else begin
-        if (s_axis.tvalid & s_axis.tready) begin
-            tx_reg <= s_axis.tdata;
-        end
+    end else if (s_axis.tvalid & s_axis.tready) begin
+        tx_reg <= s_axis.tdata;
     end
 end
 
