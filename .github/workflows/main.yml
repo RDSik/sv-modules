@@ -19,7 +19,6 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v4
         with:
-            context: .
             file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
             push: false
             tags: r0d0s/fpga_tools:v1.0
