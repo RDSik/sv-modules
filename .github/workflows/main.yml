@@ -22,7 +22,7 @@ jobs:
             file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
             push: false
             tags: fpga_tools:latest
-      - name: Run Docker container
+      # - name: Run Docker container
       - uses: addnab/docker-run-action@v3
         with:
             image: fpga_tools:latest
