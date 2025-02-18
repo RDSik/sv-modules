@@ -16,9 +16,11 @@ jobs:
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v2
-      - name: Build Docker image
-        uses: docker/build-push-action@v2
+      - name: Build image
+        run: docker build -t fpga_tools .
+      - name: Run container
+        run: docker run fpga_tools
       - name: Copy code
-        run: docker cp * ../ fpga_tools:v1.0
+        run: docker cp * ../ fpga_tools
       - name: Run sim
-        run: docker exec fpga_tools:v1.0 make
+        run: docker exec fpga_tools make
