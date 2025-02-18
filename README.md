@@ -1,3 +1,6 @@
+[![Verilator Simulation](https://github.com/RDSik/axis-uart/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/RDSik/axis-uart/actions/workflows/main.yml)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/RDSik/si5340-config-loader/blob/master/LICENSE.txt)
+
 # AXI-Stream UART module
 
 This is simple UART with AXI-Stream interface, module tested on Tang Primer 20k board. 
