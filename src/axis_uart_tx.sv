@@ -15,7 +15,7 @@ localparam RATIO = CLK_FREQ/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [$clog2(RATIO)-1:0]      baud_cnt;
-logic [DATA_WIDTH-1:0]         tx_reg;
+logic [DATA_WIDTH-1:0]         tx_data;
 logic                          bit_done;
 logic                          baud_done;
 
@@ -45,7 +45,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 end
             end
             DATA: begin
-                tx_o <= tx_reg[bit_cnt];
+                tx_o <= tx_data[bit_cnt];
                 if (bit_done) begin
                     state <= STOP;
                 end
@@ -86,9 +86,9 @@ end
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        tx_reg <= '0;
+        tx_data <= '0;
     end else if (s_axis.tvalid & s_axis.tready) begin
-        tx_reg <= s_axis.tdata;
+        tx_data <= s_axis.tdata;
     end
 end
 
