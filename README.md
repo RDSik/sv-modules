@@ -6,7 +6,7 @@ If you want build project, program board or run simulation use Makefile.
 
 ## Clone repository:
 ```bash
-git clone https://github.com/RDSik/axis-uart.git
+git clone --recurse-submodules https://github.com/RDSik/axis-uart.git
 cd axis-uart
 ```
 
