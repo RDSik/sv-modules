@@ -16,13 +16,11 @@ jobs:
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v2
-      - name: Build Docker image
-        uses: docker/build-push-action@v4
+      - uses: addnab/docker-run-action@v3
         with:
-            file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
-            push: false
-            tags: fpga_tools:latest
-      - name: Copy files
-        run: docker cp ./ fpga_tools:/
-      - name: Run sim
-        run: docker exec fpga_tools make
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+            image: fpga_tools:latest
+            run: |
+              git clone https://github.com/RDSik/axis-uart.git
+              make
