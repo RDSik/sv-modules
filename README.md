@@ -1,5 +1,5 @@
 [![Verilator Simulation](https://github.com/RDSik/axis-uart/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/RDSik/axis-uart/actions/workflows/main.yml)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/RDSik/si5340-config-loader/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/RDSik/axis-uart/blob/master/LICENSE.txt)
 
 # AXI-Stream UART module
 
