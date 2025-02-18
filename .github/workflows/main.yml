@@ -12,15 +12,15 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./Verilator-Iverilog-Verible-Docker
+        working-directory: ./
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v2
-      - name: Build image
-        run: docker build -t fpga_tools .
-      - name: Run container
-        run: docker run fpga_tools
-      - name: Copy code
-        run: docker cp * ../ fpga_tools
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+            file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
+      - name: Copy files
+        run: docker cp * ./ fpga_tools
       - name: Run sim
         run: docker exec fpga_tools make
