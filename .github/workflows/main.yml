@@ -20,7 +20,10 @@ jobs:
         uses: docker/build-push-action@v4
         with:
             file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
+            push: false
+            context: .
+            tags: r0d0s/fpga_tools:v1.0
       - name: Copy files
-        run: docker cp ./ fpga_tools:/
+        run: docker cp ./ fpga_tools:v1.0:/
       - name: Run sim
-        run: docker exec fpga_tools make
+        run: docker exec fpga_tools:v1.0 make
