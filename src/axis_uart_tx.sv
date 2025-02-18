@@ -92,12 +92,11 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end
 end
 
-always_comb begin
-    s_axis.tready = (state == IDLE) ? 1'b1 : 1'b0;
-    /* verilator lint_off WIDTHEXPAND */
-    bit_done      = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
-    baud_done     = (baud_cnt == RATIO - 1) ? 1'b1 : 1'b0;
-    /* verilator lint_on WIDTHEXPAND */
-end
+assign s_axis.tready = (state == IDLE) ? 1'b1 : 1'b0;
+
+/* verilator lint_off WIDTHEXPAND */
+assign bit_done  = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
+assign baud_done = (baud_cnt == RATIO - 1) ? 1'b1 : 1'b0;
+/* verilator lint_on WIDTHEXPAND */
 
 endmodule
