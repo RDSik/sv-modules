@@ -21,6 +21,6 @@ jobs:
         with:
             file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
       - name: Copy files
-        run: docker cp * ./ fpga_tools
+        run: docker cp ./ fpga_tools:/
       - name: Run sim
         run: docker exec fpga_tools make
