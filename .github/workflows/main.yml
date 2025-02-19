@@ -19,7 +19,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-            file: ./Verilator-Iverilog-Verible-Docker/Dockerfile
+            file: ./CI_CD/Verilator-Iverilog-Verible-Docker/Dockerfile
             push: false
             tags: fpga_tools:latest
       - name: Run Docker container

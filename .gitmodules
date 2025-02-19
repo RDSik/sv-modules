@@ -1,0 +1,3 @@
+[submodule "CI_CD/Verilator-Iverilog-Verible-Docker"]
+	path = CI_CD/Verilator-Iverilog-Verible-Docker
+	url = https://github.com/RDSik/Verilator-Iverilog-Verible-Docker.git
