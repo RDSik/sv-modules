@@ -25,7 +25,7 @@ jobs:
       - name: Run Docker container
         uses: addnab/docker-run-action@v3
         with:
-            image: r0d0s/fpga_tools:latest
+            image: fpga_tools:latest
             run: |
               git clone --recurse-submodules https://github.com/RDSik/axis-uart.git
               cd axis-uart
