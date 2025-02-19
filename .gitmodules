@@ -1,3 +1,0 @@
-[submodule "Verilator-Iverilog-Verible-Docker"]
-	path = Verilator-Iverilog-Verible-Docker
-	url = https://github.com/RDSik/Verilator-Iverilog-Verible-Docker.git
