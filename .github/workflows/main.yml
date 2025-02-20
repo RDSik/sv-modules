@@ -16,16 +16,10 @@ jobs:
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v2
-      - name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-            file: ./CI_CD/Verilator-Iverilog-Verible-Docker/Dockerfile
-            push: false
-            tags: fpga_tools:latest
       - name: Run Docker container
         uses: addnab/docker-run-action@v3
         with:
-            image: fpga_tools:latest
+            image: r0d0s/fpga_tools:latest
             run: |
               git clone --recurse-submodules https://github.com/RDSik/axis-uart.git
               cd axis-uart
