@@ -31,7 +31,9 @@ else ifeq ($(SIM), questa)
 endif
 
 run:
+ifeq ($(SIM), verilator)
 	./obj_dir/V$(TOP)_tb
+endif
 
 wave:
 	gtkwave $(TOP)_tb.vcd
