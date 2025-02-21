@@ -38,7 +38,7 @@ class environment;
                     /* verilator lint_off WIDTHTRUNC */
                     dut_if.rx_i = $urandom_range(0, 1);
                     /* verilator lint_on WIDTHTRUNC */
-                    $display("%0d bit detected in %g ns\n", i, $time);
+                    $display("%d bit detected in %g ns\n", i, $time);
                     #(ratio*clk_per);
                 end
                 @(posedge dut_if.clk_i);
