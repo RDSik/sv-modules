@@ -21,6 +21,6 @@ jobs:
         with:
             image: r0d0s/fpga_tools:v1.0
             run: |
-              git clone --recurse-submodules https://github.com/RDSik/axis-uart.git
+              git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make
