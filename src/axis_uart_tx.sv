@@ -70,7 +70,7 @@ always @(posedge clk_i or negedge arstn_i) begin
     end else if (baud_done) begin
         baud_cnt <= '0;
     end else if ((state == DATA) || (state == START) || (state == STOP)) begin
-        baud_cnt <= baud_cnt + 1;
+        baud_cnt <= baud_cnt + 1'b1;
     end
 end
 
@@ -80,7 +80,7 @@ always @(posedge clk_i or negedge arstn_i) begin
     end else if (bit_done) begin
         bit_cnt <= '0;
     end else if ((state == DATA) && (baud_done)) begin
-        bit_cnt <= bit_cnt + 1;
+        bit_cnt <= bit_cnt + 1'b1;
     end
 end
 
