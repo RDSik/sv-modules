@@ -36,10 +36,10 @@ axis_uart_top #(
     .BAUD_RATE  (BAUD_RATE ),
     .DATA_WIDTH (DATA_WIDTH)
 ) dut (
-    .clk_i  (dut_if.clk_i  ),
-    .arstn_i(dut_if.arstn_i),
-    .rx_i   (dut_if.rx_i   ),
-    .tx_o   (dut_if.tx_o   )
+    .clk_i     (dut_if.clk_i    ),
+    .arstn_i   (dut_if.arstn_i  ),
+    .uart_rx_i (dut_if.uart_rx_i),
+    .uart_tx_o (dut_if.uart_tx_o)
 );
 
 endmodule

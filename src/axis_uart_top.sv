@@ -6,8 +6,8 @@ module axis_uart_top #(
 )(
     input  logic clk_i,
     input  logic arstn_i,
-    input  logic rx_i,
-    output logic tx_o
+    input  logic uart_rx_i,
+    output logic uart_tx_o
 );
 
 axis_if axis();
@@ -17,10 +17,10 @@ axis_uart_tx #(
     .BAUD_RATE  (BAUD_RATE ),
     .DATA_WIDTH (DATA_WIDTH)
 ) i_axis_uart_tx (
-    .clk_i   (clk_i  ),
-    .arstn_i (arstn_i),
-    .tx_o    (tx_o   ),
-    .s_axis  (axis   )
+    .clk_i     (clk_i    ),
+    .arstn_i   (arstn_i  ),
+    .uart_tx_o (uart_tx_o),
+    .s_axis    (axis     )
 );
 
 axis_uart_rx #(
@@ -28,10 +28,10 @@ axis_uart_rx #(
     .BAUD_RATE  (BAUD_RATE ),
     .DATA_WIDTH (DATA_WIDTH)
 ) i_axis_uart_rx (
-    .clk_i   (clk_i  ),
-    .arstn_i (arstn_i),
-    .rx_i    (rx_i   ),
-    .m_axis  (axis   )
+    .clk_i     (clk_i    ),
+    .arstn_i   (arstn_i  ),
+    .uart_rx_i (uart_rx_i),
+    .m_axis    (axis     )
 );
 
 `ifdef COCOTB_SIM

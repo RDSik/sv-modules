@@ -6,7 +6,7 @@ module axis_uart_tx #(
 ) (
     input  logic clk_i,
     input  logic arstn_i,
-    output logic tx_o,
+    output logic uart_tx_o,
 
     axis_if.slave s_axis
 );
@@ -33,25 +33,25 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end else begin
         case (state)
             IDLE: begin
-                tx_o <= 1'b1;
+                uart_tx_o <= 1'b1;
                 if (s_axis.tvalid) begin
                     state <= START;
                 end
             end
             START: begin
-                tx_o <= 1'b0;
+                uart_tx_o <= 1'b0;
                 if (baud_done) begin
                     state <= DATA;
                 end
             end
             DATA: begin
-                tx_o <= tx_data[bit_cnt];
+                uart_tx_o <= tx_data[bit_cnt];
                 if (bit_done) begin
                     state <= STOP;
                 end
             end
             STOP: begin
-                tx_o <= 1'b1;
+                uart_tx_o <= 1'b1;
                 if (baud_done) begin
                     state <= WAIT;
                 end

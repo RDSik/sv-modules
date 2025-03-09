@@ -30,19 +30,19 @@ class environment;
         int ratio = clk_freq/baud_rate;
         begin
             repeat (n) begin
-                dut_if.rx_i = 1'b0;
+                dut_if.uart_rx_i = 1'b0;
                 $display("Start bit detected at: %g ns\n", $time);
                 #((ratio/2)*clk_per);
                 $display("Data transmission start in %g ns\n", $time);
                 for (int i = 0; i < data_width; i++) begin
                     /* verilator lint_off WIDTHTRUNC */
-                    dut_if.rx_i = $urandom_range(0, 1);
+                    dut_if.uart_rx_i = $urandom_range(0, 1);
                     /* verilator lint_on WIDTHTRUNC */
                     $display("%d bit detected in %g ns\n", i, $time);
                     #(ratio*clk_per);
                 end
                 @(posedge dut_if.clk_i);
-                dut_if.rx_i = 1'b1;
+                dut_if.uart_rx_i = 1'b1;
                 $display("Stop bit detected in %g ns", $time);
                 #(ratio*clk_per);
             end

@@ -6,7 +6,7 @@ module axis_uart_rx #(
 )(
     input logic clk_i,
     input logic arstn_i,
-    input logic rx_i,
+    input logic uart_rx_i,
 
     axis_if.master m_axis
 );
@@ -34,13 +34,13 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end else begin
         case (state)
             IDLE: begin
-                if (~rx_i) begin
+                if (~uart_rx_i) begin
                     state <= START;
                 end
             end
             START: begin
                 if (baud_done) begin
-                    if (~rx_i) begin
+                    if (~uart_rx_i) begin
                         state <= DATA;
                     end else begin
                         state <= IDLE;
@@ -48,7 +48,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 end
             end
             DATA: begin
-                rx_data[bit_cnt] <= rx_i;
+                rx_data[bit_cnt] <= uart_rx_i;
                 if (bit_done) begin
                     state <= STOP;
                 end
