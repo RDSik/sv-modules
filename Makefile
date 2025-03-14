@@ -19,9 +19,9 @@ SRC_FILES += $(TB_DIR)/axis_uart_top_tb.sv
 SRC_FILES += $(TB_DIR)/axis_uart_top_if.sv
 SRC_FILES += $(TB_DIR)/environment.sv
 
-.PHONY: all wave program clean
+.PHONY: sim project wave program clean
 
-all: build run project
+sim: build run
 
 build:
 ifeq ($(SIM), verilator)
