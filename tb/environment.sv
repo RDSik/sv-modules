@@ -43,7 +43,9 @@ class environment;
         begin
             wait(dut_if.arstn_i);
             forever begin
+                /* verilator lint_off WIDTHTRUNC */
                 tmp_data = $urandom_range(0, (2**data_width)-1);
+                /* verilator lint_on WIDTHTRUNC */
                 $display("Data to transmit: 8'b%b - 8'h%h\n", tmp_data, tmp_data);
                 dut_if.uart_rx_i = 1'b0;
                 $display("Start bit detected at: %g ns\n", $time);
