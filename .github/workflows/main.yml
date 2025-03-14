@@ -1,4 +1,4 @@
-name: Verilator Simulation
+name: Simulation and build project
 
 on: 
     push:
@@ -24,3 +24,4 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make
+              make project
