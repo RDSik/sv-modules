@@ -1,6 +1,6 @@
 TOP := axis_uart_top
 
-SRC_DIR     := src
+RTL_DIR     := rtl
 TB_DIR      := tb
 PROJECT_DIR := project
 
@@ -10,10 +10,10 @@ BOARD := tangprimer20k
 MACRO_FILE := wave.do
 TCL        := project.tcl
 
-SRC_FILES += $(SRC_DIR)/axis_uart_top.sv
-SRC_FILES += $(SRC_DIR)/axis_if.sv
-SRC_FILES += $(SRC_DIR)/axis_uart_rx.sv
-SRC_FILES += $(SRC_DIR)/axis_uart_tx.sv
+SRC_FILES += $(RTL_DIR)/axis_uart_top.sv
+SRC_FILES += $(RTL_DIR)/axis_if.sv
+SRC_FILES += $(RTL_DIR)/axis_uart_rx.sv
+SRC_FILES += $(RTL_DIR)/axis_uart_tx.sv
 
 SRC_FILES += $(TB_DIR)/axis_uart_top_tb.sv
 SRC_FILES += $(TB_DIR)/axis_uart_top_if.sv
@@ -25,7 +25,7 @@ sim: build run
 
 build:
 ifeq ($(SIM), verilator)
-	$(SIM) --binary $(SRC_FILES) --trace -I$(SRC_DIR) -I$(TB_DIR) --top $(TOP)_tb
+	$(SIM) --binary $(SRC_FILES) --trace -I$(RTL_DIR) -I$(TB_DIR) --top $(TOP)_tb
 else ifeq ($(SIM), questa)
 	vsim -do $(TB_DIR)/$(MACRO_FILE)
 endif

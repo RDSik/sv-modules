@@ -6,6 +6,10 @@ on:
     pull_request:
       branches: [master]
 
+env:
+    artifact_path: ~/../axis-uart/project/axis_uart_top/impl/pnr/
+    artifact_name: axis_uart_top.fs
+
 jobs:
   simulation:
     runs-on: ubuntu-latest
@@ -24,7 +28,7 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make
-  build-project:
+  build-project and download beatstream:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,3 +45,14 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make project
+      - name: Archive Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.artifact_name}}
+          path: ${{env.path}}${{env.file_name}}
+        steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{env.artifact_name}}
+          path: ${{env.path}}
