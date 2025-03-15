@@ -98,7 +98,8 @@ assign m_axis.tvalid = (state == STOP) ? 1'b1 : 1'b0;
 
 /* verilator lint_off WIDTHEXPAND */
 assign bit_done  = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
-assign baud_done = ((baud_cnt == RATIO - 1) || ((state == START) && (baud_cnt == (RATIO/2) - 1))) ? 1'b1 : 1'b0;
+assign baud_done = ((baud_cnt == RATIO - 1) || start_bit_check) ? 1'b1 : 1'b0;
+assign start_bit_check = ((state == START) && (baud_cnt == (RATIO/2) - 1)) ? 1'b1 : 1'b0;
 /* verilator lint_on WIDTHEXPAND */
 
 endmodule
