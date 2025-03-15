@@ -44,16 +44,3 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make project
-  download_image:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    steps:
-    - name: Checkout project
-      uses: actions/checkout@v2
-    - name: Download image
-      uses: ishworkh/docker-image-artifact-download@v2.0.0
-      with:
-        image: "${{env.image_name}}"
