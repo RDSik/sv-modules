@@ -50,7 +50,6 @@ jobs:
         with:
           name: ${{env.artifact_name}}
           path: ${{env.path}}${{env.file_name}}
-        steps:
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
