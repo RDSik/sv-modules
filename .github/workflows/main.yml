@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{env.artifact_name}}
-          path: ${{env.artifact_path}}${{env.file_name}}
+          path: ${{env.artifact_path}}${{env.artifact_name}}
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
