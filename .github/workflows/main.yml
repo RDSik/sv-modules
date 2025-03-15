@@ -28,7 +28,7 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make
-  build-project and download beatstream:
+  build-project:
     runs-on: ubuntu-latest
     defaults:
       run:
