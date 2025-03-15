@@ -18,6 +18,7 @@ logic [$clog2(RATIO)-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         rx_data;
 logic                          bit_done;
 logic                          baud_done;
+logic                          start_bit_check;
 
 enum logic [2:0] {
     IDLE  = 3'b000,
