@@ -49,7 +49,7 @@ class environment;
                 $display("Data to transmit: 8'b%b - 8'h%h\n", tmp_data, tmp_data);
                 dut_if.uart_rx_i = 1'b0;
                 $display("Start bit detected at: %g ns\n", $time);
-                repeat (ratio/2+1) @(posedge dut_if.clk_i);
+                repeat ((ratio/2)+1) @(posedge dut_if.clk_i);
                 $display("Data transmission start in %g ns\n", $time);
                 for (int i = 0; i < data_width; i++) begin
                     dut_if.uart_rx_i = tmp_data[i];
