@@ -39,7 +39,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 end
             end
             START: begin
-                if (baud_done) begin
+                if (start_bit_check) begin
                     if (~uart_rx_i) begin
                         state <= DATA;
                     end else begin
@@ -97,8 +97,8 @@ end
 assign m_axis.tvalid = (state == STOP) ? 1'b1 : 1'b0;
 
 /* verilator lint_off WIDTHEXPAND */
-assign bit_done  = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
-assign baud_done = ((baud_cnt == RATIO - 1) || start_bit_check) ? 1'b1 : 1'b0;
+assign bit_done        = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
+assign baud_done       = (baud_cnt == RATIO - 1) ? 1'b1 : 1'b0;
 assign start_bit_check = ((state == START) && (baud_cnt == (RATIO/2) - 1)) ? 1'b1 : 1'b0;
 /* verilator lint_on WIDTHEXPAND */
 
