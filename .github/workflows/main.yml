@@ -48,10 +48,10 @@ jobs:
       - name: Archive Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{env.artifact_name}}
-          path: ${{env.artifact_path}}${{env.artifact_name}}
+          name: Bitstream
+          path: ~/../axis-uart/project/axis_uart_top/impl/pnr/axis_uart_top.fs
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
-          name: ${{env.artifact_name}}
-          path: ${{env.artifact_path}}
+          name: Bitstream
+          path: ~/../
