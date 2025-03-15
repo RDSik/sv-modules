@@ -23,10 +23,16 @@ make project
 make program
 ```
 
-## Simulation with Verilator and Gtkwave:
+## Simulation with Verilator: and Gtkwave:
 ```bash
 make
 ```
+
+## Wave with Gtkwave:
+```bash
+make wave
+```
+
 ## Simulation  with QuestaSim:
 ```bash
 make SIM=questa
