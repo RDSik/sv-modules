@@ -7,8 +7,7 @@ on:
       branches: [master]
 
 env:
-    artifact_path: ${{github.workspace}}/project/axis_uart_top/impl/pnr/axis_uart_top.fs
-    artifact_name: Bitstream
+    image_name: r0d0s/fpga_tools:latest
 
 jobs:
   simulation:
@@ -40,18 +39,16 @@ jobs:
       - name: Run Docker container
         uses: addnab/docker-run-action@v3
         with:
-            image: r0d0s/fpga_tools:latest
+            image: ${{env.image_name}}
             run: |
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make project
-      - name: Archive Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{env.artifact_name}}
-          path: ${{env.artifact_path}}${{env.artifact_name}}
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{env.artifact_name}}
-          path: ${{env.artifact_path}}
+  download_image:
+    - name: Checkout project
+      uses: actions/checkout@v2
+
+    - name: Download image
+      uses: ishworkh/docker-image-artifact-download@v2.0.0
+      with:
+        image: "${{env.image_name}}"
