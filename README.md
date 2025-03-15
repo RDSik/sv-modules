@@ -23,7 +23,7 @@ make project
 make program
 ```
 
-## Simulation with Verilator: and Gtkwave:
+## Simulation with Verilator:
 ```bash
 make
 ```
