@@ -7,7 +7,7 @@ on:
       branches: [master]
 
 env:
-    artifact_path: ~/../axis-uart/project/axis_uart_top/impl/pnr/
+    artifact_path: axis-uart/project/axis_uart_top/impl/pnr/
     artifact_name: axis_uart_top.fs
 
 jobs:
@@ -48,10 +48,10 @@ jobs:
       - name: Archive Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: Bitstream
-          path: ~/../axis-uart/project/axis_uart_top/impl/pnr/axis_uart_top.fs
+          name: ${{env.artifact_name}}
+          path: ${{env.artifact_path}}${{env.artifact_name}}
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
-          name: Bitstream
-          path: ~/../
+          name: ${{env.artifact_name}}
+          path: ${{env.artifact_path}}
