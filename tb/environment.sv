@@ -67,7 +67,7 @@ class environment;
             dut_if.arstn_i = 1'b0;
             repeat (delay) @(posedge dut_if.clk_i);
             dut_if.arstn_i = 1'b1;
-            $display("Reset done at %g ns\n.", $time);
+            $display("Reset done in %g ns\n.", $time);
         end
     endtask
 
