@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_rx #(
-    parameter CLK_FREQ   = 27_000_000,
-    parameter BAUD_RATE  = 115_200,
-    parameter DATA_WIDTH = 8
+    parameter int CLK_FREQ   = 27_000_000,
+    parameter int BAUD_RATE  = 115_200,
+    parameter int DATA_WIDTH = 8
 )(
     input logic clk_i,
     input logic arstn_i,
@@ -11,7 +11,17 @@ module axis_uart_rx #(
     axis_if.master m_axis
 );
 
-localparam RATIO = CLK_FREQ/BAUD_RATE;
+typedef enum logic [2:0] {
+    IDLE  = 3'b000,
+    START = 3'b001,
+    DATA  = 3'b010,
+    STOP  = 3'b011,
+    WAIT  = 3'b100
+} my_state;
+
+my_state state;
+
+localparam int RATIO = CLK_FREQ/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [$clog2(RATIO)-1:0]      baud_cnt;
@@ -22,14 +32,6 @@ logic                          baud_done;
 logic                          start_bit_check;
 logic                          m_axis_tvalid_reg;
 logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
-
-enum logic [2:0] {
-    IDLE  = 3'b000,
-    START = 3'b001,
-    DATA  = 3'b010,
-    STOP  = 3'b011,
-    WAIT  = 3'b100
-} state;
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
