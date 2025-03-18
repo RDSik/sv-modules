@@ -35,7 +35,8 @@ logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        state <= IDLE;
+        state   <= IDLE;
+        rx_data <= '0;
     end else begin
         case (state)
             IDLE: begin
@@ -53,6 +54,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 end
             end
             DATA: begin
+            rx_data[bit_cnt] <= uart_rx_i;
                 if (bit_done) begin
                     state <= STOP;
                 end
@@ -67,14 +69,6 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
             end
             default: state <= IDLE;
         endcase
-    end
-end
-
-always @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
-        rx_data <= '0;
-    end else if (state == DATA) begin
-        rx_data[bit_cnt] <= uart_rx_i;
     end
 end
 
