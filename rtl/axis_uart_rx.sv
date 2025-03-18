@@ -54,7 +54,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 end
             end
             DATA: begin
-            rx_data[bit_cnt] <= uart_rx_i;
+                rx_data[bit_cnt] <= uart_rx_i;
                 if (bit_done) begin
                     state <= STOP;
                 end
