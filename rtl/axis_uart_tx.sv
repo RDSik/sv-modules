@@ -11,14 +11,6 @@ module axis_uart_tx #(
     axis_if.slave s_axis
 );
 
-localparam RATIO = CLK_FREQ/BAUD_RATE;
-
-logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
-logic [$clog2(RATIO)-1:0]      baud_cnt;
-logic [DATA_WIDTH-1:0]         tx_data;
-logic                          bit_done;
-logic                          baud_done;
-
 typedef enum logic [2:0] {
     IDLE  = 3'b000,
     START = 3'b001,
@@ -30,69 +22,49 @@ typedef enum logic [2:0] {
 my_state state;
 my_state next_state;
 
+localparam RATIO = CLK_FREQ/BAUD_RATE;
+
+logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
+logic [$clog2(RATIO)-1:0]      baud_cnt;
+logic [DATA_WIDTH-1:0]         tx_data;
+logic                          bit_done;
+logic                          baud_done;
+
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        state <= IDLE;
+        state  <= IDLE;
     end else begin
-        state <= next_state;
+        case (state)
+            IDLE: begin
+                uart_tx_o <= 1'b1;
+                if (s_axis.tvalid) begin
+                    state <= START;
+                end
+            end
+            START: begin
+                uart_tx_o <= 1'b0;
+                if (baud_done) begin
+                    state <= DATA;
+                end
+            end
+            DATA: begin
+                uart_tx_o <= tx_data[bit_cnt];
+                if (bit_done) begin
+                    state <= STOP;
+                end
+            end
+            STOP: begin
+                uart_tx_o <= 1'b1;
+                if (baud_done) begin
+                    state <= WAIT;
+                end
+            end
+            WAIT: begin
+                state  <= IDLE;
+            end
+            default: state <= IDLE;
+        endcase
     end
-end
-
-always_comb begin
-    case (state)
-        IDLE: begin
-            if (s_axis.tvalid) begin
-                next_state = START;
-            end else begin
-                next_state = IDLE;
-            end
-        end
-        START: begin
-            if (baud_done) begin
-                next_state = DATA;
-            end else begin
-                next_state = START;
-            end
-        end
-        DATA: begin
-            if (bit_done) begin
-                next_state = STOP;
-            end else begin
-                next_state = DATA;
-            end
-        end
-        STOP: begin
-            if (baud_done) begin
-                next_state = WAIT;
-            end else begin
-                next_state = STOP;
-            end
-        end
-        WAIT: begin
-            next_state = IDLE;
-        end
-        default: next_state = state;
-    endcase
-end
-
-always_comb begin
-    unique case (state)
-        IDLE: begin
-            uart_tx_o = 1'b1;
-        end
-        START: begin
-            uart_tx_o = 1'b0;
-        end
-        DATA: begin
-            uart_tx_o = 1'b0;
-        end
-        STOP: begin
-            uart_tx_o = 1'b1;
-        end
-        WAIT: begin
-            uart_tx_o = 1'b1;
-        end
-    endcase
 end
 
 always @(posedge clk_i or negedge arstn_i) begin

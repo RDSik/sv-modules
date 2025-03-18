@@ -11,6 +11,17 @@ module axis_uart_rx #(
     axis_if.master m_axis
 );
 
+typedef enum logic [2:0] {
+    IDLE  = 3'b000,
+    START = 3'b001,
+    DATA  = 3'b010,
+    STOP  = 3'b011,
+    WAIT  = 3'b100
+} my_state;
+
+my_state state;
+my_state next_state;
+
 localparam RATIO = CLK_FREQ/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
@@ -23,64 +34,41 @@ logic                          start_bit_check;
 logic                          m_axis_tvalid_reg;
 logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
 
-typedef enum logic [2:0] {
-    IDLE  = 3'b000,
-    START = 3'b001,
-    DATA  = 3'b010,
-    STOP  = 3'b011,
-    WAIT  = 3'b100
-} my_state;
-
-my_state state;
-my_state next_state;
-
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         state <= IDLE;
     end else begin
-        state <= next_state;
-    end
-end
-
-always_comb begin
-    case (state)
-        IDLE: begin
-            if (~uart_rx_i) begin
-                next_state = START;
-            end else begin
-                next_state = IDLE;
-            end
-        end
-        START: begin
-            if (start_bit_check) begin
+        case (state)
+            IDLE: begin
                 if (~uart_rx_i) begin
-                    next_state = DATA;
-                end else begin
-                    next_state = IDLE;
+                    state <= START;
                 end
-            end else begin
-                next_state = START;
             end
-        end
-        DATA: begin
-            if (bit_done) begin
-                next_state = STOP;
-            end else begin
-                next_state = DATA;
+            START: begin
+                if (start_bit_check) begin
+                    if (~uart_rx_i) begin
+                        state <= DATA;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
             end
-        end
-        STOP: begin
-            if (baud_done) begin
-                next_state = WAIT;
-            end else begin
-                next_state = STOP;
+            DATA: begin
+                if (bit_done) begin
+                    state <= STOP;
+                end
             end
-        end
-        WAIT: begin
-            next_state = IDLE;
-        end
-        default: next_state = state;
-    endcase
+            STOP: begin
+                if (baud_done) begin
+                    state <= WAIT;
+                end
+            end
+            WAIT: begin
+                state  <= IDLE;
+            end
+            default: state <= IDLE;
+        endcase
+    end
 end
 
 always @(posedge clk_i or negedge arstn_i) begin
