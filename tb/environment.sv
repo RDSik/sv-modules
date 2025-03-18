@@ -27,7 +27,8 @@ class environment;
                 reset_gen($urandom_range(1, 10));
                 data_gen();
             join_none
-            #sim_time $display("Stop simulation at: %g ns\n", $time);
+            repeat (sim_time) @(posedge dut_if.clk_i);
+            $display("Stop simulation at: %g ns\n", $time);
             `ifdef VERILATOR
             $finish();
             `else

@@ -16,9 +16,12 @@ localparam RATIO = CLK_FREQ/BAUD_RATE;
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [$clog2(RATIO)-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         rx_data;
+logic                          bit_done_d;
 logic                          bit_done;
 logic                          baud_done;
 logic                          start_bit_check;
+logic                          m_axis_tvalid_reg;
+logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
 
 enum logic [2:0] {
     IDLE  = 3'b000,
@@ -30,8 +33,7 @@ enum logic [2:0] {
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        state  <= IDLE;
-        rx_data <= '0;
+        state <= IDLE;
     end else begin
         case (state)
             IDLE: begin
@@ -49,7 +51,6 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 end
             end
             DATA: begin
-                rx_data[bit_cnt] <= uart_rx_i;
                 if (bit_done) begin
                     state <= STOP;
                 end
@@ -64,6 +65,14 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
             end
             default: state <= IDLE;
         endcase
+    end
+end
+
+always @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
+        rx_data <= '0;
+    end else if (state == DATA) begin
+        rx_data[bit_cnt] <= uart_rx_i;
     end
 end
 
@@ -89,13 +98,28 @@ end
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        m_axis.tdata <= '0;
-    end else if (m_axis.tvalid & m_axis.tready) begin
-        m_axis.tdata <= rx_data;
+        m_axis_tdata_reg <= '0;
+    end else if (bit_done_d) begin
+        m_axis_tdata_reg <= rx_data;
     end
 end
 
-assign m_axis.tvalid = (state == STOP) ? 1'b1 : 1'b0;
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
+        m_axis_tvalid_reg <= 1'b0;
+    end else if (m_axis.tvalid & m_axis.tready) begin
+        m_axis_tvalid_reg <= 1'b0;
+    end else if (bit_done_d) begin
+        m_axis_tvalid_reg <= 1'b1;
+    end
+end
+
+always_ff @(posedge clk_i) begin
+    bit_done_d <= bit_done;
+end
+
+assign m_axis.tvalid = m_axis_tvalid_reg;
+assign m_axis.tdata  = m_axis_tdata_reg;
 
 /* verilator lint_off WIDTHEXPAND */
 assign bit_done        = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
