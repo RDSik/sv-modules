@@ -4,11 +4,11 @@
 
 module axis_uart_top_tb();
 
-localparam int CLK_FREQ   = 27_000_000;
-localparam int BAUD_RATE  = 115_200;
-localparam int DATA_WIDTH = 8;
-localparam int CLK_PER    = 2;
-localparam int SIM_TIME   = 50000;
+localparam CLK_FREQ   = 27_000_000;
+localparam BAUD_RATE  = 115_200;
+localparam DATA_WIDTH = 8;
+localparam CLK_PER    = 2;
+localparam SIM_TIME   = 50000;
 
 axis_uart_top_if dut_if();
 
