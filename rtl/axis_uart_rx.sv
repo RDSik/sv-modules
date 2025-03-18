@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_rx #(
-    parameter int CLK_FREQ   = 27_000_000,
-    parameter int BAUD_RATE  = 115_200,
-    parameter int DATA_WIDTH = 8
+    parameter CLK_FREQ   = 27_000_000,
+    parameter BAUD_RATE  = 115_200,
+    parameter DATA_WIDTH = 8
 )(
     input logic clk_i,
     input logic arstn_i,
@@ -21,7 +21,7 @@ typedef enum logic [2:0] {
 
 my_state state;
 
-localparam int RATIO = CLK_FREQ/BAUD_RATE;
+localparam RATIO = CLK_FREQ/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [$clog2(RATIO)-1:0]      baud_cnt;
