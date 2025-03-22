@@ -21,10 +21,10 @@ typedef enum logic [2:0] {
 
 my_state state;
 
-localparam RATIO = CLK_FREQ/BAUD_RATE;
+localparam DIVIDER = CLK_FREQ/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
-logic [$clog2(RATIO)-1:0]      baud_cnt;
+logic [$clog2(DIVIDER)-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         rx_data;
 logic                          bit_done_d;
 logic                          bit_done;
@@ -113,8 +113,8 @@ assign m_axis.tdata  = m_axis_tdata_reg;
 
 /* verilator lint_off WIDTHEXPAND */
 assign bit_done        = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
-assign baud_done       = ((baud_cnt == RATIO - 1) || start_bit_check) ? 1'b1 : 1'b0;
-assign start_bit_check = ((state == START) && (baud_cnt == (RATIO/2) - 1)) ? 1'b1 : 1'b0;
+assign baud_done       = ((baud_cnt == DIVIDER - 1) || start_bit_check) ? 1'b1 : 1'b0;
+assign start_bit_check = ((state == START) && (baud_cnt == (DIVIDER/2) - 1)) ? 1'b1 : 1'b0;
 /* verilator lint_on WIDTHEXPAND */
 
 endmodule
