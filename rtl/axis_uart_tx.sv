@@ -24,7 +24,7 @@ my_state state;
 localparam DIVIDER = CLK_FREQ/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
-logic [$clog2(DIVIDER)-1:0]      baud_cnt;
+logic [$clog2(DIVIDER)-1:0]    baud_cnt;
 logic [DATA_WIDTH-1:0]         tx_data;
 logic                          bit_done;
 logic                          baud_done;
