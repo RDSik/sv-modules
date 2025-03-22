@@ -31,7 +31,8 @@ logic                          baud_done;
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        state <= IDLE;
+        uart_tx_o <= 1'b1;
+        state     <= IDLE;
     end else begin
         case (state)
             IDLE: begin
