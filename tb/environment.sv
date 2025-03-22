@@ -24,16 +24,10 @@ class environment;
         begin
             fork
                 clock_gen();
-                reset_gen($urandom_range(1, 10));
+                reset_gen();
                 data_gen();
             join_none
-            repeat (sim_time) @(posedge dut_if.clk_i);
-            $display("Stop simulation at: %g ns\n", $time);
-            `ifdef VERILATOR
-            $finish();
-            `else
-            $stop();
-            `endif
+            time_out(sim_time);
         end
     endtask
 
@@ -63,10 +57,10 @@ class environment;
         end
     endtask
 
-    task reset_gen(int delay);
+    task reset_gen();
         begin
             dut_if.arstn_i = 1'b0;
-            repeat (delay) @(posedge dut_if.clk_i);
+            repeat ($urandom_range(1, 10)) @(posedge dut_if.clk_i);
             dut_if.arstn_i = 1'b1;
             $display("Reset done in %g ns\n.", $time);
         end
@@ -78,6 +72,18 @@ class environment;
             forever begin
                 #(clk_per/2) dut_if.clk_i = ~dut_if.clk_i;
             end
+        end
+    endtask
+
+    task time_out(int sim_time);
+        begin
+            repeat (sim_time) @(posedge dut_if.clk_i);
+            $display("Stop simulation at: %g ns\n", $time);
+            `ifdef VERILATOR
+            $finish();
+            `else
+            $stop();
+            `endif
         end
     endtask
 

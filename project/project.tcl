@@ -12,6 +12,7 @@ add_file $rtl_dir/axis_if.sv
 add_file $rtl_dir/axis_uart_top.sv
 add_file $rtl_dir/axis_uart_tx.sv
 add_file $rtl_dir/axis_uart_rx.sv
+add_file $rtl_dir/axis_fifo.sv
 
 add_file $constrain_dir/axis_uart_top.sdc
 add_file $constrain_dir/axis_uart_top.cst

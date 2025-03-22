@@ -92,26 +92,20 @@ always @(posedge clk_i or negedge arstn_i) begin
     end
 end
 
-always_ff @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
-        m_axis_tdata_reg <= '0;
-    end else if (bit_done_d) begin
-        m_axis_tdata_reg <= rx_data;
-    end
-end
-
-always_ff @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
-        m_axis_tvalid_reg <= 1'b0;
-    end else if (m_axis.tvalid & m_axis.tready) begin
-        m_axis_tvalid_reg <= 1'b0;
-    end else if (bit_done_d) begin
-        m_axis_tvalid_reg <= 1'b1;
-    end
-end
-
 always_ff @(posedge clk_i) begin
     bit_done_d <= bit_done;
+end
+
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
+        m_axis_tvalid_reg <= '0;
+        m_axis_tdata_reg  <= '0;
+    end else if (bit_done_d) begin
+        m_axis_tvalid_reg <= 1'b1;
+        m_axis_tdata_reg  <= rx_data;
+    end else if (m_axis.tvalid & m_axis.tready) begin
+        m_axis_tvalid_reg <= 1'b0;
+    end
 end
 
 assign m_axis.tvalid = m_axis_tvalid_reg;
