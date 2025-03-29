@@ -23,15 +23,15 @@ class environment;
     task run();
         begin
             fork
-                clock_gen();
+                clock_gen(clk_per);
                 reset_gen();
-                data_gen();
+                data_gen(clk_freq, baud_rate);
             join_none
             time_out(sim_time);
         end
     endtask
 
-    task data_gen();
+    task data_gen(int clk_freq, int baud_rate);
         int ratio = clk_freq/baud_rate;
         logic [7:0] tmp_data;
         begin
@@ -66,7 +66,7 @@ class environment;
         end
     endtask
 
-    task clock_gen();
+    task clock_gen(int clk_per);
         begin
             dut_if.clk_i = 1'b0;
             forever begin
