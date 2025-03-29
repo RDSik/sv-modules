@@ -7,7 +7,7 @@ module axis_uart_top_tb();
 localparam CLK_FREQ   = 27_000_000;
 localparam BAUD_RATE  = 115_200;
 localparam DATA_WIDTH = 8;
-localparam CLK_PER    = 2;
+localparam CLK_PER_NS = 10**9/CLK_FREQ;
 localparam SIM_TIME   = 50000;
 
 axis_uart_top_if dut_if();
@@ -15,7 +15,7 @@ axis_uart_top_if dut_if();
 environment env;
 
 initial begin
-    env = new(dut_if, CLK_PER, CLK_FREQ, BAUD_RATE, DATA_WIDTH, SIM_TIME);
+    env = new(dut_if, CLK_PER_NS, CLK_FREQ, BAUD_RATE, DATA_WIDTH, SIM_TIME);
     env.run();
 end
 
