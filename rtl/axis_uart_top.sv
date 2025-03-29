@@ -11,18 +11,7 @@ module axis_uart_top #(
     output logic uart_tx_o
 );
 
-axis_if s_axis();
-axis_if m_axis();
-
-axis_fifo #(
-    .DATA_WIDTH (DATA_WIDTH),
-    .FIFO_DEPTH (FIFO_DEPTH)
-) i_axis_fifo (
-    .clk_i   (clk_i  ),
-    .arstn_i (arstn_i),
-    .m_axis  (s_axis ),
-    .s_axis  (m_axis )
-);
+axis_if axis();
 
 axis_uart_tx #(
     .CLK_FREQ   (CLK_FREQ  ),
@@ -32,7 +21,7 @@ axis_uart_tx #(
     .clk_i     (clk_i    ),
     .arstn_i   (arstn_i  ),
     .uart_tx_o (uart_tx_o),
-    .s_axis    (s_axis   )
+    .s_axis    (axis     )
 );
 
 axis_uart_rx #(
@@ -43,7 +32,7 @@ axis_uart_rx #(
     .clk_i     (clk_i    ),
     .arstn_i   (arstn_i  ),
     .uart_rx_i (uart_rx_i),
-    .m_axis    (m_axis   )
+    .m_axis    (axis     )
 );
 
 `ifdef COCOTB_SIM
