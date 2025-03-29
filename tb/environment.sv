@@ -80,9 +80,9 @@ class environment;
             repeat (sim_time) @(posedge dut_if.clk_i);
             $display("Stop simulation at: %g ns\n", $time);
             `ifdef VERILATOR
-            $finish();
+                $finish();
             `else
-            $stop();
+                $stop();
             `endif
         end
     endtask
