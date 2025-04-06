@@ -1,9 +1,14 @@
 *
 
+!.github/
+!.github/**/
+
+!.github/**/main.yml
+
 !project/
 !project/**/
 
-!project/**/*.tcl
+!project/**/project.tcl
 !project/**/*.sdc
 !project/**/*.cst
 !project/**/*.xdc
