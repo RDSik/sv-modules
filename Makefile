@@ -5,6 +5,7 @@ TB_DIR      := tb
 PROJECT_DIR := project
 
 SIM   ?= verilator
+SYN   ?= gowin
 BOARD := tangprimer20k
 
 MACRO_FILE := wave.do
@@ -39,23 +40,27 @@ wave:
 	gtkwave $(TOP)_tb.vcd
 
 project: 
-	gw_sh $(PROJECT_DIR)/$(TCL)
+ifeq ($(SYN), gowin)
+	gw_sh $(PROJECT_DIR)/gowin/$(TCL)
+else ifeq ($(SYN), vivado)
+	vivado -mode tcl -source $(PROJECT_DIR)/vivado/$(TCL)
+endif
 
 program:
 	openFPGALoader -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs
 
 clean:
-ifeq ($(OS), Windows_NT)
-	rmdir /s /q $(PROJECT_DIR)\$(TOP)
-	rmdir /s /q work
-	del transcript
-	del *.vcd
-	del *.wlf
-else
 	rm -rf $(PROJECT_DIR)/$(TOP)
+	rm -rf $(PROJECT_DIR)/vivado/$(TOP).cache
+	rm -rf $(PROJECT_DIR)/vivado/$(TOP).hw
+	rm -rf $(PROJECT_DIR)/vivado/$(TOP).runs
+	rm -rf $(PROJECT_DIR)/vivado/$(TOP).sim
+	rm -rf $(PROJECT_DIR)/vivado/$(TOP).ip_user_files
+	rm $(PROJECT_DIR)/vivado/$(TOP).xpr
 	rm -rf obj_dir
 	rm -rf work
 	rm transcript
 	rm *.vcd
 	rm *.wlf
-endif
+	rm *.log
+	rm *.jou

@@ -1,6 +1,6 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_top #(
-    parameter CLK_FREQ   = 27_000_000,
+    parameter CLK_FREQ   = 50_000_000,
     parameter BAUD_RATE  = 115_200,
     parameter DATA_WIDTH = 8,
     parameter FIFO_DEPTH = 16
