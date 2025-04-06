@@ -9,9 +9,9 @@
 !project/**/
 
 !project/**/project.tcl
+!project/**/axis_uart_top.xdc
 !project/**/*.sdc
 !project/**/*.cst
-!project/**/*.xdc
 
 !rtl/
 
