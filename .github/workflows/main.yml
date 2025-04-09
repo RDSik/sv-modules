@@ -7,6 +7,8 @@ on:
     - '*'
   pull_request:
     branches: [master]
+    tags:
+    - '*'
 
 env:
     image_name: r0d0s/fpga_tools:latest
