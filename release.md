@@ -1,1 +1,1 @@
-#First release!
+# First release v1.0

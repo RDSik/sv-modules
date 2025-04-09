@@ -48,10 +48,10 @@ jobs:
               make project
       - name: Create artifact
         run: | 
-          cp project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
+          docker cp ${{env.image_name}}:/axis-uart/project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
           tar -cvf release.tar.gz axis_uart_top.fs
       - name: Create release
         uses: ncipollo/release-action@v1
-        with: 
+        with:
           artifacts: "release.tar.gz"
           bodyFile: release.md
