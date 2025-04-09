@@ -2,11 +2,6 @@ name: Simulation and build project
 
 on: 
   push:
-    branches: [master]
-    tags:
-    - '*'
-  pull_request:
-    branches: [master]
     tags:
     - '*'
 
@@ -15,24 +10,7 @@ env:
     container_name: fpga_tools
 
 jobs:
-  simulation:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    steps:
-      - name: Check out the repository to the runner
-        uses: actions/checkout@v2
-      - name: Run Docker container
-        uses: addnab/docker-run-action@v3
-        with:
-            image: ${{env.image_name}}
-            run: |
-              git clone https://github.com/RDSik/axis-uart.git
-              cd axis-uart
-              make
-  build-project:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
