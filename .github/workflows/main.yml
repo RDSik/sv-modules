@@ -48,10 +48,9 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make project
-              exit
-              docker cp ${{env.container_name}}:/axis-uart ./
       - name: Create artifact
-        run: | 
+        run: |
+          docker cp ${{env.container_name}}:/axis-uart ./
           tar -cvf release.tar.gz axis_uart
       - name: Create release
         uses: ncipollo/release-action@v1
