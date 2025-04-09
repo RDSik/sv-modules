@@ -3,7 +3,7 @@ name: Simulation and build project
 on: 
   push:
     tags:
-    - '*'
+    - 'v*'
 
 env:
     image_name: r0d0s/fpga_tools:latest
