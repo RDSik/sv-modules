@@ -1,4 +1,4 @@
-name: Simulation and build project
+name: Simulation
 
 on: 
   push:
