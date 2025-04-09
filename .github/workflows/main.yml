@@ -55,7 +55,7 @@ jobs:
       - name: Create artifact
         run: |
           docker cp ${{env.container_name}}:/axis-uart/project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
-          tar -cvf bitstream.tar.gz axis-uart_top.fs
+          tar -cvf bitstream.tar.gz axis_uart_top.fs
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
