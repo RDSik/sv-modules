@@ -8,6 +8,7 @@ on:
 
 env:
     image_name: r0d0s/fpga_tools:latest
+    container_name: fpga_tools
 
 jobs:
   simulation:
@@ -22,7 +23,7 @@ jobs:
       - name: Run Docker container
         uses: addnab/docker-run-action@v3
         with:
-            image: r0d0s/fpga_tools:latest
+            image: ${{env.image_name}}
             run: |
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
@@ -42,14 +43,16 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
             image: ${{env.image_name}}
+            options: --name ${{env.container_name}}
             run: |
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make project
+              exit
+              docker cp ${{env.container_name}}:/axis-uart ./
       - name: Create artifact
         run: | 
-          docker cp ${{env.image_name}}:/axis-uart/project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
-          tar -cvf release.tar.gz axis_uart_top.fs
+          tar -cvf release.tar.gz axis_uart
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
