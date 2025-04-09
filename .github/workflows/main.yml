@@ -29,6 +29,8 @@ jobs:
               make
   build-project:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         shell: bash
@@ -44,3 +46,12 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make project
+      - name: Create artifact
+        run: | 
+          cp project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
+          tar -cvf release.tar.gz axis_uart_top.fs
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with: 
+          artifacts: "release.tar.gz"
+          bodyFile: release.md
