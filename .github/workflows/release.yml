@@ -1,4 +1,4 @@
-name: Simulation and build project
+name: Build project and create release
 
 on: 
   push:
