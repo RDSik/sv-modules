@@ -3,7 +3,7 @@
 !.github/
 !.github/**/
 
-!.github/**/main.yml
+!.github/**/*.yml
 
 !project/
 !project/**/

@@ -1,4 +1,4 @@
-[![Simulation and build project](https://github.com/RDSik/axis-uart/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/RDSik/axis-uart/actions/workflows/main.yml)
+[![Simulation](https://github.com/RDSik/axis-uart/actions/workflows/simulation.yml/badge.svg?branch=master)](https://github.com/RDSik/axis-uart/actions/workflows/simulation.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/RDSik/axis-uart/blob/master/LICENSE.txt)
 
 # AXI-Stream UART module
