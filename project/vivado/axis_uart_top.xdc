@@ -10,5 +10,5 @@ set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports clk_i]
 ####################
 
 set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33} [get_ports arstn_i]
-set_property -dict {PACKAGE_PIN G19 IOSTANDARD LVCMOS33 } [get_ports uart_tx_o]
-set_property -dict {PACKAGE_PIN G20 IOSTANDARD LVCMOS33 } [get_ports uart_rx_i]
+set_property -dict {PACKAGE_PIN G19 IOSTANDARD LVCMOS33} [get_ports uart_tx_o]
+set_property -dict {PACKAGE_PIN G20 IOSTANDARD LVCMOS33} [get_ports uart_rx_i]
