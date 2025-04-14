@@ -56,6 +56,7 @@ clean:
 	rm -rf $(PROJECT_DIR)/vivado/$(TOP).runs
 	rm -rf $(PROJECT_DIR)/vivado/$(TOP).sim
 	rm -rf $(PROJECT_DIR)/vivado/$(TOP).ip_user_files
+ rm -rf $(PROJECT_FOR)/vivado/.Xil
 	rm $(PROJECT_DIR)/vivado/$(TOP).xpr
 	rm -rf obj_dir
 	rm -rf work
