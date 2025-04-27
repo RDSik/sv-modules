@@ -32,6 +32,7 @@ logic                          baud_done;
 logic                          start_bit_check;
 logic                          m_axis_tvalid_reg;
 logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
+logic                          m_handshake;
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
@@ -103,13 +104,14 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end else if (bit_done_d) begin
         m_axis_tvalid_reg <= 1'b1;
         m_axis_tdata_reg  <= rx_data;
-    end else if (m_axis.tvalid & m_axis.tready) begin
+    end else if (m_handshake) begin
         m_axis_tvalid_reg <= 1'b0;
     end
 end
 
 assign m_axis.tvalid = m_axis_tvalid_reg;
 assign m_axis.tdata  = m_axis_tdata_reg;
+assign m_handshake   = m_axis.tvalid & m_axis.tready;
 
 /* verilator lint_off WIDTHEXPAND */
 assign bit_done        = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
