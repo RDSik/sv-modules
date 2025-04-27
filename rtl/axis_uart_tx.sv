@@ -8,7 +8,7 @@ module axis_uart_tx #(
     input  logic arstn_i,
     output logic uart_tx_o,
 
-    axis_if.slave s_axis
+    axis_if      s_axis
 );
 
 typedef enum logic [2:0] {
@@ -28,6 +28,7 @@ logic [$clog2(DIVIDER)-1:0]    baud_cnt;
 logic [DATA_WIDTH-1:0]         tx_data;
 logic                          bit_done;
 logic                          baud_done;
+logic                          s_handshake;
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
@@ -90,12 +91,13 @@ end
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         tx_data <= '0;
-    end else if (s_axis.tvalid & s_axis.tready) begin
+    end else if (s_handshake) begin
         tx_data <= s_axis.tdata;
     end
 end
 
 assign s_axis.tready = (state == IDLE) ? 1'b1 : 1'b0;
+assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
 /* verilator lint_off WIDTHEXPAND */
 assign bit_done  = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;

@@ -22,18 +22,18 @@ axis_uart_tx #(
     .clk_i      (clk_i     ),
     .arstn_i    (arstn_i   ),
     .uart_tx_o  (uart_tx_o ),
-    .s_axis     (axis      )
+    .s_axis     (axis.slave)
 );
 
 axis_uart_rx #(
-    .CLK_FREQ   (CLK_FREQ  ),
-    .BAUD_RATE  (BAUD_RATE ),
-    .DATA_WIDTH (DATA_WIDTH)
+    .CLK_FREQ   (CLK_FREQ   ),
+    .BAUD_RATE  (BAUD_RATE  ),
+    .DATA_WIDTH (DATA_WIDTH )
 ) i_axis_uart_rx (
-    .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   ),
-    .uart_rx_i  (uart_rx_i ),
-    .m_axis     (axis      )
+    .clk_i      (clk_i      ),
+    .arstn_i    (arstn_i    ),
+    .uart_rx_i  (uart_rx_i  ),
+    .m_axis     (axis.master)
 );
 
 `ifdef COCOTB_SIM

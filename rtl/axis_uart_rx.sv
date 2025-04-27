@@ -8,7 +8,7 @@ module axis_uart_rx #(
     input logic arstn_i,
     input logic uart_rx_i,
 
-    axis_if.master m_axis
+    axis_if     m_axis
 );
 
 typedef enum logic [2:0] {
@@ -30,8 +30,9 @@ logic                          bit_done_d;
 logic                          bit_done;
 logic                          baud_done;
 logic                          start_bit_check;
-logic                          m_axis_tvalid_reg;
+
 logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
+logic                          m_axis_tvalid_reg;
 logic                          m_handshake;
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
