@@ -13,7 +13,7 @@ module axis_uart_top #(
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
-)  axis (
+) axis (
     .clk_i      (clk_i     ),
     .arstn_i    (arstn_i   )
 );
