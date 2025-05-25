@@ -17,8 +17,6 @@ SRC_FILES += $(RTL_DIR)/axis_uart_rx.sv
 SRC_FILES += $(RTL_DIR)/axis_uart_tx.sv
 
 SRC_FILES += $(TB_DIR)/axis_uart_top_tb.sv
-SRC_FILES += $(TB_DIR)/axis_uart_top_if.sv
-SRC_FILES += $(TB_DIR)/environment.sv
 
 .PHONY: sim project wave program clean
 

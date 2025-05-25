@@ -16,12 +16,9 @@ set_property top $sim_top [get_filesets sim_1]
 add_files -norecurse $rtl_dir/axis_uart_rx.sv
 add_files -norecurse $rtl_dir/axis_uart_tx.sv
 add_files -norecurse $rtl_dir/axis_uart_top.sv
-add_files -norecurse $rtl_dir/axis_fifo.sv
 add_files -norecurse $rtl_dir/axis_if.sv
 
-add_files -norecurse $tb_dir/axis_uart_top_if.sv
 add_files -norecurse $tb_dir/axis_uart_top_tb.sv
-add_files -norecurse $tb_dir/environment.sv
 
 add_files -fileset constrs_1 -norecurse $project_dir/$syn_top.xdc
 

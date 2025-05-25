@@ -1,11 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_rx #(
-    parameter CLK_FREQ   = 27_000_000,
-    parameter BAUD_RATE  = 115_200,
-    parameter DATA_WIDTH = 8
+    parameter int CLK_FREQ   = 27,
+    parameter int BAUD_RATE  = 115_200,
+    parameter int DATA_WIDTH = 8
 )(
-    input logic clk_i,
-    input logic arstn_i,
     input logic uart_rx_i,
 
     axis_if     m_axis
@@ -17,28 +15,25 @@ typedef enum logic [2:0] {
     DATA  = 3'b010,
     STOP  = 3'b011,
     WAIT  = 3'b100
-} my_state;
+} state_e;
 
-my_state state;
+state_e state;
 
-localparam DIVIDER = CLK_FREQ/BAUD_RATE;
+localparam int DIVIDER = (CLK_FREQ*1_000_000)/BAUD_RATE;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [$clog2(DIVIDER)-1:0]    baud_cnt;
 logic [DATA_WIDTH-1:0]         rx_data;
-logic                          bit_done_d;
 logic                          bit_done;
 logic                          baud_done;
 logic                          start_bit_check;
-
-logic [DATA_WIDTH-1:0]         m_axis_tdata_reg;
-logic                          m_axis_tvalid_reg;
 logic                          m_handshake;
 
-always_ff @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
+always_ff @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
+    if (~m_axis.arstn_i) begin
         state   <= IDLE;
         rx_data <= '0;
+        bit_cnt <= '0;
     end else begin
         case (state)
             IDLE: begin
@@ -57,8 +52,13 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
             end
             DATA: begin
                 rx_data[bit_cnt] <= uart_rx_i;
-                if (bit_done) begin
-                    state <= STOP;
+                if (baud_done) begin
+                    if (bit_done) begin
+                        state   <= STOP;
+                        bit_cnt <= '0;
+                    end else begin
+                        bit_cnt <= bit_cnt + 1'b1;
+                    end
                 end
             end
             STOP: begin
@@ -74,50 +74,32 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end
 end
 
-always @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
+always @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
+    if (~m_axis.arstn_i) begin
         baud_cnt <= '0;
-    end else if (baud_done) begin
+    end else if (baud_done | start_bit_check) begin
         baud_cnt <= '0;
     end else if ((state == DATA) || (state == START) || (state == STOP)) begin
         baud_cnt <= baud_cnt + 1'b1;
     end
 end
 
-always @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
-        bit_cnt <= '0;
-    end else if (bit_done) begin
-        bit_cnt <= '0;
-    end else if ((state == DATA) && (baud_done)) begin
-        bit_cnt <= bit_cnt + 1'b1;
-    end
-end
-
-always_ff @(posedge clk_i) begin
-    bit_done_d <= bit_done;
-end
-
-always_ff @(posedge clk_i or negedge arstn_i) begin
-    if (~arstn_i) begin
-        m_axis_tvalid_reg <= '0;
-        m_axis_tdata_reg  <= '0;
-    end else if (bit_done_d) begin
-        m_axis_tvalid_reg <= 1'b1;
-        m_axis_tdata_reg  <= rx_data;
+always_ff @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
+    if (~m_axis.arstn_i) begin
+        m_axis.tvalid <= '0;
+        m_axis.tdata  <= '0;
     end else if (m_handshake) begin
-        m_axis_tvalid_reg <= 1'b0;
+        m_axis.tvalid <= 1'b0;
+    end else if (state == WAIT) begin
+        m_axis.tvalid <= 1'b1;
+        m_axis.tdata  <= rx_data;
     end
 end
 
-assign m_axis.tvalid = m_axis_tvalid_reg;
-assign m_axis.tdata  = m_axis_tdata_reg;
-assign m_handshake   = m_axis.tvalid & m_axis.tready;
+assign m_handshake = m_axis.tvalid & m_axis.tready;
 
-/* verilator lint_off WIDTHEXPAND */
-assign bit_done        = (bit_cnt == DATA_WIDTH - 1) ? 1'b1 : 1'b0;
-assign baud_done       = ((baud_cnt == DIVIDER - 1) || start_bit_check) ? 1'b1 : 1'b0;
-assign start_bit_check = ((state == START) && (baud_cnt == (DIVIDER/2) - 1)) ? 1'b1 : 1'b0;
-/* verilator lint_on WIDTHEXPAND */
+assign bit_done        = (bit_cnt == DATA_WIDTH - 1);
+assign baud_done       = (baud_cnt == DIVIDER - 1);
+assign start_bit_check = ((state == START) && (baud_cnt == (DIVIDER/2) - 1));
 
 endmodule

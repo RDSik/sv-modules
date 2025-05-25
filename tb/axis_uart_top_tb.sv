@@ -1,38 +1,69 @@
 `timescale 1ns/1ps
 
-`include "environment.sv"
+`include "test_pkg.svh"
 
 module axis_uart_top_tb();
 
-localparam CLK_FREQ   = 27_000_000;
-localparam BAUD_RATE  = 115_200;
-localparam DATA_WIDTH = 8;
-localparam CLK_PER_NS = 10**9/CLK_FREQ;
-localparam SIM_TIME   = 50000;
+import test_pkg::*;
 
-axis_uart_top_if dut_if();
+localparam int CLK_FREQ   = 50;
+localparam int BAUD_RATE  = 115_200;
+localparam int DATA_WIDTH = 8;
+localparam int SIM_TIME   = 50000;
 
-environment env;
+localparam int RESET_DELAY = 10;
+localparam int CLK_PER     = 10**9/CLK_FREQ;
+
+logic clk_i;
+logic arstn_i;
+logic uart;
+
+axis_if s_axis (
+    .clk_i   (clk_i  ),
+    .arstn_i (arstn_i)
+);
+
+axis_if m_axis (
+    .clk_i   (clk_i  ),
+    .arstn_i (arstn_i)
+);
 
 initial begin
-    env = new(dut_if, CLK_PER_NS, CLK_FREQ, BAUD_RATE, DATA_WIDTH, SIM_TIME);
-    env.run();
+    arstn_i = 1'b0;
+    repeat (RESET_DELAY) @(posedge clk_i);
+    arstn_i = 1'b1;
+    $display("Slave reset done in: %0t ns\n.", $time());
 end
 
 initial begin
-    $dumpfile("axis_uart_top_tb.vcd");
-    $dumpvars(0, axis_uart_top_tb);
+    clk_i = 1'b0;
+    forever begin
+        #(CLK_PER/2) clk_i = ~clk_i;
+    end
 end
 
-axis_uart_top #(
+initial begin
+    test_base test;
+    test = new(s_axis, m_axis);
+    test.run();
+end
+
+axis_uart_tx #(
     .CLK_FREQ   (CLK_FREQ  ),
     .BAUD_RATE  (BAUD_RATE ),
     .DATA_WIDTH (DATA_WIDTH)
-) dut (
-    .clk_i     (dut_if.clk_i    ),
-    .arstn_i   (dut_if.arstn_i  ),
-    .uart_rx_i (dut_if.uart_rx_i),
-    .uart_tx_o (dut_if.uart_tx_o)
+) i_axis_uart_tx (
+    .uart_tx_o  (uart      ),
+    .s_axis     (m_axis    )
+);
+
+axis_uart_rx #(
+    .CLK_FREQ   (CLK_FREQ   ),
+    .BAUD_RATE  (BAUD_RATE  ),
+    .DATA_WIDTH (DATA_WIDTH )
+) i_axis_uart_rx (
+    .uart_rx_i  (uart       ),
+    .m_axis     (s_axis     )
 );
 
 endmodule

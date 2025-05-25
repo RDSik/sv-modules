@@ -1,9 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_top #(
-    parameter CLK_FREQ   = 50_000_000,
-    parameter BAUD_RATE  = 115_200,
-    parameter DATA_WIDTH = 8,
-    parameter FIFO_DEPTH = 16
+    parameter int CLK_FREQ   = 50,
+    parameter int BAUD_RATE  = 115_200,
+    parameter int DATA_WIDTH = 8
 )(
     input  logic clk_i,
     input  logic arstn_i,
@@ -12,15 +11,18 @@ module axis_uart_top #(
     output logic uart_tx_o
 );
 
-axis_if axis();
+axis_if #(
+    .DATA_WIDTH (DATA_WIDTH)
+)  axis (
+    .clk_i      (clk_i     ),
+    .arstn_i    (arstn_i   )
+);
 
 axis_uart_tx #(
     .CLK_FREQ   (CLK_FREQ  ),
     .BAUD_RATE  (BAUD_RATE ),
     .DATA_WIDTH (DATA_WIDTH)
 ) i_axis_uart_tx (
-    .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   ),
     .uart_tx_o  (uart_tx_o ),
     .s_axis     (axis.slave)
 );
@@ -30,8 +32,6 @@ axis_uart_rx #(
     .BAUD_RATE  (BAUD_RATE  ),
     .DATA_WIDTH (DATA_WIDTH )
 ) i_axis_uart_rx (
-    .clk_i      (clk_i      ),
-    .arstn_i    (arstn_i    ),
     .uart_rx_i  (uart_rx_i  ),
     .m_axis     (axis.master)
 );

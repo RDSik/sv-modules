@@ -16,10 +16,12 @@
 !rtl/
 
 !rtl/*.sv
+!rtl/*.svh
 
 !tb/
 
 !tb/*.sv
+!tb/*.svh
 !tb/wave.do
 
 !.gitignore
