@@ -57,7 +57,7 @@ class slave_monitor_base;
         packet p;
         begin
             @(posedge axis.clk_i);
-            if(axis.tvalid & axis.tready) begin
+            if (axis.tvalid & axis.tready) begin
                 p = new();
                 p.tdata = axis.tdata;
                 out_mbx.put(p);
