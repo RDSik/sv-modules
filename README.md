@@ -15,14 +15,14 @@ cd axis-uart
 
 ## Build project:
 
-### Gowin
+### TangPrimer-20K
 ```bash
 make project
 ```
 
-### Vivado
+### PZ7020-StarLite
 ```bash
-make SYN=vivado project
+make BOARD=pz7020starlite project
 ```
 
 ## Program Tang Primer 20K with OpenFPGALoader:

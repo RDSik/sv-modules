@@ -5,8 +5,7 @@ TB_DIR      := tb
 PROJECT_DIR := project
 
 SIM   ?= verilator
-SYN   ?= gowin
-BOARD := tangprimer20k
+BOARD ?= tangprimer20k
 
 MACRO_FILE := wave.do
 TCL        := project.tcl
@@ -38,10 +37,10 @@ wave:
 	gtkwave $(TOP)_tb.vcd
 
 project: 
-ifeq ($(SYN), gowin)
-	gw_sh $(PROJECT_DIR)/gowin/$(TCL)
-else ifeq ($(SYN), vivado)
-	vivado -mode tcl -source $(PROJECT_DIR)/vivado/$(TCL)
+ifeq ($(BOARD), tangprimer20k)
+	gw_sh $(PROJECT_DIR)/$(BOARD)/$(TCL)
+else ifeq ($(BOARD), pz7020starlite)
+	vivado -mode tcl -source $(PROJECT_DIR)/$(BOARD)/$(TCL)
 endif
 
 program:

@@ -50,8 +50,20 @@ class test_base;
         begin
             fork
                 env.run();
+                reset_checker();
                 timeout();
             join
+        end
+    endtask
+
+    virtual task reset_checker();
+        begin
+            forever begin
+                wait(~m_axis.arstn_i);
+                env.check.in_reset = 1'b1;
+                wait(m_axis.arstn_i);
+                env.check.in_reset = 1'b0;
+            end
         end
     endtask
 

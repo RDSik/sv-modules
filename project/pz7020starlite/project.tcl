@@ -3,7 +3,7 @@ set syn_top  "axis_uart_top"
 set sim_top  "axis_uart_top_tb"
 set language "Verilog"
 
-set project_dir [file normalize "project/vivado"]
+set project_dir [file normalize "project/pz7020starlite"]
 set rtl_dir     [file normalize "rtl"]
 set tb_dir      [file normalize "tb"]
 
