@@ -93,7 +93,9 @@ end
 assign s_axis.tready = (state == IDLE);
 assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
+/* verilator lint_off WIDTHEXPAND */
 assign bit_done  = (bit_cnt == DATA_WIDTH - 1);
 assign baud_done = (baud_cnt == DIVIDER - 1);
+/* verilator lint_on WIDTHEXPAND */
 
 endmodule

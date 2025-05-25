@@ -26,7 +26,7 @@ class test_base;
         gen2drv = new();
         in_mbx  = new();
         out_mbx = new();
-        cfg.randomize();
+        void'(cfg.randomize());
 
         env.master.master_gen.cfg    = cfg;
         env.master.master_driver.cfg = cfg;
