@@ -32,7 +32,7 @@ initial begin
     arstn_i = 1'b0;
     repeat (RESET_DELAY) @(posedge clk_i);
     arstn_i = 1'b1;
-    $display("Slave reset done in: %0t ns\n.", $time());
+    $display("Reset done in: %0t ns\n.", $time());
 end
 
 initial begin
