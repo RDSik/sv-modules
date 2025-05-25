@@ -27,7 +27,6 @@ jobs:
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
               make
-jobs:
   build_project:
     runs-on: ubuntu-latest
     defaults:
