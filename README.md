@@ -1,4 +1,4 @@
-[![Simulation](https://github.com/RDSik/axis-uart/actions/workflows/simulation.yml/badge.svg?branch=master)](https://github.com/RDSik/axis-uart/actions/workflows/simulation.yml)
+[![CI](https://github.com/RDSik/axis-uart/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/RDSik/axis-uart/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/RDSik/axis-uart/blob/master/LICENSE.txt)
 
 # AXI-Stream UART module
@@ -13,9 +13,16 @@ git clone https://github.com/RDSik/axis-uart.git
 cd axis-uart
 ```
 
-## Build project (need Gowind IDE):
+## Build project:
+
+### Gowin
 ```bash
 make project
+```
+
+### Vivado
+```bash
+make SYN=vivado project
 ```
 
 ## Program Tang Primer 20K with OpenFPGALoader:

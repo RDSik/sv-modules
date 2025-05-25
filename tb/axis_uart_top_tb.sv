@@ -12,7 +12,7 @@ localparam int DATA_WIDTH = 8;
 localparam int SIM_TIME   = 50000;
 
 localparam int RESET_DELAY = 10;
-localparam int CLK_PER     = 10**9/CLK_FREQ;
+localparam int CLK_PER     = 10**9/(CLK_FREQ*10**6);
 
 logic clk_i;
 logic arstn_i;
