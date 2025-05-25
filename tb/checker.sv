@@ -5,7 +5,6 @@ class checker_base;
 
     test_cfg_base cfg;
 
-    int cnt;
     bit in_reset;
 
     mailbox#(packet) in_mbx;
