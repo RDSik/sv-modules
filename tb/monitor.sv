@@ -21,8 +21,8 @@ class master_monitor_base;
     endtask
 
     virtual task monitor_master();
+        packet p;
         begin
-            packet p;
             @(posedge axis.clk_i);
             if (axis.tvalid & axis.tready) begin
                 p = new();
@@ -54,8 +54,8 @@ class slave_monitor_base;
     endtask
 
     virtual task monitor_slave();
+        packet p;
         begin
-            packet p;
             @(posedge axis.clk_i);
             if(axis.tvalid & axis.tready) begin
                 p = new();
