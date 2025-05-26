@@ -48,12 +48,12 @@ program:
 
 clean:
 	rm -rf $(PROJECT_DIR)/$(TOP)
-	rm -rf $(PROJECT_DIR)/vivado/$(TOP).cache
-	rm -rf $(PROJECT_DIR)/vivado/$(TOP).hw
-	rm -rf $(PROJECT_DIR)/vivado/$(TOP).runs
-	rm -rf $(PROJECT_DIR)/vivado/$(TOP).sim
-	rm -rf $(PROJECT_DIR)/vivado/$(TOP).ip_user_files
-	rm -rf $(PROJECT_DIR)/vivado/.Xil
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).cache
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).hw
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).runs
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).sim
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).ip_user_files
+	rm -rf $(PROJECT_DIR)/pz7020starlite/.Xil
 	rm $(PROJECT_DIR)/vivado/$(TOP).xpr
 	rm -rf obj_dir
 	rm -rf work
