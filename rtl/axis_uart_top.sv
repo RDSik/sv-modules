@@ -3,7 +3,7 @@ module axis_uart_top #(
     parameter int CLK_FREQ   = 50,
     parameter int BAUD_RATE  = 115_200,
     parameter int DATA_WIDTH = 8
-)(
+) (
     input  logic clk_i,
     input  logic arstn_i,
 
