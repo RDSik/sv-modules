@@ -3,7 +3,7 @@ module axis_uart_rx #(
     parameter int CLK_FREQ   = 27,
     parameter int BAUD_RATE  = 115_200,
     parameter int DATA_WIDTH = 8
-)(
+) (
     input logic uart_rx_i,
 
     axis_if     m_axis
