@@ -11,7 +11,7 @@ localparam int BAUD_RATE  = 115_200;
 localparam int DATA_WIDTH = 8;
 
 localparam int RESET_DELAY = 10;
-localparam int CLK_PER     = 1_000_000_000/(CLK_FREQ*1_000_000);
+localparam int CLK_PER_NS  = 1_000_000_000/(CLK_FREQ*1_000_000);
 
 logic clk_i;
 logic arstn_i;
@@ -37,7 +37,7 @@ end
 initial begin
     clk_i = 1'b0;
     forever begin
-        #(CLK_PER/2) clk_i = ~clk_i;
+        #(CLK_PER_NS/2) clk_i = ~clk_i;
     end
 end
 
