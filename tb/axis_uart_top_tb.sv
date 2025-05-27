@@ -9,10 +9,9 @@ import test_pkg::*;
 localparam int CLK_FREQ   = 50;
 localparam int BAUD_RATE  = 115_200;
 localparam int DATA_WIDTH = 8;
-localparam int SIM_TIME   = 50000;
 
 localparam int RESET_DELAY = 10;
-localparam int CLK_PER     = 10**9/(CLK_FREQ*10**6);
+localparam int CLK_PER     = 1_000_000_000/(CLK_FREQ*1_000_000);
 
 logic clk_i;
 logic arstn_i;
