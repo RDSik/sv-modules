@@ -14,10 +14,6 @@
 !project/**/*.sdc
 !project/**/*.cst
 
-# !modules/ip/
-
-!modules/**/ip/*.xci
-
 # !modules/
 # !modules/**/
 # !modules/**/rtl/
@@ -30,6 +26,10 @@
 !modules/**/tb/*.sv
 !modules/**/tb/*.svh
 !modules/**/tb/wave.do
+
+# !modules/**/ip/
+
+!modules/**/ip/*.xci
 
 !modules/**/*.tcl
 
