@@ -1,28 +1,20 @@
 /* verilator lint_off TIMESCALEMOD */
-module axis_uart_tx #(
-    parameter int CLK_FREQ   = 27,
-    parameter int BAUD_RATE  = 115_200,
-    parameter int DATA_WIDTH = 8
-) (
-    output logic uart_tx_o,
+`include "axis_uart_pkg.svh"
 
-    axis_if      s_axis
+module axis_uart_tx
+    import axis_uart_pkg::*;
+(
+    input  uart_parity_reg_t      parity_i,
+    input  uart_clk_divider_reg_t clk_divider_i,
+    output logic                  uart_tx_o,
+
+    axis_if                       s_axis
 );
-
-typedef enum logic [2:0] {
-    IDLE  = 3'b000,
-    START = 3'b001,
-    DATA  = 3'b010,
-    STOP  = 3'b011,
-    WAIT  = 3'b100
-} state_e;
 
 state_e state;
 
-localparam int DIVIDER = (CLK_FREQ*1_000_000)/BAUD_RATE;
-
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
-logic [$clog2(DIVIDER)-1:0]    baud_cnt;
+logic [DIVIDER_WIDTH-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         tx_data;
 logic                          bit_done;
 logic                          baud_done;
@@ -51,11 +43,21 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
                 uart_tx_o <= tx_data[bit_cnt];
                 if (baud_done) begin
                     if (bit_done) begin
-                        state   <= STOP;
                         bit_cnt <= '0;
+                        if (parity_i != '0) begin
+                            state <= PARITY;
+                        end else begin
+                            state <= STOP;
+                        end
                     end else begin
                         bit_cnt <= bit_cnt + 1'b1;
                     end
+                end
+            end
+            PARITY: begin
+                uart_tx_o <= parity(tx_data, parity_i);
+                if (baud_done) begin
+                    state <= STOP;
                 end
             end
             STOP: begin
@@ -77,7 +79,7 @@ always @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         baud_cnt <= '0;
     end else if (baud_done) begin
         baud_cnt <= '0;
-    end else if ((state == DATA) || (state == START) || (state == STOP)) begin
+    end else if ((state == DATA) || (state == START) || (state == STOP) || (state == PARITY)) begin
         baud_cnt <= baud_cnt + 1'b1;
     end
 end
@@ -95,7 +97,7 @@ assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
 /* verilator lint_off WIDTHEXPAND */
 assign bit_done  = (bit_cnt == DATA_WIDTH - 1);
-assign baud_done = (baud_cnt == DIVIDER - 1);
+assign baud_done = (baud_cnt == clk_divider_i - 1);
 /* verilator lint_on WIDTHEXPAND */
 
 endmodule

@@ -1,29 +1,37 @@
 *
-# !*/
+!*/
 
-!.github/
-!.github/**/
+# !.github/
+# !.github/**/
 
 !.github/**/*.yml
 
-!project/
-!project/**/
+# !project/
+# !project/**/
 
 !project/**/project.tcl
 !project/**/axis_uart_top.xdc
 !project/**/*.sdc
 !project/**/*.cst
 
-!rtl/
+# !modules/ip/
 
-!rtl/*.sv
-!rtl/*.svh
+!modules/ip/**/*.xci
 
-!tb/
+# !modules/
+# !modules/**/
+# !modules/**/rtl/
 
-!tb/*.sv
-!tb/*.svh
-!tb/wave.do
+!modules/**/rtl/*.sv
+!modules/**/rtl/*.svh
+
+# !modules/**/tb/
+
+!modules/**/tb/*.sv
+!modules/**/tb/*.svh
+!modules/**/tb/wave.do
+
+!modules/**/*.tcl
 
 !.gitignore
 !Makefile

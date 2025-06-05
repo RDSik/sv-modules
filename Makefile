@@ -1,21 +1,25 @@
 TOP := axis_uart_top
 
-RTL_DIR     := rtl
-TB_DIR      := tb
 PROJECT_DIR := project
 
-SIM   ?= verilator
-BOARD ?= tangprimer20k
+SIM    ?= verilator
+BOARD  ?= tangprimer20k
+TB_DIR ?= axis_uart
 
 MACRO_FILE := wave.do
-TCL        := project.tcl
+TCL_FILE   := project.tcl
 
-SRC_FILES += $(RTL_DIR)/axis_uart_top.sv
-SRC_FILES += $(RTL_DIR)/axis_if.sv
-SRC_FILES += $(RTL_DIR)/axis_uart_rx.sv
-SRC_FILES += $(RTL_DIR)/axis_uart_tx.sv
-
-SRC_FILES += $(TB_DIR)/axis_uart_top_tb.sv
+SRC_FILES := $(wildcard \
+	modules/axis_uart/rtl/*.sv \
+	modules/axis_uart/rtl/*.svh \
+	modules/axis_uart/tb/*.sv \
+	modules/fifo/rtl/*.sv \
+	modules/fifo/tb/*.sv \
+	modules/bram/rtl/*.sv \
+	modules/interface/rtl/*.sv \
+	modules/verification/tb/*.sv \
+	modules/verification/tb/*.svh \
+)
 
 .PHONY: sim project wave program clean
 
@@ -23,9 +27,9 @@ sim: build run
 
 build:
 ifeq ($(SIM), verilator)
-	$(SIM) --binary $(SRC_FILES) --trace -I$(RTL_DIR) -I$(TB_DIR) --top $(TOP)_tb
+	$(SIM) --binary $(SRC_FILES) --trace --top $(TOP)_tb
 else ifeq ($(SIM), questa)
-	vsim -do $(TB_DIR)/$(MACRO_FILE)
+	vsim -do modules/$(TB_DIR)/tb/$(MACRO_FILE)
 endif
 
 run:
@@ -38,9 +42,9 @@ wave:
 
 project: 
 ifeq ($(BOARD), tangprimer20k)
-	gw_sh $(PROJECT_DIR)/$(BOARD)/$(TCL)
+	gw_sh $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE)
 else ifeq ($(BOARD), pz7020starlite)
-	vivado -mode tcl -source $(PROJECT_DIR)/$(BOARD)/$(TCL)
+	vivado -mode tcl -source $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE)
 endif
 
 program:

@@ -2,10 +2,11 @@ set part     "xc7z020clg400-2"
 set syn_top  "axis_uart_top"
 set sim_top  "axis_uart_top_tb"
 set language "Verilog"
+set gui_flag  1
 
 set project_dir [file normalize "project/pz7020starlite"]
-set rtl_dir     [file normalize "rtl"]
-set tb_dir      [file normalize "tb"]
+set modules_dir [file normalize "modules"]
+set ip_dir      [file normalize "modules/ip"]
 
 create_project -force $syn_top $project_dir -part $part
 
@@ -13,17 +14,37 @@ set_property target_language $language [current_project]
 set_property top $syn_top [current_fileset]
 set_property top $sim_top [get_filesets sim_1]
 
-add_files -norecurse $rtl_dir/axis_uart_rx.sv
-add_files -norecurse $rtl_dir/axis_uart_tx.sv
-add_files -norecurse $rtl_dir/axis_uart_top.sv
-add_files -norecurse $rtl_dir/axis_if.sv
+proc source_scripts {current_dir} {
+    foreach sub_dir [glob -nocomplain -directory $current_dir *] {
+        if {[file isdirectory $sub_dir]} {
+            puts "Current dir: $sub_dir"
+            cd $sub_dir
+            foreach script [glob -nocomplain *.tcl] {
+                if {[catch {source $script} err]} {
+                    puts "Error source '$script': $err"
+                } else {
+                    puts "Success source: $script"
+                }
+            }
+            cd $current_dir
+        }
+    }
+}
 
-add_files -norecurse $tb_dir/axis_uart_top_tb.sv
+source_scripts $modules_dir
+
+add_files -norecurse $ip_dir/uart_ila.xci
+
+upgrade_ip [get_ips -all]
 
 add_files -fileset constrs_1 -norecurse $project_dir/$syn_top.xdc
 
 set_property strategy Flow_PerfOptimized_high [get_runs synth_1]
 set_property strategy Performance_ExtraTimingOpt [get_runs impl_1]
+
+if {$gui_flag == 1} {
+    start_gui
+}
 
 launch_runs synth_1
 wait_on_run synth_1

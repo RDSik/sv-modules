@@ -1,15 +1,15 @@
 `timescale 1ns/1ps
 
-`include "test_pkg.svh"
+`include "modules/verification/tb/test_pkg.svh"
 
 module axis_uart_top_tb();
 
 import test_pkg::*;
 
-localparam int CLK_FREQ   = 50;
-localparam int BAUD_RATE  = 115_200;
-localparam int DATA_WIDTH = 8;
-
+localparam int CLK_FREQ    = 50;
+localparam int BAUD_RATE   = 115_200;
+localparam int PARITY      = 2;
+localparam int DIVIDER     = (CLK_FREQ*1_000_000)/BAUD_RATE;
 localparam int RESET_DELAY = 10;
 localparam int CLK_PER_NS  = 1_000_000_000/(CLK_FREQ*1_000_000);
 
@@ -47,22 +47,18 @@ initial begin
     test.run();
 end
 
-axis_uart_tx #(
-    .CLK_FREQ   (CLK_FREQ  ),
-    .BAUD_RATE  (BAUD_RATE ),
-    .DATA_WIDTH (DATA_WIDTH)
-) i_axis_uart_tx (
-    .uart_tx_o  (uart      ),
-    .s_axis     (m_axis    )
+axis_uart_tx i_axis_uart_tx (
+    .clk_divider_i (DIVIDER),
+    .parity_i      (PARITY ),
+    .uart_tx_o     (uart   ),
+    .s_axis        (m_axis )
 );
 
-axis_uart_rx #(
-    .CLK_FREQ   (CLK_FREQ   ),
-    .BAUD_RATE  (BAUD_RATE  ),
-    .DATA_WIDTH (DATA_WIDTH )
-) i_axis_uart_rx (
-    .uart_rx_i  (uart       ),
-    .m_axis     (s_axis     )
+axis_uart_rx i_axis_uart_rx (
+    .clk_divider_i (DIVIDER),
+    .parity_i      (PARITY ),
+    .uart_rx_i     (uart   ),
+    .m_axis        (s_axis )
 );
 
 endmodule
