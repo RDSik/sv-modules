@@ -34,6 +34,7 @@ class master_driver_base;
             repeat(delay) @(posedge axis.clk_i);
             axis.tvalid = 1'b1;
             axis.tdata  = p.tdata;
+            axis.tlast  = p.tlast;
             do begin
                 @(posedge axis.clk_i);
             end

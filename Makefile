@@ -12,7 +12,9 @@ TCL_FILE   := project.tcl
 SRC_FILES := $(wildcard \
 	modules/axis_uart/rtl/*.sv \
 	modules/axis_uart/rtl/*.svh \
-	modules/axis_uart/tb/*.sv \
+	modules/axis_spit/rtl/*.sv \
+	modules/axis_spi/rtl/*.svh \
+	modules/axis_spi/tb/*.sv \
 	modules/fifo/rtl/*.sv \
 	modules/fifo/tb/*.sv \
 	modules/bram/rtl/*.sv \

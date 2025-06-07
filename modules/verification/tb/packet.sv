@@ -3,6 +3,7 @@
 
 class packet;
     rand logic [7:0] tdata;
+    rand logic       tlast;
     rand int         delay;
 endclass
 

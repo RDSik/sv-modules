@@ -15,7 +15,7 @@ localparam int CLK_PER_NS  = 1_000_000_000/(CLK_FREQ*1_000_000);
 
 logic clk_i;
 logic arstn_i;
-logic uart;
+logic uart_data;
 
 axis_if s_axis (
     .clk_i   (clk_i  ),
@@ -47,18 +47,23 @@ initial begin
     test.run();
 end
 
+initial begin
+    $dumpfile("axis_uart_top_tb.vcd");
+    $dumpvars(0, axis_uart_top_tb);
+end
+
 axis_uart_tx i_axis_uart_tx (
-    .clk_divider_i (DIVIDER),
-    .parity_i      (PARITY ),
-    .uart_tx_o     (uart   ),
-    .s_axis        (m_axis )
+    .clk_divider_i (DIVIDER  ),
+    .parity_i      (PARITY   ),
+    .uart_tx_o     (uart_data),
+    .s_axis        (m_axis   )
 );
 
 axis_uart_rx i_axis_uart_rx (
-    .clk_divider_i (DIVIDER),
-    .parity_i      (PARITY ),
-    .uart_rx_i     (uart   ),
-    .m_axis        (s_axis )
+    .clk_divider_i (DIVIDER  ),
+    .parity_i      (PARITY   ),
+    .uart_rx_i     (uart_data),
+    .m_axis        (s_axis   )
 );
 
 endmodule

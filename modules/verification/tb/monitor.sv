@@ -27,6 +27,7 @@ class master_monitor_base;
             if (axis.tvalid & axis.tready) begin
                 p = new();
                 p.tdata = axis.tdata;
+                p.tlast = axis.tlast;
                 in_mbx.put(p);
             end
         end
@@ -60,6 +61,7 @@ class slave_monitor_base;
             if (axis.tvalid & axis.tready) begin
                 p = new();
                 p.tdata = axis.tdata;
+                p.tlast = axis.tlast;
                 out_mbx.put(p);
             end
         end

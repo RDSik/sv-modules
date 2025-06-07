@@ -53,6 +53,13 @@ class test_base;
                 reset_checker();
                 timeout();
             join
+            wait(env.check.done);
+            $display("Test was finished!");
+            `ifdef VERILATOR
+            $finish();
+            `else
+            $stop();
+            `endif
         end
     endtask
 

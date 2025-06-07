@@ -5,6 +5,8 @@ class checker_base;
 
     test_cfg_base cfg;
 
+    bit done;
+    int cnt;
     bit in_reset;
 
     mailbox#(packet) in_mbx;
@@ -37,6 +39,11 @@ class checker_base;
                 in_mbx.get(in_p);
                 out_mbx.get(out_p);
                 check(in_p, out_p);
+                cnt = cnt + out_p.tlast;
+                if (cnt == cfg.packet_num) begin
+                    done = 1;
+                    break;
+                end
             end
         end
     endtask
