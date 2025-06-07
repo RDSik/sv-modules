@@ -1,9 +1,8 @@
 module bram_true_dp #(
-    parameter int BYTE_NUM   = 2,
+    parameter int BYTE_NUM   = 4,
     parameter int BYTE_WIDTH = 8,
-    parameter int MEM_DEPTH  = 64,
-    parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH,
-    parameter int ADDR_WIDTH = $clog2(MEM_DEPTH)
+    parameter int ADDR_WIDTH = 32,
+    parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
 ) (
     input  logic                  a_clk_i,
     input  logic                  a_en_i,
@@ -19,6 +18,8 @@ module bram_true_dp #(
     input  logic [MEM_WIDTH-1:0]  b_data_i,
     output logic [MEM_WIDTH-1:0]  b_data_o
 );
+
+localparam int MEM_DEPTH = 2**ADDR_WIDTH;
 
 logic [MEM_WIDTH-1:0] ram [MEM_DEPTH];
 
