@@ -21,6 +21,20 @@ module axis_uart_bram_ctrl
     output logic [BYTE_NUM-1:0]   wr_en_o
 );
 
+axis_if #(
+    .DATA_WIDTH (DATA_WIDTH)
+) s_axis (
+    .clk_i      (clk_i     ),
+    .arstn_i    (arstn_i   )
+);
+
+axis_if #(
+    .DATA_WIDTH (DATA_WIDTH)
+) m_axis (
+    .clk_i      (clk_i     ),
+    .arstn_i    (arstn_i   )
+);
+    
 logic s_handshake;
 logic m_handshake;
 
@@ -59,20 +73,6 @@ end
 
 assign s_handshake = s_axis.tvalid & s_axis.tready;
 assign m_handshake = m_axis.tvalid & m_axis.tready;
-
-axis_if #(
-    .DATA_WIDTH (DATA_WIDTH)
-) s_axis (
-    .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   )
-);
-
-axis_if #(
-    .DATA_WIDTH (DATA_WIDTH)
-) m_axis (
-    .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   )
-);
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
