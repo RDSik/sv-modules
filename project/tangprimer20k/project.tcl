@@ -13,6 +13,10 @@ add_file $modules_dir/axis_uart/rtl/axis_uart_rx.sv
 add_file $modules_dir/axis_uart/rtl/axis_uart_top.sv
 add_file $modules_dir/axis_uart/rtl/axis_uart_pkg.svh
 
+add_file $modules_dir/axis_spi/rtl/axis_data_gen.sv
+add_file $modules_dir/axis_spi/rtl/axis_spi_master.sv
+add_file $modules_dir/axis_spi/rtl/axis_spi_pkg.svh
+
 add_file $modules_dir/fifo/rtl/async_fifo.sv
 add_file $modules_dir/fifo/rtl/axis_fifo_wrap.sv
 add_file $modules_dir/fifo/rtl/rd_ptr_empty.sv
@@ -20,9 +24,10 @@ add_file $modules_dir/fifo/rtl/sync_fifo.sv
 add_file $modules_dir/fifo/rtl/wr_ptr_full.sv
 add_file $modules_dir/fifo/rtl/shift_reg.sv
 
-add_file $modules_dir/bram/rtl/bram_dp.sv
-add_file $modules_dir/bram/rtl/bram_true_dp.sv
-add_file $modules_dir/bram/rtl/bram.sv
+add_file $modules_dir/bmem/rtl/bram_dp_2clk.sv
+add_file $modules_dir/bmem/rtl/bram_true_dp.sv
+add_file $modules_dir/bmem/rtl/bram_dp.sv
+add_file $modules_dir/bmem/rtl/brom.sv
 
 add_file $modules_dir/interface/rtl/axis_if.sv
 
