@@ -29,13 +29,13 @@ end
 assign addr_done = (addr == MEM_DEPTH - 1);
 
 brom #(
-    .MEM_FILE  (MEM_FILE   ),
-    .MEM_DEPTH (MEM_DEPTH  ),
-    .MEM_WIDTH (MEM_WIDTH  )
+    .MEM_FILE  (MEM_FILE  ),
+    .MEM_DEPTH (MEM_DEPTH ),
+    .MEM_WIDTH (MEM_WIDTH )
 ) i_rom (
-    .clk_i     (m_axis.clk ),
-    .addr_i    (addr       ),
-    .data_o    (rom_data   )
+    .clk_i     (m_axis.clk),
+    .addr_i    (addr      ),
+    .data_o    (rom_data  )
 );
 
 always_ff @(posedge m_axis.clk or negedge m_axis.arstn) begin
