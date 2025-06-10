@@ -1,6 +1,7 @@
 module axis_fifo_wrap #(
     parameter int FIFO_WIDTH  = 16,
     parameter int FIFO_DEPTH  = 64,
+    parameter int CDC_REG_NUM = 2,
     parameter int CIRCLE_BUF  = 1,
     parameter     FIFO_TYPE   = "SYNC"
 ) (
@@ -41,7 +42,8 @@ if (FIFO_TYPE == "SYNC") begin: g_fifo
 end else if (FIFO_TYPE == "ASYNC") begin : g_fifo
     async_fifo #(
         .FIFO_WIDTH  (FIFO_WIDTH    ),
-        .FIFO_DEPTH  (FIFO_DEPTH    )
+        .FIFO_DEPTH  (FIFO_DEPTH    ),
+        .CDC_REG_NUM (CDC_REG_NUM   )
     ) i_fifo (
         .wr_clk_i    (s_axis.clk_i  ),
         .wr_arstn_i  (s_axis.arstn_i),
