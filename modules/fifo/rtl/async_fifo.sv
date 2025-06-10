@@ -18,7 +18,6 @@ module async_fifo #(
 );
 
 localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
-localparam int DELAY      = 2;
 
 logic [ADDR_WIDTH-1:0] wr_addr;
 logic [ADDR_WIDTH:0]   wr_ptr;
