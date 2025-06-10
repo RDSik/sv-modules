@@ -3,6 +3,7 @@ module axis_uart_bridge #(
     parameter int BYTE_NUM   = 4,
     parameter int BYTE_WIDTH = 8,
     parameter int ADDR_WIDTH = 32,
+    parameter int FIFO_DEPTH = 128,
     parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
 ) (
     input  logic                  clk_i,
@@ -17,8 +18,6 @@ module axis_uart_bridge #(
     input  logic [MEM_WIDTH-1:0]  data_i,
     output logic [MEM_WIDTH-1:0]  data_o
 );
-
-localparam int FIFO_DEPTH = 128;
 
 logic [BYTE_NUM-1:0]   wr_en;
 logic [ADDR_WIDTH-1:0] addr;
