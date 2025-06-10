@@ -47,7 +47,7 @@ always_ff @(posedge m_axis.clk or negedge m_axis.arstn) begin
         m_axis.tlast  <= 1'b0;
     end else begin
         m_axis.tvalid <= 1'b1;
-        if (index_done) begin
+        if (addr_done) begin
             m_axis.tlast <= 1'b1;
         end
     end

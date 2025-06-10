@@ -23,6 +23,9 @@ localparam int MEM_DEPTH = 2**ADDR_WIDTH;
 
 logic [MEM_WIDTH-1:0] ram [MEM_DEPTH];
 
+logic a_rd_en;
+logic b_rd_en;
+
 always_ff @(posedge a_clk_i) begin
     if (a_en_i) begin
         for (int i = 0; i < BYTE_NUM; i++) begin
@@ -42,9 +45,6 @@ always_ff @(posedge b_clk_i) begin
         end
     end
 end
-
-logic a_rd_en;
-logic b_rd_en;
 
 always_ff @(posedge a_clk_i) begin
     if (a_en_i) begin
