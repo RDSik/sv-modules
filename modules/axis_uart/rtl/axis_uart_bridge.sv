@@ -1,9 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_bridge #(
+    parameter int FIFO_DEPTH = 128,
     parameter int BYTE_NUM   = 4,
     parameter int BYTE_WIDTH = 8,
     parameter int ADDR_WIDTH = 32,
-    parameter int FIFO_DEPTH = 128,
     parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
 ) (
     input  logic                  clk_i,
