@@ -57,17 +57,17 @@ rd_ptr_empty #(
 );
 
 bram_dp_2clk #(
-    .MEM_WIDTH   (FIFO_WIDTH ),
-    .MEM_DEPTH   (FIFO_DEPTH )
+    .MEM_WIDTH (FIFO_WIDTH),
+    .MEM_DEPTH (FIFO_DEPTH)
 ) i_bram_dp (
-    .wr_clk_i    (wr_clk_i   ),
-    .wr_en_i     (wr_en      ),
-    .wr_addr_i   (wr_addr    ),
-    .wr_data_i   (wr_data_i  ),
-    .rd_clk_i    (rd_clk_i   ),
-    .rd_en_i     (rd_en      ),
-    .rd_addr_i   (rd_addr    ),
-    .rd_data_o   (rd_data_o  )
+    .wr_clk_i  (wr_clk_i  ),
+    .wr_en_i   (wr_en     ),
+    .wr_addr_i (wr_addr   ),
+    .wr_data_i (wr_data_i ),
+    .rd_clk_i  (rd_clk_i  ),
+    .rd_en_i   (rd_en     ),
+    .rd_addr_i (rd_addr   ),
+    .rd_data_o (rd_data_o )
 );
 
 shift_reg #(
