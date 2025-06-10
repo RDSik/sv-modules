@@ -17,7 +17,7 @@ SRC_FILES := $(wildcard \
 	modules/axis_spi/tb/*.sv \
 	modules/fifo/rtl/*.sv \
 	modules/fifo/tb/*.sv \
-	modules/bram/rtl/*.sv \
+	modules/bmem/rtl/*.sv \
 	modules/interface/rtl/*.sv \
 	modules/verification/tb/*.sv \
 	modules/verification/tb/*.svh \

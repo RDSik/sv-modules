@@ -4,7 +4,7 @@
 module axis_uart_top
     import axis_uart_pkg::*;
 #(
-    parameter int CLK_FREQ  = 50,
+    parameter int CLK_MHZ   = 50,
     parameter int BAUD_RATE = 115_200,
     parameter int PARITY    = 0,
     parameter int ILA_EN    = 0
@@ -16,9 +16,7 @@ module axis_uart_top
     output logic uart_tx_o
 );
 
-localparam int DIVIDER = (CLK_FREQ*1_000_000)/BAUD_RATE;
-
-uart_regs_t uart_regs;
+localparam int DIVIDER = (CLK_MHZ*1_000_000)/BAUD_RATE;
 
 uart_clk_divider_reg_t clk_divider;
 uart_parity_reg_t parity;

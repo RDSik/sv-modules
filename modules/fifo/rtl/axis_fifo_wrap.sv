@@ -4,8 +4,8 @@ module axis_fifo_wrap #(
     parameter int CIRCLE_BUF  = 1,
     parameter     FIFO_TYPE   = "SYNC"
 ) (
-    axis_if.slave s_axis,
-    axis_if.master m_axis
+    axis_if s_axis,
+    axis_if m_axis
 );
 
 if ((FIFO_TYPE != "SYNC") && (FIFO_TYPE != "ASYNC")) begin

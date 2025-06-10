@@ -57,7 +57,7 @@ rd_ptr_empty #(
     .empty_o       (empty_o    )
 );
 
-bram_dp #(
+bram_dp_2clk #(
     .MEM_WIDTH   (FIFO_WIDTH ),
     .MEM_DEPTH   (FIFO_DEPTH )
 ) i_bram_dp (

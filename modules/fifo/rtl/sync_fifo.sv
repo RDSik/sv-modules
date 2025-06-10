@@ -81,7 +81,7 @@ end
 
 assign data_o = bypass_valid ? bypass_data : ram_data;
 
-bram #(
+bram_dp #(
     .MEM_WIDTH   (FIFO_WIDTH  ),
     .MEM_DEPTH   (FIFO_DEPTH  )
 ) i_bram (

@@ -6,12 +6,12 @@ module axis_uart_top_tb();
 
 import test_pkg::*;
 
-localparam int CLK_FREQ    = 50;
+localparam int CLK_MHZ     = 50;
 localparam int BAUD_RATE   = 115_200;
 localparam int PARITY      = 2;
-localparam int DIVIDER     = (CLK_FREQ*1_000_000)/BAUD_RATE;
+localparam int DIVIDER     = (CLK_MHZ*1_000_000)/BAUD_RATE;
 localparam int RESET_DELAY = 10;
-localparam int CLK_PER_NS  = 1_000_000_000/(CLK_FREQ*1_000_000);
+localparam int CLK_PER_NS  = 1_000_000_000/(CLK_MHZ*1_000_000);
 
 logic clk_i;
 logic arstn_i;

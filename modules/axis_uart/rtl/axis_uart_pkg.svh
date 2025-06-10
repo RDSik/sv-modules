@@ -58,7 +58,7 @@ package axis_uart_pkg;
         PARITY = 3'b011,
         STOP   = 3'b100,
         WAIT   = 3'b101
-    } state_e;
+    } uart_state_e;
 
 endpackage
 

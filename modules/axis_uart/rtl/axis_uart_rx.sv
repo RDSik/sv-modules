@@ -11,7 +11,7 @@ module axis_uart_rx
     axis_if                      m_axis
 );
 
-state_e state;
+uart_state_e state;
 
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [DIVIDER_WIDTH-1:0]      baud_cnt;
