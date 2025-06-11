@@ -34,14 +34,24 @@ axis_if #(
     .clk_i      (clk_i     ),
     .arstn_i    (arstn_i   )
 );
-    
+
 logic s_handshake;
 logic m_handshake;
 
-typedef enum logic [1:0] {
-    IDLE  = 2'b00,
-    READ  = 2'b01,
-    WRITE = 2'b10
+typedef enum logic [3:0] {
+    IDLE      = 4'b0000,
+    DIVIDER_1 = 4'b0001,
+    DIVIDER_2 = 4'b0010,
+    DIVIDER_3 = 4'b0011,
+    PARITY_1  = 4'b0100,
+    PARITY_2  = 4'b0101,
+    PARITY_3  = 4'b0110,
+    TX_1      = 4'b0111,
+    TX_2      = 4'b1000,
+    TX_3      = 4'b1001,
+    RX_1      = 4'b1010,
+    RX_2      = 4'b1011,
+    RX_3      = 4'b1100
 } state_e;
 
 state_e state;
@@ -50,21 +60,28 @@ uart_regs_t uart_regs;
 
 always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     if (~s_axis.arstn_i) begin
-        state <= IDLE;
+        state   <= IDLE;
+        addr_o  <= '0;
+        wr_en_o <= '0;
+        data_o  <= '0;
     end else begin
         case (state)
             IDLE: begin
-                if (m_axis.tvalid) begin
-                    state <= WRITE;
-                end else if (s_axis.tready) begin
-                    state <= READ;
-                end
-            end
-            READ: begin
-
-            end
-            WRITE: begin
-
+                addr_o <= UART_CONTROL_REG_ADDR;
+                unique case (data_i)
+                    UART_CLK_DIVIDER_REG_ADDR: begin
+                        state <= READ_ADDR;
+                    end
+                    UART_PARITY_REG_ADDR: begin
+                        state <= READ_ADDR;
+                    end
+                    UART_TX_DATA_REG_ADDR: begin
+                        state <= READ_ADDR;
+                    end
+                    UART_RX_DATA_REG_ADDR: begin
+                        state <= WRITE_ADDR;
+                    end
+                endcase
             end
             default: state <= IDLE;
         endcase

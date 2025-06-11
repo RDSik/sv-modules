@@ -58,18 +58,18 @@ initial begin
 end
 
 axis_spi_master #(
-    .SLAVE_NUM     (SLAVE_NUM  ),
-    .WAIT_TIME     (WAIT_TIME  )
+    .SLAVE_NUM     (SLAVE_NUM),
+    .WAIT_TIME     (WAIT_TIME)
 ) dut (
-    .clk_divider_i (DIVIDER    ),
-    .mode_i        (SPI_MODE   ),
-    .addr_i        ('0         ),
-    .spi_clk_o     (spi_clk_o  ),
-    .spi_cs_o      (spi_cs_o   ),
-    .spi_mosi_o    (spi_data   ),
-    .spi_miso_i    (spi_data   ),
-    .s_axis        (m_axis     ),
-    .m_axis        (s_axis     )
+    .clk_divider_i (DIVIDER  ),
+    .mode_i        (SPI_MODE ),
+    .addr_i        ('0       ),
+    .spi_clk_o     (spi_clk_o),
+    .spi_cs_o      (spi_cs_o ),
+    .spi_mosi_o    (spi_data ),
+    .spi_miso_i    (spi_data ),
+    .s_axis        (m_axis   ),
+    .m_axis        (s_axis   )
 );
 
 endmodule
