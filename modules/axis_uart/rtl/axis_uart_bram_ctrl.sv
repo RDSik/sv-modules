@@ -61,7 +61,7 @@ uart_regs_t uart_regs;
 always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     if (~s_axis.arstn_i) begin
         state   <= IDLE;
-        addr_o  <= '0;
+        addr_o  <= UART_CONTROL_REG_ADDR;
         wr_en_o <= '0;
         data_o  <= '0;
     end else begin
