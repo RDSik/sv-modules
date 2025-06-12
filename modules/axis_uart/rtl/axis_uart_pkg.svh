@@ -33,7 +33,7 @@ package axis_uart_pkg;
 
     localparam int UART_CONTROL_REG_ADDR = 0;
 
-    localparam int UART_CLK_DIVIDER_REG_ADDR = 4*(UART_PARITY_REG_ADDR + 1);
+    localparam int UART_CLK_DIVIDER_REG_ADDR = 4*(UART_CONTROL_REG_ADDR + 1);
 
     localparam int UART_PARITY_REG_ADDR = 4*(UART_CLK_DIVIDER_REG_ADDR + $bits(uart_clk_divider_reg_t)/32);
 
