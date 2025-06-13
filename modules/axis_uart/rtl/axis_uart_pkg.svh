@@ -30,11 +30,11 @@ package axis_uart_pkg;
 
     localparam int UART_CLK_DIVIDER_REG_ADDR = 4*(UART_CONTROL_REG_ADDR + 1);
 
-    localparam int UART_PARITY_REG_ADDR = 4*(UART_CLK_DIVIDER_REG_ADDR + $bits(uart_clk_divider_reg_t)/32);
+    localparam int UART_PARITY_REG_ADDR = UART_CLK_DIVIDER_REG_ADDR + $bits(uart_clk_divider_reg_t)/8;
 
-    localparam int UART_TX_DATA_REG_ADDR = 4*(UART_PARITY_REG_ADDR + $bits(uart_parity_reg_t)/32);
+    localparam int UART_TX_DATA_REG_ADDR = UART_PARITY_REG_ADDR + $bits(uart_parity_reg_t)/8;
 
-    localparam int UART_RX_DATA_REG_ADDR = 4*(UART_TX_DATA_REG_ADDR + $bits(uart_data_reg_t)/32);
+    localparam int UART_RX_DATA_REG_ADDR = UART_TX_DATA_REG_ADDR + $bits(uart_data_reg_t)/8;
 
     function automatic logic parity;
         input logic [DATA_WIDTH-1:0] data;

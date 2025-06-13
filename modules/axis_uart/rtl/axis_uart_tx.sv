@@ -23,7 +23,7 @@ logic                          s_handshake;
 always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     if (~s_axis.arstn_i) begin
         state     <= IDLE;
-        uart_tx_o <= '0;
+        uart_tx_o <= '1;
         bit_cnt   <= '0;
     end else begin
         case (state)
