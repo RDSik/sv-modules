@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
         for (i = 4; i <= 16; i+=4) {
             addr = (unsigned long)(map_base0 + 0);
             content = i;
-            map_base0[i] = content;
+            map_base0[0] = content;
             sleep(1);
             printf("%2dth data, address: 0x%lx data_read: 0x%x\t\t\n", i, addr, content);
         }
