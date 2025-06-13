@@ -41,12 +41,10 @@ initial begin
     write_data(4, 32'ha, 1);
     write_data(8, 32'h2, 1);
     write_data(12, 32'hfc, 1);
-    write_data(0, 4, CTRL_DELAY);
-    write_data(0, 8, CTRL_DELAY);
-    write_data(0, 12, CTRL_DELAY);
-    write_data(0, 16, CTRL_DELAY);
-    read_data(16, CTRL_DELAY);
-    repeat (200) @(posedge clk_i);
+    for (int i = 4; i <= 16; i+=4) begin
+        write_data(0, i, CTRL_DELAY);
+    end
+    read_data(16, 150);
     $stop;
 end
 
@@ -68,7 +66,7 @@ task static write_data;
         en_i = 1'b0;
         wr_en_i = '0;
         repeat (delay) @(posedge clk_i);
-        $display("address: 0x%0h data_write: 0x%0h", addr, data);
+        $display("%t: address: 0x%0h data_write: 0x%0h", $time, addr, data);
     end
 endtask
 
@@ -80,9 +78,9 @@ task static read_data;
         wr_en_i = '0;
         addr_i = addr;
         @(posedge clk_i);
-        en_i = 1'b0;
         repeat (delay) @(posedge clk_i);
-        $display("address: 0x%0h data_read: 0x%0h", addr, data_o);
+        en_i = 1'b0;
+        $display("%t: address: 0x%0h data_read: 0x%0h", $time, addr, data_o);
     end
 endtask
 

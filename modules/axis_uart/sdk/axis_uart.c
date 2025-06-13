@@ -47,18 +47,12 @@ int main(int argc, char **argv) {
 
         unsigned long addr;
         unsigned int content;
-        int i = 0;
+        int i;
 
         // clk_divider_reg
         addr = (unsigned long)(map_base0 + 1);
         content = 0xa;
         map_base0[1] = content;
-        printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
-
-        // control_reg
-        addr = (unsigned long)(map_base0 + 0);
-        content = 0x4;
-        map_base0[0] = content;
         printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
 
         // parity_reg
@@ -67,44 +61,26 @@ int main(int argc, char **argv) {
         map_base0[2] = content;
         printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
         
-        // control_reg
-        addr = (unsigned long)(map_base0 + 0);
-        content = 0x8;
-        map_base0[0] = content;
-        printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
-
         // tx_data_reg
         addr = (unsigned long)(map_base0 + 3);
-        content = 0x7;
+        content = 0xfc;
         map_base0[3] = content;
         printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
 
         // control_reg
-        addr = (unsigned long)(map_base0 + 0);
-        content = 0xc;
-        map_base0[0] = content;
-        printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
+        for (i = 4; i <= 16; i+=4) {
+            addr = (unsigned long)(map_base0 + 0);
+            content = i;
+            map_base0[i] = content;
+            sleep(1);
+            printf("%2dth data, address: 0x%lx data_read: 0x%x\t\t\n", i, addr, content);
+        }
+
+        sleep(1);
 
         // rx_data_reg
         addr = (unsigned long)(map_base0 + 4);
         content = map_base0[4];
         printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
-
-        while(1) {
-        addr = (unsigned long)(map_base0 + 0);
-        content = 0x3;
-        map_base0[0] = content;
-
-        printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
-
-        sleep(1);
-
-        printf("\nread data from bram\n");
-        for (i = 0; i < REG_NUM; i++) {
-            addr = (unsigned long)(map_base0 + i);
-            content = map_base0[i];
-            printf("%2dth data, address: 0x%lx data_read: 0x%x\t\t\n", i, addr, content);
-        }
-    }
      
 }
