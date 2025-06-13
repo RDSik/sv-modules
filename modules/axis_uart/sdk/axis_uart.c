@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
         // clk_divider_reg
         addr = (unsigned long)(map_base0 + 1);
-        content = 0xa;
+        content = 0x1b2; // 50e6/115200
         map_base0[1] = content;
         printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
 
@@ -82,5 +82,4 @@ int main(int argc, char **argv) {
         addr = (unsigned long)(map_base0 + 4);
         content = map_base0[4];
         printf("%2dth data, address: 0x%lx data_write: 0x%x\t\t\n", i, addr, content);
-     
 }

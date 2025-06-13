@@ -44,7 +44,7 @@ initial begin
     for (int i = 4; i <= 16; i+=4) begin
         write_data(0, i, CTRL_DELAY);
     end
-    read_data(16, 150);
+    read_data(16, 200);
     $stop;
 end
 
@@ -58,12 +58,12 @@ task static write_data;
     input logic [MEM_WIDTH-1:0] data;
     input int delay;
     begin
-        en_i = 1'b1;
+        en_i    = '1;
         wr_en_i = '1;
-        data_i = data;
-        addr_i = addr;
+        data_i  = data;
+        addr_i  = addr;
         @(posedge clk_i);
-        en_i = 1'b0;
+        en_i    = '0;
         wr_en_i = '0;
         repeat (delay) @(posedge clk_i);
         $display("%t: address: 0x%0h data_write: 0x%0h", $time, addr, data);
@@ -74,10 +74,9 @@ task static read_data;
     input logic [ADDR_WIDTH-1:0] addr;
     input int delay;
     begin
-        en_i = 1'b1;
+        en_i    = '1;
         wr_en_i = '0;
-        addr_i = addr;
-        @(posedge clk_i);
+        addr_i  = addr;
         repeat (delay) @(posedge clk_i);
         en_i = 1'b0;
         $display("%t: address: 0x%0h data_read: 0x%0h", $time, addr, data_o);

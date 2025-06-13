@@ -36,23 +36,21 @@ axis_if #(
     .arstn_i    (arstn_i   )
 );
 
-logic s_handshake;
-logic m_handshake;
+localparam int DELAY     = 4;
+localparam int CNT_WIDTH = $clog2(DELAY);
 
-typedef enum logic [3:0] {
-    IDLE              = 4'b0000,
-    DIVIDER_ADDR      = 4'b0001,
-    DIVIDER_WAIT_DATA = 4'b0010,
-    DIVIDER_DATA      = 4'b0011,
-    PARITY_ADDR       = 4'b0100,
-    PARITY_WAIT_DATA  = 4'b0101,
-    PARITY_DATA       = 4'b0110,
-    TX_ADDR           = 4'b0111,
-    TX_WAIT_DATA      = 4'b1000,
-    TX_DATA           = 4'b1001,
-    RX_ADDR           = 4'b1010,
-    RX_WAIT_DATA      = 4'b1011,
-    RX_DATA           = 4'b1100
+logic [CNT_WIDTH-1:0] cnt;
+logic                 cnt_done;
+logic                 cnt_en;
+logic                 s_handshake;
+logic                 m_handshake;
+
+typedef enum logic [2:0] {
+    IDLE    = 3'b000,
+    DIVIDER = 3'b001,
+    PARITY  = 3'b010,
+    TX_DATA = 3'b011,
+    RX_DATA = 3'b100
 } state_e;
 
 state_e state;
@@ -66,79 +64,103 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
         wr_en_o <= '0;
         data_o  <= '0;
         wr_en_o <= '0;
+        cnt_en  <= '0;
     end else begin
         case (state)
             IDLE: begin
                 addr_o <= UART_CONTROL_REG_ADDR;
                 unique case (data_i)
                     UART_CLK_DIVIDER_REG_ADDR: begin
-                        state <= DIVIDER_ADDR;
+                        state  <= DIVIDER;
+                        cnt_en <= 1'b1;
                     end
                     UART_PARITY_REG_ADDR: begin
-                        state <= PARITY_ADDR;
+                        state  <= PARITY;
+                        cnt_en <= 1'b1;
                     end
                     UART_TX_DATA_REG_ADDR: begin
-                        state <= TX_ADDR;
+                        state  <= TX_DATA;
+                        cnt_en <= 1'b1;
                     end
                     UART_RX_DATA_REG_ADDR: begin
-                        state <= RX_WAIT_DATA;
+                        state  <= RX_DATA;
+                        cnt_en <= 1'b0;
                     end
                 endcase
             end
-            DIVIDER_ADDR: begin
-                state  <= DIVIDER_WAIT_DATA;
-                addr_o <= UART_CLK_DIVIDER_REG_ADDR;
+            DIVIDER: begin
+                unique case (cnt)
+                    0: begin
+                        addr_o <= UART_CLK_DIVIDER_REG_ADDR;
+                    end
+                    2: begin
+                        uart_regs.clk_divider <= data_i;
+                        addr_o <= UART_CONTROL_REG_ADDR;
+                    end
+                    3: begin
+                        state  <= IDLE;
+                        cnt_en <= 1'b0;
+                    end
+                endcase
             end
-            DIVIDER_WAIT_DATA: begin
-                state <= DIVIDER_DATA;
-            end
-            DIVIDER_DATA: begin
-                uart_regs.clk_divider <= data_i;
-                addr_o <= UART_CONTROL_REG_ADDR;
-                state  <= IDLE;
-            end
-            PARITY_ADDR: begin
-                state  <= PARITY_WAIT_DATA;
-                addr_o <= UART_PARITY_REG_ADDR;
-            end
-            PARITY_WAIT_DATA: begin
-                state <= PARITY_DATA;
-            end
-            PARITY_DATA: begin
-                uart_regs.parity <= data_i;
-                addr_o <= UART_CONTROL_REG_ADDR;
-                state  <= IDLE;
-            end
-            TX_ADDR: begin
-                state  <= TX_WAIT_DATA;
-                addr_o <= UART_TX_DATA_REG_ADDR;
-            end
-            TX_WAIT_DATA: begin
-                state <= TX_DATA;
+            PARITY: begin
+                unique case (cnt)
+                    0: begin
+                        addr_o <= UART_PARITY_REG_ADDR;
+                    end
+                    2: begin
+                        uart_regs.parity <= data_i;
+                        addr_o <= UART_CONTROL_REG_ADDR;
+                    end
+                    3: begin
+                        state  <= IDLE;
+                        cnt_en <= 1'b0;
+                    end
+                endcase
             end
             TX_DATA: begin
-                uart_regs.tx <= data_i;
-                if (s_handshake) begin
-                    addr_o <= UART_CONTROL_REG_ADDR;
-                    state  <= IDLE;
-                end
-            end
-            RX_WAIT_DATA: begin
-                if (m_handshake) begin
-                    uart_regs.rx <= {{MEM_WIDTH-DATA_WIDTH{1'b0}}, m_axis.tdata};
-                    state <= RX_DATA;
-                end
+                unique case (cnt)
+                    0: begin
+                        addr_o <= UART_TX_DATA_REG_ADDR;
+                    end
+                    1: begin
+                        cnt_en <= 1'b0;
+                    end
+                    2: begin
+                        uart_regs.tx <= data_i;
+                        if (s_handshake) begin
+                            addr_o <= UART_CONTROL_REG_ADDR;
+                            cnt_en <= 1'b1;
+                        end
+                    end
+                    3: begin
+                        state  <= IDLE;
+                        cnt_en <= 1'b0;
+                    end
+                endcase
             end
             RX_DATA: begin
-                state   <= RX_ADDR;
-                addr_o  <= UART_RX_DATA_REG_ADDR;
-                data_o  <= uart_regs.rx;
-                wr_en_o <= '1;
-            end
-            RX_ADDR: begin
-                wr_en_o <= '0;
-                addr_o  <= UART_CONTROL_REG_ADDR;
-                state   <= IDLE;
+                unique case (cnt)
+                    0: begin
+                        if (m_handshake) begin
+                            uart_regs.rx <= {{MEM_WIDTH-DATA_WIDTH{1'b0}}, m_axis.tdata};
+                            cnt_en       <= 1'b1;
+                        end
+                    end
+                    1: begin
+                        addr_o  <= UART_RX_DATA_REG_ADDR;
+                        data_o  <= uart_regs.rx;
+                        wr_en_o <= '1;
+                    end
+                    2: begin
+                        wr_en_o <= '0;
+                        addr_o  <= UART_CONTROL_REG_ADDR;
+                    end
+                    3: begin
+                        state  <= IDLE;
+                        cnt_en <= 1'b0;
+                    end
+                endcase
             end
             default: state <= IDLE;
         endcase
@@ -147,17 +169,29 @@ end
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
+        cnt <= '0;
+    end else if (cnt_done) begin
+        cnt <= '0;
+    end else if (cnt_en) begin
+        cnt <= cnt + 1'b1;
+    end
+end
+
+assign cnt_done = (cnt == DELAY - 1);
+
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         s_axis.tvalid <= 1'b0;
     end else if (s_handshake) begin
         s_axis.tvalid <= 1'b0;
-    end else if (state == TX_DATA) begin
+    end else if ((state == TX_DATA) && (cnt == 2)) begin
         s_axis.tvalid <= 1'b1;
     end
 end
 
 assign s_axis.tdata = uart_regs.tx.data;
 
-assign m_axis.tready = (state == RX_WAIT_DATA);
+assign m_axis.tready = (state == RX_DATA) && (cnt == 0);
 
 assign s_handshake = s_axis.tvalid & s_axis.tready;
 assign m_handshake = m_axis.tvalid & m_axis.tready;
