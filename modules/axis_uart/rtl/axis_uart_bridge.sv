@@ -1,6 +1,7 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_bridge #(
-    parameter int FIFO_DEPTH = 128,
+    parameter int FIFO_DEPTH = 1024,
+    parameter int MEM_DEPTH  = 8192,
     parameter int BYTE_NUM   = 4,
     parameter int BYTE_WIDTH = 8,
     parameter int ADDR_WIDTH = 32,
@@ -19,10 +20,10 @@ module axis_uart_bridge #(
     output logic [MEM_WIDTH-1:0]  data_o
 );
 
-logic [BYTE_NUM-1:0]   wr_en;
 logic [ADDR_WIDTH-1:0] addr;
 logic [MEM_WIDTH-1:0]  data_in;
 logic [MEM_WIDTH-1:0]  data_out;
+logic [BYTE_NUM-1:0]   wr_en;
 
 axis_uart_bram_ctrl #(
     .BYTE_NUM   (BYTE_NUM  ),
@@ -31,6 +32,7 @@ axis_uart_bram_ctrl #(
     .FIFO_DEPTH (FIFO_DEPTH)
 ) i_axis_uart_bram_ctrl (
     .clk_i      (clk_i     ),
+    .arstn_i    (arstn_i   ),
     .uart_rx_i  (uart_rx_i ),
     .uart_tx_o  (uart_tx_o ),
     .data_i     (data_in   ),
@@ -42,7 +44,8 @@ axis_uart_bram_ctrl #(
 bram_true_dp #(
     .BYTE_NUM   (BYTE_NUM  ),
     .BYTE_WIDTH (BYTE_WIDTH),
-    .ADDR_WIDTH (ADDR_WIDTH)
+    .ADDR_WIDTH (ADDR_WIDTH),
+    .MEM_DEPTH  (MEM_DEPTH )
 ) i_bram_true_dp (
     .a_clk_i    (clk_i     ),
     .a_en_i     (en_i      ),

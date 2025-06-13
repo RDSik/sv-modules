@@ -32,7 +32,7 @@ brom #(
     .MEM_FILE  (MEM_FILE  ),
     .MEM_DEPTH (MEM_DEPTH ),
     .MEM_WIDTH (MEM_WIDTH )
-) i_rom (
+) i_brom (
     .clk_i     (m_axis.clk),
     .addr_i    (addr      ),
     .data_o    (rom_data  )

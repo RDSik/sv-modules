@@ -31,6 +31,11 @@
 
 !modules/**/ip/*.xci
 
+# !modules/**/sdk/
+
+!modules/**/sdk/*.c
+!modules/**/sdk/*.h
+
 !modules/**/*.tcl
 
 !.gitignore
