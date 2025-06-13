@@ -61,7 +61,6 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         state   <= IDLE;
         addr_o  <= UART_CONTROL_REG_ADDR;
-        wr_en_o <= '0;
         data_o  <= '0;
         wr_en_o <= '0;
         cnt_en  <= '0;
