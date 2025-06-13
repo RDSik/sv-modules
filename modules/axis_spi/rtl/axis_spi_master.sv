@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------
-// SPI_MODE can be 0, 1, 2, or 3.
+// SPI MODE can be 0, 1, 2, or 3.
 // Can be configured in one of 4 modes:
 // Mode | Clock Polarity (CPOL/CKP) | Clock Phase (CPHA)
 // 0   |             0             |        0
@@ -18,7 +18,6 @@ module axis_spi_master
     parameter WAIT_TIME    = 50,
     parameter ADDR_WIDTH   = $clog2(SLAVE_NUM)
 ) (
-
     input  spi_clk_divider_reg_t  clk_divider_i,
     input  spi_mode_reg_t         mode_i,
     input  logic [ADDR_WIDTH-1:0] addr_i,
