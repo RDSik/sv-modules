@@ -2,6 +2,7 @@
 // From https://www.sunburst-design.com/papers/CummingsSNUG2002SJ_FIFO1.pdf
 // ----------------------------------------------------------------------------
 
+/* verilator lint_off TIMESCALEMOD */
 module wr_ptr_full #(
     parameter int ADDR_WIDTH = 4
 ) (

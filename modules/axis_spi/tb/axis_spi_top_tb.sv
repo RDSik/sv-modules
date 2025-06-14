@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-`include "modules/verification/tb/test_pkg.svh"
+`include "../../verification/tb/test_pkg.svh"
 
 module axis_spi_top_tb ();
 

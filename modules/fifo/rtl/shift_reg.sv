@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module shift_reg #(
     parameter int DATA_WIDTH = 16,
     parameter int DELAY      = 16

@@ -3,23 +3,23 @@
 
 package test_pkg;
 
-    `include "packet.sv"
+    `include "../../verification/tb/packet.sv"
 
-    `include "cfg.sv"
+    `include "../../verification/tb/cfg.sv"
 
-    `include "gen.sv"
+    `include "../../verification/tb/gen.sv"
 
-    `include "driver.sv"
+    `include "../../verification/tb/driver.sv"
 
-    `include "monitor.sv"
+    `include "../../verification/tb/monitor.sv"
 
-    `include "agent.sv"
+    `include "../../verification/tb/agent.sv"
 
-    `include "checker.sv"
+    `include "../../verification/tb/checker.sv"
 
-    `include "env.sv"
+    `include "../../verification/tb/env.sv"
 
-    `include "test.sv"
+    `include "../../verification/tb/test.sv"
 
 endpackage
 

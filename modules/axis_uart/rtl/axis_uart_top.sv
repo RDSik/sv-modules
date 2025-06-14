@@ -1,5 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
-`include "axis_uart_pkg.svh"
+`include "../rtl/axis_uart_pkg.svh"
 
 module axis_uart_top
     import axis_uart_pkg::*;

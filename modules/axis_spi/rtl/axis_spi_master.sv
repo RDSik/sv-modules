@@ -9,7 +9,7 @@
 // -------------------------------------------------------------------------
 
 /* verilator lint_off TIMESCALEMOD */
-`include "axis_spi_pkg.svh"
+`include "../rtl/axis_spi_pkg.svh"
 
 module axis_spi_master
     import axis_spi_pkg::*;
@@ -20,7 +20,9 @@ module axis_spi_master
 ) (
     input  spi_clk_divider_reg_t  clk_divider_i,
     input  spi_mode_reg_t         mode_i,
+    /* verilator lint_off ASCRANGE */
     input  logic [ADDR_WIDTH-1:0] addr_i,
+    /* verilator lint_on ASCRANGE */
 
     output logic                  spi_clk_o,
     output logic [SLAVE_NUM-1:0]  spi_cs_o,
@@ -159,7 +161,9 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         trailing_edge <= 1'b0;
         leading_edge  <= 1'b0;
         if (s_handshake) begin
+            /* verilator lint_off WIDTHTRUNC */
             edge_cnt <= EDGE_NUM;
+            /* verilator lint_on WIDTHTRUNC */
         end else if (~edge_done) begin
             if (clk_done) begin
                 trailing_edge <= 1'b1;

@@ -47,12 +47,13 @@ class test_base;
     endfunction
 
     virtual task run();
+        bit done;
         begin
             fork
                 env.run();
                 reset_checker();
                 timeout();
-            join
+            join_none
             wait(env.check.done);
             $display("Test was finished!");
             `ifdef VERILATOR

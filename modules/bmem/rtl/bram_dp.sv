@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module bram_dp #(
     parameter int MEM_WIDTH   = 16,
     parameter int MEM_DEPTH   = 64,

@@ -1,5 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
-`include "axis_uart_pkg.svh"
+`include "../rtl/axis_uart_pkg.svh"
 
 module axis_uart_tx
     import axis_uart_pkg::*;
@@ -18,6 +18,7 @@ logic [DIVIDER_WIDTH-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         tx_data;
 logic                          bit_done;
 logic                          baud_done;
+logic                          baud_en;
 logic                          s_handshake;
 
 always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
@@ -25,12 +26,14 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         state     <= IDLE;
         uart_tx_o <= '1;
         bit_cnt   <= '0;
+        baud_en   <= '0;
     end else begin
         case (state)
             IDLE: begin
                 uart_tx_o <= 1'b1;
                 if (s_axis.tvalid) begin
-                    state <= START;
+                    state   <= START;
+                    baud_en <= 1'b1;
                 end
             end
             START: begin
@@ -63,7 +66,8 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
             STOP: begin
                 uart_tx_o <= 1'b1;
                 if (baud_done) begin
-                    state <= WAIT;
+                    state   <= WAIT;
+                    baud_en <= 1'b0;
                 end
             end
             WAIT: begin
@@ -79,7 +83,7 @@ always @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         baud_cnt <= '0;
     end else if (baud_done) begin
         baud_cnt <= '0;
-    end else if ((state == DATA) || (state == START) || (state == STOP) || (state == PARITY)) begin
+    end else if (baud_en) begin
         baud_cnt <= baud_cnt + 1'b1;
     end
 end

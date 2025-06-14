@@ -1,12 +1,12 @@
 vlib work
 vmap work
 
-vlog  modules/interface/rtl/axis_if.sv
+vlog  ../../interface/rtl/axis_if.sv
 
-vlog  modules/axis_spi/rtl/axis_spi_pkg.svh
-vlog  modules/axis_spi/rtl/axis_spi_master.sv
+vlog  ../rtl/axis_spi_pkg.svh
+vlog  ../rtl/axis_spi_master.sv
 
-vlog modules/axis_spi/tb/axis_spi_top_tb.sv
+vlog axis_spi_top_tb.sv
 
 vsim -voptargs="+acc" axis_spi_top_tb
 add log -r /*

@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module axis_fifo_wrap #(
     parameter int FIFO_WIDTH  = 16,
     parameter int FIFO_DEPTH  = 64,
@@ -9,9 +10,11 @@ module axis_fifo_wrap #(
     axis_if m_axis
 );
 
+/* verilator lint_off WIDTHEXPAND */
 if ((FIFO_TYPE != "SYNC") && (FIFO_TYPE != "ASYNC")) begin
     $error("Only SYNC or ASYNC FIFO_TYPE is available!");
 end
+/* verilator lint_on WIDTHEXPAND */
 
 logic pop;
 logic push;

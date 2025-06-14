@@ -25,9 +25,11 @@ class master_gen_base;
             /* verilator lint_on CONSTRAINTIGN */
             for(int i = 0; i < size; i = i + 1) begin
                 p = create_packet();
+                /* verilator lint_off IGNOREDRETURN */
                 void'(p.randomize() with {
                     p.tlast == (i == size - 1);
                 });
+                /* verilator lint_on IGNOREDRETURN */
                 gen2drv.put(p);
             end
         end

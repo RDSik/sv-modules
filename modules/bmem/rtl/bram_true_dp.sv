@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module bram_true_dp #(
     parameter int BYTE_NUM   = 4,
     parameter int BYTE_WIDTH = 8,

@@ -2,7 +2,7 @@
 
 module axis_uart_bridge_tb();
 
-localparam int FIFO_DEPTH = 1024;
+localparam int FIFO_DEPTH = 512;
 localparam int MEM_DEPTH  = 8192;
 localparam int BYTE_NUM   = 4;
 localparam int BYTE_WIDTH = 8;

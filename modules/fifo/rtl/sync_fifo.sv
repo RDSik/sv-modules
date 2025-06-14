@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module sync_fifo #(
     parameter int FIFO_WIDTH  = 32,
     parameter int FIFO_DEPTH  = 64,

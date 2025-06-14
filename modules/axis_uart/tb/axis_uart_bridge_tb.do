@@ -1,27 +1,27 @@
 vlib work
 vmap work
 
-vlog modules/interface/rtl/axis_if.sv
+vlog ../../interface/rtl/axis_if.sv
 
-vlog modules/axis_uart/rtl/axis_uart_pkg.svh
-vlog modules/axis_uart/rtl/axis_uart_bram_ctrl.sv
-vlog modules/axis_uart/rtl/axis_uart_bridge.sv
-vlog modules/axis_uart/rtl/axis_uart_tx.sv
-vlog modules/axis_uart/rtl/axis_uart_rx.sv
+vlog ../rtl/axis_uart_pkg.svh
+vlog ../rtl/axis_uart_bram_ctrl.sv
+vlog ../rtl/axis_uart_bridge.sv
+vlog ../rtl/axis_uart_tx.sv
+vlog ../rtl/axis_uart_rx.sv
 
-vlog modules/fifo/rtl/async_fifo.sv
-vlog modules/fifo/rtl/axis_fifo_wrap.sv
-vlog modules/fifo/rtl/rd_ptr_empty.sv
-vlog modules/fifo/rtl/shift_reg.sv
-vlog modules/fifo/rtl/sync_fifo.sv
-vlog modules/fifo/rtl/wr_ptr_full.sv
+vlog ../../fifo/rtl/async_fifo.sv
+vlog ../../fifo/rtl/axis_fifo_wrap.sv
+vlog ../../fifo/rtl/rd_ptr_empty.sv
+vlog ../../fifo/rtl/shift_reg.sv
+vlog ../../fifo/rtl/sync_fifo.sv
+vlog ../../fifo/rtl/wr_ptr_full.sv
 
-vlog modules/bmem/rtl/bram_true_dp.sv
-vlog modules/bmem/rtl/bram_dp_2clk.sv
-vlog modules/bmem/rtl/bram_dp.sv
-vlog modules/bmem/rtl/brom.sv
+vlog ../../bmem/rtl/bram_true_dp.sv
+vlog ../../bmem/rtl/bram_dp_2clk.sv
+vlog ../../bmem/rtl/bram_dp.sv
+vlog ../../bmem/rtl/brom.sv
 
-vlog modules/axis_uart/tb/axis_uart_bridge_tb.sv
+vlog axis_uart_bridge_tb.sv
 
 vsim -voptargs="+acc" axis_uart_bridge_tb
 add log -r /*

@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module brom #(
     parameter int MEM_WIDTH   = 16,
     parameter int MEM_DEPTH   = 66,

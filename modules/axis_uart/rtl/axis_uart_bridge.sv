@@ -1,6 +1,6 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_bridge #(
-    parameter int FIFO_DEPTH = 1024,
+    parameter int FIFO_DEPTH = 512,
     parameter int MEM_DEPTH  = 8192,
     parameter int BYTE_NUM   = 4,
     parameter int BYTE_WIDTH = 8,

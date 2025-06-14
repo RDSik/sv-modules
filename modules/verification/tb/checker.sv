@@ -39,7 +39,9 @@ class checker_base;
                 in_mbx.get(in_p);
                 out_mbx.get(out_p);
                 check(in_p, out_p);
+                /* verilator lint_off WIDTHEXPAND */
                 cnt = cnt + out_p.tlast;
+                /* verilator lint_on WIDTHEXPAND */
                 if (cnt == cfg.packet_num) begin
                     done = 1;
                     break;
