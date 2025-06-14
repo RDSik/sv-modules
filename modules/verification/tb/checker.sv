@@ -19,9 +19,7 @@ class checker_base;
                 wait(~in_reset);
                 fork
                     do_check();
-                join_any
-                if (done) break;
-                while(in_mbx.try_get(tmp_p)) cnt = cnt + tmp_p.tlast;
+                join
             end
         end
     endtask
