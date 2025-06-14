@@ -13,12 +13,15 @@ class checker_base;
     mailbox#(packet) out_mbx;
 
     virtual task run();
+        packet tmp_p;
         begin
             forever begin
                 wait(~in_reset);
                 fork
                     do_check();
-                join
+                join_any
+                if (done) break;
+                while(in_mbx.try_get(tmp_p)) cnt = cnt + tmp_p.tlast;
             end
         end
     endtask
