@@ -9,8 +9,8 @@ module rd_ptr_empty #(
     input  logic                  rd_clk_i,
     input  logic                  rd_arstn_i,
     input  logic                  rd_en_i,
+    input  logic [ADDR_WIDTH:0]   rq2_wptr_i,
     output logic [ADDR_WIDTH-1:0] rd_addr_o,
-    input  logic [ADDR_WIDTH:0]   wr_sync_ptr_i,
     output logic [ADDR_WIDTH:0]   rd_ptr_o,
     output logic                  empty_o
 );
@@ -32,7 +32,7 @@ assign rd_addr_o = rbin[ADDR_WIDTH-1:0];
 assign rbinnext  = rbin + (rd_en_i & ~empty_o);
 assign rgraynext = (rbinnext >> 1) ^ rbinnext;
 
-assign empty_val = (rgraynext == wr_sync_ptr_i);
+assign empty_val = (rgraynext == rq2_wptr_i);
 
 always_ff @(posedge rd_clk_i or negedge rd_arstn_i) begin
     if (~rd_arstn_i) begin

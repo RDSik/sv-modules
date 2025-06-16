@@ -22,39 +22,39 @@ localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
 logic [ADDR_WIDTH-1:0] wr_addr;
 logic [ADDR_WIDTH:0]   wr_ptr;
-logic [ADDR_WIDTH:0]   wr_sync_ptr;
+logic [ADDR_WIDTH:0]   rq2_wptr;
 logic                  wr_en;
 
 logic [ADDR_WIDTH-1:0] rd_addr;
 logic [ADDR_WIDTH:0]   rd_ptr;
-logic [ADDR_WIDTH:0]   rd_sync_ptr;
+logic [ADDR_WIDTH:0]   wq2_rptr;
 logic                  rd_en;
 
 assign wr_en = push_i & ~full_o;
 assign rd_en = pop_i & ~empty_o;
 
 wr_ptr_full #(
-    .ADDR_WIDTH    (ADDR_WIDTH )
+    .ADDR_WIDTH    (ADDR_WIDTH)
 ) i_wr_ptr_full (
-    .wr_en_i       (push_i     ),
-    .wr_clk_i      (wr_clk_i   ),
-    .wr_arstn_i    (wr_arstn_i ),
-    .wr_addr_o     (wr_addr    ),
-    .rd_sync_ptr_i (rd_sync_ptr),
-    .wr_ptr_o      (wr_ptr     ),
-    .full_o        (full_o     )
+    .wr_clk_i      (wr_clk_i  ),
+    .wr_arstn_i    (wr_arstn_i),
+    .wr_en_i       (push_i    ),
+    .wq2_rptr_i    (wq2_rptr  ),
+    .wr_addr_o     (wr_addr   ),
+    .wr_ptr_o      (wr_ptr    ),
+    .full_o        (full_o    )
 );
 
 rd_ptr_empty #(
-    .ADDR_WIDTH    (ADDR_WIDTH )
+    .ADDR_WIDTH    (ADDR_WIDTH)
 ) i_rd_ptr_empty (
-    .rd_clk_i      (rd_clk_i   ),
-    .rd_arstn_i    (rd_arstn_i ),
-    .rd_en_i       (pop_i      ),
-    .rd_addr_o     (rd_addr    ),
-    .wr_sync_ptr_i (wr_sync_ptr),
-    .rd_ptr_o      (rd_ptr     ),
-    .empty_o       (empty_o    )
+    .rd_clk_i      (rd_clk_i  ),
+    .rd_arstn_i    (rd_arstn_i),
+    .rd_en_i       (pop_i     ),
+    .rq2_wptr_i    (rq2_wptr  ),
+    .rd_addr_o     (rd_addr   ),
+    .rd_ptr_o      (rd_ptr    ),
+    .empty_o       (empty_o   )
 );
 
 bram_dp_2clk #(
@@ -79,7 +79,7 @@ shift_reg #(
     .arstn_i    (wr_arstn_i  ),
     .en_i       (1'b1        ),
     .data_i     (rd_ptr      ),
-    .data_o     (wr_sync_ptr )
+    .data_o     (wq2_rptr    )
 );
 
 shift_reg #(
@@ -90,7 +90,7 @@ shift_reg #(
     .arstn_i    (rd_arstn_i  ),
     .en_i       (1'b1        ),
     .data_i     (wr_ptr      ),
-    .data_o     (rd_sync_ptr )
+    .data_o     (rq2_wptr    )
 );
 
 endmodule

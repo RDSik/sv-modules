@@ -22,18 +22,26 @@ module axis_uart_bram_ctrl
     output logic [BYTE_NUM-1:0]   wr_en_o
 );
 
+uart_regs_t uart_regs;
+
+logic tx_reset;
+logic rx_reset;
+
+assign tx_reset = ~uart_regs.control.tx_reset;
+assign rx_reset = ~uart_regs.control.rx_reset;
+
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
 ) s_axis (
     .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   )
+    .arstn_i    (tx_reset  )
 );
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
 ) m_axis (
     .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   )
+    .arstn_i    (rx_reset  )
 );
 
 localparam int DELAY     = 4;
@@ -48,19 +56,17 @@ logic                 m_handshake;
 typedef enum logic [2:0] {
     IDLE    = 3'b000,
     DIVIDER = 3'b001,
-    PARITY  = 3'b010,
+    CONTROL = 3'b010,
     TX_DATA = 3'b011,
     RX_DATA = 3'b100
 } state_e;
 
 state_e state;
 
-uart_regs_t uart_regs;
-
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
         state   <= IDLE;
-        addr_o  <= UART_CONTROL_REG_ADDR;
+        addr_o  <= UART_COMMAND_REG_ADDR;
         wr_en_o <= '0;
         data_o  <= '0;
         wr_en_o <= '0;
@@ -68,21 +74,21 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end else begin
         case (state)
             IDLE: begin
-                addr_o <= UART_CONTROL_REG_ADDR;
+                addr_o <= UART_COMMAND_REG_ADDR;
                 unique case (data_i)
-                    UART_CLK_DIVIDER_REG_ADDR: begin
+                    DIVIDER_CMD: begin
                         state  <= DIVIDER;
                         cnt_en <= 1'b1;
                     end
-                    UART_PARITY_REG_ADDR: begin
-                        state  <= PARITY;
+                    CONTROL_CMD: begin
+                        state  <= CONTROL;
                         cnt_en <= 1'b1;
                     end
-                    UART_TX_DATA_REG_ADDR: begin
+                    TX_DATA_CMD: begin
                         state  <= TX_DATA;
                         cnt_en <= 1'b1;
                     end
-                    UART_RX_DATA_REG_ADDR: begin
+                    RX_DATA_CMD: begin
                         state  <= RX_DATA;
                         cnt_en <= 1'b0;
                     end
@@ -95,7 +101,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                     end
                     2: begin
                         uart_regs.clk_divider <= data_i;
-                        addr_o <= UART_CONTROL_REG_ADDR;
+                        addr_o <= UART_COMMAND_REG_ADDR;
                     end
                     3: begin
                         state  <= IDLE;
@@ -103,14 +109,14 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                     end
                 endcase
             end
-            PARITY: begin
+            CONTROL: begin
                 unique case (cnt)
                     0: begin
-                        addr_o <= UART_PARITY_REG_ADDR;
+                        addr_o <= UART_CONTROL_REG_ADDR;
                     end
                     2: begin
-                        uart_regs.parity <= data_i;
-                        addr_o <= UART_CONTROL_REG_ADDR;
+                        uart_regs.control <= data_i;
+                        addr_o <= UART_COMMAND_REG_ADDR;
                     end
                     3: begin
                         state  <= IDLE;
@@ -129,7 +135,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                     2: begin
                         uart_regs.tx <= data_i;
                         if (s_handshake) begin
-                            addr_o <= UART_CONTROL_REG_ADDR;
+                            addr_o <= UART_COMMAND_REG_ADDR;
                             cnt_en <= 1'b1;
                         end
                     end
@@ -154,7 +160,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                     end
                     2: begin
                         wr_en_o <= '0;
-                        addr_o  <= UART_CONTROL_REG_ADDR;
+                        addr_o  <= UART_COMMAND_REG_ADDR;
                     end
                     3: begin
                         state  <= IDLE;
@@ -200,28 +206,30 @@ axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
 ) uart_tx (
     .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   )
+    .arstn_i    (tx_reset  )
 );
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
 ) uart_rx (
     .clk_i      (clk_i     ),
-    .arstn_i    (arstn_i   )
+    .arstn_i    (rx_reset  )
 );
 
 axis_uart_tx i_axis_uart_tx (
-    .clk_divider_i (uart_regs.clk_divider),
-    .parity_i      (uart_regs.parity     ),
-    .uart_tx_o     (uart_tx_o            ),
-    .s_axis        (uart_tx.slave        )
+    .clk_divider_i (uart_regs.clk_divider ),
+    .odd_i         (uart_regs.control.odd ),
+    .even_i        (uart_regs.control.even),
+    .uart_tx_o     (uart_tx_o             ),
+    .s_axis        (uart_tx.slave         )
 );
 
 axis_uart_rx i_axis_uart_rx (
-    .clk_divider_i (uart_regs.clk_divider),
-    .parity_i      (uart_regs.parity     ),
-    .uart_rx_i     (uart_rx_i            ),
-    .m_axis        (uart_rx.master       )
+    .clk_divider_i (uart_regs.clk_divider ),
+    .odd_i         (uart_regs.control.odd ),
+    .even_i        (uart_regs.control.even),
+    .uart_rx_i     (uart_rx_i             ),
+    .m_axis        (uart_rx.master        )
 );
 
 axis_fifo_wrap #(
