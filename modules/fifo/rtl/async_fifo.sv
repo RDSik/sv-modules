@@ -60,7 +60,7 @@ rd_ptr_empty #(
 bram_dp_2clk #(
     .MEM_WIDTH (FIFO_WIDTH),
     .MEM_DEPTH (FIFO_DEPTH)
-) i_bram_dp (
+) i_bram_dp_2clk (
     .wr_clk_i  (wr_clk_i  ),
     .wr_en_i   (wr_en     ),
     .wr_addr_i (wr_addr   ),
