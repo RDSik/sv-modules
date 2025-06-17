@@ -10,10 +10,10 @@ package axis_uart_pkg;
 
     typedef struct packed {
         logic [27:0] rsrvd;
+        logic        parity_even;
+        logic        parity_odd;
         logic        tx_reset;
         logic        rx_reset;
-        logic        even;
-        logic        odd;
     } uart_control_reg_t;
 
     typedef struct packed {
@@ -50,12 +50,12 @@ package axis_uart_pkg;
 
     function automatic logic parity;
         input logic [DATA_WIDTH-1:0] data;
-        input logic                  odd;
-        input logic                  even;
+        input logic                  parity_odd;
+        input logic                  parity_even;
         begin
-            if (odd) begin
+            if (parity_odd) begin
                 parity = ~(^data);
-            end else if (even) begin
+            end else if (parity_even) begin
                 parity = ^data;
             end
         end

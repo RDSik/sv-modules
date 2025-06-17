@@ -5,8 +5,8 @@ module axis_uart_tx
     import axis_uart_pkg::*;
 (
     input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                     odd_i,
-    input logic                     even_i,
+    input logic                     parity_odd_i,
+    input logic                     parity_even_i,
     output logic                    uart_tx_o,
 
     axis_if                         s_axis
@@ -48,7 +48,7 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
                 if (baud_done) begin
                     if (bit_done) begin
                         bit_cnt <= '0;
-                        if (odd_i | even_i) begin
+                        if (parity_odd_i | parity_even_i) begin
                             state <= PARITY;
                         end else begin
                             state <= STOP;
@@ -59,7 +59,7 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
                 end
             end
             PARITY: begin
-                uart_tx_o <= parity(tx_data, odd_i, even_i);
+                uart_tx_o <= parity(tx_data, parity_odd_i, parity_even_i);
                 if (baud_done) begin
                     state <= STOP;
                 end

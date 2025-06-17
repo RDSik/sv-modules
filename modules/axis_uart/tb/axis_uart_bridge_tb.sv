@@ -40,9 +40,9 @@ initial begin
     wait (arstn_i);
     write_data(4, 32'ha, 1);
     write_data(12, 32'hfc, 1);
-    write_data(8, 32'hc, 1);
+    write_data(8, 32'h3, 1);
     write_data(0, 2, CTRL_DELAY+2);
-    write_data(8, 32'h2, CTRL_DELAY);
+    write_data(8, 32'h4, CTRL_DELAY);
     write_data(0, 2, CTRL_DELAY);
     for (int i = 1; i <= 4; i++) begin
         write_data(0, i, CTRL_DELAY);

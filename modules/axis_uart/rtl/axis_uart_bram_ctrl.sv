@@ -217,19 +217,19 @@ axis_if #(
 );
 
 axis_uart_tx i_axis_uart_tx (
-    .clk_divider_i (uart_regs.clk_divider ),
-    .odd_i         (uart_regs.control.odd ),
-    .even_i        (uart_regs.control.even),
-    .uart_tx_o     (uart_tx_o             ),
-    .s_axis        (uart_tx.slave         )
+    .clk_divider_i (uart_regs.clk_divider        ),
+    .parity_odd_i  (uart_regs.control.parity_odd ),
+    .parity_even_i (uart_regs.control.parity_even),
+    .uart_tx_o     (uart_tx_o                    ),
+    .s_axis        (uart_tx.slave                )
 );
 
 axis_uart_rx i_axis_uart_rx (
-    .clk_divider_i (uart_regs.clk_divider ),
-    .odd_i         (uart_regs.control.odd ),
-    .even_i        (uart_regs.control.even),
-    .uart_rx_i     (uart_rx_i             ),
-    .m_axis        (uart_rx.master        )
+    .clk_divider_i (uart_regs.clk_divider        ),
+    .parity_odd_i  (uart_regs.control.parity_odd ),
+    .parity_even_i (uart_regs.control.parity_even),
+    .uart_rx_i     (uart_rx_i                    ),
+    .m_axis        (uart_rx.master               )
 );
 
 axis_fifo_wrap #(
