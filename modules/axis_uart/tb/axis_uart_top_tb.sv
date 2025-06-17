@@ -8,7 +8,8 @@ import test_pkg::*;
 
 localparam int CLK_MHZ     = 50;
 localparam int BAUD_RATE   = 115_200;
-localparam int PARITY      = 2;
+localparam int PARITY_ODD  = 1;
+localparam int PARITY_EVEN = 0;
 localparam int DIVIDER     = (CLK_MHZ*1_000_000)/BAUD_RATE;
 localparam int RESET_DELAY = 10;
 localparam int CLK_PER_NS  = 1_000_000_000/(CLK_MHZ*1_000_000);
@@ -53,17 +54,19 @@ initial begin
 end
 
 axis_uart_tx i_axis_uart_tx (
-    .clk_divider_i (DIVIDER  ),
-    .parity_i      (PARITY   ),
-    .uart_tx_o     (uart_data),
-    .s_axis        (m_axis   )
+    .clk_divider_i (DIVIDER    ),
+    .parity_odd_i  (PARITY_ODD ),
+    .parity_even_i (PARITY_EVEN),
+    .uart_tx_o     (uart_data  ),
+    .s_axis        (m_axis     )
 );
 
 axis_uart_rx i_axis_uart_rx (
-    .clk_divider_i (DIVIDER  ),
-    .parity_i      (PARITY   ),
-    .uart_rx_i     (uart_data),
-    .m_axis        (s_axis   )
+    .clk_divider_i (DIVIDER    ),
+    .parity_odd_i  (PARITY_ODD ),
+    .parity_even_i (PARITY_EVEN),
+    .uart_rx_i     (uart_data  ),
+    .m_axis        (s_axis     )
 );
 
 endmodule

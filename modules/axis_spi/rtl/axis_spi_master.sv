@@ -14,12 +14,13 @@
 module axis_spi_master
     import axis_spi_pkg::*;
 #(
-    parameter SLAVE_NUM    = 1,
-    parameter WAIT_TIME    = 50,
-    parameter ADDR_WIDTH   = $clog2(SLAVE_NUM)
+    parameter int SLAVE_NUM    = 1,
+    parameter int WAIT_TIME    = 100,
+    parameter int ADDR_WIDTH   = $clog2(SLAVE_NUM)
 ) (
-    input  spi_clk_divider_reg_t  clk_divider_i,
-    input  spi_mode_reg_t         mode_i,
+    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
+    input logic                     cpha_i,
+    input logic                     cpol_i,
     /* verilator lint_off ASCRANGE */
     input  logic [ADDR_WIDTH-1:0] addr_i,
     /* verilator lint_on ASCRANGE */
@@ -156,7 +157,7 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         trailing_edge <= 1'b0;
         leading_edge  <= 1'b0;
         edge_cnt      <= '0;
-        spi_clk_reg   <= mode_i.cpol;
+        spi_clk_reg   <= cpol_i;
     end else begin
         trailing_edge <= 1'b0;
         leading_edge  <= 1'b0;
@@ -188,7 +189,7 @@ end
 // SPI clock---------------------------------------------------
 always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     if (~s_axis.arstn_i) begin
-        spi_clk_o <= mode_i.cpol;
+        spi_clk_o <= cpol_i;
     end else begin
         spi_clk_o <= spi_clk_reg;
     end
@@ -202,7 +203,7 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         rx_data    <= '0;
     end else if (rx_bit_done) begin
         rx_bit_cnt <='0;
-    end else if ((leading_edge & ~mode_i.cpha) || (trailing_edge & mode_i.cpha)) begin
+    end else if ((leading_edge & ~cpha_i) || (trailing_edge & cpha_i)) begin
         rx_bit_cnt <= rx_bit_cnt + 1'b1;
         rx_data    <= {rx_data[DATA_WIDTH-2:0], spi_miso_i};
     end
@@ -224,12 +225,12 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
         /* verilator lint_off WIDTHTRUNC */
         tx_bit_cnt <= DATA_WIDTH - 1;
         /* verilator lint_on WIDTHTRUNC */
-    end else if (s_handshake_d & ~mode_i.cpha) begin // Catch the case where we start transaction and CPHA = 0
+    end else if (s_handshake_d & ~cpha_i) begin // Catch the case where we start transaction and CPHA = 0
         /* verilator lint_off WIDTHTRUNC */
         tx_bit_cnt <= DATA_WIDTH - 2;
         /* verilator lint_on WIDTHTRUNC */
         spi_mosi_o <= tx_data[DATA_WIDTH-1];
-    end else if ((leading_edge & mode_i.cpha) || (trailing_edge & ~mode_i.cpha)) begin
+    end else if ((leading_edge & cpha_i) || (trailing_edge & ~cpha_i)) begin
         tx_bit_cnt <= tx_bit_cnt - 1'b1;
         spi_mosi_o <= tx_data[tx_bit_cnt];
     end

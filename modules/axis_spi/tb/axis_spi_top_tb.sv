@@ -6,7 +6,8 @@ module axis_spi_top_tb ();
 
 import test_pkg::*;
 
-localparam int SPI_MODE    = 3;
+localparam int CPHA        = 1;
+localparam int CPOL        = 1;
 localparam int MAIN_CLK    = 27_000_000;
 localparam int SPI_CLK     = 6_750_000;
 localparam int SLAVE_NUM   = 1;
@@ -62,7 +63,8 @@ axis_spi_master #(
     .WAIT_TIME     (WAIT_TIME)
 ) dut (
     .clk_divider_i (DIVIDER  ),
-    .mode_i        (SPI_MODE ),
+    .cpol_i        (CPHA     ),
+    .cpha_i        (CPOL     ),
     .addr_i        ('0       ),
     .spi_clk_o     (spi_clk_o),
     .spi_cs_o      (spi_cs_o ),
