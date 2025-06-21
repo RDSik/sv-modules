@@ -114,7 +114,6 @@ end else if (MODE == "NO_CHANGE") begin: g_no_change
             end
         end
     end
-
 end
 
 endmodule
