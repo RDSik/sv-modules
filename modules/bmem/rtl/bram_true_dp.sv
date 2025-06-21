@@ -31,9 +31,9 @@ end
 logic [MEM_WIDTH-1:0] ram [MEM_DEPTH];
 
 if (MODE == "WRITE_FIRST") begin: g_wr_first
-    for (genvar i = 0; i < BYTE_NUM; i++) begin : g_bram
-        always_ff @(posedge a_clk_i) begin
-            if (a_en_i) begin
+    always_ff @(posedge a_clk_i) begin
+        if (a_en_i) begin
+            for (int i = 0; i < BYTE_NUM; i++) begin
                 if (a_wr_en_i[i]) begin
                     ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     a_data_o <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
@@ -42,9 +42,11 @@ if (MODE == "WRITE_FIRST") begin: g_wr_first
                 end
             end
         end
+    end
 
-        always_ff @(posedge b_clk_i) begin
-            if (b_en_i) begin
+    always_ff @(posedge b_clk_i) begin
+        if (b_en_i) begin
+            for (int i = 0; i < BYTE_NUM; i++) begin
                 if (b_wr_en_i[i]) begin
                     ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     b_data_o <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
@@ -55,19 +57,21 @@ if (MODE == "WRITE_FIRST") begin: g_wr_first
         end
     end
 end else if (MODE == "READ_FIRST") begin : g_rd_first
-    for (genvar i = 0; i < BYTE_NUM; i++) begin : g_bram
-        always_ff @(posedge a_clk_i) begin
-            if (a_en_i) begin
-                a_data_o <= ram[a_addr_i];
+    always_ff @(posedge a_clk_i) begin
+        if (a_en_i) begin
+            a_data_o <= ram[a_addr_i];
+            for (int i = 0; i < BYTE_NUM; i++) begin
                 if (a_wr_en_i[i]) begin
                     ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                 end
             end
         end
+    end
 
-        always_ff @(posedge b_clk_i) begin
-            if (b_en_i) begin
-                b_data_o <= ram[b_addr_i];
+    always_ff @(posedge b_clk_i) begin
+        if (b_en_i) begin
+            b_data_o <= ram[b_addr_i];
+            for (int i = 0; i < BYTE_NUM; i++) begin
                 if (b_wr_en_i[i]) begin
                     ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                 end
@@ -75,27 +79,42 @@ end else if (MODE == "READ_FIRST") begin : g_rd_first
         end
     end
 end else if (MODE == "NO_CHANGE") begin: g_no_change
-    for (genvar i = 0; i < BYTE_NUM; i++) begin : g_bram
-        always_ff @(posedge a_clk_i) begin
-            if (a_en_i) begin
+    always_ff @(posedge a_clk_i) begin
+        if (a_en_i) begin
+            for (int i = 0; i < BYTE_NUM; i++) begin
                 if (a_wr_en_i[i]) begin
                     ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
-                end else if (~|a_wr_en_i) begin
-                    a_data_o <= ram[a_addr_i];
-                end
-            end
-        end
-
-        always_ff @(posedge b_clk_i) begin
-            if (b_en_i) begin
-                if (b_wr_en_i[i]) begin
-                    ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
-                end else if (~|b_wr_en_i) begin
-                    b_data_o <= ram[b_addr_i];
                 end
             end
         end
     end
+
+    always_ff @(posedge a_clk_i) begin
+        if (a_en_i) begin
+            if (~|a_wr_en_i) begin
+                a_data_o <= ram[a_addr_i];
+            end
+        end
+    end
+
+    always_ff @(posedge b_clk_i) begin
+        if (b_en_i) begin
+            for (int i = 0; i < BYTE_NUM; i++) begin
+                if (b_wr_en_i[i]) begin
+                    ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                end
+            end
+        end
+    end
+
+    always_ff @(posedge b_clk_i) begin
+        if (b_en_i) begin
+            if (~|b_wr_en_i) begin
+                b_data_o <= ram[b_addr_i];
+            end
+        end
+    end
+
 end
 
 endmodule
