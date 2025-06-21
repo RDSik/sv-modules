@@ -32,14 +32,14 @@ assign rx_reset = ~uart_regs.control.rx_reset;
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
-) fifio_tx (
+) fifo_tx (
     .clk_i      (clk_i     ),
     .arstn_i    (tx_reset  )
 );
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
-) fifio_rx (
+) fifo_rx (
     .clk_i      (clk_i     ),
     .arstn_i    (rx_reset  )
 );
@@ -149,7 +149,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 unique case (cnt)
                     0: begin
                         if (m_handshake) begin
-                            uart_regs.rx <= {{MEM_WIDTH-DATA_WIDTH{1'b0}}, fifio_rx.tdata};
+                            uart_regs.rx <= {{MEM_WIDTH-DATA_WIDTH{1'b0}}, fifo_rx.tdata};
                             cnt_en       <= 1'b1;
                         end
                     end
@@ -187,20 +187,20 @@ assign cnt_done = (cnt == DELAY - 1);
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        fifio_tx.tvalid <= 1'b0;
+        fifo_tx.tvalid <= 1'b0;
     end else if (s_handshake) begin
-        fifio_tx.tvalid <= 1'b0;
+        fifo_tx.tvalid <= 1'b0;
     end else if ((state == TX_DATA) && (cnt == 2)) begin
-        fifio_tx.tvalid <= 1'b1;
+        fifo_tx.tvalid <= 1'b1;
     end
 end
 
-assign fifio_tx.tdata = uart_regs.tx.data;
+assign fifo_tx.tdata = uart_regs.tx.data;
 
-assign fifio_rx.tready = (state == RX_DATA) && (cnt == 0);
+assign fifo_rx.tready = (state == RX_DATA) && (cnt == 0);
 
-assign s_handshake = fifio_tx.tvalid & fifio_tx.tready;
-assign m_handshake = fifio_rx.tvalid & fifio_rx.tready;
+assign s_handshake = fifo_tx.tvalid & fifo_tx.tready;
+assign m_handshake = fifo_rx.tvalid & fifo_rx.tready;
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
@@ -238,7 +238,7 @@ axis_fifo_wrap #(
     .CIRCLE_BUF (1         ),
     .FIFO_TYPE  ("SYNC"    )
 ) i_axis_fifo_tx (
-    .s_axis     (fifio_tx  ),
+    .s_axis     (fifo_tx   ),
     .m_axis     (uart_tx   )
 );
 
@@ -249,7 +249,7 @@ axis_fifo_wrap #(
     .FIFO_TYPE  ("SYNC"    )
 ) i_axis_fifo_rx (
     .s_axis     (uart_rx   ),
-    .m_axis     (fifio_rx  )
+    .m_axis     (fifo_rx   )
 );
 
 endmodule

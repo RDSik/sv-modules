@@ -42,23 +42,24 @@ axis_uart_bram_ctrl #(
 );
 
 bram_true_dp #(
-    .BYTE_NUM   (BYTE_NUM  ),
-    .BYTE_WIDTH (BYTE_WIDTH),
-    .ADDR_WIDTH (ADDR_WIDTH),
-    .MEM_DEPTH  (MEM_DEPTH )
+    .BYTE_NUM   (BYTE_NUM   ),
+    .BYTE_WIDTH (BYTE_WIDTH ),
+    .ADDR_WIDTH (ADDR_WIDTH ),
+    .MEM_DEPTH  (MEM_DEPTH  ),
+    .MODE       ("NO_CHANGE")
 ) i_bram_true_dp (
-    .a_clk_i    (clk_i     ),
-    .a_en_i     (en_i      ),
-    .a_wr_en_i  (wr_en_i   ),
-    .a_addr_i   (addr_i    ),
-    .a_data_i   (data_i    ),
-    .a_data_o   (data_o    ),
-    .b_clk_i    (clk_i     ),
-    .b_en_i     (1'b1      ),
-    .b_wr_en_i  (wr_en     ),
-    .b_addr_i   (addr      ),
-    .b_data_i   (data_out  ),
-    .b_data_o   (data_in   )
+    .a_clk_i    (clk_i      ),
+    .a_en_i     (en_i       ),
+    .a_wr_en_i  (wr_en_i    ),
+    .a_addr_i   (addr_i     ),
+    .a_data_i   (data_i     ),
+    .a_data_o   (data_o     ),
+    .b_clk_i    (clk_i      ),
+    .b_en_i     (1'b1       ),
+    .b_wr_en_i  (wr_en      ),
+    .b_addr_i   (addr       ),
+    .b_data_i   (data_out   ),
+    .b_data_o   (data_in    )
 );
 
 endmodule

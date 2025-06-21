@@ -32,11 +32,11 @@ add wave -expand -group RAM     /axis_uart_bridge_tb/dut/i_bram_true_dp/*
 add wave -expand -group UART_TX /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/i_axis_uart_tx/*
 add wave                        /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/uart_tx/*
 add wave -expand -group UART_RX /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/i_axis_uart_rx/*
-add wave                        /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/uart_tx/*
+add wave                        /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/uart_rx/*
 add wave -expand -group FIFO_TX /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/i_axis_fifo_tx/*
+add wave                        /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/fifo_tx/*
 add wave -expand -group FIFO_RX /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/i_axis_fifo_rx/*
-add wave -expand -group S_AXIS  /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/s_axis/*
-add wave -expand -group M_AXIS  /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/m_axis/*
+add wave                        /axis_uart_bridge_tb/dut/i_axis_uart_bram_ctrl/fifo_rx/*
 
 run -all
 wave zoom full
