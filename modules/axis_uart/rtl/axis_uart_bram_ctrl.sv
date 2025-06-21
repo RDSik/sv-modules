@@ -32,14 +32,14 @@ assign rx_reset = ~uart_regs.control.rx_reset;
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
-) s_axis (
+) fifio_tx (
     .clk_i      (clk_i     ),
     .arstn_i    (tx_reset  )
 );
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
-) m_axis (
+) fifio_rx (
     .clk_i      (clk_i     ),
     .arstn_i    (rx_reset  )
 );
@@ -149,7 +149,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
                 unique case (cnt)
                     0: begin
                         if (m_handshake) begin
-                            uart_regs.rx <= {{MEM_WIDTH-DATA_WIDTH{1'b0}}, m_axis.tdata};
+                            uart_regs.rx <= {{MEM_WIDTH-DATA_WIDTH{1'b0}}, fifio_rx.tdata};
                             cnt_en       <= 1'b1;
                         end
                     end
@@ -187,20 +187,20 @@ assign cnt_done = (cnt == DELAY - 1);
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        s_axis.tvalid <= 1'b0;
+        fifio_tx.tvalid <= 1'b0;
     end else if (s_handshake) begin
-        s_axis.tvalid <= 1'b0;
+        fifio_tx.tvalid <= 1'b0;
     end else if ((state == TX_DATA) && (cnt == 2)) begin
-        s_axis.tvalid <= 1'b1;
+        fifio_tx.tvalid <= 1'b1;
     end
 end
 
-assign s_axis.tdata = uart_regs.tx.data;
+assign fifio_tx.tdata = uart_regs.tx.data;
 
-assign m_axis.tready = (state == RX_DATA) && (cnt == 0);
+assign fifio_rx.tready = (state == RX_DATA) && (cnt == 0);
 
-assign s_handshake = s_axis.tvalid & s_axis.tready;
-assign m_handshake = m_axis.tvalid & m_axis.tready;
+assign s_handshake = fifio_tx.tvalid & fifio_tx.tready;
+assign m_handshake = fifio_rx.tvalid & fifio_rx.tready;
 
 axis_if #(
     .DATA_WIDTH (DATA_WIDTH)
@@ -221,7 +221,7 @@ axis_uart_tx i_axis_uart_tx (
     .parity_odd_i  (uart_regs.control.parity_odd ),
     .parity_even_i (uart_regs.control.parity_even),
     .uart_tx_o     (uart_tx_o                    ),
-    .s_axis        (uart_tx.slave                )
+    .s_axis        (uart_tx                      )
 );
 
 axis_uart_rx i_axis_uart_rx (
@@ -229,27 +229,27 @@ axis_uart_rx i_axis_uart_rx (
     .parity_odd_i  (uart_regs.control.parity_odd ),
     .parity_even_i (uart_regs.control.parity_even),
     .uart_rx_i     (uart_rx_i                    ),
-    .m_axis        (uart_rx.master               )
+    .m_axis        (uart_rx                      )
 );
 
 axis_fifo_wrap #(
-    .FIFO_DEPTH (FIFO_DEPTH    ),
-    .FIFO_WIDTH (DATA_WIDTH    ),
-    .CIRCLE_BUF (1             ),
-    .FIFO_TYPE  ("SYNC"        )
+    .FIFO_DEPTH (FIFO_DEPTH),
+    .FIFO_WIDTH (DATA_WIDTH),
+    .CIRCLE_BUF (1         ),
+    .FIFO_TYPE  ("SYNC"    )
 ) i_axis_fifo_tx (
-    .s_axis     (s_axis.slave  ),
-    .m_axis     (uart_tx.master)
+    .s_axis     (fifio_tx  ),
+    .m_axis     (uart_tx   )
 );
 
 axis_fifo_wrap #(
-    .FIFO_DEPTH (FIFO_DEPTH   ),
-    .FIFO_WIDTH (DATA_WIDTH   ),
-    .CIRCLE_BUF (1            ),
-    .FIFO_TYPE  ("SYNC"       )
+    .FIFO_DEPTH (FIFO_DEPTH),
+    .FIFO_WIDTH (DATA_WIDTH),
+    .CIRCLE_BUF (1         ),
+    .FIFO_TYPE  ("SYNC"    )
 ) i_axis_fifo_rx (
-    .s_axis     (uart_rx.slave),
-    .m_axis     (m_axis.master)
+    .s_axis     (uart_rx   ),
+    .m_axis     (fifio_rx  )
 );
 
 endmodule

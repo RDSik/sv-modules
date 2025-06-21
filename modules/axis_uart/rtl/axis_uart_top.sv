@@ -38,7 +38,7 @@ axis_uart_tx i_axis_uart_tx (
     .parity_odd_i  (control.parity_odd ),
     .parity_even_i (control.parity_even),
     .uart_tx_o     (uart_tx_o          ),
-    .s_axis        (axis.slave         )
+    .s_axis        (axis               )
 );
 
 axis_uart_rx i_axis_uart_rx (
@@ -46,7 +46,7 @@ axis_uart_rx i_axis_uart_rx (
     .parity_odd_i  (control.parity_odd ),
     .parity_even_i (control.parity_even),
     .uart_rx_i     (uart_rx_i          ),
-    .m_axis        (axis.master        )
+    .m_axis        (axis               )
 );
 
 if (ILA_EN) begin : g_uart_ila

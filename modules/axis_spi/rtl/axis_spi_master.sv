@@ -30,11 +30,14 @@ module axis_spi_master
     output logic                  spi_mosi_o,
     input  logic                  spi_miso_i,
 
-    axis_if                       s_axis,
-    axis_if                       m_axis
+    axis_if.slave                 s_axis,
+    axis_if.master                m_axis
 );
 
 localparam EDGE_NUM = DATA_WIDTH*2; // need 16 edges to transmit 8 bits
+
+logic                          clk_i;
+logic                          arstn_i;
 
 logic [$clog2(WAIT_TIME)-1:0]  wait_cnt;
 logic                          wait_done;
@@ -73,6 +76,9 @@ typedef enum logic [1:0] {
 
 state_e state;
 
+assign clk_i   = s_axis.clk_i;
+assign arstn_i = s_axis.arstn_i;
+
 if (SLAVE_NUM == 1) begin : g_one_slave
     assign spi_cs_o = spi_cs_reg;
 end else begin : g_many_slave
@@ -87,8 +93,8 @@ end else begin : g_many_slave
     end
 end
 
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         state      <= IDLE;
         spi_cs_reg <= 1'b1;
         tlast_flag <= 1'b0;
@@ -123,8 +129,8 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
 end
 
 // WAIT TIME counter-------------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         wait_cnt <= '0;
     end else if (wait_done) begin
         wait_cnt <= '0;
@@ -137,8 +143,8 @@ assign wait_done = (wait_cnt == WAIT_TIME - 1);
 // ------------------------------------------------------------
 
 // SPI clock counters------------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         clk_cnt <= '0;
     end else if (clk_done) begin
         clk_cnt <= '0;
@@ -152,8 +158,8 @@ assign clk_done      = (clk_cnt == clk_divider_i - 1);
 assign half_clk_done = (clk_cnt == (clk_divider_i/2) - 1);
 /* verilator lint_on WIDTHEXPAND */
 
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         trailing_edge <= 1'b0;
         leading_edge  <= 1'b0;
         edge_cnt      <= '0;
@@ -181,14 +187,14 @@ end
 
 assign edge_done = ~(|edge_cnt);
 
-always_ff @(posedge s_axis.clk_i) begin
+always_ff @(posedge clk_i) begin
     edge_done_d <= (state == WAIT) ? 1'b0 : edge_done;
 end
 // ------------------------------------------------------------
 
 // SPI clock---------------------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         spi_clk_o <= cpol_i;
     end else begin
         spi_clk_o <= spi_clk_reg;
@@ -197,8 +203,8 @@ end
 // ------------------------------------------------------------
 
 // MISO data---------------------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         rx_bit_cnt <= '0;
         rx_data    <= '0;
     end else if (rx_bit_done) begin
@@ -215,8 +221,8 @@ assign rx_bit_done = (rx_bit_cnt == DATA_WIDTH - 1);
 // ------------------------------------------------------------
 
 // MOSI data---------------------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         /* verilator lint_off WIDTHTRUNC */
         tx_bit_cnt <= DATA_WIDTH - 1;
         /* verilator lint_on WIDTHTRUNC */
@@ -238,8 +244,8 @@ end
 // ------------------------------------------------------------
 
 // Slave AXI-Stream data---------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         tx_data <= '0;
     end else if (s_handshake) begin
         tx_data <= s_axis.tdata;
@@ -249,14 +255,14 @@ end
 assign s_axis.tready = (state == IDLE);
 assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
-always_ff @(posedge s_axis.clk_i) begin
+always_ff @(posedge clk_i) begin
     s_handshake_d <= s_handshake;
 end
 // ------------------------------------------------------------
 
 // Master AXI-Stream data--------------------------------------
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         m_axis.tlast  <= '0;
         m_axis.tvalid <= '0;
     end else if (m_handshake) begin
@@ -270,7 +276,7 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     end
 end
 
-always_ff @(posedge s_axis.clk_i) begin
+always_ff @(posedge clk_i) begin
     if (edge_done_d) begin
         m_axis.tdata <= rx_data;
     end

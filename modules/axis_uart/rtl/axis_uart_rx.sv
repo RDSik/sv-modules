@@ -9,11 +9,11 @@ module axis_uart_rx
     input logic                     parity_even_i,
     input logic                     uart_rx_i,
 
-    axis_if                         m_axis
+    axis_if.master                  m_axis
 );
 
-uart_state_e state;
-
+logic                          clk_i;
+logic                          arstn_i;
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [DIVIDER_WIDTH-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         rx_data;
@@ -25,8 +25,13 @@ logic                          m_handshake;
 logic                          parity_bit;
 logic                          parity_err;
 
-always_ff @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
-    if (~m_axis.arstn_i) begin
+uart_state_e state;
+
+assign clk_i   = m_axis.clk_i;
+assign arstn_i = m_axis.arstn_i;
+
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         state      <= IDLE;
         rx_data    <= '0;
         bit_cnt    <= '0;
@@ -88,8 +93,8 @@ always_ff @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
     end
 end
 
-always @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
-    if (~m_axis.arstn_i) begin
+always @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         baud_cnt <= '0;
     end else if (baud_done | start_bit_check) begin
         baud_cnt <= '0;
@@ -98,8 +103,8 @@ always @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
     end
 end
 
-always_ff @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
-    if (~m_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         m_axis.tvalid <= 1'b0;
     end else if (m_handshake) begin
         m_axis.tvalid <= 1'b0;
@@ -108,7 +113,7 @@ always_ff @(posedge m_axis.clk_i or negedge m_axis.arstn_i) begin
     end
 end
 
-always_ff @(posedge m_axis.clk_i) begin
+always_ff @(posedge clk_i) begin
     if ((state == WAIT) && (~parity_err)) begin
         m_axis.tdata <= rx_data;
     end

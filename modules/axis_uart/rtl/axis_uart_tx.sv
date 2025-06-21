@@ -9,11 +9,11 @@ module axis_uart_tx
     input logic                     parity_even_i,
     output logic                    uart_tx_o,
 
-    axis_if                         s_axis
+    axis_if.slave                   s_axis
 );
 
-uart_state_e state;
-
+logic                          clk_i;
+logic                          arstn_i;
 logic [$clog2(DATA_WIDTH)-1:0] bit_cnt;
 logic [DIVIDER_WIDTH-1:0]      baud_cnt;
 logic [DATA_WIDTH-1:0]         tx_data;
@@ -22,8 +22,13 @@ logic                          baud_done;
 logic                          baud_en;
 logic                          s_handshake;
 
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+uart_state_e state;
+
+assign clk_i   = s_axis.clk_i;
+assign arstn_i = s_axis.arstn_i;
+
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         state     <= IDLE;
         uart_tx_o <= '1;
         bit_cnt   <= '0;
@@ -79,8 +84,8 @@ always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     end
 end
 
-always @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         baud_cnt <= '0;
     end else if (baud_done) begin
         baud_cnt <= '0;
@@ -89,8 +94,8 @@ always @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
     end
 end
 
-always_ff @(posedge s_axis.clk_i or negedge s_axis.arstn_i) begin
-    if (~s_axis.arstn_i) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         tx_data <= '0;
     end else if (s_handshake) begin
         tx_data <= s_axis.tdata;

@@ -4,18 +4,23 @@ module axis_data_gen #(
     parameter int MEM_DEPTH = 66,
     parameter     MEM_FILE  = ""
 ) (
-    axis_if m_axis
+    axis_if.master m_axis
 );
 
 localparam int ADDR_WIDTH = $clog2(MEM_DEPTH);
 
+logic                  clk_i;
+logic                  arstn_i;
 logic [ADDR_WIDTH-1:0] addr;
 logic                  addr_done;
 logic [MEM_WIDTH-1:0]  rom_data;
 logic                  m_handshake;
 
-always_ff @(posedge m_axis.clk or negedge m_axis.arstn) begin
-    if (~m_axis.arstn) begin
+assign clk_i   = m_axis.clk_i;
+assign arstn_i = m_axis.arstn_i;
+
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         addr <= '0;
     end else if (m_handshake) begin
         if (addr_done) begin
@@ -33,13 +38,13 @@ brom #(
     .MEM_DEPTH (MEM_DEPTH ),
     .MEM_WIDTH (MEM_WIDTH )
 ) i_brom (
-    .clk_i     (m_axis.clk),
+    .clk_i     (clk_i     ),
     .addr_i    (addr      ),
     .data_o    (rom_data  )
 );
 
-always_ff @(posedge m_axis.clk or negedge m_axis.arstn) begin
-    if (~m_axis.arstn) begin
+always_ff @(posedge clk_i or negedge arstn_i) begin
+    if (~arstn_i) begin
         m_axis.tvalid <= 1'b0;
         m_axis.tlast  <= 1'b0;
     end else if (m_handshake) begin
