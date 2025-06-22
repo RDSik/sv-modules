@@ -33,7 +33,7 @@ axis_uart_bram_ctrl #(
     .wr_en_o    (wr_en     )
 );
 
-design_1_wrapper (
+zynq_bd_wrapper (
     .BRAM_PORTB_0_addr    (addr     ),
     .BRAM_PORTB_0_clk     (clk_i    ),
     .BRAM_PORTB_0_din     (data_out ),
