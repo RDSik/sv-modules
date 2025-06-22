@@ -4,12 +4,13 @@
 module axis_uart_rx
     import axis_uart_pkg::*;
 (
-    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                     parity_odd_i,
-    input logic                     parity_even_i,
-    input logic                     uart_rx_i,
+    input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
+    input  logic                     parity_odd_i,
+    input  logic                     parity_even_i,
+    input  logic                     uart_rx_i,
+    output logic                     parity_err_o,
 
-    axis_if.master                  m_axis
+    axis_if.master                   m_axis
 );
 
 logic                          clk_i;
@@ -23,7 +24,6 @@ logic                          baud_en;
 logic                          start_bit_check;
 logic                          m_handshake;
 logic                          parity_bit;
-logic                          parity_err;
 
 uart_state_e state;
 
@@ -36,13 +36,13 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
         rx_data    <= '0;
         bit_cnt    <= '0;
         parity_bit <= '0;
-        parity_err <= '0;
+        parity_err_o <= '0;
         baud_en    <= '0;
     end else begin
         case (state)
             IDLE: begin
                 parity_bit <= '0;
-                parity_err <= '0;
+                parity_err_o <= '0;
                 if (~uart_rx_i) begin
                     state   <= START;
                     baud_en <= 1'b1;
@@ -75,8 +75,8 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
             PARITY: begin
                 parity_bit <= parity(rx_data, parity_odd_i, parity_even_i);
                 if (baud_done) begin
-                    state      <= STOP;
-                    parity_err <= (parity_bit != uart_rx_i);
+                    state        <= STOP;
+                    parity_err_o <= (parity_bit != uart_rx_i);
                 end
             end
             STOP: begin
@@ -108,13 +108,13 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
         m_axis.tvalid <= 1'b0;
     end else if (m_handshake) begin
         m_axis.tvalid <= 1'b0;
-    end else if ((state == WAIT) && (~parity_err)) begin
+    end else if ((state == WAIT) && (~parity_err_o)) begin
         m_axis.tvalid <= 1'b1;
     end
 end
 
 always_ff @(posedge clk_i) begin
-    if ((state == WAIT) && (~parity_err)) begin
+    if ((state == WAIT) && (~parity_err_o)) begin
         m_axis.tdata <= rx_data;
     end
 end

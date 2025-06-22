@@ -10,7 +10,9 @@
 # !project/**/
 
 !project/**/project.tcl
+!project/**/zynq_ps.tcl
 !project/**/axis_uart_top.xdc
+!project/**/axis_uart_bridge.xdc
 !project/**/*.sdc
 !project/**/*.cst
 

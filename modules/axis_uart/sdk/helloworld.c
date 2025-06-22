@@ -63,7 +63,7 @@ int main() {
 
 	Xil_Out32(XPAR_BRAM_0_BASEADDR + 8, 0x2);    // control_reg
 	Xil_Out32(XPAR_BRAM_0_BASEADDR + 4, 0x1b2);  // clk_divider_reg = 50e6/115200
-	Xil_Out32(XPAR_BRAM_0_BASEADDR + 12, 0xfc);  // tx_data_reg
+	Xil_Out32(XPAR_BRAM_0_BASEADDR + 12, 0x41);  // tx_data_reg
 
 	xil_printf("Write data in registers\n\r");
 
