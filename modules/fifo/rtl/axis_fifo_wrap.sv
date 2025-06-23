@@ -39,18 +39,18 @@ assign pop  = m_axis.tvalid & m_axis.tready;
 
 if (FIFO_TYPE == "SYNC") begin: g_fifo
     sync_fifo #(
-        .FIFO_WIDTH  (FIFO_WIDTH    ),
-        .FIFO_DEPTH  (FIFO_DEPTH    ),
-        .CIRCLE_BUF  (CIRCLE_BUF    )
+        .FIFO_WIDTH  (FIFO_WIDTH  ),
+        .FIFO_DEPTH  (FIFO_DEPTH  ),
+        .CIRCLE_BUF  (CIRCLE_BUF  )
     ) i_fifo (
-        .clk_i       (rd_clk_i      ),
-        .arstn_i     (rd_arstn_i    ),
-        .data_i      (s_axis.tdata  ),
-        .data_o      (m_axis.tdata  ),
-        .push_i      (push          ),
-        .pop_i       (pop           ),
-        .full_o      (full          ),
-        .empty_o     (empty         )
+        .clk_i       (rd_clk_i    ),
+        .arstn_i     (rd_arstn_i  ),
+        .data_i      (s_axis.tdata),
+        .data_o      (m_axis.tdata),
+        .push_i      (push        ),
+        .pop_i       (pop         ),
+        .full_o      (full        ),
+        .empty_o     (empty       )
     );
 end else if (FIFO_TYPE == "ASYNC") begin : g_fifo
     async_fifo #(
@@ -58,11 +58,11 @@ end else if (FIFO_TYPE == "ASYNC") begin : g_fifo
         .FIFO_DEPTH  (FIFO_DEPTH  ),
         .CDC_REG_NUM (CDC_REG_NUM )
     ) i_fifo (
-        .wr_clk_i    (rd_clk_i    ),
-        .wr_arstn_i  (rd_arstn_i  ),
+        .wr_clk_i    (wr_clk_i    ),
+        .wr_arstn_i  (wr_arstn_i  ),
         .wr_data_i   (s_axis.tdata),
-        .rd_clk_i    (wr_clk_i    ),
-        .rd_arstn_i  (wr_arstn_i  ),
+        .rd_clk_i    (rd_clk_i    ),
+        .rd_arstn_i  (rd_arstn_i  ),
         .rd_data_o   (m_axis.tdata),
         .push_i      (push        ),
         .pop_i       (pop         ),

@@ -235,7 +235,6 @@ axis_uart_rx i_axis_uart_rx (
 axis_fifo_wrap #(
     .FIFO_DEPTH (FIFO_DEPTH),
     .FIFO_WIDTH (DATA_WIDTH),
-    .CIRCLE_BUF (1         ),
     .FIFO_TYPE  ("SYNC"    )
 ) i_axis_fifo_tx (
     .s_axis     (fifo_tx   ),
@@ -245,7 +244,6 @@ axis_fifo_wrap #(
 axis_fifo_wrap #(
     .FIFO_DEPTH (FIFO_DEPTH),
     .FIFO_WIDTH (DATA_WIDTH),
-    .CIRCLE_BUF (1         ),
     .FIFO_TYPE  ("SYNC"    )
 ) i_axis_fifo_rx (
     .s_axis     (uart_rx   ),
