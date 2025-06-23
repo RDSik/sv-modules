@@ -2,7 +2,7 @@ CC=arm-linux-gnueabihf-gcc
 
 CFLAGS ?= -O2 -static
 
-objects = axis_uart.o 
+objects = axis_uart.o
 
 CHECKFLAGS = -Wall -Wuninitialized -Wundef
 
@@ -13,7 +13,7 @@ progs = axis_uart
 .PHONY: clean
 
 axis_uart: $(objects)
-	$(CC) $(CFLAGS) -o $@ $(objects) 
+	$(CC) $(CFLAGS) -o $@ $(objects)
 
 clean:
 	rm -f $(progs) $(objects)

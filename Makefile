@@ -2,13 +2,13 @@ TOP := axis_uart_top
 
 PROJECT_DIR := project
 
-BOARD  ?= tangprimer20k
+BOARD ?= tangprimer20k
 
 TCL_FILE := project.tcl
 
 .PHONY: project program clean
 
-project: 
+project:
 ifeq ($(BOARD), tangprimer20k)
 	gw_sh $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE)
 else ifeq ($(BOARD), pz7020starlite)
@@ -24,7 +24,9 @@ clean:
 	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).hw
 	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).runs
 	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).sim
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).src
 	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).ip_user_files
+	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).sdk
 	rm -rf $(PROJECT_DIR)/pz7020starlite/.Xil
 	rm $(PROJECT_DIR)/pz7020starlite/$(TOP).xpr
 	rm *.log
