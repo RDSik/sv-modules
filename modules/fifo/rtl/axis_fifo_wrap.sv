@@ -58,11 +58,11 @@ end else if (FIFO_TYPE == "ASYNC") begin : g_fifo
         .FIFO_DEPTH  (FIFO_DEPTH  ),
         .CDC_REG_NUM (CDC_REG_NUM )
     ) i_fifo (
-        .wr_clk_i    (rd_clk_i    ),
-        .wr_arstn_i  (rd_arstn_i  ),
+        .wr_clk_i    (wr_clk_i    ),
+        .wr_arstn_i  (wr_arstn_i  ),
         .wr_data_i   (s_axis.tdata),
-        .rd_clk_i    (wr_clk_i    ),
-        .rd_arstn_i  (wr_arstn_i  ),
+        .rd_clk_i    (rd_clk_i    ),
+        .rd_arstn_i  (rd_arstn_i  ),
         .rd_data_o   (m_axis.tdata),
         .push_i      (push        ),
         .pop_i       (pop         ),
