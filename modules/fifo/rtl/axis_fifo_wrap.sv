@@ -42,10 +42,10 @@ if (FIFO_MODE == "sync") begin: g_fifo
         .data_o      (m_axis.tdata  ),
         .push_i      (push          ),
         .pop_i       (pop           ),
+        .empty_o     (empty         ),
         .full_o      (full          ),
-        .a_full_o    (a_full_o      ),
         .a_empty_o   (a_empty_o     ),
-        .empty_o     (empty         )
+        .a_full_o    (a_full_o      )
     );
 end else if (FIFO_MODE == "async") begin : g_fifo
     async_fifo #(
@@ -62,10 +62,10 @@ end else if (FIFO_MODE == "async") begin : g_fifo
         .rd_data_o   (m_axis.tdata  ),
         .push_i      (push          ),
         .pop_i       (pop           ),
+        .empty_o     (empty         ),
         .full_o      (full          ),
-        .a_full_o    (a_full_o      ),
         .a_empty_o   (a_empty_o     ),
-        .empty_o     (empty         )
+        .a_full_o    (a_full_o      )
     );
 end
 
