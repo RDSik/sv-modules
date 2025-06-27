@@ -91,7 +91,8 @@ axis_uart_bridge #(
     .MEM_DEPTH  (MEM_DEPTH ),
     .BYTE_NUM   (BYTE_NUM  ),
     .BYTE_WIDTH (BYTE_WIDTH),
-    .ADDR_WIDTH (ADDR_WIDTH)
+    .ADDR_WIDTH (ADDR_WIDTH),
+    .SIM_EN     (1         )
 ) dut (
     .clk_i      (clk_i     ),
     .arstn_i    (arstn_i   ),

@@ -7,9 +7,10 @@ module axis_fifo_tb();
 import test_pkg::*;
 
 localparam int FIFO_WIDTH  = 8;
-localparam int FIFO_DEPTH  = 64;
+localparam int FIFO_DEPTH  = 3;
 localparam int CIRCLE_BUF  = 1;
-localparam     FIFO_TYPE   = "SYNC";
+localparam     FIFO_MODE   = "sync";
+localparam     FIFO_TYPE   = "block";
 
 localparam int M_CLK_PER     = 2;
 localparam int S_CLK_PER     = 2;
@@ -68,7 +69,7 @@ end
 axis_fifo_wrap #(
     .FIFO_DEPTH  (FIFO_DEPTH ),
     .FIFO_WIDTH  (FIFO_WIDTH ),
-    .CIRCLE_BUF  (CIRCLE_BUF ),
+    .FIFO_MODE   (FIFO_MODE  ),
     .FIFO_TYPE   (FIFO_TYPE  )
 ) dut (
     .s_axis      (m_axis     ),

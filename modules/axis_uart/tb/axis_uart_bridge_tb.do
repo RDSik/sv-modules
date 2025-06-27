@@ -16,10 +16,10 @@ vlog ../../fifo/rtl/shift_reg.sv
 vlog ../../fifo/rtl/sync_fifo.sv
 vlog ../../fifo/rtl/wr_ptr_full.sv
 
-vlog ../../bmem/rtl/bram_true_dp.sv
-vlog ../../bmem/rtl/bram_dp_2clk.sv
-vlog ../../bmem/rtl/bram_dp.sv
-vlog ../../bmem/rtl/brom.sv
+vlog ../../ram/rtl/bram_true_dp.sv
+vlog ../../ram/rtl/ram_dp_2clk.sv
+vlog ../../ram/rtl/ram_dp.sv
+vlog ../../ram/rtl/ram.sv
 
 vlog axis_uart_bridge_tb.sv
 

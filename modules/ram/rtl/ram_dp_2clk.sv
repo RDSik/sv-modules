@@ -1,7 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
-module bram_dp_2clk #(
+module ram_dp_2clk #(
     parameter int MEM_WIDTH   = 16,
     parameter int MEM_DEPTH   = 64,
+    parameter     MEM_TYPE    = "block",
     parameter int ADDR_WIDTH  = $clog2(MEM_DEPTH)
 ) (
     input  logic                  wr_clk_i,
@@ -15,6 +16,10 @@ module bram_dp_2clk #(
     output logic [MEM_WIDTH-1:0]  rd_data_o
 );
 
+if ((MEM_TYPE != "block") && (MEM_TYPE != "distributed")) begin : g_ram_type_err
+    $error("Only block and distributed ram type supported!");
+end
+
 logic [MEM_WIDTH-1:0] ram [MEM_DEPTH];
 
 always_ff @(posedge wr_clk_i) begin
@@ -23,10 +28,14 @@ always_ff @(posedge wr_clk_i) begin
     end
 end
 
-always_ff @(posedge rd_clk_i) begin
-    if (rd_en_i) begin
-        rd_data_o <= ram[rd_addr_i];
+if (MEM_TYPE == "block") begin : g_block_ram
+    always_ff @(posedge rd_clk_i) begin
+        if (rd_en_i) begin
+            rd_data_o <= ram[rd_addr_i];
+        end
     end
+end else if (MEM_TYPE == "distributed") begin : g_distributed_ram
+    assign rd_data_o = ram[rd_addr_i];
 end
 
 endmodule

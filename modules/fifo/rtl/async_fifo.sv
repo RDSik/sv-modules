@@ -2,7 +2,8 @@
 module async_fifo #(
     parameter int FIFO_WIDTH  = 32,
     parameter int FIFO_DEPTH  = 64,
-    parameter int CDC_REG_NUM = 2
+    parameter int CDC_REG_NUM = 2,
+    parameter     FIFO_TYPE   = "block"
 ) (
     input  logic                  wr_clk_i,
     input  logic                  wr_arstn_i,
@@ -14,7 +15,9 @@ module async_fifo #(
 
     input  logic                  push_i,
     input  logic                  pop_i,
+    output logic                  a_full_o,
     output logic                  full_o,
+    output logic                  a_empty_o,
     output logic                  empty_o
 );
 
@@ -42,6 +45,7 @@ wr_ptr_full #(
     .wq2_rptr_i    (wq2_rptr  ),
     .wr_addr_o     (wr_addr   ),
     .wr_ptr_o      (wr_ptr    ),
+    .a_full_o      (a_full_o  ),
     .full_o        (full_o    )
 );
 
@@ -54,13 +58,15 @@ rd_ptr_empty #(
     .rq2_wptr_i    (rq2_wptr  ),
     .rd_addr_o     (rd_addr   ),
     .rd_ptr_o      (rd_ptr    ),
+    .a_empty_o     (a_empty_o ),
     .empty_o       (empty_o   )
 );
 
-bram_dp_2clk #(
+ram_dp_2clk #(
     .MEM_WIDTH (FIFO_WIDTH),
-    .MEM_DEPTH (FIFO_DEPTH)
-) i_bram_dp_2clk (
+    .MEM_DEPTH (FIFO_DEPTH),
+    .MEM_TYPE  (FIFO_TYPE )
+) i_ram_dp_2clk (
     .wr_clk_i  (wr_clk_i  ),
     .wr_en_i   (wr_en     ),
     .wr_addr_i (wr_addr   ),

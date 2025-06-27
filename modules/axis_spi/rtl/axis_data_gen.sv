@@ -2,7 +2,8 @@
 module axis_data_gen #(
     parameter int MEM_WIDTH = 16,
     parameter int MEM_DEPTH = 66,
-    parameter     MEM_FILE  = ""
+    parameter     MEM_FILE  = "",
+    parameter     MEM_TYPE  = "block"
 ) (
     axis_if.master m_axis
 );
@@ -13,7 +14,7 @@ logic                  clk_i;
 logic                  arstn_i;
 logic [ADDR_WIDTH-1:0] addr;
 logic                  addr_done;
-logic [MEM_WIDTH-1:0]  rom_data;
+logic [MEM_WIDTH-1:0]  ram_data;
 logic                  m_handshake;
 
 assign clk_i   = m_axis.clk_i;
@@ -33,14 +34,16 @@ end
 
 assign addr_done = (addr == MEM_DEPTH - 1);
 
-brom #(
+ram #(
     .MEM_FILE  (MEM_FILE  ),
     .MEM_DEPTH (MEM_DEPTH ),
-    .MEM_WIDTH (MEM_WIDTH )
-) i_brom (
+    .MEM_WIDTH (MEM_WIDTH ),
+    .MEM_TYPE  (MEM_TYPE  )
+) i_ram (
     .clk_i     (clk_i     ),
     .addr_i    (addr      ),
-    .data_o    (rom_data  )
+    .data_i    (          ),
+    .data_o    (ram_data  )
 );
 
 always_ff @(posedge clk_i or negedge arstn_i) begin
@@ -58,7 +61,7 @@ always_ff @(posedge clk_i or negedge arstn_i) begin
     end
 end
 
-assign m_axis.tdata = rom_data;
+assign m_axis.tdata = ram_data;
 assign m_handshake  = m_axis.tvalid & m_axis.tready;
 
 endmodule
