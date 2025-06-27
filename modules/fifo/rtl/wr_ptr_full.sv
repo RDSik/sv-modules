@@ -37,7 +37,7 @@ assign wgraynext   = (wbinnext >> 1) ^ wbinnext;
 assign wgraynextp1 = ((wbinnext + 1'b1) >> 1) ^ (wbinnext + 1'b1);
 
 assign full_val   = (wgraynext == {~wq2_rptr_i[ADDR_WIDTH:ADDR_WIDTH-1], wq2_rptr_i[ADDR_WIDTH-2:0]});
-assign a_full_val = (wgraynextp1 == {~wq2_rptr_i[ADDR_WIDTH:ADDR_WIDTH-1],wq2_rptr_i[ADDR_WIDTH-2:0]});
+assign a_full_val = (wgraynextp1 == {~wq2_rptr_i[ADDR_WIDTH:ADDR_WIDTH-1], wq2_rptr_i[ADDR_WIDTH-2:0]});
 
 always_ff @(posedge wr_clk_i or negedge wr_arstn_i) begin
     if (~wr_arstn_i) begin
