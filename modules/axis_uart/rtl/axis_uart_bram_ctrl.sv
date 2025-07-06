@@ -233,21 +233,23 @@ axis_uart_rx i_axis_uart_rx (
 );
 
 axis_fifo_wrap #(
-    .FIFO_DEPTH (FIFO_DEPTH),
-    .FIFO_WIDTH (DATA_WIDTH),
-    .FIFO_TYPE  ("SYNC"    )
+    .FIFO_DEPTH (FIFO_DEPTH   ),
+    .FIFO_WIDTH (DATA_WIDTH   ),
+    .FIFO_MODE  ("sync"       ),
+    .FIFO_TYPE  ("distributed")
 ) i_axis_fifo_tx (
-    .s_axis     (fifo_tx   ),
-    .m_axis     (uart_tx   )
+    .s_axis     (fifo_tx      ),
+    .m_axis     (uart_tx      )
 );
 
 axis_fifo_wrap #(
-    .FIFO_DEPTH (FIFO_DEPTH),
-    .FIFO_WIDTH (DATA_WIDTH),
-    .FIFO_TYPE  ("SYNC"    )
+    .FIFO_DEPTH (FIFO_DEPTH   ),
+    .FIFO_WIDTH (DATA_WIDTH   ),
+    .FIFO_MODE  ("sync"       ),
+    .FIFO_TYPE  ("distributed")
 ) i_axis_fifo_rx (
-    .s_axis     (uart_rx   ),
-    .m_axis     (fifo_rx   )
+    .s_axis     (uart_rx      ),
+    .m_axis     (fifo_rx      )
 );
 
 endmodule

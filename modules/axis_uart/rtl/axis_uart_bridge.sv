@@ -1,10 +1,11 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_uart_bridge #(
-    parameter int FIFO_DEPTH = 128,
-    parameter int BYTE_NUM   = 4,
-    parameter int BYTE_WIDTH = 8,
-    parameter int ADDR_WIDTH = 32,
-    parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
+    parameter int   FIFO_DEPTH = 128,
+    parameter int   MEM_DEPTH  = 8192,
+    parameter int   BYTE_NUM   = 4,
+    parameter int   BYTE_WIDTH = 8,
+    parameter int   ADDR_WIDTH = 32,
+    parameter int   MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
 ) (
     input  logic uart_rx_i,
     output logic uart_tx_o

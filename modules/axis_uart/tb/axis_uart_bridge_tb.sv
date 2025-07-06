@@ -21,6 +21,11 @@ logic [BYTE_NUM-1:0]   wr_en_i;
 logic [ADDR_WIDTH-1:0] addr_i;
 logic [MEM_WIDTH-1:0]  data_i;
 logic [MEM_WIDTH-1:0]  data_o;
+logic [ADDR_WIDTH-1:0] addr;
+logic [MEM_WIDTH-1:0]  data_in;
+logic [MEM_WIDTH-1:0]  data_out;
+logic [BYTE_NUM-1:0]   wr_en;
+
 
 initial begin
     arstn_i = 1'b0;
@@ -86,22 +91,41 @@ task static read_data;
     end
 endtask
 
-axis_uart_bridge #(
-    .FIFO_DEPTH (FIFO_DEPTH),
-    .MEM_DEPTH  (MEM_DEPTH ),
+axis_uart_bram_ctrl #(
     .BYTE_NUM   (BYTE_NUM  ),
     .BYTE_WIDTH (BYTE_WIDTH),
-    .ADDR_WIDTH (ADDR_WIDTH)
-) dut (
+    .ADDR_WIDTH (ADDR_WIDTH),
+    .FIFO_DEPTH (FIFO_DEPTH)
+) i_axis_uart_bram_ctrl (
     .clk_i      (clk_i     ),
     .arstn_i    (arstn_i   ),
     .uart_rx_i  (uart      ),
     .uart_tx_o  (uart      ),
-    .en_i       (en_i      ),
-    .wr_en_i    (wr_en_i   ),
-    .addr_i     (addr_i    ),
-    .data_i     (data_i    ),
-    .data_o     (data_o    )
+    .data_i     (data_in   ),
+    .data_o     (data_out  ),
+    .addr_o     (addr      ),
+    .wr_en_o    (wr_en     )
+);
+
+bram_true_dp #(
+    .BYTE_NUM   (BYTE_NUM   ),
+    .BYTE_WIDTH (BYTE_WIDTH ),
+    .ADDR_WIDTH (ADDR_WIDTH ),
+    .MEM_DEPTH  (MEM_DEPTH  ),
+    .MODE       ("NO_CHANGE")
+) i_bram_true_dp (
+    .a_clk_i    (clk_i      ),
+    .a_en_i     (en_i       ),
+    .a_wr_en_i  (wr_en_i    ),
+    .a_addr_i   (addr_i     ),
+    .a_data_i   (data_i     ),
+    .a_data_o   (data_o     ),
+    .b_clk_i    (clk_i      ),
+    .b_en_i     (1'b1       ),
+    .b_wr_en_i  (wr_en      ),
+    .b_addr_i   (addr       ),
+    .b_data_i   (data_out   ),
+    .b_data_o   (data_in    )
 );
 
 endmodule
