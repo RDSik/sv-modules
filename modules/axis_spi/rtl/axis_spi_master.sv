@@ -9,64 +9,64 @@
 // -------------------------------------------------------------------------
 
 /* verilator lint_off TIMESCALEMOD */
-`include "../rtl/axis_spi_pkg.svh"
-
-module axis_spi_master
-    import axis_spi_pkg::*;
-#(
-    parameter int SLAVE_NUM    = 1,
-    parameter int WAIT_TIME    = 100,
-    parameter int ADDR_WIDTH   = $clog2(SLAVE_NUM)
+module axis_spi_master #(
+    parameter int SLAVE_NUM     = 1,
+    parameter int WAIT_TIME     = 100,
+    parameter int DIVIDER_WIDTH = 32,
+    parameter int DATA_WIDTH    = 8,
+    parameter int ADDR_WIDTH    = $clog2(SLAVE_NUM)
 ) (
-    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                     cpha_i,
-    input logic                     cpol_i,
+    input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
+    input  logic                     cpha_i,
+    input  logic                     cpol_i,
     /* verilator lint_off ASCRANGE */
-    input  logic [ADDR_WIDTH-1:0] addr_i,
+    input  logic [ADDR_WIDTH-1:0]    addr_i,
     /* verilator lint_on ASCRANGE */
 
-    output logic                  spi_clk_o,
-    output logic [SLAVE_NUM-1:0]  spi_cs_o,
-    output logic                  spi_mosi_o,
-    input  logic                  spi_miso_i,
+    output logic                     spi_clk_o,
+    output logic [SLAVE_NUM-1:0]     spi_cs_o,
+    output logic                     spi_mosi_o,
+    input  logic                     spi_miso_i,
 
-    axis_if.slave                 s_axis,
-    axis_if.master                m_axis
+    axis_if.slave                    s_axis,
+    axis_if.master                   m_axis
 );
 
-localparam EDGE_NUM = DATA_WIDTH*2; // need 16 edges to transmit 8 bits
+localparam int EDGE_NUM       = DATA_WIDTH*2; // need 16 edges to transmit 8 bits
+localparam int BIT_CNT_WIDTH  = $clog2(DATA_WIDTH);
+localparam int WAIT_CNT_WIDTH = $clog2(WAIT_TIME);
 
-logic                          clk_i;
-logic                          arstn_i;
+logic                       clk_i;
+logic                       arstn_i;
 
-logic [$clog2(WAIT_TIME)-1:0]  wait_cnt;
-logic                          wait_done;
+logic [WAIT_CNT_WIDTH-1:0]  wait_cnt;
+logic                       wait_done;
 
-logic [DIVIDER_WIDTH-1:0]      clk_cnt;
-logic                          clk_done;
-logic                          half_clk_done;
+logic [DIVIDER_WIDTH-1:0]   clk_cnt;
+logic                       clk_done;
+logic                       half_clk_done;
 
-logic [$clog2(EDGE_NUM):0]     edge_cnt;
-logic                          edge_done;
-logic                          edge_done_d;
+logic [$clog2(EDGE_NUM):0]  edge_cnt;
+logic                       edge_done;
+logic                       edge_done_d;
 
-logic                          spi_clk_reg;
-logic                          spi_cs_reg;
-logic                          tlast_flag;
+logic                       spi_clk_reg;
+logic                       spi_cs_reg;
+logic                       tlast_flag;
 
-logic [DATA_WIDTH-1:0]         tx_data;
-logic [$clog2(DATA_WIDTH)-1:0] tx_bit_cnt;
+logic [DATA_WIDTH-1:0]      tx_data;
+logic [BIT_CNT_WIDTH-1:0]   tx_bit_cnt;
 
-logic [DATA_WIDTH-1:0]         rx_data;
-logic [$clog2(DATA_WIDTH)-1:0] rx_bit_cnt;
-logic                          rx_bit_done;
+logic [DATA_WIDTH-1:0]      rx_data;
+logic [BIT_CNT_WIDTH-1:0]   rx_bit_cnt;
+logic                       rx_bit_done;
 
-logic                          leading_edge;
-logic                          trailing_edge;
+logic                       leading_edge;
+logic                       trailing_edge;
 
-logic                          m_handshake;
-logic                          s_handshake;
-logic                          s_handshake_d;
+logic                       m_handshake;
+logic                       s_handshake;
+logic                       s_handshake_d;
 
 typedef enum logic [1:0] {
     IDLE = 2'b00,
@@ -263,8 +263,8 @@ end
 // Master AXI-Stream data--------------------------------------
 always_ff @(posedge clk_i or negedge arstn_i) begin
     if (~arstn_i) begin
-        m_axis.tlast  <= '0;
-        m_axis.tvalid <= '0;
+        m_axis.tlast  <= 1'b0;
+        m_axis.tvalid <= 1'b0;
     end else if (m_handshake) begin
         m_axis.tvalid <= 1'b0;
         m_axis.tlast  <= 1'b0;
