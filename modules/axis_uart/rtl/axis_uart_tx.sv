@@ -4,12 +4,12 @@
 module axis_uart_tx
     import axis_uart_pkg::*;
 (
-    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                     parity_odd_i,
-    input logic                     parity_even_i,
-    output logic                    uart_tx_o,
+    input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
+    input  logic                     parity_odd_i,
+    input  logic                     parity_even_i,
+    output logic                     uart_tx_o,
 
-    axis_if.slave                   s_axis
+    axis_if.slave                    s_axis
 );
 
 logic                          clk_i;
