@@ -66,6 +66,9 @@ module apb_uart
     assign wr_valid                       = s_apb.psel & s_apb.penable & s_apb.pwrite;
     assign rd_valid                       = s_apb.psel & s_apb.penable & ~s_apb.pwrite;
 
+    assign tx_handshake                   = fifo_tx.tvalid & fifo_tx.tready;
+    assign rx_handshake                   = fifo_rx.tvalid & fifo_rx.tready;
+
     assign uart_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
     assign uart_regs.status.tx_fifo_full  = ~fifo_tx.tready;
     assign uart_regs.status.rsrvd         = '0;
@@ -73,8 +76,6 @@ module apb_uart
     assign uart_regs.rx.rsrvd             = '0;
     assign fifo_tx.tdata                  = uart_regs.tx.data;
     assign fifo_rx.tready                 = rd_valid;
-    assign tx_handshake                   = fifo_tx.tvalid & fifo_tx.tready;
-    assign rx_handshake                   = fifo_rx.tvalid & fifo_rx.tready;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
