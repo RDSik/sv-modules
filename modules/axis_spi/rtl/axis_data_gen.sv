@@ -15,7 +15,6 @@ module axis_data_gen #(
 
     logic                  clk_i;
     logic                  rstn_i;
-    logic                  reset;
     logic                  en;
     logic [ADDR_WIDTH-1:0] addr;
     logic                  addr_done;
@@ -24,10 +23,11 @@ module axis_data_gen #(
 
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;
-    assign reset  = ~rstn_i | stop_i;
 
     always_ff @(posedge clk_i) begin
-        if (reset) begin
+        if (~rstn_i) begin
+            en <= 1'b0;
+        end else if (stop_i) begin
             en <= 1'b0;
         end else if (start_i) begin
             en <= 1'b1;
@@ -35,7 +35,7 @@ module axis_data_gen #(
     end
 
     always_ff @(posedge clk_i) begin
-        if (reset) begin
+        if (~rstn_i) begin
             addr <= '0;
         end else if (en) begin
             if (m_handshake) begin
@@ -63,18 +63,16 @@ module axis_data_gen #(
     );
 
     always_ff @(posedge clk_i) begin
-        if (reset) begin
+        if (~rstn_i) begin
+            m_axis.tvalid <= 1'b0;
+            m_axis.tlast  <= 1'b0;
+        end else if (m_handshake) begin
             m_axis.tvalid <= 1'b0;
             m_axis.tlast  <= 1'b0;
         end else if (en) begin
-            if (m_handshake) begin
-                m_axis.tvalid <= 1'b0;
-                m_axis.tlast  <= 1'b0;
-            end else begin
-                m_axis.tvalid <= 1'b1;
-                if (addr_done) begin
-                    m_axis.tlast <= 1'b1;
-                end
+            m_axis.tvalid <= 1'b1;
+            if (addr_done) begin
+                m_axis.tlast <= 1'b1;
             end
         end
     end
