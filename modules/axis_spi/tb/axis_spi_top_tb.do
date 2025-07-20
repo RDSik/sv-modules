@@ -2,8 +2,8 @@ vlib work
 vmap work
 
 vlog  ../../interface/rtl/axis_if.sv
+vlog  ../../interface/rtl/spi_if.sv
 
-vlog  ../rtl/axis_spi_pkg.svh
 vlog  ../rtl/axis_spi_master.sv
 
 vlog axis_spi_top_tb.sv

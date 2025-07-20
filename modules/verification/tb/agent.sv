@@ -16,8 +16,8 @@ class master_agent_base;
     virtual task run();
         begin
             fork
-                master_gen    .run();
-                master_driver .run();
+                master_gen.run();
+                master_driver.run();
                 master_monitor.run();
             join
         end
@@ -38,7 +38,7 @@ class slave_agent_base;
     virtual task run();
         begin
             fork
-                slave_driver .run();
+                slave_driver.run();
                 slave_monitor.run();
             join
         end
@@ -46,4 +46,4 @@ class slave_agent_base;
 
 endclass
 
-`endif // AGENT_SV
+`endif  // AGENT_SV

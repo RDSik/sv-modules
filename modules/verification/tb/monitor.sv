@@ -3,14 +3,14 @@
 
 class master_monitor_base;
 
-    virtual axis_if axis;
+    virtual axis_if   axis;
 
-    mailbox#(packet) in_mbx;
+    mailbox #(packet) in_mbx;
 
     virtual task run();
         begin
             forever begin
-                wait(axis.arstn_i);
+                wait (axis.rstn_i);
                 fork
                     forever begin
                         monitor_master();
@@ -37,14 +37,14 @@ endclass
 
 class slave_monitor_base;
 
-    virtual axis_if axis;
+    virtual axis_if   axis;
 
-    mailbox#(packet) out_mbx;
+    mailbox #(packet) out_mbx;
 
     virtual task run();
         begin
             forever begin
-                wait(axis.arstn_i);
+                wait (axis.rstn_i);
                 fork
                     forever begin
                         monitor_slave();
@@ -69,4 +69,4 @@ class slave_monitor_base;
 
 endclass
 
-`endif // MONITOR_SV
+`endif  // MONITOR_SV

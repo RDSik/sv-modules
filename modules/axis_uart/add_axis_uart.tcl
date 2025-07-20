@@ -7,14 +7,13 @@ set xci_defaultlib "
 add_files -norecurse $xci_defaultlib
 
 set xil_defaultlib "
-    $path/rtl/axis_uart_bram_ctrl.sv
-    $path/rtl/axis_uart_bridge.sv
+    $path/rtl/apb_uart.sv
+    $path/rtl/ps_pl_uart.sv
     $path/rtl/axis_uart_rx.sv
     $path/rtl/axis_uart_top.sv
     $path/rtl/axis_uart_tx.sv
     $path/rtl/axis_uart_pkg.svh
     $path/tb/axis_uart_top_tb.sv
-    $path/tb/axis_uart_bridge_tb.sv
 "
 
 add_files -norecurse $xil_defaultlib

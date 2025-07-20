@@ -7,7 +7,7 @@ class master_driver_base;
 
     test_cfg_base cfg;
 
-    mailbox#(packet) gen2drv;
+    mailbox #(packet) gen2drv;
 
     virtual task run();
         packet p;
@@ -28,17 +28,19 @@ class master_driver_base;
         int delay;
         begin
             /* verilator lint_off CONSTRAINTIGN */
-            void'(std::randomize(delay) with {delay inside {
-                [cfg.master_min_delay:cfg.master_max_delay]};});
+            void'(std::randomize(
+                delay
+            ) with {
+                delay inside {[cfg.master_min_delay : cfg.master_max_delay]};
+            });
             /* verilator lint_on CONSTRAINTIGN */
-            repeat(delay) @(posedge axis.clk_i);
+            repeat (delay) @(posedge axis.clk_i);
             axis.tvalid = 1'b1;
             axis.tdata  = p.tdata;
             axis.tlast  = p.tlast;
             do begin
                 @(posedge axis.clk_i);
-            end
-            while(~axis.tready);
+            end while (~axis.tready);
             axis.tvalid = 1'b0;
         end
     endtask
@@ -49,7 +51,7 @@ class slave_driver_base;
 
     virtual axis_if axis;
 
-    test_cfg_base cfg;
+    test_cfg_base   cfg;
 
     virtual task run();
         begin
@@ -68,8 +70,11 @@ class slave_driver_base;
         int delay;
         begin
             /* verilator lint_off CONSTRAINTIGN */
-            void'(std::randomize(delay) with {delay inside {
-                [cfg.slave_min_delay:cfg.slave_max_delay]};});
+            void'(std::randomize(
+                delay
+            ) with {
+                delay inside {[cfg.slave_min_delay : cfg.slave_max_delay]};
+            });
             /* verilator lint_on CONSTRAINTIGN */
             repeat (delay) @(posedge axis.clk_i);
             axis.tready = 1'b1;
@@ -80,4 +85,4 @@ class slave_driver_base;
 
 endclass
 
-`endif // DRIVER_SV
+`endif  // DRIVER_SV

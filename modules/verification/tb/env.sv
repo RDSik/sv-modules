@@ -17,12 +17,12 @@ class env_base;
         begin
             fork
                 master.run();
-                slave .run();
-                check .run();
+                slave.run();
+                check.run();
             join
         end
     endtask
 
 endclass
 
-`endif // ENV_SV
+`endif  // ENV_SV

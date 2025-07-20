@@ -7,4 +7,4 @@ class packet;
     rand int         delay;
 endclass
 
-`endif // PACKET_SV
+`endif  // PACKET_SV

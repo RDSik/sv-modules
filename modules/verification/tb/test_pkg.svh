@@ -23,4 +23,4 @@ package test_pkg;
 
 endpackage
 
-`endif // TEST_PKG_SVH
+`endif  // TEST_PKG_SVH

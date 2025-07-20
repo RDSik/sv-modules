@@ -5,11 +5,11 @@ class master_gen_base;
 
     test_cfg_base cfg;
 
-    mailbox#(packet) gen2drv;
+    mailbox #(packet) gen2drv;
 
     virtual task run();
         begin
-            repeat(cfg.packet_num) begin
+            repeat (cfg.packet_num) begin
                 gen_master();
             end
         end
@@ -20,15 +20,12 @@ class master_gen_base;
         int size;
         begin
             /* verilator lint_off CONSTRAINTIGN */
-            void'(std::randomize(size) with {size inside {
-                [cfg.min_size:cfg.max_size]};});
+            void'(std::randomize(size) with {size inside {[cfg.min_size : cfg.max_size]};});
             /* verilator lint_on CONSTRAINTIGN */
-            for(int i = 0; i < size; i = i + 1) begin
+            for (int i = 0; i < size; i = i + 1) begin
                 p = create_packet();
                 /* verilator lint_off IGNOREDRETURN */
-                void'(p.randomize() with {
-                    p.tlast == (i == size - 1);
-                });
+                void'(p.randomize() with {p.tlast == (i == size - 1);});
                 /* verilator lint_on IGNOREDRETURN */
                 gen2drv.put(p);
             end
@@ -45,4 +42,4 @@ class master_gen_base;
 
 endclass
 
-`endif // GEN_SV
+`endif  // GEN_SV

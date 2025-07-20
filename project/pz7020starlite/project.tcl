@@ -31,6 +31,7 @@ proc source_scripts {current_dir} {
 }
 
 source_scripts $modules_dir
+source $modules_dir/axis_uart/bd/zynq_bd.tcl
 
 upgrade_ip [get_ips -all]
 

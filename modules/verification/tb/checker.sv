@@ -9,14 +9,14 @@ class checker_base;
     bit done;
     bit in_reset;
 
-    mailbox#(packet) in_mbx;
-    mailbox#(packet) out_mbx;
+    mailbox #(packet) in_mbx;
+    mailbox #(packet) out_mbx;
 
     virtual task run();
         packet tmp_p;
         begin
             forever begin
-                wait(~in_reset);
+                wait (~in_reset);
                 fork
                     do_check();
                 join
@@ -27,8 +27,8 @@ class checker_base;
     virtual task check(packet in_p, packet out_p);
         begin
             if (out_p.tdata !== in_p.tdata) begin
-                $error("%0t Invalid TDATA: Real: %h, Expected: %h",
-                    $time(), out_p.tdata, in_p.tdata);
+                $error("%0t Invalid TDATA: Real: %h, Expected: %h", $time(), out_p.tdata,
+                       in_p.tdata);
             end
         end
     endtask
@@ -53,4 +53,4 @@ class checker_base;
 
 endclass
 
-`endif // CHECKER_SV
+`endif  // CHECKER_SV
