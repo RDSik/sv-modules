@@ -5,6 +5,9 @@ module axis_data_gen #(
     parameter     MEM_FILE  = "",
     parameter     MEM_TYPE  = "block"
 ) (
+    input logic start_i,
+    input logic stop_i,
+
     axis_if.master m_axis
 );
 
@@ -12,6 +15,8 @@ module axis_data_gen #(
 
     logic                  clk_i;
     logic                  rstn_i;
+    logic                  reset;
+    logic                  en;
     logic [ADDR_WIDTH-1:0] addr;
     logic                  addr_done;
     logic [ MEM_WIDTH-1:0] ram_data;
@@ -19,15 +24,26 @@ module axis_data_gen #(
 
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;
+    assign reset  = ~rstn_i | stop_i;
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (reset) begin
+            en <= 1'b0;
+        end else if (start_i) begin
+            en <= 1'b1;
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (reset) begin
             addr <= '0;
-        end else if (m_handshake) begin
-            if (addr_done) begin
-                addr <= '0;
-            end else begin
-                addr <= addr + 1'b1;
+        end else if (en) begin
+            if (m_handshake) begin
+                if (addr_done) begin
+                    addr <= '0;
+                end else begin
+                    addr <= addr + 1'b1;
+                end
             end
         end
     end
@@ -47,16 +63,18 @@ module axis_data_gen #(
     );
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (reset) begin
             m_axis.tvalid <= 1'b0;
             m_axis.tlast  <= 1'b0;
-        end else if (m_handshake) begin
-            m_axis.tvalid <= 1'b0;
-            m_axis.tlast  <= 1'b0;
-        end else begin
-            m_axis.tvalid <= 1'b1;
-            if (addr_done) begin
-                m_axis.tlast <= 1'b1;
+        end else if (en) begin
+            if (m_handshake) begin
+                m_axis.tvalid <= 1'b0;
+                m_axis.tlast  <= 1'b0;
+            end else begin
+                m_axis.tvalid <= 1'b1;
+                if (addr_done) begin
+                    m_axis.tlast <= 1'b1;
+                end
             end
         end
     end

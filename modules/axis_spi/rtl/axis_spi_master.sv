@@ -73,9 +73,9 @@ module axis_spi_master #(
 
     state_e state;
 
-    if (SLAVE_NUM == 1) begin
+    if (SLAVE_NUM == 1) begin : g_one_slave
         assign m_spi.cs = spi_cs_reg;
-    end else begin
+    end else begin : g_many_slaves
         always_comb begin
             for (int i = 0; i < SLAVE_NUM; i++) begin
                 if (i == addr_i) begin
