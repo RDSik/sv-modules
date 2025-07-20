@@ -107,15 +107,16 @@ module apb_uart
     end
 
     assign s_apb.pslverr = 1'b0;
-    assign s_apb.pready  = fifo_tx.tready;
 
     always_comb begin
-        if (rx_handshake && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
+        s_apb.prdata = '0;
+        s_apb.pready = '0;
+        if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
             s_apb.prdata = uart_regs.rx;
-        end
-
-        if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
+            s_apb.pready = rx_handshake;
+        end else if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
             s_apb.prdata = uart_regs.status;
+            s_apb.pready = 1'b1;
         end
     end
 
