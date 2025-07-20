@@ -57,11 +57,67 @@ module apb_uart
         .rstn_i(rx_reset)
     );
 
+    // TODO: Add AXIS to APB logic
+    logic wr_valid;
+    logic rd_valid;
+    logic tx_handshake;
+    logic rx_handshake;
+
+    assign wr_valid                       = s_apb.psel & s_apb.penable & s_apb.pwrite;
+    assign rd_valid                       = s_apb.psel & s_apb.penable & ~s_apb.pwrite;
+
     assign uart_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
     assign uart_regs.status.tx_fifo_full  = ~fifo_tx.tready;
+    assign uart_regs.status.rsrvd         = '0;
+    assign uart_regs.rx.data              = fifo_rx.tdata;
+    assign uart_regs.rx.rsrvd             = '0;
+    assign fifo_tx.tdata                  = uart_regs.tx.data;
+    assign fifo_rx.tready                 = rd_valid;
+    assign tx_handshake                   = fifo_tx.tvalid & fifo_tx.tready;
+    assign rx_handshake                   = fifo_rx.tvalid & fifo_rx.tready;
 
-    // TODO: Add AXIS to APB logic
-    assign s_apb.pslverr                  = 1'b0;
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            uart_regs.control     <= '0;
+            uart_regs.clk_divider <= '0;
+            uart_regs.tx          <= '0;
+        end else begin
+            if (wr_valid && (s_apb.paddr == CLK_DIVIDER_REG_ADDR)) begin
+                uart_regs.clk_divider <= s_apb.pwdata;
+            end
+
+            if (wr_valid && (s_apb.paddr == CONTROL_REG_ADDR)) begin
+                uart_regs.control <= s_apb.pwdata;
+            end
+
+            if (wr_valid && (s_apb.paddr == TX_DATA_REG_ADDR)) begin
+                uart_regs.tx <= s_apb.pwdata;
+            end
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            fifo_tx.tvalid <= 1'b0;
+        end else if (tx_handshake) begin
+            fifo_tx.tvalid <= 1'b0;
+        end else if (wr_valid && (s_apb.paddr == TX_DATA_REG_ADDR)) begin
+            fifo_tx.tvalid <= 1'b1;
+        end
+    end
+
+    assign s_apb.pslverr = 1'b0;
+    assign s_apb.pready  = fifo_tx.tready;
+
+    always_comb begin
+        if (rx_handshake && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
+            s_apb.prdata = uart_regs.rx;
+        end
+
+        if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
+            s_apb.prdata = uart_regs.status;
+        end
+    end
 
     axis_uart_tx i_axis_uart_tx (
         .clk_divider_i(uart_regs.clk_divider),
