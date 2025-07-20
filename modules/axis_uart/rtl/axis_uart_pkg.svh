@@ -36,8 +36,6 @@ package axis_uart_pkg;
         uart_status_reg_t      status;
     } uart_regs_t;
 
-    // Address
-
     localparam int UART_STATUS_REG_ADDR = 0;
     localparam int UART_CLK_DIVIDER_REG_ADDR = UART_STATUS_REG_ADDR + $bits(uart_status_reg_t) / 8;
     localparam int UART_CONTROL_REG_ADDR = UART_CLK_DIVIDER_REG_ADDR + $bits(
