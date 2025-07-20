@@ -26,6 +26,9 @@ module apb_uart
     logic tx_reset;
     logic rx_reset;
 
+    assign tx_reset = uart_regs.control.tx_reset;
+    assign rx_reset = uart_regs.control.rx_reset;
+
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_tx (
@@ -53,9 +56,6 @@ module apb_uart
         .clk_i (clk_i),
         .rstn_i(rx_reset)
     );
-
-    assign tx_reset                       = uart_regs.control.tx_reset;
-    assign rx_reset                       = uart_regs.control.rx_reset;
 
     assign uart_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
     assign uart_regs.status.tx_fifo_full  = ~fifo_tx.tready;
