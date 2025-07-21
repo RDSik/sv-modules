@@ -111,13 +111,12 @@ module apb_uart
 
     always_comb begin
         s_apb.prdata = '0;
-        s_apb.pready = '0;
+        s_apb.pready = '1;
         if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
             s_apb.prdata = uart_regs.rx;
             s_apb.pready = rx_handshake;
         end else if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
             s_apb.prdata = uart_regs.status;
-            s_apb.pready = 1'b1;
         end
     end
 
