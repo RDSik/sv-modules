@@ -2,7 +2,7 @@ TOP := axis_uart_top
 
 PROJECT_DIR := project
 
-BOARD ?= pz7020starlite
+BOARD ?= tangprimer20k
 
 TCL_FILE := project.tcl
 

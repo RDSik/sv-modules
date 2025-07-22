@@ -24,9 +24,9 @@ jobs:
         with:
             image: ${{env.image_name}}
             run: |
-              git clone https://github.com/RDSik/axis-uart.git
-              cd axis-uart
-              make
+              git clone https://github.com/RDSik/axis-modules.git
+              cd axis-modules/modules/axis_uart/tb
+              make SIM=verilator
   build-project:
     runs-on: ubuntu-latest
     defaults:
