@@ -35,7 +35,7 @@
 
 # !modules/**/bd/
 
-!modules/**/bd/*.bd
+!modules/**/bd/*
 
 # !modules/**/sdk/
 
