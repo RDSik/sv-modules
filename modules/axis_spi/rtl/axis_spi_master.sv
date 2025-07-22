@@ -16,13 +16,15 @@ module axis_spi_master #(
     parameter int SLAVE_NUM     = 1,
     parameter int ADDR_WIDTH    = $clog2(SLAVE_NUM)
 ) (
+    /* verilator lint_off ASCRANGE */
     input logic [   ADDR_WIDTH-1:0] addr_i,
+    /* verilator lint_on ASCRANGE */
     input logic [   WAIT_WIDTH-1:0] wait_time_i,
     input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
     input logic                     cpha_i,
     input logic                     cpol_i,
 
-    spi_if.master  m_spi,
+    spi_if.master m_spi,
 
     axis_if.slave  s_axis,
     axis_if.master m_axis
@@ -163,7 +165,9 @@ module axis_spi_master #(
             trailing_edge <= 1'b0;
             leading_edge  <= 1'b0;
             if (s_handshake) begin
+                /* verilator lint_off WIDTHTRUNC */
                 edge_cnt <= EDGE_NUM;
+                /* verilator lint_on WIDTHTRUNC */
             end else if (~edge_done) begin
                 if (clk_done) begin
                     trailing_edge <= 1'b1;
