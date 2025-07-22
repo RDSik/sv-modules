@@ -27,12 +27,12 @@ jobs:
             image: ${{env.image_name}}
             options: --name ${{env.container_name}}
             run: |
-              git clone https://github.com/RDSik/axis-uart.git
-              cd axis-uart
-              make project
+              git clone https://github.com/RDSik/axis-modules.git
+              cd axis-modules
+              make BOARD=tangprimer20k project
       - name: Create artifact
         run: |
-          docker cp ${{env.container_name}}:/axis-uart/project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
+          docker cp ${{env.container_name}}:/axis-modules/project/axis_uart_top/impl/pnr/axis_uart_top.fs ./
           tar -cvf bitstream.tar.gz axis_uart_top.fs
       - name: Create release
         uses: ncipollo/release-action@v1

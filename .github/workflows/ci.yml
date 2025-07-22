@@ -12,6 +12,9 @@ env:
 jobs:
   simulation:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arg: [axis_uart, axis_spi, fifo]
     defaults:
       run:
         shell: bash
@@ -25,7 +28,7 @@ jobs:
             image: ${{env.image_name}}
             run: |
               git clone https://github.com/RDSik/axis-modules.git
-              cd axis-modules/modules/axis_uart/tb
+              cd axis-modules/modules/${{matrix.arg}}"/tb
               make SIM=verilator
   build-project:
     runs-on: ubuntu-latest
@@ -43,4 +46,4 @@ jobs:
             run: |
               git clone https://github.com/RDSik/axis-uart.git
               cd axis-uart
-              make project
+              make BOARD=tangprimer20k project
