@@ -131,8 +131,10 @@ module sync_fifo #(
             a_empty_o <= 1'b0;
             empty_o   <= 1'b1;
         end else begin
+            /* verilator lint_off WIDTHEXPAND*/
             a_full_o  <= (data_cnt_next == FIFO_DEPTH - 1);
             full_o    <= (data_cnt_next == FIFO_DEPTH);
+            /* verilator lint_on WIDTHEXPAND*/
             a_empty_o <= (data_cnt_next == 1);
             empty_o   <= (data_cnt_next == 0);
         end
