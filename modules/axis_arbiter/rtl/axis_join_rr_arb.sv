@@ -24,7 +24,7 @@ module axis_join_rr_arb #(
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;
 
-    for (genvar i = 0; i < MASTER_NUM; i++) begin : g_s_tready
+    for (genvar i = 0; i < MASTER_NUM; i++) begin : g_axis
         assign m_axis.tdata     = (grant[i]) ? s_axis[i].tdata : '0;
         assign m_axis.tuser     = (grant[i]) ? i : '0;
         assign s_axis[i].tready = m_axis.tready & grant[i];
