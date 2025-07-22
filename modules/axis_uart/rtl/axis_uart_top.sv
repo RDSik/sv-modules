@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
-`include "../rtl/axis_uart_pkg.svh"
+`include "../rtl/uart_pkg.svh"
 
 module axis_uart_top
-    import axis_uart_pkg::*;
+    import uart_pkg::*;
 #(
     parameter int   CLK_MHZ     = 50,
     parameter int   BAUD_RATE   = 115_200,

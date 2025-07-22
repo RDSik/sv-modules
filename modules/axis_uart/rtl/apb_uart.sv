@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
-`include "../rtl/axis_uart_pkg.svh"
+`include "../rtl/uart_pkg.svh"
 
 module apb_uart
-    import axis_uart_pkg::*;
+    import uart_pkg::*;
 #(
     parameter int FIFO_DEPTH      = 128,
     parameter int APB_ADDR_WIDTH  = 32,
@@ -70,6 +70,8 @@ module apb_uart
     assign rx_handshake                   = fifo_rx.tvalid & fifo_rx.tready;
 
     assign uart_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
+    assign uart_regs.status.tx_fifo_empty = ~uart_tx.tvalid;
+    assign uart_regs.status.rx_fifo_full  = ~uart_rx.tready;
     assign uart_regs.status.tx_fifo_full  = ~fifo_tx.tready;
     assign uart_regs.status.rsrvd         = '0;
 
@@ -80,9 +82,9 @@ module apb_uart
     assign fifo_rx.tready                 = rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR);
 
     always_comb begin
+        s_apb.pslverr = '0;
         s_apb.prdata  = '0;
         s_apb.pready  = '1;
-        s_apb.pslverr = '0;
         if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
             s_apb.prdata = uart_regs.rx;
         end else if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin

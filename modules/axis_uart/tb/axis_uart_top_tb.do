@@ -3,7 +3,7 @@ vmap work
 
 vlog  ../../interface/rtl/axis_if.sv
 
-vlog  ../rtl/axis_uart_pkg.svh
+vlog  ../rtl/uart_pkg.svh
 vlog  ../rtl/axis_uart_tx.sv
 vlog  ../rtl/axis_uart_rx.sv
 

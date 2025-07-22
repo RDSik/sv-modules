@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
-`include "../rtl/axis_uart_pkg.svh"
+`include "../rtl/uart_pkg.svh"
 
 module axis_uart_rx
-    import axis_uart_pkg::*;
+    import uart_pkg::*;
 (
     input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
     input  logic                     parity_odd_i,

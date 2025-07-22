@@ -1,14 +1,16 @@
 `ifndef UART_PKG_SVH
 `define UART_PKG_SVH
 
-package axis_uart_pkg;
+package uart_pkg;
 
     localparam int DIVIDER_WIDTH = 32;
     localparam int DATA_WIDTH = 8;
 
     typedef struct packed {
-        logic [28:0] rsrvd;
+        logic [26:0] rsrvd;
         logic        rx_fifo_empty;
+        logic        tx_fifo_empty;
+        logic        rx_fifo_full;
         logic        tx_fifo_full;
         logic        parity_err;
     } uart_status_reg_t;
