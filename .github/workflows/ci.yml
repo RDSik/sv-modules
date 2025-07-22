@@ -28,7 +28,7 @@ jobs:
             image: ${{env.image_name}}
             run: |
               git clone https://github.com/RDSik/axis-modules.git
-              cd axis-modules/modules/${{matrix.arg}}"/tb
+              cd axis-modules/modules/${{matrix.arg}}/tb
               make SIM=verilator
   build-project:
     runs-on: ubuntu-latest
