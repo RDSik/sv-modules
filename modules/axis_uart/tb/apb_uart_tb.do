@@ -2,9 +2,10 @@ vlib work
 vmap work
 
 vlog ../../interface/rtl/axis_if.sv
+vlog ../../interface/rtl/apb_if.sv
 
 vlog ../rtl/uart_pkg.svh
-vlog ../rtl/apb_uart.sv
+vlog ../bd/apb_uart.sv
 vlog ../rtl/axis_uart_tx.sv
 vlog ../rtl/axis_uart_rx.sv
 
@@ -21,7 +22,7 @@ vlog ../../ram/rtl/ram.sv
 
 vlog apb_uart_tb.sv
 
-vsim -voptargs="+acc" axis_uart_bridge_tb
+vsim -voptargs="+acc" apb_uart_tb
 add log -r /*
 
 add wave -expand -group TOP     /apb_uart_tb/i_apb_uart/*
