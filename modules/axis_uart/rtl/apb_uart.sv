@@ -75,7 +75,7 @@ module apb_uart
     assign uart_regs.rx.data              = fifo_rx.tdata;
     assign uart_regs.rx.rsrvd             = '0;
     assign fifo_tx.tdata                  = uart_regs.tx.data;
-    assign fifo_rx.tready                 = rd_valid && ;
+    assign fifo_rx.tready                 = rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR);
 
     always_comb begin
         s_apb.prdata = '0;
