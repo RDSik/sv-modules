@@ -2,13 +2,14 @@ interface axis_if #(
     parameter int DATA_WIDTH = 8,
     parameter int DEST_WIDTH = 1,
     parameter int USER_WIDTH = 1,
-    parameter int ID_WIDTH   = 1,
-    parameter int KEEP_WIDTH = (DATA_WIDTH / 8),
-    parameter int STRB_WIDTH = (DATA_WIDTH / 8)
+    parameter int ID_WIDTH   = 1
 ) (
     input logic clk_i,
     input logic rstn_i
 );
+
+    localparam int KEEP_WIDTH = (DATA_WIDTH / 8);
+    localparam int STRB_WIDTH = (DATA_WIDTH / 8);
 
     logic [DATA_WIDTH-1:0] tdata;
     logic                  tvalid;
