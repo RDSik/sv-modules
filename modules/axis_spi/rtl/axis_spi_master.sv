@@ -23,8 +23,8 @@ module axis_spi_master #(
     input logic                     cpol_i,
 
     spi_if.master  m_spi,
-    axis_if.slave  s_axis,
 
+    axis_if.slave  s_axis,
     axis_if.master m_axis
 );
 
