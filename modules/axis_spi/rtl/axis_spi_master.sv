@@ -24,6 +24,7 @@ module axis_spi_master #(
 
     spi_if.master  m_spi,
     axis_if.slave  s_axis,
+
     axis_if.master m_axis
 );
 
