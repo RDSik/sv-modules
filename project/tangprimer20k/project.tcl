@@ -16,6 +16,9 @@ add_file $modules_dir/axis_uart/rtl/uart_pkg.svh
 add_file $modules_dir/axis_spi/rtl/axis_data_gen.sv
 add_file $modules_dir/axis_spi/rtl/axis_spi_master.sv
 
+add_file $modules_dir/axis_arbiter/rtl/axis_fork.sv
+add_file $modules_dir/axis_arbiter/rtl/axis_join_rr_arb.sv
+
 add_file $modules_dir/fifo/rtl/async_fifo.sv
 add_file $modules_dir/fifo/rtl/axis_fifo_wrap.sv
 add_file $modules_dir/fifo/rtl/rd_ptr_empty.sv

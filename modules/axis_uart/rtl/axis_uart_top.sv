@@ -22,6 +22,8 @@ module axis_uart_top
     uart_clk_divider_reg_t clk_divider;
     uart_control_reg_t control;
 
+    logic parity_err;
+
     assign clk_divider         = DIVIDER;
     assign control.parity_even = PARITY_EVEN;
     assign control.parity_odd  = PARITY_ODD;
@@ -46,6 +48,7 @@ module axis_uart_top
         .parity_odd_i (control.parity_odd),
         .parity_even_i(control.parity_even),
         .uart_rx_i    (uart_rx_i),
+        .parity_err_o (parity_err_o),
         .m_axis       (axis)
     );
 
@@ -56,7 +59,8 @@ module axis_uart_top
             .probe1(axis.tvalid),
             .probe2(axis.tready),
             .probe3(clk_divider),
-            .probe4(control)
+            .probe4(control),
+            .probe5(parity_err)
         );
     end
 

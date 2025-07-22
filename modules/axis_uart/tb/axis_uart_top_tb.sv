@@ -17,6 +17,7 @@ module axis_uart_top_tb ();
     logic clk_i;
     logic rstn_i;
     logic uart_data;
+    logic parity_err;
 
     axis_if s_axis (
         .clk_i (clk_i),
@@ -66,6 +67,7 @@ module axis_uart_top_tb ();
         .parity_odd_i (PARITY_ODD),
         .parity_even_i(PARITY_EVEN),
         .uart_rx_i    (uart_data),
+        .parity_err_o (parity_err_o),
         .m_axis       (s_axis)
     );
 
