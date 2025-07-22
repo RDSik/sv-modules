@@ -21,6 +21,8 @@ module axis_fifo_tb ();
     logic m_axis_clk;
     logic s_axis_rstn;
     logic m_axis_rstn;
+    logic a_full;
+    logic a_empty;
 
     axis_if s_axis (
         .clk_i (s_axis_clk),
@@ -72,8 +74,10 @@ module axis_fifo_tb ();
         .FIFO_MODE (FIFO_MODE),
         .FIFO_TYPE (FIFO_TYPE)
     ) dut (
-        .s_axis(m_axis),
-        .m_axis(s_axis)
+        .s_axis   (m_axis),
+        .m_axis   (s_axis),
+        .a_full_o (a_full),
+        .a_empty_o(a_empty)
     );
 
 endmodule
