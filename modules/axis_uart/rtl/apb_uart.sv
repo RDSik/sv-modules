@@ -75,7 +75,18 @@ module apb_uart
     assign uart_regs.rx.data              = fifo_rx.tdata;
     assign uart_regs.rx.rsrvd             = '0;
     assign fifo_tx.tdata                  = uart_regs.tx.data;
-    assign fifo_rx.tready                 = rd_valid;
+    assign fifo_rx.tready                 = rd_valid && ;
+
+    always_comb begin
+        s_apb.prdata = '0;
+        s_apb.pready = '1;
+        s_apb.pslverr = '0;
+        if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
+            s_apb.prdata = uart_regs.rx;
+        end else if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
+            s_apb.prdata = uart_regs.status;
+        end
+    end
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -104,19 +115,6 @@ module apb_uart
             fifo_tx.tvalid <= 1'b0;
         end else if (wr_valid && (s_apb.paddr == TX_DATA_REG_ADDR)) begin
             fifo_tx.tvalid <= 1'b1;
-        end
-    end
-
-    assign s_apb.pslverr = 1'b0;
-
-    always_comb begin
-        s_apb.prdata = '0;
-        s_apb.pready = '1;
-        if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
-            s_apb.prdata = uart_regs.rx;
-            s_apb.pready = rx_handshake;
-        end else if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
-            s_apb.prdata = uart_regs.status;
         end
     end
 
