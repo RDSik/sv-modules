@@ -17,9 +17,11 @@ module ram_dp #(
     output logic [ MEM_WIDTH-1:0] rd_data_o
 );
 
+    /* verilator lint_off WIDTHEXPAND */
     if ((MEM_TYPE != "block") && (MEM_TYPE != "distributed")) begin : g_ram_type_err
         $error("Only block and distributed ram type supported!");
     end
+    /* verilator lint_on WIDTHEXPAND */
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
