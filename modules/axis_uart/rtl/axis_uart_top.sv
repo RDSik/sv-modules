@@ -48,7 +48,7 @@ module axis_uart_top
         .parity_odd_i (control.parity_odd),
         .parity_even_i(control.parity_even),
         .uart_rx_i    (uart_rx_i),
-        .parity_err_o (parity_err_o),
+        .parity_err_o (parity_err),
         .m_axis       (axis)
     );
 

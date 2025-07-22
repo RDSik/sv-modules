@@ -8,16 +8,7 @@ module axis_fork #(
     for (genvar i = 0; i < SLAVE_NUM; i++) begin : g_m_tvalid_tdata
         assign m_axis[i].tdata  = s_axis.tdata;
         assign m_axis[i].tvalid = s_axis.tvalid && (s_axis.tdest == i);
-    end
-
-    always_comb begin
-        for (i = 0; i < SLAVE_NUM; i++) begin
-            if (s_axis.tdest == i) begin
-                s_axis.tready = m_axis[i].tready;
-            end else begin
-                s_axis.tready = 1'b0;
-            end
-        end
+        assign s_axis.tready    = (s_axis.tdest == i) ? m_axis[i].tready : 1'b0;
     end
 
 endmodule

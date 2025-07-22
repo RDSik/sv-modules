@@ -25,6 +25,8 @@ module axis_join_rr_arb #(
     assign rstn_i = m_axis.rstn_i;
 
     for (genvar i = 0; i < MASTER_NUM; i++) begin : g_s_tready
+        assign m_axis.tdata     = (grant[i]) ? s_axis[i].tdata : '0;
+        assign m_axis.tuser     = (grant[i]) ? i : '0;
         assign s_axis[i].tready = m_axis.tready & grant[i];
         assign req[i]           = s_axis[i].tvalid;
     end
@@ -43,26 +45,6 @@ module axis_join_rr_arb #(
             if (req_shift[i]) begin
                 grant_shift[i] = 1'b1;
                 break;
-            end
-        end
-    end
-
-    always_comb begin
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant[i]) begin
-                m_axis.tdata = s_axis[i].tdata;
-            end else begin
-                m_axis.tdata = '0;
-            end
-        end
-    end
-
-    always_comb begin
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant[i]) begin
-                m_axis[i].tuser = i;
-            end else begin
-                m_axis[i].tuser = '0;
             end
         end
     end
