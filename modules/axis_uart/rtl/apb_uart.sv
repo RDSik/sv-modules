@@ -26,8 +26,8 @@ module apb_uart
     logic tx_reset;
     logic rx_reset;
 
-    assign tx_reset = uart_regs.control.tx_reset;
-    assign rx_reset = uart_regs.control.rx_reset;
+    assign tx_reset = ~uart_regs.control.tx_reset;
+    assign rx_reset = ~uart_regs.control.rx_reset;
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
