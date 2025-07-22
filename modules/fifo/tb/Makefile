@@ -6,7 +6,7 @@ MACRO_FILE := $(TOP)_tb.do
 
 SRC_FILES := $(wildcard \
 	../../interface/rtl/*.sv \
-	../../bmem/rtl/*.sv \
+	../../ram/rtl/*.sv \
 	../rtl/*.sv \
 	./*.sv \
 )
