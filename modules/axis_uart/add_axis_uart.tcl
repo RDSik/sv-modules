@@ -17,3 +17,5 @@ set xil_defaultlib "
 "
 
 add_files -norecurse $xil_defaultlib
+
+source $path/bd/zynq_bd.tcl
