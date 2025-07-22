@@ -1,4 +1,4 @@
 IO_LOC "clk_i"     H11;
-IO_LOC "arstn_i"   C7;
+IO_LOC "rstn_i"   C7;
 IO_LOC "uart_rx_i" T13;
 IO_LOC "uart_tx_o" M11;
