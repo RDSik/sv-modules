@@ -78,8 +78,8 @@ module apb_uart
     assign fifo_rx.tready                 = rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR);
 
     always_comb begin
-        s_apb.prdata = '0;
-        s_apb.pready = '1;
+        s_apb.prdata  = '0;
+        s_apb.pready  = '1;
         s_apb.pslverr = '0;
         if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
             s_apb.prdata = uart_regs.rx;
