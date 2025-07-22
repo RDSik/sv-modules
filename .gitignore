@@ -1,29 +1,48 @@
 *
-# !*/
+!*/
 
-!.github/
-!.github/**/
+# !.github/
+# !.github/**/
 
 !.github/**/*.yml
 
-!project/
-!project/**/
+# !project/
+# !project/**/
 
 !project/**/project.tcl
+!project/**/zynq_ps.tcl
 !project/**/axis_uart_top.xdc
+!project/**/axis_uart_bridge.xdc
 !project/**/*.sdc
 !project/**/*.cst
 
-!rtl/
+# !modules/
+# !modules/**/
+# !modules/**/rtl/
 
-!rtl/*.sv
-!rtl/*.svh
+!modules/**/rtl/*.sv
+!modules/**/rtl/*.svh
 
-!tb/
+# !modules/**/tb/
 
-!tb/*.sv
-!tb/*.svh
-!tb/wave.do
+!modules/**/tb/*.sv
+!modules/**/tb/*.svh
+!modules/**/tb/*.do
+
+# !modules/**/ip/
+
+!modules/**/ip/*.xci
+
+# !modules/**/bd/
+
+!modules/**/bd/*.bd
+
+# !modules/**/sdk/
+
+!modules/**/sdk/*.c
+!modules/**/sdk/*.h
+
+!modules/**/*.tcl
 
 !.gitignore
 !Makefile
