@@ -67,6 +67,6 @@ module axis_join_rr_arb #(
         end
     end
 
-    assign m_handshake = m_axis.m_tvalid & m_axis.tready;
+    assign m_handshake = m_axis.tvalid & m_axis.tready;
 
 endmodule
