@@ -17,8 +17,6 @@ PHASE_WIDTH  = 8;
 SAMPLE_NUM   = 2^PHASE_WIDTH;
 SAMPLE_WIDTH = 16;
 
-HALF_BYTE = 8/2;
-
 %% Filter coefficients generation
 lpFilt = designfilt('lowpassfir', 'PassbandFrequency', Fpass, 'StopbandFrequency', Fstop, ... 
          'PassbandRipple', PASS_RIPPLE, 'StopbandAttenuation', Astop, 'SampleRate', Fs, 'DesignMethod', DESIGN);
