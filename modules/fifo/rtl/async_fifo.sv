@@ -84,6 +84,7 @@ module async_fifo #(
         .clk_i (wr_clk_i),
         .rstn_i(wr_rstn_i),
         .en_i  (1'b1),
+        .sel_i (CDC_REG_NUM - 1),
         .data_i(rd_ptr),
         .data_o(wq2_rptr)
     );
@@ -95,6 +96,7 @@ module async_fifo #(
         .clk_i (rd_clk_i),
         .rstn_i(rd_rstn_i),
         .en_i  (1'b1),
+        .sel_i (CDC_REG_NUM - 1),
         .data_i(wr_ptr),
         .data_o(rq2_wptr)
     );
