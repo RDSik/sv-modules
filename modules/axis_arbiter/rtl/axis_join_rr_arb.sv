@@ -50,11 +50,11 @@ module axis_join_rr_arb #(
     end
 
     always_comb begin
+        ptr_next = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
             if (grant[i]) begin
                 ptr_next = (i + 1) % MASTER_NUM;
-            end else begin
-                ptr_next = '0;
+                break;
             end
         end
     end
