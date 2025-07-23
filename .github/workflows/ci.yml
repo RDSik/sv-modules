@@ -44,6 +44,6 @@ jobs:
         with:
             image: ${{env.image_name}}
             run: |
-              git clone https://github.com/RDSik/axis-uart.git
-              cd axis-uart
+              git clone https://github.com/RDSik/axis-modules.git
+              cd axis-modules
               make BOARD=tangprimer20k project
