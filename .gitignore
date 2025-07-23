@@ -28,6 +28,7 @@
 !modules/**/tb/*.sv
 !modules/**/tb/*.svh
 !modules/**/tb/*.do
+!modules/**/tb/*.m
 
 # !modules/**/ip/
 
