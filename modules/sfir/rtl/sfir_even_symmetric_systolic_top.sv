@@ -2,7 +2,7 @@ module sfir_even_symmetric_systolic_top #(
     parameter int TAP_NUM                    = 33,
     parameter int DATA_WIDTH                 = 16,
     parameter int COEF_WIDTH                 = 16,
-    parameter int PRODUCT_WIDTH              = COE_WIDTH + DATA_WIDTH,
+    parameter int PRODUCT_WIDTH              = COEF_WIDTH + DATA_WIDTH,
     parameter int COEF         [0:TAP_NUM-1] = '{
     // verilog_format: off
     356, 498, 192, -288, -274, 182, 270, -232,
