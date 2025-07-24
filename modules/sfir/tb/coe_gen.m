@@ -26,7 +26,7 @@ fvtool(filter_coe, 'Fs', Fs);
 hq = dfilt.dffir(filter_coe); 
 set(hq,'arithmetic','fixed');
 set(hq, 'coeffwordlength', COE_WIDTH); 
-coewrite(hq, 16, COE_NAME);
+coewrite(hq, 10, COE_NAME);
 
 %% Sin lut generation
 sin_fid = fopen(SIN_LUT_NAME, 'w');
@@ -39,7 +39,7 @@ sin_lut = zeros(SAMPLE_NUM, 1);
 
 for i = 1:SAMPLE_NUM
     sin_lut(i) = round(A*sin(2*pi*i/SAMPLE_NUM));
-    fprintf(sin_fid, '%04X\n', mod(sine_lut(i), 2^SAMPLE_WIDTH));
+    fprintf(sin_fid, '%04X\n', mod(sin_lut(i), 2^SAMPLE_WIDTH));
 end
 
 fclose(sin_fid);

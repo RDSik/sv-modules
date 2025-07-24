@@ -1,4 +1,3 @@
-
 module sfir_even_symmetric_systolic_element #(
     parameter int DATA_WIDTH    = 16,
     parameter int COEF_WIDTH    = 16,
