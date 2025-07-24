@@ -12,13 +12,14 @@ module sfir_even_symmetric_systolic_top #(
     output logic signed [PRODUCT_WIDTH-1:0] fir_o
 );
 
+    logic signed [   COEF_WIDTH-1:0] h          [TAP_NUM-1:0];
     logic signed [   DATA_WIDTH-1:0] arraydata  [TAP_NUM-1:0];
     logic signed [PRODUCT_WIDTH-1:0] arrayprod  [TAP_NUM-1:0];
 
     logic signed [   DATA_WIDTH-1:0] shifterout;
     logic signed [   DATA_WIDTH-1:0] dataz      [TAP_NUM-1:0];
 
-    assign fir_o = arrayprod[TAP_NUM-1];  // Connect last product to output
+    assign fir_o = arrayprod[TAP_NUM-1];
 
     shift_reg #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -33,6 +34,8 @@ module sfir_even_symmetric_systolic_top #(
     );
 
     for (genvar i = 0; i < TAP_NUM; i++) begin
+        assign h[i] = COEF[i][COEF_WIDTH-1:0];
+
         if (i == 0) begin
             sfir_even_symmetric_systolic_element #(
                 .DATA_WIDTH(DATA_WIDTH),
@@ -41,7 +44,7 @@ module sfir_even_symmetric_systolic_top #(
                 .clk     (clk_i),
                 .rstn_i  (rstn_i),
                 .en_i    (en_i),
-                .coeffin (COEF[i]),
+                .coeffin (h[i]),
                 .datain  (data_i),
                 .datazin (shifterout),
                 .cascin  ({32{1'b0}}),
@@ -56,7 +59,7 @@ module sfir_even_symmetric_systolic_top #(
                 .clk     (clk_i),
                 .rstn_i  (rstn_i),
                 .en_i    (en_i),
-                .coeffin (COEF[i]),
+                .coeffin (h[i]),
                 .datain  (arraydata[i-1]),
                 .datazin (shifterout),
                 .cascin  (arrayprod[i-1]),
