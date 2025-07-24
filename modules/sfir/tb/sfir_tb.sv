@@ -56,8 +56,6 @@ module sfir_tb ();
         .COEF      ()
     ) i_sfir_even_symmetric_systolic_top (
         .clk_i (clk_i),
-        .rstn_i(rstn_i),
-        .en_i  (1'b1),
         .data_i(noise),
         .fir_o (fir_out)
     );
