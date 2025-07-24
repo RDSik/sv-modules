@@ -39,10 +39,10 @@ module sfir_even_symmetric_systolic_top #(
         .data_o(shifterout)
     );
 
-    for (genvar i = 0; i < TAP_NUM; i++) begin
+    for (genvar i = 0; i < TAP_NUM; i++) begin : g_fte
         assign h[i] = COEF[i][COEF_WIDTH-1:0];
 
-        if (i == 0) begin : g_fte0
+        if (i == 0) begin : g_fte_0
             sfir_even_symmetric_systolic_element #(
                 .DATA_WIDTH(DATA_WIDTH),
                 .COEF_WIDTH(COEF_WIDTH)
@@ -55,7 +55,7 @@ module sfir_even_symmetric_systolic_top #(
                 .cascdata_o(arraydata[i]),
                 .casc_o    (arrayprod[i])
             );
-        end else begin : g_fte
+        end else begin : g_fte_n
             sfir_even_symmetric_systolic_element #(
                 .DATA_WIDTH(DATA_WIDTH),
                 .COEF_WIDTH(COEF_WIDTH)
