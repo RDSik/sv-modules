@@ -6,8 +6,6 @@ module sfir_even_symmetric_systolic_element #(
 
 ) (
     input  logic                            clk_i,
-    input  logic                            rstn_i,
-    input  logic                            en_i,
     input  logic signed [   COEF_WIDTH-1:0] coeff_i,
     input  logic signed [   DATA_WIDTH-1:0] data_i,
     input  logic signed [   DATA_WIDTH-1:0] dataz_i,
@@ -26,23 +24,13 @@ module sfir_even_symmetric_systolic_element #(
     assign cascdata_o = datatwo;
 
     always @(posedge clk_i) begin
-        if (~rstn_i) begin
-            coeff   <= '0;
-            data    <= '0;
-            datatwo <= '0;
-            dataz   <= '0;
-            preadd  <= '0;
-            product <= '0;
-            casc_o  <= '0;
-        end else if (en_i) begin
-            coeff   <= coeff_i;
-            data    <= data_i;
-            datatwo <= data;
-            dataz   <= dataz_i;
-            preadd  <= datatwo + dataz;
-            product <= preadd * coeff;
-            casc_o  <= product + casc_i;
-        end
+        coeff   <= coeff_i;
+        data    <= data_i;
+        datatwo <= data;
+        dataz   <= dataz_i;
+        preadd  <= datatwo + dataz;
+        product <= preadd * coeff;
+        casc_o  <= product + casc_i;
     end
 
 endmodule

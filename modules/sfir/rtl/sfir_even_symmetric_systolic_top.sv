@@ -6,8 +6,6 @@ module sfir_even_symmetric_systolic_top #(
     parameter int COEF         [0:TAP_NUM-1] = '{}
 ) (
     input  logic                            clk_i,
-    input  logic                            rstn_i,
-    input  logic                            en_i,
     input  logic signed [   DATA_WIDTH-1:0] data_i,
     output logic signed [PRODUCT_WIDTH-1:0] fir_o
 );
@@ -22,13 +20,13 @@ module sfir_even_symmetric_systolic_top #(
     assign fir_o = arrayprod[TAP_NUM-1];
 
     shift_reg #(
+        .RESET_EN  (0),
         .DATA_WIDTH(DATA_WIDTH),
-        .DELAY     (TAP_NUM*2)
+        .DELAY     (TAP_NUM * 2)
     ) shift_reg (
         .clk_i (clk_i),
-        .rstn_i(rstn_i),
         .en_i  (en_i),
-        .sel_i (TAP_NUM*2 - 1),
+        .sel_i (TAP_NUM * 2 - 1),
         .data_i(data_i),
         .data_o(shifterout)
     );
@@ -36,35 +34,31 @@ module sfir_even_symmetric_systolic_top #(
     for (genvar i = 0; i < TAP_NUM; i++) begin
         assign h[i] = COEF[i][COEF_WIDTH-1:0];
 
-        if (i == 0) begin
+        if (i == 0) begin : g_fte0
             sfir_even_symmetric_systolic_element #(
                 .DATA_WIDTH(DATA_WIDTH),
                 .COEF_WIDTH(COEF_WIDTH)
             ) fte_inst0 (
-                .clk     (clk_i),
-                .rstn_i  (rstn_i),
-                .en_i    (en_i),
-                .coeffin (h[i]),
-                .datain  (data_i),
-                .datazin (shifterout),
-                .cascin  ({32{1'b0}}),
-                .cascdata(arraydata[i]),
-                .cascout (arrayprod[i])
+                .clk_i     (clk_i),
+                .coeff_i   (h[i]),
+                .data_i    (data_i),
+                .dataz_i   (shifterout),
+                .casc_i    ({32{1'b0}}),
+                .cascdata_o(arraydata[i]),
+                .casc_o    (arrayprod[i])
             );
-        end else begin
+        end else begin : g_fte
             sfir_even_symmetric_systolic_element #(
                 .DATA_WIDTH(DATA_WIDTH),
                 .COEF_WIDTH(COEF_WIDTH)
             ) fte_inst (
-                .clk     (clk_i),
-                .rstn_i  (rstn_i),
-                .en_i    (en_i),
-                .coeffin (h[i]),
-                .datain  (arraydata[i-1]),
-                .datazin (shifterout),
-                .cascin  (arrayprod[i-1]),
-                .cascdata(arraydata[i]),
-                .cascout (arrayprod[i])
+                .clk_i     (clk_i),
+                .coeff_i   (h[i]),
+                .data_i    (arraydata[i-1]),
+                .dataz_i   (shifterout),
+                .casc_i    (arrayprod[i-1]),
+                .cascdata_o(arraydata[i]),
+                .casc_o    (arrayprod[i])
             );
         end
     end
