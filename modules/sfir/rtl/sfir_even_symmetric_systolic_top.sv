@@ -27,7 +27,7 @@ module sfir_even_symmetric_systolic_top #(
         .clk_i (clk_i),
         .rstn_i(rstn_i),
         .en_i  (en_i),
-        .sel_i (TAP_NUM - 1),
+        .sel_i (TAP_NUM*2 - 1),
         .data_i(data_i),
         .data_o(shifterout)
     );
