@@ -8,9 +8,7 @@ COE_NAME  = 'fir.coe';
 Fs          = 250e6;
 Fpass       = 55e6;
 Fstop       = 62.5e6;
-Astop       = 50;
 PASS_RIPPLE = 0.5;
-DESIGN      = 'equiripple';
 
 SIN_LUT_NAME = 'sin_lut.mem';
 PHASE_WIDTH  = 8;
@@ -18,10 +16,8 @@ SAMPLE_NUM   = 2^PHASE_WIDTH;
 SAMPLE_WIDTH = 16;
 
 %% Filter coefficients generation
-lpFilt = designfilt('lowpassfir', 'PassbandFrequency', Fpass, 'StopbandFrequency', Fstop, ... 
-         'PassbandRipple', PASS_RIPPLE, 'StopbandAttenuation', Astop, 'SampleRate', Fs, 'DesignMethod', DESIGN);
 dev = (10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1);
-filter_coen = firhalfband('minorder', 2*Fpass/Fs, dev);
+filter_coe = firhalfband('minorder', 2*Fpass/Fs, dev);
 fvtool(filter_coe, 'Fs', Fs);
 
 hq = dfilt.dffir(filter_coe); 
