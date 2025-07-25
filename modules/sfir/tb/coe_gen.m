@@ -18,7 +18,7 @@ SAMPLE_WIDTH = 16;
 %% Filter coefficients generation
 dev = (10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1);
 fir_coe = firhalfband('minorder', 2*Fpass/Fs, dev);
-fir_coe_round = round(for_coe*(2^(COW_WIDTH-1)-1);
+fir_coe_round = round(for_coe*(2^(COE_WIDTH-1)-1);
 fvtool(filter_coe, 'Fs', Fs);
 
 hq = dfilt.dffir(fir_coe_round); 
