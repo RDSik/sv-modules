@@ -17,10 +17,11 @@ SAMPLE_WIDTH = 16;
 
 %% Filter coefficients generation
 dev = (10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1);
-filter_coe = firhalfband('minorder', 2*Fpass/Fs, dev);
+fir_coe = firhalfband('minorder', 2*Fpass/Fs, dev);
+fir_coe_round = round(for_cow*(2^(COW_WIDTH-1)-1);
 fvtool(filter_coe, 'Fs', Fs);
 
-hq = dfilt.dffir(filter_coe); 
+hq = dfilt.dffir(fir_coe_round); 
 set(hq,'arithmetic','fixed');
 set(hq, 'coeffwordlength', COE_WIDTH); 
 coewrite(hq, 10, COE_NAME);
