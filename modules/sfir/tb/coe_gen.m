@@ -20,7 +20,8 @@ SAMPLE_WIDTH = 16;
 %% Filter coefficients generation
 lpFilt = designfilt('lowpassfir', 'PassbandFrequency', Fpass, 'StopbandFrequency', Fstop, ... 
          'PassbandRipple', PASS_RIPPLE, 'StopbandAttenuation', Astop, 'SampleRate', Fs, 'DesignMethod', DESIGN);
-filter_coe = round(lpFilt.Coefficients*(2^(COE_WIDTH-1)-1));
+dev = (10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1);
+filter_coen = firhalfband('minorder', 2*Fpass/Fs, dev);
 fvtool(filter_coe, 'Fs', Fs);
 
 hq = dfilt.dffir(filter_coe); 
