@@ -3,15 +3,14 @@ module sfir_even_symmetric_systolic_top #(
     parameter int DATA_WIDTH                 = 16,
     parameter int COEF_WIDTH                 = 16,
     parameter int PRODUCT_WIDTH              = COEF_WIDTH + DATA_WIDTH,
-    parameter int COEF         [0:TAP_NUM-1] = '{
     // verilog_format: off
+    parameter int COEF         [0:TAP_NUM-1] = '{
     356, 498, 192, -288, -274, 182, 270, -232,
     -454, 94, 498, -62, -686, -166, 718,  312,
     -858, -656, 814, 940, -830, -1432, 618, 1904,
     -376, -2654, -242, 3590, 1268 -5452, -4078,
-    11262, 27798
+    11262, 27798}
     // verilog_format: on
-    }
 ) (
     input  logic                            clk_i,
     input  logic signed [   DATA_WIDTH-1:0] data_i,
