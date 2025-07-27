@@ -15,14 +15,14 @@ module axis_join_rr_arb_tb ();
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
-    ) lfsr_s_axis[MASTER_NUM-1:0] (
+    ) arb_s_axis (
         .clk_i (clk_i),
         .rstn_i(s_rstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
-    ) arb_s_axis (
+    ) lfsr_s_axis[MASTER_NUM-1:0] (
         .clk_i (clk_i),
         .rstn_i(s_rstn_i)
     );
