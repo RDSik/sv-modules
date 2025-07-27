@@ -1,8 +1,7 @@
 /* verilator lint_off TIMESCALEMOD */
 module dds #(
-    parameter int PHASE_WIDTH = 8,
-    parameter int DATA_WIDTH  = 16,
-    parameter     SIN_FILE    = "sin_lut.mem"
+    parameter int PHASE_WIDTH = 16,
+    parameter int DATA_WIDTH  = 16
 ) (
     input  logic                   clk_i,
     input  logic                   rstn_i,
@@ -12,8 +11,17 @@ module dds #(
 );
 
     localparam int SIN_NUM = 2 ** PHASE_WIDTH;
+    localparam int A = 2 ** (DATA_WIDTH - 1) - 1;
+    localparam real PI = 3.14159265359;
 
+    logic [DATA_WIDTH-1:0] sin_lut[SIN_NUM];
     logic [PHASE_WIDTH-1:0] phase_acc;
+
+    initial begin
+        for (int i = 0; i < SIN_NUM; i++) begin
+            sin_lut[i] = $rtoi(A * (1 + $sin(2 * PI * i / SIN_NUM)));
+        end
+    end
 
     always @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -23,16 +31,8 @@ module dds #(
         end
     end
 
-    ram #(
-        .MEM_FILE (SIN_FILE),
-        .MEM_DEPTH(SIN_NUM),
-        .MEM_WIDTH(DATA_WIDTH),
-        .MEM_TYPE ("block")
-    ) i_ram (
-        .clk_i (clk_i),
-        .addr_i(phase_acc),
-        .data_i(),
-        .data_o(sin_o)
-    );
+    always_ff @(posedge clk_i) begin
+        sin_o <= sin_lut[phase_acc];
+    end
 
 endmodule

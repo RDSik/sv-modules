@@ -1,12 +1,13 @@
 vlib work
 vmap work
 
-vlog  ../../ram/rtl/ram.sv
+vlog  ../../ram/rtl/shift_reg.sv
 vlog  ../rtl/dds.sv
+vlog  ../rtl/round.sv
 vlog  ../rtl/sfir_even_symmetric_systolic_element.sv
 vlog  ../rtl/sfir_even_symmetric_systolic_top.sv
 
-vlog tb/sfir_tb.sv
+vlog sfir_tb.sv
 
 vsim -voptargs="+acc" sfir_tb
 add log -r /*

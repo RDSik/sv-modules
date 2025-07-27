@@ -1,30 +1,38 @@
 module sfir_even_symmetric_systolic_top #(
-    parameter int TAP_NUM                    = 33,
+    parameter int TAP_NUM                    = 28,
     parameter int DATA_WIDTH                 = 16,
     parameter int COEF_WIDTH                 = 16,
     parameter int PRODUCT_WIDTH              = COEF_WIDTH + DATA_WIDTH,
     // verilog_format: off
     parameter int COEF         [0:TAP_NUM-1] = '{
-    356, 498, 192, -288, -274, 182, 270, -232,
-    -454, 94, 498, -62, -686, -166, 718,  312,
-    -858, -656, 814, 940, -830, -1432, 618, 1904,
-    -376, -2654, -242, 3590, 1268 -5452, -4078,
-    11262, 27798}
+        560, 608, -120, -354, -34, 538, 40, -560,
+        -250, 692, 412, -710, -704, 740, 1014,  -662,
+        -1436, 514, 1936, -198, -2608, -354, 3572, 1438,
+        -5354, -4176, 11198, 27938}
     // verilog_format: on
 ) (
-    input  logic                            clk_i,
-    input  logic signed [   DATA_WIDTH-1:0] data_i,
-    output logic signed [PRODUCT_WIDTH-1:0] fir_o
+    input  logic                         clk_i,
+    input  logic                         odd_even_i,
+    input  logic signed [DATA_WIDTH-1:0] data_i,
+    output logic signed [DATA_WIDTH-1:0] fir_o
 );
+
+    /* verilator lint_off WIDTHEXPAND */
+    if ((TAP_NUM % 2) != 0) begin : g_tap_num_err
+        $error("TAP_NUM must be even!");
+    end
+    // /* verilator lint_on WIDTHEXPAND */
+
 
     logic signed [   COEF_WIDTH-1:0] h          [TAP_NUM-1:0];
     logic signed [   DATA_WIDTH-1:0] arraydata  [TAP_NUM-1:0];
     logic signed [PRODUCT_WIDTH-1:0] arrayprod  [TAP_NUM-1:0];
 
+    logic signed [PRODUCT_WIDTH-1:0] fir;
     logic signed [   DATA_WIDTH-1:0] shifterout;
     logic signed [   DATA_WIDTH-1:0] dataz      [TAP_NUM-1:0];
 
-    assign fir_o = arrayprod[TAP_NUM-1];
+    assign fir = arrayprod[TAP_NUM-1];  // Connect last product to output
 
     shift_reg #(
         .RESET_EN  (0),
@@ -69,4 +77,15 @@ module sfir_even_symmetric_systolic_top #(
             );
         end
     end
+
+    round #(
+        .DATA_IN_WIDTH (PRODUCT_WIDTH),
+        .DATA_OUT_WIDTH(DATA_WIDTH)
+    ) i_round (
+        .clk_i       (clk_i),
+        .odd_even_i  (odd_even_i),
+        .data_i      (fir),
+        .round_data_o(fir_o)
+    );
+
 endmodule

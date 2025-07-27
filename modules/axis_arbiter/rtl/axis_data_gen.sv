@@ -1,9 +1,7 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_data_gen #(
     parameter int MEM_WIDTH = 16,
-    parameter int MEM_DEPTH = 66,
-    parameter     MEM_FILE  = "",
-    parameter     MEM_TYPE  = "block"
+    parameter int MEM_DEPTH = 66
 ) (
     input logic start_i,
     input logic stop_i,
@@ -20,6 +18,14 @@ module axis_data_gen #(
     logic                  addr_done;
     logic [ MEM_WIDTH-1:0] ram_data;
     logic                  m_handshake;
+
+    logic [ MEM_WIDTH-1:0] ram         [MEM_DEPTH];
+
+    initial begin
+        for (int i = 0; i < MEM_DEPTH; i++) begin
+            ram[i] = $urandom_range(0, (2 ** MEM_WIDTH) - 1);
+        end
+    end
 
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;
@@ -50,18 +56,6 @@ module axis_data_gen #(
 
     assign addr_done = (addr == MEM_DEPTH - 1);
 
-    ram #(
-        .MEM_FILE (MEM_FILE),
-        .MEM_DEPTH(MEM_DEPTH),
-        .MEM_WIDTH(MEM_WIDTH),
-        .MEM_TYPE (MEM_TYPE)
-    ) i_ram (
-        .clk_i (clk_i),
-        .addr_i(addr),
-        .data_i(),
-        .data_o(ram_data)
-    );
-
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             m_axis.tvalid <= 1'b0;
@@ -75,6 +69,10 @@ module axis_data_gen #(
                 m_axis.tlast <= 1'b1;
             end
         end
+    end
+
+    always_ff @(posedge clk_i) begin
+        ram_data <= ram[addr];
     end
 
     assign m_axis.tdata = ram_data;

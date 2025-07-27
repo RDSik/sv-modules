@@ -78,6 +78,7 @@ module async_fifo #(
     );
 
     shift_reg #(
+        .RESET_EN  (1),
         .DATA_WIDTH(ADDR_WIDTH + 1),
         .DELAY     (CDC_REG_NUM)
     ) wr_shift_reg (
@@ -90,6 +91,7 @@ module async_fifo #(
     );
 
     shift_reg #(
+        .RESET_EN  (1),
         .DATA_WIDTH(ADDR_WIDTH + 1),
         .DELAY     (CDC_REG_NUM)
     ) rd_shift_reg (

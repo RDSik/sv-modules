@@ -1,8 +1,8 @@
 module axis_join_rr_arb #(
     parameter int MASTER_NUM = 4
 ) (
-    axis_if.slave  [MASTER_NUM-1:0] s_axis,
-    axis_if.master                  m_axis
+    axis_if.slave  s_axis[MASTER_NUM-1:0],
+    axis_if.master m_axis
 );
 
     localparam int PTR_WIDTH = $clog2(MASTER_NUM);
@@ -20,6 +20,8 @@ module axis_join_rr_arb #(
 
     logic [     PTR_WIDTH-1:0] ptr;
     logic [     PTR_WIDTH-1:0] ptr_next;
+
+    logic                      m_handshake;
 
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;

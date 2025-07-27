@@ -3,11 +3,11 @@
 module sfir_tb ();
 
     localparam int DATA_WIDTH = 16;
-    localparam int COE_WIDTH = 16;
-    localparam int TAP_NUM = 66;
-    localparam int PHASE_WIDTH = 8;
-    localparam SIN_FILE = "sin_lut.mem";
-    localparam int OUT_WIDTH = DATA_WIDTH + COE_WIDTH;
+    localparam int COEF_WIDTH = 16;
+    localparam int TAP_NUM = 28;
+    localparam int PHASE_WIDTH = 16;
+    localparam int OUT_WIDTH = DATA_WIDTH + COEF_WIDTH;
+    localparam logic ROUND_ODD_EVEN = 1;
 
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
@@ -51,19 +51,18 @@ module sfir_tb ();
 
     sfir_even_symmetric_systolic_top #(
         .DATA_WIDTH(DATA_WIDTH),
-        .COE_WIDTH (COE_WIDTH),
-        .TAP_NUM   (TAP_NUM),
-        .COEF      ()
+        .COEF_WIDTH(COEF_WIDTH),
+        .TAP_NUM   (TAP_NUM)
     ) i_sfir_even_symmetric_systolic_top (
-        .clk_i (clk_i),
+        .clk_i(clk_i),
         .data_i(noise),
-        .fir_o (fir_out)
+        .odd_even_i(ROUND_ODD_EVEN),
+        .fir_o(fir_out)
     );
 
     dds #(
         .PHASE_WIDTH(PHASE_WIDTH),
-        .DATA_WIDTH (DATA_WIDTH),
-        .SIN_FILE   (SIN_FILE)
+        .DATA_WIDTH (DATA_WIDTH)
     ) i_dds_1 (
         .clk_i      (clk_i),
         .rstn_i     (rstn_i),
@@ -74,8 +73,7 @@ module sfir_tb ();
 
     dds #(
         .PHASE_WIDTH(PHASE_WIDTH),
-        .DATA_WIDTH (DATA_WIDTH),
-        .SIN_FILE   (SIN_FILE)
+        .DATA_WIDTH (DATA_WIDTH)
     ) i_dds_2 (
         .clk_i      (clk_i),
         .rstn_i     (rstn_i),
