@@ -12,9 +12,9 @@ module sfir_even_symmetric_systolic_top #(
         -5354, -4176, 11198, 27938}
     // verilog_format: on
 ) (
-    input  logic                         clk_i,
-    input  logic signed [DATA_WIDTH-1:0] data_i,
-    output logic signed [DATA_WIDTH-1:0] fir_o
+    input  logic                            clk_i,
+    input  logic signed [   DATA_WIDTH-1:0] data_i,
+    output logic signed [PRODUCT_WIDTH-1:0] fir_o
 );
 
     /* verilator lint_off WIDTHEXPAND */
@@ -28,11 +28,10 @@ module sfir_even_symmetric_systolic_top #(
     logic signed [   DATA_WIDTH-1:0] arraydata  [TAP_NUM-1:0];
     logic signed [PRODUCT_WIDTH-1:0] arrayprod  [TAP_NUM-1:0];
 
-    logic signed [PRODUCT_WIDTH-1:0] fir;
     logic signed [   DATA_WIDTH-1:0] shifterout;
     logic signed [   DATA_WIDTH-1:0] dataz      [TAP_NUM-1:0];
 
-    assign fir = arrayprod[TAP_NUM-1];  // Connect last product to output
+    assign fir_o = arrayprod[TAP_NUM-1];  // Connect last product to output
 
     logic [$clog2(TAP_NUM)-1] sel;
     assign sel = (TAP_NUM * 2) - 1;
