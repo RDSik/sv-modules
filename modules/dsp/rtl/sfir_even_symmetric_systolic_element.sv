@@ -23,7 +23,7 @@ module sfir_even_symmetric_systolic_element #(
 
     assign cascdata_o = datatwo;
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         coeff   <= coeff_i;
         data    <= data_i;
         datatwo <= data;
