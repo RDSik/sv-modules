@@ -35,7 +35,7 @@ module axis_lfsr #(
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
                 m_axis.tdata  <= seed_i;
-                m_axis.tvalid <= '0;
+                m_axis.tvalid <= 1'b0;
             end else begin
                 m_axis.tdata  <= {m_axis.tdata[DATA_WIDTH-2:0], feedback};
                 m_axis.tvalid <= 1'b1;
