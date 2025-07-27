@@ -35,7 +35,7 @@ module sfir_even_symmetric_systolic_top #(
 
     localparam int SEL_WIDTH = $clog2(TAP_NUM * 2);
     logic [SEL_WIDTH-1:0] sel;
-    assign sel = SEL_WIDTH'(CDC_REG_NUM - 1);
+    assign sel = SEL_WIDTH'((TAP_NUM * 2) - 1);
 
     shift_reg #(
         .RESET_EN  (0),
