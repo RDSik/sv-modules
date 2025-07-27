@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module round #(
     parameter int DATA_IN_WIDTH  = 40,
     parameter int DATA_OUT_WIDTH = 16

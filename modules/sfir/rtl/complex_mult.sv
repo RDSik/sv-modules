@@ -1,4 +1,4 @@
-
+/* verilator lint_off TIMESCALEMOD */
 //  Complex Multiplier
 //  The following code implements a parameterizable complex multiplier
 //  The style described uses 3 DSP's to implement the complex multiplier

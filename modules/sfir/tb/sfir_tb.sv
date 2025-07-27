@@ -19,7 +19,8 @@ module sfir_tb ();
     logic                  rstn_i;
     logic [DATA_WIDTH-1:0] sin_out_1;
     logic [DATA_WIDTH-1:0] sin_out_2;
-    logic [ OUT_WIDTH-1:0] fir_out;
+    logic [ OUT_WIDTH-1:0] fir_o;
+    logic [DATA_WIDTH-1:0] round_data_o;
     logic [DATA_WIDTH-1:0] noise;
 
     assign noise = (sin_out_1 + sin_out_2) / 2;
@@ -54,10 +55,19 @@ module sfir_tb ();
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM)
     ) i_sfir_even_symmetric_systolic_top (
-        .clk_i(clk_i),
+        .clk_i (clk_i),
         .data_i(noise),
-        .odd_even_i(ROUND_ODD_EVEN),
-        .fir_o(fir_out)
+        .fir_o (fir_o)
+    );
+
+    round #(
+        .DATA_IN_WIDTH (OUT_WIDTH),
+        .DATA_OUT_WIDTH(DATA_WIDTH)
+    ) i_round (
+        .clk_i       (clk_i),
+        .odd_even_i  (ROUND_ODD_EVEN),
+        .data_i      (fir_out),
+        .round_data_o(round_data_o)
     );
 
     dds #(

@@ -19,7 +19,9 @@ module dds #(
 
     initial begin
         for (int i = 0; i < SIN_NUM; i++) begin
+            /* verilator lint_off WIDTHTRUNC */
             sin_lut[i] = $rtoi(A * (1 + $sin(2 * PI * i / SIN_NUM)));
+            /* verilator lint_on WIDTHTRUNC */
         end
     end
 
