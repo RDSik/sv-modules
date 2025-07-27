@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module sfir_even_symmetric_systolic_top #(
     parameter int TAP_NUM                    = 28,
     parameter int DATA_WIDTH                 = 16,
@@ -12,7 +13,6 @@ module sfir_even_symmetric_systolic_top #(
     // verilog_format: on
 ) (
     input  logic                         clk_i,
-    input  logic                         odd_even_i,
     input  logic signed [DATA_WIDTH-1:0] data_i,
     output logic signed [DATA_WIDTH-1:0] fir_o
 );
@@ -34,14 +34,18 @@ module sfir_even_symmetric_systolic_top #(
 
     assign fir = arrayprod[TAP_NUM-1];  // Connect last product to output
 
+    logic [$clog2(TAP_NUM)-1] sel;
+    assign sel = (TAP_NUM * 2) - 1;
+
     shift_reg #(
         .RESET_EN  (0),
         .DATA_WIDTH(DATA_WIDTH),
         .DELAY     (TAP_NUM * 2)
     ) shift_reg (
         .clk_i (clk_i),
+        .rstn_i(),
         .en_i  (1'b1),
-        .sel_i (TAP_NUM * 2 - 1),
+        .sel_i (sel),
         .data_i(data_i),
         .data_o(shifterout)
     );
@@ -77,15 +81,5 @@ module sfir_even_symmetric_systolic_top #(
             );
         end
     end
-
-    round #(
-        .DATA_IN_WIDTH (PRODUCT_WIDTH),
-        .DATA_OUT_WIDTH(DATA_WIDTH)
-    ) i_round (
-        .clk_i       (clk_i),
-        .odd_even_i  (odd_even_i),
-        .data_i      (fir),
-        .round_data_o(fir_o)
-    );
 
 endmodule
