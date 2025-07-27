@@ -1,60 +1,39 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_data_gen #(
-    parameter int MEM_WIDTH = 16,
-    parameter int MEM_DEPTH = 66
+    parameter int DATA_WIDTH = 16
 ) (
-    input logic start_i,
-    input logic stop_i,
+    input logic                  en_i,
+    input logic [DATA_WIDTH-1:0] poly_i,
+    input logic [DATA_WIDTH-1:0] seed_i,
 
     axis_if.master m_axis
 );
 
-    localparam int ADDR_WIDTH = $clog2(MEM_DEPTH);
+    localparam int PERIOD = 2 ** DATA_WIDTH;
 
     logic                  clk_i;
     logic                  rstn_i;
-    logic                  en;
-    logic [ADDR_WIDTH-1:0] addr;
-    logic                  addr_done;
-    logic [ MEM_WIDTH-1:0] ram_data;
+    logic [DATA_WIDTH-1:0] cnt;
+    logic [DATA_WIDTH-1:0] lfsr;
+    logic                  cnt_done;
     logic                  m_handshake;
-
-    logic [ MEM_WIDTH-1:0] ram         [MEM_DEPTH];
-
-    initial begin
-        for (int i = 0; i < MEM_DEPTH; i++) begin
-            ram[i] = $urandom_range(0, (2 ** MEM_WIDTH) - 1);
-        end
-    end
 
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            en <= 1'b0;
-        end else if (stop_i) begin
-            en <= 1'b0;
-        end else if (start_i) begin
-            en <= 1'b1;
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            addr <= '0;
-        end else if (en) begin
-            if (m_handshake) begin
-                if (addr_done) begin
-                    addr <= '0;
-                end else begin
-                    addr <= addr + 1'b1;
-                end
+            cnt <= '0;
+        end else if (en_i) begin
+            if (cnt_done) begin
+                cnt <= '0;
+            end else begin
+                cnt <= cnt + 1'b1;
             end
         end
     end
 
-    assign addr_done = (addr == MEM_DEPTH - 1);
+    assign cnt_done = (cnt == PERIOD - 1);
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -63,19 +42,26 @@ module axis_data_gen #(
         end else if (m_handshake) begin
             m_axis.tvalid <= 1'b0;
             m_axis.tlast  <= 1'b0;
-        end else if (en) begin
+        end else if (en_i) begin
             m_axis.tvalid <= 1'b1;
-            if (addr_done) begin
+            if (cnt_done) begin
                 m_axis.tlast <= 1'b1;
             end
         end
     end
 
-    always_ff @(posedge clk_i) begin
-        ram_data <= ram[addr];
-    end
+    lfsr #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) i_lfsr (
+        .clk_i (clk_i),
+        .rstn_i(rstn_i),
+        .en_i  (en_i),
+        .seed_i(seed_i),
+        .poly_i(poly_i),
+        .data_o(lfsr),
+    );
 
-    assign m_axis.tdata = ram_data;
+    assign m_axis.tdata = lfsr;
     assign m_handshake  = m_axis.tvalid & m_axis.tready;
 
 endmodule
