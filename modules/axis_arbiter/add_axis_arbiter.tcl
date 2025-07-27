@@ -12,5 +12,5 @@ if {$xilinx == 1} {
 } elseif {$gowin == 1} {
     add_file $path/rtl/axis_fork.sv
     add_file $path/rtl/axis_join_rr_arb.sv
-    add_file $path/rtl/axis_data_gen.sv
+    add_file $path/rtl/axis_lfsr.sv
 }
