@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module axis_fork #(
     parameter int SLAVE_NUM = 4
 ) (

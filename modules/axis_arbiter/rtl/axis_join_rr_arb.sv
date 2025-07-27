@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module axis_join_rr_arb #(
     parameter int MASTER_NUM = 4
 ) (
