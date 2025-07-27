@@ -1,9 +1,12 @@
 set path [file dirname [info script]]
 
-set xil_defaultlib "
-    $path/rtl/axis_data_gen.sv
-    $path/rtl/axis_spi_master.sv
-    $path/tb/axis_spi_top_tb.sv
-"
+if {$xilinx == 1} {
+    set xil_defaultlib "
+        $path/rtl/axis_spi_master.sv
+        $path/tb/axis_spi_top_tb.sv
+    "
 
-add_files -norecurse $xil_defaultlib
+    add_files -norecurse $xil_defaultlib
+} elseif {$gowin == 1} {
+    add_file $path/rtl/axis_spi_master.sv
+}

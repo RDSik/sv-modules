@@ -1,8 +1,8 @@
 module axis_fork #(
     parameter int SLAVE_NUM = 4
 ) (
-    axis_if.slave                  s_axis,
-    axis_if.master [SLAVE_NUM-1:0] m_axis
+    axis_if.slave  s_axis,
+    axis_if.master m_axis[SLAVE_NUM-1:0]
 );
 
     for (genvar i = 0; i < SLAVE_NUM; i++) begin : g_axis

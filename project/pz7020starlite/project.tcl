@@ -16,6 +16,10 @@ set_property top $sim_top [get_filesets sim_1]
 proc source_scripts {current_dir} {
     foreach sub_dir [glob -nocomplain -directory $current_dir *] {
         if {[file isdirectory $sub_dir]} {
+           global gowin
+            global xilinx
+            set gowin 0
+            set xilinx 1
             puts "Current dir: $sub_dir"
             cd $sub_dir
             foreach script [glob -nocomplain *.tcl] {
