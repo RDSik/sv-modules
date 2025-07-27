@@ -3,26 +3,33 @@
 module axis_join_rr_arb_tb ();
 
     localparam int MASTER_NUM = 4;
-    localparam int MEM_WIDTH = 16;
-    localparam int MEM_DEPTH = 64;
+    localparam int DATA_WIDTH = 16;
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    logic                  clk_i;
-    logic                  rstn_i;
-    logic [MASTER_NUM-1:0] start_i;
-    logic [MASTER_NUM-1:0] stop_i;
+    logic                                  clk_i;
+    logic                                  rstn_i;
+    logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] seed_i;
+    logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] poly_i;
+    int                                    delay;
 
     axis_if #(
-        .DATA_WIDTH(MEM_WIDTH)
-    ) s_axis (
+        .DATA_WIDTH(DATA_WIDTH)
+    ) lfsr_s_axis[MASTER_NUM-1:0] (
         .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .rstn_i(s_rstn_i)
     );
 
     axis_if #(
-        .DATA_WIDTH(MEM_WIDTH)
-    ) m_axis[MASTER_NUM-1:0] (
+        .DATA_WIDTH(DATA_WIDTH)
+    ) arb_s_axis (
+        .clk_i (clk_i),
+        .rstn_i(s_rstn_i)
+    );
+
+    axis_if #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) lfsr_m_axis[MASTER_NUM-1:0] (
         .clk_i (clk_i),
         .rstn_i(rstn_i)
     );
@@ -42,17 +49,11 @@ module axis_join_rr_arb_tb ();
     end
 
     initial begin
-        start_i = '0;
-        stop_i  = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
-            #100;
-            start_i[i] = 1'b1;
+            seed_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
+            poly_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
         end
-        #2000;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            #100;
-            stop_i[i] = 1'b1;
-        end
+        #1000;
     end
 
     initial begin
@@ -62,19 +63,20 @@ module axis_join_rr_arb_tb ();
 
     axis_join_rr_arb #(
         .MASTER_NUM(MASTER_NUM)
-    ) dut (
-        .s_axis(m_axis),
-        .m_axis(s_axis)
+    ) i_axis_join_rr_arb (
+        .s_axis(lfsr_m_axis),
+        .m_axis(arb_s_axis)
     );
 
-    for (genvar i = 0; i < MASTER_NUM; i++) begin
-        axis_data_gen #(
-            .MEM_WIDTH(MEM_WIDTH),
-            .MEM_DEPTH(MEM_DEPTH)
+    for (genvar i = 0; i < MASTER_NUM; i++) begin : g_lfsr
+        axis_lfsr #(
+            .CRC_MODE_EN(0),
+            .DATA_WIDTH (DATA_WIDTH)
         ) i_axis_data_gen (
-            .start_i(start_i[i]),
-            .stop_i (stop_i[i]),
-            .m_axis (m_axis[i])
+            .seed_i(seed_i[i]),
+            .poly_i(poly_i[i]),
+            .m_axis(lfsr_m_axis[i]),
+            .s_axis(lfsr_s_axis[i])
         );
     end
 
