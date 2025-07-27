@@ -33,7 +33,7 @@ module sfir_even_symmetric_systolic_top #(
 
     assign fir_o = arrayprod[TAP_NUM-1];  // Connect last product to output
 
-    logic [$clog2(TAP_NUM)-1] sel;
+    logic [$clog2(TAP_NUM)-1:0] sel;
     assign sel = (TAP_NUM * 2) - 1;
 
     shift_reg #(

@@ -77,7 +77,7 @@ module async_fifo #(
         .rd_data_o(rd_data_o)
     );
 
-    logic [$clog2(CDC_REG_NUM)-1] sel;
+    logic [$clog2(CDC_REG_NUM)-1:0] sel;
     assign sel = CDC_REG_NUM - 1;
 
     shift_reg #(
