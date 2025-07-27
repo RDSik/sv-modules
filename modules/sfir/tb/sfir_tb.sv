@@ -66,7 +66,7 @@ module sfir_tb ();
     ) i_round (
         .clk_i       (clk_i),
         .odd_even_i  (ROUND_ODD_EVEN),
-        .data_i      (fir_out),
+        .data_i      (fir_o),
         .round_data_o(round_data_o)
     );
 
