@@ -9,6 +9,7 @@ module axis_join_rr_arb_tb ();
 
     logic                                  clk_i;
     logic                                  rstn_i;
+    logic [MASTER_NUM-1:0]                 en_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] seed_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] poly_i;
     int                                    delay;
@@ -49,9 +50,12 @@ module axis_join_rr_arb_tb ();
     end
 
     initial begin
+        en_i = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
             seed_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
             poly_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
+            en_i[i] = 1'b1;
+            #100;
         end
         #1000;
     end
@@ -73,6 +77,7 @@ module axis_join_rr_arb_tb ();
             .CRC_MODE_EN(0),
             .DATA_WIDTH (DATA_WIDTH)
         ) i_axis_lfsr (
+            .en    (en_i),
             .seed_i(seed_i[i]),
             .poly_i(poly_i[i]),
             .m_axis(lfsr_m_axis[i]),
