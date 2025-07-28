@@ -26,16 +26,16 @@ module axis_lfsr #(
     assign s_axis.tready = s_axis.rstn_i;
     
     always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
-                m_axis.tvalid <= 1'b0;
+        if (~rstn_i) begin
+            m_axis.tvalid <= 1'b0;
+        end else begin
+            if (s_axis.tvalid) begin
+                m_axis.tvalid <= 1'b1;
             end else begin
-                if (s_axis.tvalid) begin
-                    m_axis.tvalid <= 1'b1;
-                end else begin
-                    m_axis.tvalid <= 1'b0;
-                end
+                m_axis.tvalid <= 1'b0;
             end
         end
+    end
 
     if (~CRC_MODE_EN) begin : g_non_crc
         logic feedback;
