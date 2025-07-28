@@ -77,7 +77,7 @@ module axis_join_rr_arb_tb ();
             .CRC_MODE_EN(0),
             .DATA_WIDTH (DATA_WIDTH)
         ) i_axis_lfsr (
-            .en    (en_i),
+            .en    (en_i[i]),
             .seed_i(seed_i[i]),
             .poly_i(poly_i[i]),
             .m_axis(lfsr_m_axis[i]),
