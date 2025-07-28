@@ -54,7 +54,7 @@ module axis_join_rr_arb_tb ();
         for (int i = 0; i < MASTER_NUM; i++) begin
             seed_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
             poly_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
-            en_i[i] = 1'b1;
+            en_i[i]   = 1'b1;
             #100;
         end
         #1000;
