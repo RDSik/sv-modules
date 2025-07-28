@@ -7,6 +7,7 @@ module axis_lfsr #(
     parameter int   DATA_WIDTH  = 16,
     parameter int   CRC_WIDTH   = 16
 ) (
+    input logic                  en_i,
     input logic [DATA_WIDTH-1:0] seed_i,
     input logic [DATA_WIDTH-1:0] poly_i,
 
@@ -28,7 +29,7 @@ module axis_lfsr #(
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             m_axis.tvalid <= 1'b0;
-        end else begin
+        end else if (en_i) begin
             if (s_axis.tvalid) begin
                 m_axis.tvalid <= 1'b1;
             end else begin
@@ -45,7 +46,7 @@ module axis_lfsr #(
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
                 m_axis.tdata <= seed_i;
-            end else begin
+            end else if (en_i) begin
                 m_axis.tdata <= {m_axis.tdata[DATA_WIDTH-2:0], feedback};
             end
         end
@@ -59,7 +60,7 @@ module axis_lfsr #(
         always @(posedge clk_i) begin
             if (~rstn_i) begin
                 m_axis.tdata  <= '1;
-            end else begin
+            end else if (en_i) begin
                 m_axis.tdata <= crc_byte(m_axis.tdata, s_axis.tdata);
             end
         end
