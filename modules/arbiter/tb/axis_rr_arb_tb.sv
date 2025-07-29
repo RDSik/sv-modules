@@ -82,7 +82,9 @@ module axis_rr_arb_tb ();
             forever begin
                 delay = $urandom_range(0, RESET_DELAY);
                 repeat (delay) @(posedge clk_i);
+                /* verilator lint_off WIDTHTRUNC */
                 tvalid = $urandom_range(0, (2 ** MASTER_NUM) - 1);
+                /* verilator lint_on WIDTHTRUNC */
                 @(posedge clk_i);
                 tvalid = '0;
             end
