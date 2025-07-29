@@ -12,9 +12,9 @@ module axis_rr_arb_tb ();
     logic                                  clk_i;
     logic                                  rstn_i;
     logic [MASTER_NUM-1:0]                 en_i;
+    logic [MASTER_NUM-1:0]                 tvalid;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] seed_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] poly_i;
-    logic [MASTER_NUM-1:0]                 tvalid;
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH),
