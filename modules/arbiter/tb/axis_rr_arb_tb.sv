@@ -6,13 +6,15 @@ module axis_rr_arb_tb ();
     localparam int DATA_WIDTH = 16;
     localparam int USER_WIDTH = $clog2(MASTER_NUM);
     localparam int CLK_PER_NS = 2;
-    localparam int RESET_DELAY = 10;
+    localparam int RESET_DELAY = 20;
+    localparam int SIM_TIME = 500;
 
     logic                                  clk_i;
     logic                                  rstn_i;
     logic [MASTER_NUM-1:0]                 en_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] seed_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] poly_i;
+    logic [MASTER_NUM-1:0]                 tvalid;
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -53,25 +55,51 @@ module axis_rr_arb_tb ();
     end
 
     initial begin
-        en_i = '0;
-        arb_s_axis.tready = '1;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            /* verilator lint_off WIDTHTRUNC */
-            seed_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
-            poly_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
-            /* verilator lint_on WIDTHTRUNC */
-        end
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            #200;
-            en_i[i] = 1'b1;
-        end
-        #200;
-`ifdef VERILATOR
-        $finish();
-`else
-        $stop();
-`endif
+        fork
+            init();
+            valid_gen();
+            timeout();
+        join_none
     end
+
+    task static init();
+        begin
+            en_i              = '1;
+            arb_s_axis.tready = '1;
+            for (int i = 0; i < MASTER_NUM; i++) begin
+                /* verilator lint_off WIDTHTRUNC */
+                seed_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
+                poly_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
+                /* verilator lint_on WIDTHTRUNC */
+            end
+        end
+    endtask
+
+    task static valid_gen();
+        int delay;
+        begin
+            wait (rstn_i);
+            forever begin
+                delay = $urandom_range(0, RESET_DELAY);
+                repeat (delay) @(posedge clk_i);
+                tvalid = $urandom_range(0, (2 ** MASTER_NUM) - 1);
+                @(posedge clk_i);
+                tvalid = '0;
+            end
+        end
+    endtask
+
+    task static timeout();
+        begin
+            repeat (SIM_TIME) @(posedge clk_i);
+            $display("Test timeout in: %0t ns\n", $time());
+`ifdef VERILATOR
+            $finish();
+`else
+            $stop();
+`endif
+        end
+    endtask
 
     initial begin
         $dumpfile("axis_rr_arb_tb.vcd");
@@ -88,7 +116,7 @@ module axis_rr_arb_tb ();
     );
 
     for (genvar i = 0; i < MASTER_NUM; i++) begin : g_lfsr
-        assign lfsr_s_axis[i].tvalid = 1'b1;
+        assign lfsr_s_axis[i].tvalid = tvalid[i];
 
         axis_lfsr_wrap #(
             .DATA_WIDTH(DATA_WIDTH)
