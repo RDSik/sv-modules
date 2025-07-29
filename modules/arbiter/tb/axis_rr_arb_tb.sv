@@ -121,7 +121,8 @@ module axis_rr_arb_tb ();
         assign lfsr_s_axis[i].tvalid = tvalid[i];
 
         axis_lfsr_wrap #(
-            .DATA_WIDTH(DATA_WIDTH)
+            .CRC_MODE_EN(0),
+            .DATA_WIDTH (DATA_WIDTH)
         ) i_axis_lfsr_wrap (
             .en_i  (en_i[i]),
             .poly_i(poly_i[i]),
