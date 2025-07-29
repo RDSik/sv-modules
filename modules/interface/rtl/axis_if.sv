@@ -1,7 +1,7 @@
 interface axis_if #(
     parameter int DATA_WIDTH = 8,
-    parameter int DEST_WIDTH = 1,
-    parameter int USER_WIDTH = 1,
+    parameter int DEST_WIDTH = 2,
+    parameter int USER_WIDTH = 2,
     parameter int ID_WIDTH   = 1
 ) (
     input logic clk_i,

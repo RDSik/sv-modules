@@ -2,8 +2,10 @@ clc
 clear
 close
 
-COE_WIDTH    = 16;
-COE_NAME     = 'fir.coe';
+COE_WIDTH     = 16;
+COE_FILE_NAME = 'fir.coe';
+COE_MEM_NAME  = 'fir.mem';
+COE_FILE_TYPE = 'coe';
 
 Fs          = 250e6;
 Fpass       = 55e6;
@@ -20,5 +22,17 @@ fvtool(filter_coe, 'Fs', Fs);
 
 hq = dfilt.dffir(filter_coe); 
 set(hq,'arithmetic','fixed');
-set(hq, 'coeffwordlength', COE_WIDTH); 
-coewrite(hq, 10, COE_NAME);
+set(hq, 'coeffwordlength', COE_WIDTH);
+
+if (strcmp(COE_FILE_TYPE, 'coe'))
+    coewrite(hq, 16, COE_FILE_NAME);
+elseif (strcmp(COE_FILE_TYPE, 'mem'))
+    coe_fid = fopen(COE_MEM_NAME, 'w');
+    if coe_fid == -1
+        error('File %s is not opened', COE_MEM_NAME);
+    end
+
+    for i = 1:length(filter_coe)
+        fprintf(coe_fid, '%s\n', dec2hex(filter_coe(i), COE_WIDTH/4));
+    end
+end
