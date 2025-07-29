@@ -48,6 +48,7 @@ module axis_join_rr_arb #(
                 m_axis.tdata = s_axis[i].tdata;
                 m_axis.tuser = i;
             end
+        end
     end
 
     always_comb begin
