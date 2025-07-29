@@ -56,8 +56,10 @@ module axis_rr_arb_tb ();
         en_i = '0;
         arb_s_axis.tready = '1;
         for (int i = 0; i < MASTER_NUM; i++) begin
+            /* verilator lint_off WIDTHTRUNC */
             seed_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
             poly_i[i] = $urandom_range(1, (2 ** DATA_WIDTH) - 1);
+            /* verilator lint_on WIDTHTRUNC */
         end
         for (int i = 0; i < MASTER_NUM; i++) begin
             #200;
