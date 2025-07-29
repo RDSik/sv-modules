@@ -66,7 +66,11 @@ module axis_rr_arb_tb ();
             en_i[i] = 1'b1;
         end
         #200;
+`ifdef VERILATOR
+        $finish();
+`else
         $stop();
+`endif
     end
 
     initial begin
