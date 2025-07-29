@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module axis_lfsr_wrap #(
     parameter logic CRC_MODE_EN = 0,
     parameter int   DATA_WIDTH  = 16,

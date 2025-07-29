@@ -40,7 +40,9 @@ module round_robin_arbiter #(
         ptr_next = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
             if (grant_o[i]) begin
+                /* verilator lint_off WIDTHTRUNC */
                 ptr_next = (i + 1) % MASTER_NUM;
+                /* verilator lint_on WIDTHTRUNC */
                 break;
             end
         end

@@ -2,6 +2,7 @@
 // CRC_MODE only with CRC-8-CCIT, CRC-16-CCIT, CRC-32-MPEG-2 and CRC-64-ISO algorithms
 // --------------------------------------------------------------------------------------
 
+/* verilator lint_off TIMESCALEMOD */
 module crc #(
     parameter int DATA_WIDTH = 16,
     parameter int CRC_WIDTH  = 16

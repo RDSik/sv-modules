@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module lfsr #(
     parameter int DATA_WIDTH = 16
 ) (
