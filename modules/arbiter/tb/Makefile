@@ -1,4 +1,4 @@
-TOP ?= axis_join_rr_arb
+TOP ?= axis_rr_arb
 
 SIM ?= questa
 
@@ -6,6 +6,7 @@ MACRO_FILE := $(TOP)_tb.do
 
 SRC_FILES := $(wildcard \
 	../../interface/rtl/*.sv \
+	../../lfsr/rtl/*.sv \
 	../rtl/*.sv \
 	./*.sv \
 )
