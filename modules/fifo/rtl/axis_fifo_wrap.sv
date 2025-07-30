@@ -13,12 +13,6 @@ module axis_fifo_wrap #(
     output logic a_empty_o
 );
 
-    /* verilator lint_off WIDTHEXPAND */
-    if ((FIFO_MODE != "sync") && (FIFO_MODE != "async")) begin : g_fifo_mode_err
-        $error("Only sync or async FIFO_MODE is available!");
-    end
-    /* verilator lint_on WIDTHEXPAND */
-
     logic pop;
     logic push;
     logic empty;
@@ -67,7 +61,7 @@ module axis_fifo_wrap #(
             .a_empty_o(a_empty_o),
             .a_full_o (a_full_o)
         );
-    end else begin
+    end else begin : g_fifo
         $error("Only sync or async FIFO_MODE is available!");
     end
 
