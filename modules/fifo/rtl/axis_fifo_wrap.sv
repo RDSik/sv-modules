@@ -67,6 +67,8 @@ module axis_fifo_wrap #(
             .a_empty_o(a_empty_o),
             .a_full_o (a_full_o)
         );
+    end else begin
+        $error("Only sync or async FIFO_MODE is available!");
     end
 
 endmodule
