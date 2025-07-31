@@ -81,34 +81,41 @@ module apb_uart
     assign fifo_tx.tdata                  = uart_regs.tx.data;
     assign fifo_rx.tready                 = rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR);
 
+    assign s_apb.pslverr                  = '0;
+
     always_comb begin
-        s_apb.pslverr = '0;
-        s_apb.prdata  = '0;
-        s_apb.pready  = '1;
+        if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
+            s_apb.pready = rx_handshake;
+        end else if (wr_valid && (s_apb.paddr == TX_DATA_REG_ADDR)) begin
+            s_apb.pready = tx_handshake;
+        end else begin
+            s_apb.pready = 1'b1;
+        end
+    end
+
+    always_comb begin
         if (rd_valid && (s_apb.paddr == RX_DATA_REG_ADDR)) begin
             s_apb.prdata = uart_regs.rx;
-            s_apb.pready = rx_handshake;
         end else if (rd_valid && (s_apb.paddr == STATUS_REG_ADDR)) begin
             s_apb.prdata = uart_regs.status;
+        end else begin
+            s_apb.prdata = '0;
         end
     end
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            uart_regs.control     <= '0;
             uart_regs.clk_divider <= '0;
+            uart_regs.control     <= '0;
             uart_regs.tx          <= '0;
         end else begin
-            if (wr_valid && (s_apb.paddr == CLK_DIVIDER_REG_ADDR)) begin
-                uart_regs.clk_divider <= s_apb.pwdata;
-            end
-
-            if (wr_valid && (s_apb.paddr == CONTROL_REG_ADDR)) begin
-                uart_regs.control <= s_apb.pwdata;
-            end
-
-            if (wr_valid && (s_apb.paddr == TX_DATA_REG_ADDR)) begin
-                uart_regs.tx <= s_apb.pwdata;
+            if (wr_valid) begin
+                case (s_apb.paddr)
+                    CLK_DIVIDER_REG_ADDR: uart_regs.clk_divider <= s_apb.pwdata;
+                    CONTROL_REG_ADDR:     uart_regs.control <= s_apb.pwdata;
+                    TX_DATA_REG_ADDR:     uart_regs.tx <= s_apb.pwdata;
+                    default:              ;
+                endcase
             end
         end
     end
