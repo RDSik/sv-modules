@@ -95,7 +95,7 @@ module apb_uart
 
     always_comb begin
         if (rd_valid) begin
-            case(s_apb.paddr)
+            case (s_apb.paddr)
                 RX_DATA_REG_ADDR: s_apb.prdata = uart_regs.rx;
                 STATUS_REG_ADDR:  s_apb.prdata = uart_regs.status;
                 default:          s_apb.prdata = '0;
