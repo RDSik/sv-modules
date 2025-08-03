@@ -11,7 +11,6 @@ module axis_rr_arb_tb ();
 
     logic                                  clk_i;
     logic                                  rstn_i;
-    logic [MASTER_NUM-1:0]                 en_i;
     logic [MASTER_NUM-1:0]                 tvalid;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] seed_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] poly_i;
@@ -64,7 +63,6 @@ module axis_rr_arb_tb ();
 
     task static init();
         begin
-            en_i              = '1;
             arb_s_axis.tready = '1;
             for (int i = 0; i < MASTER_NUM; i++) begin
                 /* verilator lint_off WIDTHTRUNC */
@@ -124,7 +122,6 @@ module axis_rr_arb_tb ();
             .CRC_MODE_EN(0),
             .DATA_WIDTH (DATA_WIDTH)
         ) i_axis_lfsr_wrap (
-            .en_i  (en_i[i]),
             .poly_i(poly_i[i]),
             .seed_i(seed_i[i]),
             .s_axis(lfsr_s_axis[i]),
