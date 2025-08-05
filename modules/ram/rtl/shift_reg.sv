@@ -2,13 +2,11 @@
 module shift_reg #(
     parameter logic RESET_EN   = 1,
     parameter int   DATA_WIDTH = 16,
-    parameter int   DELAY      = 16,
-    parameter int   SEL_WIDTH  = $clog2(DELAY)
+    parameter int   DELAY      = 16
 ) (
     input  logic                  clk_i,
     input  logic                  rstn_i,
     input  logic                  en_i,
-    input  logic [ SEL_WIDTH-1:0] sel_i,
     input  logic [DATA_WIDTH-1:0] data_i,
     output logic [DATA_WIDTH-1:0] data_o
 );
@@ -57,7 +55,7 @@ module shift_reg #(
                 end
             end
 
-            assign data_o[i] = delay[i][sel_i];
+            assign data_o[i] = delay[i][DELAY-1];
         end
     end
 

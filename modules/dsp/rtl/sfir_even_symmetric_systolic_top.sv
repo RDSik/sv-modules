@@ -33,20 +33,14 @@ module sfir_even_symmetric_systolic_top #(
 
     assign fir_o = arrayprod[TAP_NUM-1];  // Connect last product to output
 
-    localparam int SEL_WIDTH = $clog2(TAP_NUM * 2);
-    logic [SEL_WIDTH-1:0] sel;
-    assign sel = SEL_WIDTH'((TAP_NUM * 2) - 1);
-
     shift_reg #(
         .RESET_EN  (0),
         .DATA_WIDTH(DATA_WIDTH),
-        .DELAY     (TAP_NUM * 2),
-        .SEL_WIDTH (SEL_WIDTH)
+        .DELAY     (TAP_NUM * 2)
     ) shift_reg (
         .clk_i (clk_i),
-        .rstn_i(),
+        .rstn_i(1'b1),
         .en_i  (1'b1),
-        .sel_i (sel),
         .data_i(data_i),
         .data_o(shifterout)
     );
