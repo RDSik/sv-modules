@@ -33,16 +33,18 @@ package uart_pkg;
     typedef struct packed {
         uart_data_reg_t        rx;
         uart_data_reg_t        tx;
-        uart_control_reg_t     control;
-        uart_clk_divider_reg_t clk_divider;
         uart_status_reg_t      status;
+        uart_clk_divider_reg_t clk_divider;
+        uart_control_reg_t     control;
     } uart_regs_t;
 
-    localparam int STATUS_REG_ADDR = 0;
-    localparam int CONTROL_REG_ADDR = STATUS_REG_ADDR + $bits(uart_status_reg_t) / 8;
+    localparam int CONTROL_REG_ADDR = 0;
     localparam int CLK_DIVIDER_REG_ADDR = CONTROL_REG_ADDR + $bits(uart_control_reg_t) / 8;
-    localparam int TX_DATA_REG_ADDR = CLK_DIVIDER_REG_ADDR + $bits(uart_clk_divider_reg_t) / 8;
+    localparam int STATUS_REG_ADDR = CLK_DIVIDER_REG_ADDR + $bits(uart_clk_divider_reg_t) / 8;
+    localparam int TX_DATA_REG_ADDR = STATUS_REG_ADDR + $bits(uart_status_reg_t) / 8;
     localparam int RX_DATA_REG_ADDR = TX_DATA_REG_ADDR + $bits(uart_data_reg_t) / 8;
+
+    localparam int REGS_NUM = $bits(uart_regs_t) / 32;
 
     function automatic logic parity;
         input logic [DATA_WIDTH-1:0] data;
