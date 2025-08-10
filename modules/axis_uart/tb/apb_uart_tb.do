@@ -5,7 +5,7 @@ vlog ../../interface/rtl/axis_if.sv
 vlog ../../interface/rtl/apb_if.sv
 
 vlog ../rtl/uart_pkg.svh
-vlog ../bd/apb_uart.sv
+vlog ../rtl/apb_uart.sv
 vlog ../rtl/axis_uart_tx.sv
 vlog ../rtl/axis_uart_rx.sv
 
@@ -25,6 +25,7 @@ vsim -voptargs="+acc" apb_uart_tb
 add log -r /*
 
 add wave -expand -group TOP     /apb_uart_tb/i_apb_uart/*
+add wave -expand -group APB     /apb_uart_tb/i_apb_uart/s_apb/*
 add wave -expand -group FIFO_RX /apb_uart_tb/i_apb_uart/i_axis_fifo_rx/*
 add wave -expand -group UART_RX /apb_uart_tb/i_apb_uart/i_axis_uart_rx/*
 add wave -expand -group FIFO_TX /apb_uart_tb/i_apb_uart/i_axis_fifo_tx/*

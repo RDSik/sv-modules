@@ -211,6 +211,8 @@ proc create_root_design { parentCell } {
   set probe4_0 [ create_bd_port -dir I -from 0 -to 0 probe4_0 ]
   set probe5_0 [ create_bd_port -dir I -from 0 -to 0 probe5_0 ]
   set probe6_0 [ create_bd_port -dir I -from 0 -to 0 probe6_0 ]
+  set probe7_0 [ create_bd_port -dir I -from 0 -to 0 probe7_0 ]
+  set probe8_0 [ create_bd_port -dir I -from 0 -to 0 probe8_0 ]
 
   # Create instance: axi_apb_bridge_0, and set properties
   set axi_apb_bridge_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_apb_bridge:3.0 axi_apb_bridge_0 ]
@@ -476,6 +478,8 @@ proc create_root_design { parentCell } {
   connect_bd_net -net probe4_0_1 [get_bd_ports probe4_0] [get_bd_pins ila_0/probe4]
   connect_bd_net -net probe5_0_1 [get_bd_ports probe5_0] [get_bd_pins ila_0/probe5]
   connect_bd_net -net probe6_0_1 [get_bd_ports probe6_0] [get_bd_pins ila_0/probe6]
+  connect_bd_net -net probe7_0_1 [get_bd_ports probe7_0] [get_bd_pins ila_0/probe7]
+  connect_bd_net -net probe8_0_1 [get_bd_ports probe8_0] [get_bd_pins ila_0/probe8]
   connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_ports peripheral_aresetn_0] [get_bd_pins axi_apb_bridge_0/s_axi_aresetn] [get_bd_pins proc_sys_reset_0/peripheral_aresetn]
   connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_ports FCLK_CLK0_0] [get_bd_pins axi_apb_bridge_0/s_axi_aclk] [get_bd_pins ila_0/clk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins smartconnect_0/aclk]

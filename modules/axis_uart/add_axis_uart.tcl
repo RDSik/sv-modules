@@ -8,8 +8,9 @@ if {$xilinx == 1} {
     add_files -norecurse $xci_defaultlib
 
     set xil_defaultlib "
-        $path/bd/apb_uart.sv
+        $path/bd/zynq_bd_wrapper.v
         $path/bd/ps_pl_uart.sv
+        $path/rtl/apb_uart.sv
         $path/rtl/axis_uart_rx.sv
         $path/rtl/axis_uart_tx.sv
         $path/rtl/axis_uart_top.sv

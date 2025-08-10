@@ -3,6 +3,7 @@
 `include "../rtl/uart_pkg.svh"
 
 module apb_uart_tb ();
+    import uart_pkg::*;
 
     localparam int FIFO_DEPTH = 128;
     localparam int APB_ADDR_WIDTH = 32;
@@ -11,6 +12,8 @@ module apb_uart_tb ();
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
+
+    uart_regs_t uart_regs;
 
     logic clk_i;
     logic rstn_i;
@@ -44,11 +47,10 @@ module apb_uart_tb ();
 
     initial begin
         $dumpfile("apb_uart_tb.vcd");
-        $dumpvars(0, axis_uart_bridge_tb);
+        $dumpvars(0, apb_uart_tb);
     end
 
-    task static uart_init();
-        uart_regs_t uart_regs;
+    task static uart_init;
         logic [31:0] rdata;
         logic [31:0] wdata;
         begin
@@ -56,9 +58,15 @@ module apb_uart_tb ();
             uart_regs = '0;
             uart_regs.clk_divider = 10;
             uart_regs.tx.data = wdata;
-            write_reg(0, uart_regs.control);
-            write_reg(4, uart_regs.clk_divider);
-            write_reg(0, uart_regs.tx.data);
+            write_reg(CLK_DIVIDER_REG_ADDR, uart_regs.clk_divider);
+            write_reg(TX_DATA_REG_ADDR, uart_regs.tx.data);
+            uart_regs.control.tx_reset = 1'b1;
+            uart_regs.control.rx_reset = 1'b1;
+            write_reg(CONTROL_REG_ADDR, uart_regs.control);
+            uart_regs.control.tx_reset = 1'b0;
+            uart_regs.control.rx_reset = 1'b0;
+            write_reg(CONTROL_REG_ADDR, uart_regs.control);
+            #500;
             for (int i = 0; i < REGS_NUM; i += 4) begin
                 read_reg(i, rdata);
             end
@@ -72,7 +80,7 @@ module apb_uart_tb ();
         $stop;
     endtask
 
-    task static write_reg();
+    task static write_reg;
         input logic [31:0] addr;
         input logic [31:0] data;
         begin
@@ -92,7 +100,7 @@ module apb_uart_tb ();
         end
     endtask
 
-    task static read_reg();
+    task static read_reg;
         input logic [31:0] addr;
         output logic [31:0] data;
         begin
@@ -117,7 +125,7 @@ module apb_uart_tb ();
         .APB_ADDR_WIDTH(APB_ADDR_WIDTH),
         .APB_DATA_WIDTH(APB_DATA_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) i_axis_uart_bram_ctrl (
+    ) i_apb_uart (
         .uart_rx_i(uart),
         .uart_tx_o(uart),
         .s_apb    (s_apb)

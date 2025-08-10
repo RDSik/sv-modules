@@ -1,5 +1,5 @@
 set part     "xc7z020clg400-2"
-set syn_top  "axis_uart_top"
+set syn_top  "ps_pl_uart"
 set sim_top  "axis_uart_top_tb"
 set language "Verilog"
 set gui_flag  1
@@ -39,7 +39,6 @@ source_scripts $modules_dir
 upgrade_ip [get_ips -all]
 
 add_files -fileset constrs_1 -norecurse $project_dir/$syn_top.xdc
-add_files -fileset constrs_1 -norecurse $project_dir/axis_uart_bridge.xdc
 
 set_property strategy Flow_PerfOptimized_high [get_runs synth_1]
 set_property strategy Performance_ExtraTimingOpt [get_runs impl_1]
