@@ -13,8 +13,6 @@ module apb_uart_tb ();
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    uart_regs_t uart_regs;
-
     logic clk_i;
     logic rstn_i;
 
@@ -51,26 +49,27 @@ module apb_uart_tb ();
     end
 
     task static uart_init;
+        uart_regs_t uart_regs;
         logic [31:0] rdata;
         logic [31:0] wdata;
         begin
             wdata = $urandom_range(0, (2 * 8) - 1);
             uart_regs = '0;
-            uart_regs.clk_divider = 10;
-            uart_regs.tx.data = wdata;
-            write_reg(CLK_DIVIDER_REG_ADDR, uart_regs.clk_divider);
-            write_reg(TX_DATA_REG_ADDR, uart_regs.tx.data);
             uart_regs.control.tx_reset = 1'b1;
             uart_regs.control.rx_reset = 1'b1;
             write_reg(CONTROL_REG_ADDR, uart_regs.control);
             uart_regs.control.tx_reset = 1'b0;
             uart_regs.control.rx_reset = 1'b0;
             write_reg(CONTROL_REG_ADDR, uart_regs.control);
-            #500;
-            for (int i = 0; i < REGS_NUM; i += 4) begin
-                read_reg(i, rdata);
+            uart_regs.clk_divider = 10;
+            write_reg(CLK_DIVIDER_REG_ADDR, uart_regs.clk_divider);
+            uart_regs.tx.data = wdata;
+            write_reg(TX_DATA_REG_ADDR, uart_regs.tx.data);
+            #200;
+            for (int i = 0; i < REGS_NUM; i++) begin
+                read_reg(i * 4, rdata);
             end
-            read_reg(16, rdata);
+            #20;
             if (wdata == rdata) begin
                 $display("Success wdata = %0d, rdata = %0d", wdata, rdata);
             end else begin
@@ -84,6 +83,7 @@ module apb_uart_tb ();
         input logic [31:0] addr;
         input logic [31:0] data;
         begin
+            @(posedge clk_i);
             s_apb.pwdata  = data;
             s_apb.paddr   = addr;
             s_apb.penable = 1'b1;
@@ -92,11 +92,8 @@ module apb_uart_tb ();
             wait (s_apb.pready);
             $display("%0t Write data: addr - %0d, data - %0d\n", $time, addr, data);
             @(posedge clk_i);
-            s_apb.paddr   = '0;
-            s_apb.pwdata  = '0;
-            s_apb.penable = '0;
-            s_apb.psel    = '0;
-            s_apb.pwrite  = '0;
+            s_apb.psel = 1'b0;
+            s_apb.penable = 1'b0;
         end
     endtask
 
@@ -104,26 +101,24 @@ module apb_uart_tb ();
         input logic [31:0] addr;
         output logic [31:0] data;
         begin
-            data = s_apb.prdata;
-            s_apb.paddr = addr;
+            @(posedge clk_i);
+            s_apb.paddr   = addr;
+            s_apb.psel    = 1'b1;
             s_apb.penable = 1'b1;
-            s_apb.penable = 1'b1;
-            s_apb.pwrite = 1'b0;
+            s_apb.pwrite  = 1'b0;
             wait (s_apb.pready);
+            data = s_apb.prdata;
             $display("%0t Read data: addr - %0d, data - %0d\n", $time, addr, data);
             @(posedge clk_i);
-            s_apb.paddr   = '0;
-            s_apb.pwdata  = '0;
-            s_apb.penable = '0;
-            s_apb.penable = '0;
-            s_apb.pwrite  = '0;
+            s_apb.psel = 1'b0;
+            s_apb.penable = 1'b0;
         end
     endtask
 
     apb_uart #(
-        .FIFO_DEPTH(FIFO_DEPTH),
-        .APB_ADDR_WIDTH(APB_ADDR_WIDTH),
-        .APB_DATA_WIDTH(APB_DATA_WIDTH),
+        .FIFO_DEPTH     (FIFO_DEPTH),
+        .APB_ADDR_WIDTH (APB_ADDR_WIDTH),
+        .APB_DATA_WIDTH (APB_DATA_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_apb_uart (
         .uart_rx_i(uart),

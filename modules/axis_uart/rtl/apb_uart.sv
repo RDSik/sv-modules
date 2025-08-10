@@ -57,7 +57,6 @@ module apb_uart
         .rstn_i(rx_reset)
     );
 
-    // TODO: Add AXIS to APB logic
     logic wr_valid;
     logic rd_valid;
     logic tx_handshake;
