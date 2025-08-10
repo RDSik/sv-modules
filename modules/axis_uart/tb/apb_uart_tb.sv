@@ -92,7 +92,7 @@ module apb_uart_tb ();
             wait (s_apb.pready);
             $display("%0t Write data: addr - %0d, data - %0d\n", $time, addr, data);
             @(posedge clk_i);
-            s_apb.psel = 1'b0;
+            s_apb.psel    = 1'b0;
             s_apb.penable = 1'b0;
         end
     endtask
@@ -110,7 +110,7 @@ module apb_uart_tb ();
             data = s_apb.prdata;
             $display("%0t Read data: addr - %0d, data - %0d\n", $time, addr, data);
             @(posedge clk_i);
-            s_apb.psel = 1'b0;
+            s_apb.psel    = 1'b0;
             s_apb.penable = 1'b0;
         end
     endtask
