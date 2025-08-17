@@ -18,6 +18,7 @@ vlog ../../fifo/rtl/wr_ptr_full.sv
 vlog ../../ram/rtl/ram_dp_2clk.sv
 vlog ../../ram/rtl/ram_dp.sv
 vlog ../../ram/rtl/shift_reg.sv
+vlog ../../ram/rtl/apb_reg_file.sv
 
 vlog apb_uart_tb.sv
 

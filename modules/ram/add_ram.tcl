@@ -7,6 +7,7 @@ if {$xilinx == 1} {
         $path/rtl/ram_dp_2clk.sv
         $path/rtl/bram_true_dp.sv
         $path/rtl/shift_reg.sv
+        $path/rtl/apb_reg_file.sv
     "
 
     add_files -norecurse $xil_defaultlib
