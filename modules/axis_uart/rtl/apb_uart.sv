@@ -70,7 +70,7 @@ module apb_uart
 
     always_comb begin
         rd_valid                     = '1;
-        rd_regs.wr                   = we_regs;
+        rd_regs.wr                   = wr_regs;
 
         rd_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
         rd_regs.status.tx_fifo_empty = ~uart_tx.tvalid;
