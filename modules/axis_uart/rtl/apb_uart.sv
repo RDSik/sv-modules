@@ -70,6 +70,7 @@ module apb_uart
 
     always_comb begin
         rd_valid                     = '1;
+        rd_regs.wr                   = we_regs;
 
         rd_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
         rd_regs.status.tx_fifo_empty = ~uart_tx.tvalid;
@@ -82,7 +83,7 @@ module apb_uart
         rd_regs.rx.rsrvd             = '0;
     end
 
-    assign fifo_tx.tdata  = regs.tx.data;
+    assign fifo_tx.tdata  = we_regs.tx.data;
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_valid[RX_DATA_REG_POS];
 
