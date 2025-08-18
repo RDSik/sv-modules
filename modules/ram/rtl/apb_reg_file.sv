@@ -54,10 +54,10 @@ module apb_reg_file #(
         end
     end
 
-    always_comb begin
+    always_ff @(posedge clk_i) begin
         for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
-            wr_regs_o[reg_indx]  = wr_reg[reg_indx];
-            wr_valid_o[reg_indx] = wr_valid[reg_indx];
+            wr_regs_o[reg_indx]  <= wr_reg[reg_indx];
+            wr_valid_o[reg_indx] <= wr_valid[reg_indx];
         end
     end
 
