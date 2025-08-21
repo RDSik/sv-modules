@@ -8,8 +8,6 @@ if {$xilinx == 1} {
     add_files -norecurse $xci_defaultlib
 
     set xil_defaultlib "
-        $path/bd/zynq_bd_wrapper.v
-        $path/bd/ps_pl_uart.sv
         $path/rtl/apb_uart.sv
         $path/rtl/axis_uart_rx.sv
         $path/rtl/axis_uart_tx.sv
@@ -19,8 +17,6 @@ if {$xilinx == 1} {
     "
 
     add_files -norecurse $xil_defaultlib
-
-    source $path/bd/zynq_bd.tcl
 } elseif {$gowin == 1} {
     add_file $path/rtl/axis_uart_tx.sv
     add_file $path/rtl/axis_uart_rx.sv

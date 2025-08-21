@@ -9,9 +9,13 @@ if {$xilinx == 1} {
         $path/rtl/shift_reg.sv
         $path/rtl/apb_reg_file.sv
         $path/rtl/counter.sv
+        $path/bd/zynq_bd_wrapper.v
+        $path/bd/ps_pl_uart.sv
     "
 
     add_files -norecurse $xil_defaultlib
+
+    source $path/bd/zynq_bd.tcl
 } elseif {$gowin == 1} {
     add_file $path/rtl/ram.sv
     add_file $path/rtl/ram_dp.sv
