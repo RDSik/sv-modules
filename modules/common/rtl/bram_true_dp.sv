@@ -22,12 +22,6 @@ module bram_true_dp #(
     output logic [ MEM_WIDTH-1:0] b_data_o
 );
 
-    /* verilator lint_off WIDTHEXPAND */
-    if ((MODE != "NO_CHANGE") && (MODE != "READ_FIRST") && (MODE != "WRITE_FIRST")) begin
-        $error("Only NO_CHANGE, READ_FIRST and WRITE_FIRST MODE is available!");
-    end
-    /* verilator lint_on WIDTHEXPAND */
-
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
     if (MODE == "WRITE_FIRST") begin : g_wr_first
@@ -114,6 +108,8 @@ module bram_true_dp #(
                 end
             end
         end
+    end else begin : g_mode_err
+        $error("Only NO_CHANGE, READ_FIRST and WRITE_FIRST MODE is available!");
     end
 
 endmodule
