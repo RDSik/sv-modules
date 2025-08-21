@@ -6,7 +6,7 @@ module apb_reg_file #(
     parameter int      WR_REG_NUM     = 3,
     parameter type     rd_reg_t       = logic         [RD_REG_NUM-1:0][REG_DATA_WIDTH-1:0],
     parameter type     wr_reg_t       = logic         [WR_REG_NUM-1:0][REG_DATA_WIDTH-1:0],
-    parameter rd_reg_t REG_INIT       = '{defaulf: 0}
+    parameter rd_reg_t REG_INIT       = '{default: 0}
 ) (
     input rd_reg_t                  rd_regs_i,
     input logic    [RD_REG_NUM-1:0] rd_valid_i,
