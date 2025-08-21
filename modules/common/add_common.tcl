@@ -18,4 +18,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/ram_dp_2clk.sv
     add_file $path/rtl/bram_true_dp.sv
     add_file $path/rtl/shift_reg.sv
+    add_file $path/rtl/counter.sv
 }
