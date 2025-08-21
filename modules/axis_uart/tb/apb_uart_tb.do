@@ -15,22 +15,23 @@ vlog ../../fifo/rtl/rd_ptr_empty.sv
 vlog ../../fifo/rtl/sync_fifo.sv
 vlog ../../fifo/rtl/wr_ptr_full.sv
 
-vlog ../../ram/rtl/ram_dp_2clk.sv
-vlog ../../ram/rtl/ram_dp.sv
-vlog ../../ram/rtl/shift_reg.sv
-vlog ../../ram/rtl/apb_reg_file.sv
+vlog ../../common/rtl/ram_dp_2clk.sv
+vlog ../../common/rtl/ram_dp.sv
+vlog ../../common/rtl/shift_reg.sv
+vlog ../../common/rtl/apb_reg_file.sv
 
 vlog apb_uart_tb.sv
 
 vsim -voptargs="+acc" apb_uart_tb
 add log -r /*
 
-add wave -expand -group TOP     /apb_uart_tb/i_apb_uart/*
-add wave -expand -group APB     /apb_uart_tb/i_apb_uart/s_apb/*
-add wave -expand -group FIFO_RX /apb_uart_tb/i_apb_uart/i_axis_fifo_rx/*
-add wave -expand -group UART_RX /apb_uart_tb/i_apb_uart/i_axis_uart_rx/*
-add wave -expand -group FIFO_TX /apb_uart_tb/i_apb_uart/i_axis_fifo_tx/*
-add wave -expand -group UART_TX /apb_uart_tb/i_apb_uart/i_axis_uart_tx/*
+add wave -expand -group TOP      /apb_uart_tb/i_apb_uart/*
+add wave -expand -group FIFO_RX  /apb_uart_tb/i_apb_uart/i_axis_fifo_rx/*
+add wave -expand -group UART_RX  /apb_uart_tb/i_apb_uart/i_axis_uart_rx/*
+add wave -expand -group FIFO_TX  /apb_uart_tb/i_apb_uart/i_axis_fifo_tx/*
+add wave -expand -group UART_TX  /apb_uart_tb/i_apb_uart/i_axis_uart_tx/*
+add wave -expand -group REG_FILE /apb_uart_tb/i_apb_uart/i_apb_reg_file/*
+add wave -expand -group APB      /apb_uart_tb/i_apb_uart/s_apb/*
 
 run -all
 wave zoom full

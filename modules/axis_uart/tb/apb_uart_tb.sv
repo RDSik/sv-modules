@@ -49,7 +49,7 @@ module apb_uart_tb ();
     end
 
     task static uart_init;
-        uart_regs_t uart_regs;
+        uart_wr_regs_t uart_regs;
         logic [31:0] rdata;
         logic [31:0] wdata;
         begin
@@ -57,16 +57,16 @@ module apb_uart_tb ();
             uart_regs = '0;
             uart_regs.control.tx_reset = 1'b1;
             uart_regs.control.rx_reset = 1'b1;
-            write_reg(CONTROL_REG_ADDR, uart_regs.control);
+            write_reg(CONTROL_REG_POS * 4, uart_regs.control);
             uart_regs.control.tx_reset = 1'b0;
             uart_regs.control.rx_reset = 1'b0;
-            write_reg(CONTROL_REG_ADDR, uart_regs.control);
+            write_reg(CONTROL_REG_POS * 4, uart_regs.control);
             uart_regs.clk_divider = 10;
-            write_reg(CLK_DIVIDER_REG_ADDR, uart_regs.clk_divider);
+            write_reg(CLK_DIVIDER_REG_POS * 4, uart_regs.clk_divider);
             uart_regs.tx.data = wdata;
-            write_reg(TX_DATA_REG_ADDR, uart_regs.tx.data);
-            #200;
-            for (int i = 0; i < REGS_NUM; i++) begin
+            write_reg(TX_DATA_REG_POS * 4, uart_regs.tx.data);
+            #190;
+            for (int i = 0; i < RD_REG_NUM; i++) begin
                 read_reg(i * 4, rdata);
             end
             #20;

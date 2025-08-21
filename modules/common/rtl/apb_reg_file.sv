@@ -17,10 +17,14 @@ module apb_reg_file #(
     apb_if.slave s_apb
 );
 
-    localparam int ADDR_OFFSET = REG_ADDR_WIDTH / 8;
+    typedef logic [REG_DATA_WIDTH-1:0] reg_unpack_t[RD_REG_NUM-1:0];
 
-    logic [REG_DATA_WIDTH-1:0] wr_reg[WR_REG_NUM];
-    logic [REG_DATA_WIDTH-1:0] rd_reg[RD_REG_NUM];
+    localparam int ADDR_OFFSET = REG_ADDR_WIDTH / 8;
+    localparam reg_unpack_t REG_INIT_UNPACK = reg_unpack_t'(REG_INIT);
+
+    logic [REG_DATA_WIDTH-1:0] wr_reg[WR_REG_NUM-1:0];
+    logic [REG_DATA_WIDTH-1:0] rd_reg[RD_REG_NUM-1:0];
+    logic [REG_DATA_WIDTH-1:0] rd_reg_unpack[RD_REG_NUM-1:0];
 
     logic clk_i;
     logic rstn_i;
@@ -34,46 +38,41 @@ module apb_reg_file #(
     assign write = s_apb.psel & s_apb.penable & s_apb.pwrite;
     assign read  = s_apb.psel & s_apb.penable & ~s_apb.pwrite;
 
-    logic [$bits(wr_valid_o)-1:0] wr_valid;
-
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
-                wr_reg[reg_indx]   <= REGS_INIT[reg_indx];
-                wr_valid[reg_indx] <= 1'b0;
+                wr_reg[reg_indx]     <= REG_INIT_UNPACK[reg_indx];
+                wr_valid_o[reg_indx] <= 1'b0;
             end
         end else begin
             for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
                 if ((write) && (s_apb.paddr == reg_indx * ADDR_OFFSET)) begin
-                    wr_reg[reg_indx]   <= s_apb.pwdata;
-                    wr_valid[reg_indx] <= 1'b1;
+                    wr_reg[reg_indx]     <= s_apb.pwdata;
+                    wr_valid_o[reg_indx] <= 1'b1;
                 end else begin
-                    wr_valid[reg_indx] <= 1'b0;
+                    wr_valid_o[reg_indx] <= 1'b0;
                 end
             end
         end
     end
 
-    always_ff @(posedge clk_i) begin
-        for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
-            wr_regs_o[reg_indx]  <= wr_reg[reg_indx];
-            wr_valid_o[reg_indx] <= wr_valid[reg_indx];
-        end
-    end
+    assign wr_regs_o = wr_reg_t'(wr_reg);
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             for (int reg_indx = 0; reg_indx < RD_REG_NUM; reg_indx++) begin
-                rd_reg[reg_indx] <= REGS_INIT[reg_indx];
+                rd_reg[reg_indx] <= REG_INIT_UNPACK[reg_indx];
             end
         end else begin
             for (int reg_indx = 0; reg_indx < RD_REG_NUM; reg_indx++) begin
                 if (rd_valid_i[reg_indx]) begin
-                    rd_reg[reg_indx] <= rd_regs_i[reg_indx];
+                    rd_reg[reg_indx] <= rd_reg_unpack[reg_indx];
                 end
             end
         end
     end
+
+    assign rd_reg_unpack = reg_unpack_t'(rd_regs_i);
 
     always_ff @(posedge clk_i) begin
         for (int reg_indx = 0; reg_indx < RD_REG_NUM; reg_indx++) begin
@@ -84,7 +83,7 @@ module apb_reg_file #(
     end
 
     always_ff @(posedge clk_i) begin
-        if (rstn_i) begin
+        if (~rstn_i) begin
             s_apb.pready <= 1'b0;
         end else begin
             if (read | write) begin

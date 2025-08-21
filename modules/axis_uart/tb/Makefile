@@ -1,4 +1,4 @@
-TOP ?= axis_uart_top
+TOP ?= apb_uart
 
 SIM ?= questa
 

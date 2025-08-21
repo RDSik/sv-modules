@@ -30,8 +30,8 @@ module apb_uart
     logic tx_reset;
     logic rx_reset;
 
-    assign tx_reset = ~regs.control.tx_reset;
-    assign rx_reset = ~regs.control.rx_reset;
+    assign tx_reset = ~wr_regs.control.tx_reset;
+    assign rx_reset = ~wr_regs.control.rx_reset;
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
@@ -83,7 +83,7 @@ module apb_uart
         rd_regs.rx.rsrvd             = '0;
     end
 
-    assign fifo_tx.tdata  = we_regs.tx.data;
+    assign fifo_tx.tdata  = wr_regs.tx.data;
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_valid[RX_DATA_REG_POS];
 
@@ -97,9 +97,9 @@ module apb_uart
         .REG_INIT      (REG_INIT)
     ) i_apb_reg_file (
         .s_apb     (s_apb),
-        .rd_data_i (rd_regs),
+        .rd_regs_i (rd_regs),
         .rd_valid_i(rd_valid),
-        .wr_data_o (wr_regs),
+        .wr_regs_o (wr_regs),
         .wr_valid_o(wr_valid)
     );
 
@@ -126,8 +126,10 @@ module apb_uart
         .FIFO_MODE ("sync"),
         .FIFO_TYPE ("distributed")
     ) i_axis_fifo_tx (
-        .s_axis(fifo_tx),
-        .m_axis(uart_tx)
+        .s_axis   (fifo_tx),
+        .m_axis   (uart_tx),
+        .a_full_o (),
+        .a_empty_o()
     );
 
     axis_fifo_wrap #(
@@ -136,8 +138,10 @@ module apb_uart
         .FIFO_MODE ("sync"),
         .FIFO_TYPE ("distributed")
     ) i_axis_fifo_rx (
-        .s_axis(uart_rx),
-        .m_axis(fifo_rx)
+        .s_axis   (uart_rx),
+        .m_axis   (fifo_rx),
+        .a_full_o (),
+        .a_empty_o()
     );
 
 endmodule
