@@ -53,10 +53,10 @@ module apb_uart_tb ();
         logic [31:0] rdata;
         logic [31:0] wdata;
         begin
-            wdata = $urandom_range(0, (2 * 8) - 1);
-            uart_regs = '0;
+            wdata                 = $urandom_range(0, (2 * 8) - 1);
+            uart_regs             = '0;
             uart_regs.clk_divider = 10;
-            uart_regs.tx.data = wdata;
+            uart_regs.tx.data     = wdata;
             write_reg(CONTROL_REG_POS * 4, uart_regs.control);
             write_reg(CLK_DIVIDER_REG_POS * 4, uart_regs.clk_divider);
             write_reg(TX_DATA_REG_POS * 4, uart_regs.tx.data);
