@@ -55,15 +55,10 @@ module apb_uart_tb ();
         begin
             wdata = $urandom_range(0, (2 * 8) - 1);
             uart_regs = '0;
-            uart_regs.control.tx_reset = 1'b1;
-            uart_regs.control.rx_reset = 1'b1;
-            write_reg(CONTROL_REG_POS * 4, uart_regs.control);
-            uart_regs.control.tx_reset = 1'b0;
-            uart_regs.control.rx_reset = 1'b0;
-            write_reg(CONTROL_REG_POS * 4, uart_regs.control);
             uart_regs.clk_divider = 10;
-            write_reg(CLK_DIVIDER_REG_POS * 4, uart_regs.clk_divider);
             uart_regs.tx.data = wdata;
+            write_reg(CONTROL_REG_POS * 4, uart_regs.control);
+            write_reg(CLK_DIVIDER_REG_POS * 4, uart_regs.clk_divider);
             write_reg(TX_DATA_REG_POS * 4, uart_regs.tx.data);
             #190;
             for (int i = 0; i < RD_REG_NUM; i++) begin
