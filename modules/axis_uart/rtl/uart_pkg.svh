@@ -53,7 +53,7 @@ package uart_pkg;
     localparam int WR_REG_NUM = $bits(uart_wr_regs_t) / 32;
 
     localparam uart_rd_regs_t REG_INIT = '{
-        wr : '{control : {30'd0, 1'b1, 1'b1},}, 
+        wr : '{control : 32'd3}, 
         default: 0
     };
 
