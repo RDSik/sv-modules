@@ -4,10 +4,11 @@
 module apb_uart
     import uart_pkg::*;
 #(
-    parameter int FIFO_DEPTH      = 128,
-    parameter int APB_ADDR_WIDTH  = 32,
-    parameter int APB_DATA_WIDTH  = 32,
-    parameter int AXIS_DATA_WIDTH = 8
+    parameter int   FIFO_DEPTH      = 128,
+    parameter int   APB_ADDR_WIDTH  = 32,
+    parameter int   APB_DATA_WIDTH  = 32,
+    parameter int   AXIS_DATA_WIDTH = 8,
+    parameter logic ILA_EN          = 0
 ) (
     input  logic uart_rx_i,
     output logic uart_tx_o,
@@ -144,4 +145,22 @@ module apb_uart
         .a_empty_o()
     );
 
+    if (ILA_EN) begin : g_ila
+        apb_ila i_apb_ila (
+            .clk(clk_i),
+            .probe0(s_apb.paddr),
+            .probe1(s_apb.prdata),
+            .probe2(s_apb.pwdata),
+            .probe3(s_apb.pwrite),
+            .probe4(s_apb.psel),
+            .probe5(s_apb.penable),
+            .probe6(s_apb.pready),
+            .probe7(s_apb.pslverr),
+            .probe8(wr_regs.control),
+            .probe9(wr_regs.clk_divider),
+            .probe10(wr_regs.tx.data),
+            .probe11(rd_regs.rx.data),
+            .probe12(rd_regs.status)
+        );
+    end
 endmodule

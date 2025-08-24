@@ -1,4 +1,4 @@
-TOP ?= axis_spi_top
+TOP ?= axis_spi
 
 SIM ?= questa
 

@@ -2,7 +2,7 @@
 
 `include "../../verification/tb/test_pkg.svh"
 
-module axis_uart_top_tb ();
+module axis_uart_tb ();
 
     import test_pkg::*;
 
@@ -50,8 +50,8 @@ module axis_uart_top_tb ();
     end
 
     initial begin
-        $dumpfile("axis_uart_top_tb.vcd");
-        $dumpvars(0, axis_uart_top_tb);
+        $dumpfile("axis_uart_tb.vcd");
+        $dumpvars(0, axis_uart_tb);
     end
 
     axis_uart_tx i_axis_uart_tx (

@@ -1,6 +1,6 @@
 set part     "xc7z020clg400-2"
-set syn_top  "ps_pl_uart"
-set sim_top  "axis_uart_top_tb"
+set syn_top  "ps_pl_top"
+set sim_top  "apb_uart_tb"
 set language "Verilog"
 set gui_flag  1
 
