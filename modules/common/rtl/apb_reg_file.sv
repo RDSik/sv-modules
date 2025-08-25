@@ -38,8 +38,8 @@ module apb_reg_file #(
     assign write = s_apb.psel & s_apb.penable & s_apb.pwrite;
     assign read  = s_apb.psel & s_apb.penable & ~s_apb.pwrite;
 
-    assign wr_regs_o = wr_reg_t'(wr_reg);
     assign rd_reg_unpack = reg_unpack_t'(rd_regs_i);
+    assign wr_regs_o     = wr_reg_t'(wr_reg);
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
