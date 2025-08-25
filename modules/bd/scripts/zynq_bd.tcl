@@ -124,7 +124,6 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:axi_apb_bridge:3.0\
-xilinx.com:ip:ila:6.2\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:processing_system7:5.5\
 xilinx.com:ip:smartconnect:1.0\
@@ -204,13 +203,6 @@ proc create_root_design { parentCell } {
    CONFIG.FREQ_HZ {50000000} \
  ] $FCLK_CLK0_0
   set peripheral_aresetn_0 [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_aresetn_0 ]
-  set probe0_0 [ create_bd_port -dir I -from 31 -to 0 probe0_0 ]
-  set probe1_0 [ create_bd_port -dir I -from 31 -to 0 probe1_0 ]
-  set probe2_0 [ create_bd_port -dir I -from 31 -to 0 probe2_0 ]
-  set probe3_0 [ create_bd_port -dir I -from 0 -to 0 probe3_0 ]
-  set probe4_0 [ create_bd_port -dir I -from 0 -to 0 probe4_0 ]
-  set probe5_0 [ create_bd_port -dir I -from 0 -to 0 probe5_0 ]
-  set probe6_0 [ create_bd_port -dir I -from 0 -to 0 probe6_0 ]
 
   # Create instance: axi_apb_bridge_0, and set properties
   set axi_apb_bridge_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_apb_bridge:3.0 axi_apb_bridge_0 ]
@@ -218,21 +210,6 @@ proc create_root_design { parentCell } {
    CONFIG.C_APB_NUM_SLAVES {1} \
    CONFIG.C_M_APB_PROTOCOL {apb3} \
  ] $axi_apb_bridge_0
-
-  # Create instance: ila_0, and set properties
-  set ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:ila:6.2 ila_0 ]
-  set_property -dict [ list \
-   CONFIG.C_ENABLE_ILA_AXI_MON {false} \
-   CONFIG.C_MONITOR_TYPE {Native} \
-   CONFIG.C_NUM_OF_PROBES {9} \
-   CONFIG.C_PROBE0_WIDTH {32} \
-   CONFIG.C_PROBE1_WIDTH {32} \
-   CONFIG.C_PROBE2_WIDTH {32} \
-   CONFIG.C_PROBE3_WIDTH {1} \
-   CONFIG.C_PROBE4_WIDTH {1} \
-   CONFIG.C_PROBE5_WIDTH {1} \
-   CONFIG.C_PROBE6_WIDTH {1} \
- ] $ila_0
 
   # Create instance: proc_sys_reset_0, and set properties
   set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
@@ -469,16 +446,9 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net smartconnect_0_M00_AXI [get_bd_intf_pins axi_apb_bridge_0/AXI4_LITE] [get_bd_intf_pins smartconnect_0/M00_AXI]
 
   # Create port connections
-  connect_bd_net -net probe0_0_1 [get_bd_ports probe0_0] [get_bd_pins ila_0/probe0]
-  connect_bd_net -net probe1_0_1 [get_bd_ports probe1_0] [get_bd_pins ila_0/probe1]
-  connect_bd_net -net probe2_0_1 [get_bd_ports probe2_0] [get_bd_pins ila_0/probe2]
-  connect_bd_net -net probe3_0_1 [get_bd_ports probe3_0] [get_bd_pins ila_0/probe3]
-  connect_bd_net -net probe4_0_1 [get_bd_ports probe4_0] [get_bd_pins ila_0/probe4]
-  connect_bd_net -net probe5_0_1 [get_bd_ports probe5_0] [get_bd_pins ila_0/probe5]
-  connect_bd_net -net probe6_0_1 [get_bd_ports probe6_0] [get_bd_pins ila_0/probe6]
   connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins smartconnect_0/aresetn]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_ports peripheral_aresetn_0] [get_bd_pins axi_apb_bridge_0/s_axi_aresetn] [get_bd_pins proc_sys_reset_0/peripheral_aresetn]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_ports FCLK_CLK0_0] [get_bd_pins axi_apb_bridge_0/s_axi_aclk] [get_bd_pins ila_0/clk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins smartconnect_0/aclk]
+  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_ports FCLK_CLK0_0] [get_bd_pins axi_apb_bridge_0/s_axi_aclk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins smartconnect_0/aclk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins proc_sys_reset_0/ext_reset_in] [get_bd_pins processing_system7_0/FCLK_RESET0_N]
 
   # Create address segments

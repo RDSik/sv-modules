@@ -1,4 +1,4 @@
-set top      "axis_uart_top"
+set top      "apb_uart"
 set part     "GW2A-LV18PG256C8/I7"
 set dev_ver  "C"
 set language "sysv2017"

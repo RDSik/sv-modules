@@ -2,7 +2,7 @@
 
 `include "../../verification/tb/test_pkg.svh"
 
-module axis_spi_top_tb ();
+module axis_spi_tb ();
 
     import test_pkg::*;
 
@@ -57,8 +57,8 @@ module axis_spi_top_tb ();
     end
 
     initial begin
-        $dumpfile("axis_spi_top_tb.vcd");
-        $dumpvars(0, axis_spi_top_tb);
+        $dumpfile("axis_spi_tb.vcd");
+        $dumpvars(0, axis_spi_tb);
     end
 
     axis_spi_master #(

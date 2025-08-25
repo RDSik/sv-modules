@@ -53,31 +53,26 @@
 #include "sleep.h"
 
 int main() {
-	int cmd;
-	int rev;
-
 	init_platform();
 
-	Xil_Out32(XPAR_BRAM_0_BASEADDR + 8, 0xc);    // control_reg
-	Xil_Out32(XPAR_BRAM_0_BASEADDR + 0, 0x2);    // command_reg
-
-	Xil_Out32(XPAR_BRAM_0_BASEADDR + 8, 0x2);    // control_reg
-	Xil_Out32(XPAR_BRAM_0_BASEADDR + 4, 0x1b2);  // clk_divider_reg = 50e6/115200
-	Xil_Out32(XPAR_BRAM_0_BASEADDR + 12, 0x41);  // tx_data_reg
-
-	xil_printf("Write data in registers\n\r");
-
-    for (cmd = 1; cmd <= 4; cmd++) {
-        Xil_Out32(XPAR_BRAM_0_BASEADDR, cmd); // control_reg
-        xil_printf("Control reg 0x%x data is 0x%x \n\r", XPAR_BRAM_0_BASEADDR, reg_addr);
-        // usleep(100000);
-    }
-
 	while(1) {
+		int control     = 0;
+		int clk_divider = 50e6/115200;
+		int tx_data     = 0x4D; // ASCII - M
 
-        rev = Xil_In32(XPAR_BRAM_0_BASEADDR + 16); // rx_data_reg
-        xil_printf("The data at 0x%x is 0x%x \n\r", XPAR_BRAM_0_BASEADDR + 16, rev);
-        xil_printf("\n\r");
+		Xil_Out32(XPAR_APB_M_0_BASEADDR + 0, control);
+		Xil_Out32(XPAR_APB_M_0_BASEADDR + 4, clk_divider);
+		Xil_Out32(XPAR_APB_M_0_BASEADDR + 8, tx_data);
+
+		int regs_num    = 5;
+		int addr_offset = 4;
+		int rd_data;
+
+		for (int i = 0; i < regs_num*addr_offset; i += addr_offset) {
+			rd_data = Xil_In32(XPAR_APB_M_0_BASEADDR + i);
+	        xil_printf("The data at 0x%x is 0x%x \n\r", XPAR_APB_M_0_BASEADDR + i, rd_data);
+	        xil_printf("\n\r");
+    	}
 
         usleep(100000);
 	}

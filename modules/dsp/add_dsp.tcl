@@ -1,7 +1,13 @@
 set path [file dirname [info script]]
 
 if {$xilinx == 1} {
-    set dsp_files "
+    set xci_defaultlib "
+        $path/ip/dds_compiler.xci
+    "
+
+    add_files -norecurse $xci_defaultlib
+
+    set xil_defaultlib "
         $path/rtl/sfir_even_symmetric_systolic_element.sv
         $path/rtl/sfir_even_symmetric_systolic_top.sv
         $path/tb/sfir_tb.sv
@@ -10,7 +16,7 @@ if {$xilinx == 1} {
         $path/rtl/round.sv
     "
 
-    add_files -norecurse $dsp_files
+    add_files -norecurse $xil_defaultlib
 } elseif {$gowin == 1} {
     add_file $path/rtl/sfir_even_symmetric_systolic_element.sv
     add_file $path/rtl/sfir_even_symmetric_systolic_top.sv

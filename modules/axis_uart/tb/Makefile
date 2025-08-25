@@ -1,4 +1,4 @@
-TOP ?= axis_uart_top
+TOP ?= apb_uart
 
 SIM ?= questa
 
@@ -6,7 +6,7 @@ MACRO_FILE := $(TOP)_tb.do
 
 SRC_FILES := $(wildcard \
 	../../interface/rtl/*.sv \
-	../../ram/rtl/*.sv \
+	../../common/rtl/*.sv \
 	../../fifo/rtl/*.sv \
 	../rtl/*.sv \
 	./*.sv \
