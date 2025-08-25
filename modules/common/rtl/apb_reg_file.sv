@@ -4,8 +4,8 @@ module apb_reg_file #(
     parameter int      REG_ADDR_WIDTH = 32,
     parameter int      RD_REG_NUM     = 5,
     parameter int      WR_REG_NUM     = 3,
-    parameter type     rd_reg_t       = logic         [RD_REG_NUM-1:0][REG_DATA_WIDTH-1:0],
-    parameter type     wr_reg_t       = logic         [WR_REG_NUM-1:0][REG_DATA_WIDTH-1:0],
+    parameter type     rd_reg_t       = logic          [RD_REG_NUM-1:0][REG_DATA_WIDTH-1:0],
+    parameter type     wr_reg_t       = logic          [WR_REG_NUM-1:0][REG_DATA_WIDTH-1:0],
     parameter rd_reg_t REG_INIT       = '{default: '0}
 ) (
     input rd_reg_t                  rd_regs_i,
@@ -35,8 +35,8 @@ module apb_reg_file #(
     logic write;
     logic read;
 
-    assign write = s_apb.psel & s_apb.penable & s_apb.pwrite;
-    assign read  = s_apb.psel & s_apb.penable & ~s_apb.pwrite;
+    assign write         = s_apb.psel & s_apb.penable & s_apb.pwrite;
+    assign read          = s_apb.psel & s_apb.penable & ~s_apb.pwrite;
 
     assign rd_reg_unpack = reg_unpack_t'(rd_regs_i);
     assign wr_regs_o     = wr_reg_t'(wr_reg);
@@ -48,12 +48,14 @@ module apb_reg_file #(
                 wr_valid_o[reg_indx] <= 1'b0;
             end
         end else begin
-            for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
-                if ((write) && (s_apb.paddr == reg_indx * ADDR_OFFSET)) begin
-                    wr_reg[reg_indx]     <= s_apb.pwdata;
-                    wr_valid_o[reg_indx] <= 1'b1;
-                end else begin
-                    wr_valid_o[reg_indx] <= 1'b0;
+            if (write) begin
+                for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
+                    if (s_apb.paddr == reg_indx * ADDR_OFFSET) begin
+                        wr_reg[reg_indx]     <= s_apb.pwdata;
+                        wr_valid_o[reg_indx] <= 1'b1;
+                    end else begin
+                        wr_valid_o[reg_indx] <= 1'b0;
+                    end
                 end
             end
         end
@@ -74,9 +76,11 @@ module apb_reg_file #(
     end
 
     always_ff @(posedge clk_i) begin
-        for (int reg_indx = 0; reg_indx < RD_REG_NUM; reg_indx++) begin
-            if ((read) && (s_apb.paddr == reg_indx * ADDR_OFFSET)) begin
-                s_apb.prdata <= rd_reg[reg_indx];
+        if (read) begin
+            for (int reg_indx = 0; reg_indx < RD_REG_NUM; reg_indx++) begin
+                if (s_apb.paddr == reg_indx * ADDR_OFFSET) begin
+                    s_apb.prdata <= rd_reg[reg_indx];
+                end
             end
         end
     end
