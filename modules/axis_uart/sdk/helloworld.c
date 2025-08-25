@@ -68,7 +68,7 @@ int main() {
 		int addr_offset = 4;
 		int rd_data;
 
-		for (int i = 0; i < regs_num*addr_offset; I += addr_offset) {
+		for (int i = 0; i < regs_num*addr_offset; i += addr_offset) {
 			rd_data = Xil_In32(XPAR_APB_M_0_BASEADDR + i);
 	        xil_printf("The data at 0x%x is 0x%x \n\r", XPAR_APB_M_0_BASEADDR + i, rd_data);
 	        xil_printf("\n\r");
