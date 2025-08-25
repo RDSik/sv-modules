@@ -49,7 +49,6 @@ package uart_pkg;
     localparam int STATUS_REG_POS = RX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
 
     localparam int RD_REG_NUM = $bits(uart_rd_regs_t) / 32;
-
     localparam int WR_REG_NUM = $bits(uart_wr_regs_t) / 32;
 
     localparam uart_rd_regs_t REG_INIT = '{wr : '{control : {30'd0, 1'b1, 1'b1}, default: '0}, default: '0};
