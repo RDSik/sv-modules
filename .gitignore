@@ -11,8 +11,7 @@
 
 !project/**/project.tcl
 !project/**/zynq_ps.tcl
-!project/**/axis_uart_top.xdc
-!project/**/ps_pl_uart.xdc
+!project/**/ps_pl_top.xdc
 !project/**/*.sdc
 !project/**/*.cst
 
