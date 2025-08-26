@@ -23,7 +23,7 @@ module lfsr #(
     end
 
     seed_check :
-    assert property (@(posedge clk_i) disable iff (~rstn_i) (seed_i != 0))
+    assert property (@(posedge clk_i) (seed_i != 0))
     else begin
         $error("seed_i must be greater than 0!");
     end

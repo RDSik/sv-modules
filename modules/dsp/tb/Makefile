@@ -5,7 +5,7 @@ SIM ?= questa
 MACRO_FILE := $(TOP)_tb.do
 
 SRC_FILES := $(wildcard \
-	../../ram/rtl/*.sv \
+	../../common/rtl/*.sv \
 	../rtl/*.sv \
 	./*.sv \
 )

@@ -22,6 +22,10 @@ module ram_dp_2clk #(
     initial begin
         if (MEM_FILE != 0) begin
             $readmemh(MEM_FILE, ram);
+        end else begin
+            for (int i = 0; i < MEM_DEPTH; i++) begin
+                ram[i] = '0;
+            end
         end
     end
 

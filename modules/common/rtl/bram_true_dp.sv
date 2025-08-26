@@ -1,11 +1,11 @@
 /* verilator lint_off TIMESCALEMOD */
 module bram_true_dp #(
-    parameter int BYTE_NUM   = 4,
-    parameter int BYTE_WIDTH = 8,
-    parameter int ADDR_WIDTH = 32,
-    parameter int MEM_DEPTH  = 8192,
-    parameter     MODE       = "NO_CHANGE",
-    parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
+    parameter int MEM_WIDTH  = 32,
+    parameter int MEM_DEPTH  = 1024,
+    parameter     MODE       = "no_change",
+    parameter     MEM_FILE   = "",
+    parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
+    parameter int BYTE_NUM  = MEM_WIDTH / 8
 ) (
     input  logic                  a_clk_i,
     input  logic                  a_en_i,
@@ -24,13 +24,23 @@ module bram_true_dp #(
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
-    if (MODE == "WRITE_FIRST") begin : g_wr_first
+    initial begin
+        if (MEM_FILE != 0) begin
+            $readmemh(MEM_FILE, ram);
+        end else begin
+            for (int i = 0; i < MEM_DEPTH; i++) begin
+                ram[i] = '0;
+            end
+        end
+    end
+
+    if (MODE == "write_first") begin : g_wr_first
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
-                        ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
-                        a_data_o <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
+                        a_data_o              <= a_data_i[i*8+:8];
                     end else begin
                         a_data_o <= ram[a_addr_i];
                     end
@@ -42,21 +52,21 @@ module bram_true_dp #(
             if (b_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
-                        b_data_o <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
+                        b_data_o              <= b_data_i[i*8+:8];
                     end else begin
                         b_data_o <= ram[b_addr_i];
                     end
                 end
             end
         end
-    end else if (MODE == "READ_FIRST") begin : g_rd_first
+    end else if (MODE == "read_first") begin : g_rd_first
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 a_data_o <= ram[a_addr_i];
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
-                        ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
                     end
                 end
             end
@@ -67,17 +77,17 @@ module bram_true_dp #(
                 b_data_o <= ram[b_addr_i];
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
                     end
                 end
             end
         end
-    end else if (MODE == "NO_CHANGE") begin : g_no_change
+    end else if (MODE == "no_change") begin : g_no_change
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
-                        ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
                     end
                 end
             end
@@ -95,7 +105,7 @@ module bram_true_dp #(
             if (b_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
                     end
                 end
             end
@@ -109,7 +119,7 @@ module bram_true_dp #(
             end
         end
     end else begin : g_mode_err
-        $error("Only NO_CHANGE, READ_FIRST and WRITE_FIRST MODE is available!");
+        $error("Only no_change, read_first and write_first MODE is available!");
     end
 
 endmodule
