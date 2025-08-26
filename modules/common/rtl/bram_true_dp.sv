@@ -1,12 +1,11 @@
 /* verilator lint_off TIMESCALEMOD */
 module bram_true_dp #(
-    parameter int BYTE_NUM   = 4,
-    parameter int BYTE_WIDTH = 8,
-    parameter int MEM_DEPTH  = 8192,
+    parameter int MEM_WIDTH  = 32,
+    parameter int MEM_DEPTH  = 1024,
     parameter     MODE       = "NO_CHANGE",
     parameter     MEM_FILE   = "",
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
-    parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
+    parameter int BYTE_NUM  = MEM_WIDTH / 8
 ) (
     input  logic                  a_clk_i,
     input  logic                  a_en_i,
