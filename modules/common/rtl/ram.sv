@@ -17,7 +17,8 @@ module ram #(
     if (MEM_FILE != 0) begin
         initial begin
             $readmemh(MEM_FILE, ram);
-        end else begin 
+        end
+     else begin 
             initial begin
                 for (int i = 0; i < MEM_DEPTH; i++) begin
                     ram[i] = '0;
