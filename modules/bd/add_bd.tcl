@@ -2,7 +2,6 @@ set path [file dirname [info script]]
 
 if {$xilinx == 1} {
     set xil_defaultlib "
-        $path/rtl/zynq_bd_wrapper.v
         $path/rtl/ps_pl_top.sv
     "
 

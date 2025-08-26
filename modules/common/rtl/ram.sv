@@ -7,6 +7,7 @@ module ram #(
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH)
 ) (
     input  logic                  clk_i,
+    input  logic                  wr_en_i,
     input  logic [ADDR_WIDTH-1:0] addr_i,
     input  logic [ MEM_WIDTH-1:0] data_i,
     output logic [ MEM_WIDTH-1:0] data_o
@@ -14,20 +15,16 @@ module ram #(
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
-    if (MEM_FILE != 0) begin
+    if (MEM_FILE != 0) begin : g_mem_file_init
         initial begin
             $readmemh(MEM_FILE, ram);
-        end
-     end else begin 
-        initial begin
-            for (int i = 0; i < MEM_DEPTH; i++) begin
-                ram[i] = '0;
-            end
         end
     end
 
     always_ff @(posedge clk_i) begin
-        ram[addr_i] <= data_i;
+        if (wr_en_i) begin
+            ram[addr_i] <= data_i;
+        end
     end
 
     if (MEM_TYPE == "block") begin : g_block_ram
