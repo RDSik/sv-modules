@@ -5,7 +5,7 @@ module bram_true_dp #(
     parameter int ADDR_WIDTH = 32,
     parameter int MEM_DEPTH  = 8192,
     parameter     MODE       = "NO_CHANGE",
-    parameter MEM_FILE       = "",
+    parameter     MEM_FILE   = "",
     parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
 ) (
     input  logic                  a_clk_i,
