@@ -2,7 +2,7 @@
 module bram_true_dp #(
     parameter int MEM_WIDTH  = 32,
     parameter int MEM_DEPTH  = 1024,
-    parameter     MODE       = "NO_CHANGE",
+    parameter     MODE       = "no_change",
     parameter     MEM_FILE   = "",
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
     parameter int BYTE_NUM  = MEM_WIDTH / 8
@@ -34,7 +34,7 @@ module bram_true_dp #(
         end
     end
 
-    if (MODE == "WRITE_FIRST") begin : g_wr_first
+    if (MODE == "write_first") begin : g_wr_first
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
@@ -60,7 +60,7 @@ module bram_true_dp #(
                 end
             end
         end
-    end else if (MODE == "READ_FIRST") begin : g_rd_first
+    end else if (MODE == "read_first") begin : g_rd_first
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 a_data_o <= ram[a_addr_i];
@@ -82,7 +82,7 @@ module bram_true_dp #(
                 end
             end
         end
-    end else if (MODE == "NO_CHANGE") begin : g_no_change
+    end else if (MODE == "no_change") begin : g_no_change
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
@@ -119,7 +119,7 @@ module bram_true_dp #(
             end
         end
     end else begin : g_mode_err
-        $error("Only NO_CHANGE, READ_FIRST and WRITE_FIRST MODE is available!");
+        $error("Only no_change, read_first and write_first MODE is available!");
     end
 
 endmodule
