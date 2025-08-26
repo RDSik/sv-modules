@@ -40,7 +40,7 @@ module bram_true_dp #(
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
                         ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
-                        a_data_o            <= a_data_i[i*8+:8];
+                        a_data_o              <= a_data_i[i*8+:8];
                     end else begin
                         a_data_o <= ram[a_addr_i];
                     end
