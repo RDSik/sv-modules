@@ -5,6 +5,7 @@ module bram_true_dp #(
     parameter int ADDR_WIDTH = 32,
     parameter int MEM_DEPTH  = 8192,
     parameter     MODE       = "NO_CHANGE",
+    parameter MEM_FILE       = "",
     parameter int MEM_WIDTH  = BYTE_NUM * BYTE_WIDTH
 ) (
     input  logic                  a_clk_i,
@@ -23,6 +24,16 @@ module bram_true_dp #(
 );
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
+
+    initial begin
+        if (MEM_FILE != 0) begin
+            $readmemh(MEM_FILE, ram);
+        end else begin
+            for (int i = 0; i < MEM_DEPTH; i++) begin
+                ram[i] = '0;
+            end
+        end
+    end
 
     if (MODE == "WRITE_FIRST") begin : g_wr_first
         always_ff @(posedge a_clk_i) begin
