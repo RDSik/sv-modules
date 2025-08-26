@@ -52,8 +52,8 @@ module bram_true_dp #(
             if (b_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*8 <= b_data_i[i*8+8];
-                        b_data_o          <= b_data_i[i*8+:8];
+                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+8];
+                        b_data_o              <= b_data_i[i*8+:8];
                     end else begin
                         b_data_o <= ram[b_addr_i];
                     end
