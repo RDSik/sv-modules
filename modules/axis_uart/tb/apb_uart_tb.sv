@@ -66,9 +66,11 @@ module apb_uart_tb ();
             end
             #20;
             if (wdata == rdata) begin
-                $display("Success wdata = %0d, rdata = %0d", wdata, rdata);
+                $display("[%0t] Transaction success: wdata = 0x%0h, rdata = 0x%0h", $time, wdata,
+                         rdata);
             end else begin
-                $display("Error wdata = %0d, rdata = %0d", wdata, rdata);
+                $display("[%0t] Transaction error: wdata = 0x%0h, rdata = 0x%0h", $time, wdata,
+                         rdata);
             end
         end
         $stop;
@@ -85,7 +87,7 @@ module apb_uart_tb ();
             s_apb.psel    = 1'b1;
             s_apb.pwrite  = 1'b1;
             wait (s_apb.pready);
-            $display("%0t Write data: addr - %0d, data - %0d\n", $time, addr, data);
+            $display("[%0t] Write data: addr = 0x%0h, data = 0x%0h\n", $time, addr, data);
             @(posedge clk_i);
             s_apb.psel    = 1'b0;
             s_apb.penable = 1'b0;
@@ -103,7 +105,7 @@ module apb_uart_tb ();
             s_apb.pwrite  = 1'b0;
             wait (s_apb.pready);
             data = s_apb.prdata;
-            $display("%0t Read data: addr - %0d, data - %0d\n", $time, addr, data);
+            $display("[%0t] Read data: addr = 0x%0h, data = 0x%0h\n", $time, addr, data);
             @(posedge clk_i);
             s_apb.psel    = 1'b0;
             s_apb.penable = 1'b0;

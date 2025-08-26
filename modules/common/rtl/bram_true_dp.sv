@@ -5,7 +5,7 @@ module bram_true_dp #(
     parameter     MODE       = "no_change",
     parameter     MEM_FILE   = "",
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
-    parameter int BYTE_NUM  = MEM_WIDTH / 8
+    parameter int BYTE_NUM   = MEM_WIDTH / 8
 ) (
     input  logic                  a_clk_i,
     input  logic                  a_en_i,
@@ -24,13 +24,9 @@ module bram_true_dp #(
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
-    initial begin
-        if (MEM_FILE != 0) begin
+    if (MEM_FILE != 0) begin : g_mem_file_init
+        initial begin
             $readmemh(MEM_FILE, ram);
-        end else begin
-            for (int i = 0; i < MEM_DEPTH; i++) begin
-                ram[i] = '0;
-            end
         end
     end
 
