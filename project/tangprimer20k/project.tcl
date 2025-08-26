@@ -8,7 +8,7 @@ set modules_dirs [list \
     ../../modules/axis_spi \
     ../../modules/axis_uart \
     ../../modules/fifo \
-    ../../modules/ram \
+    ../../modules/common \
     ../../modules/dsp \
     ../../modules/lfsr \
     ../../modules/interface \
