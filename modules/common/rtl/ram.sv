@@ -14,7 +14,6 @@ module ram #(
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
-    initial begin
     if (MEM_FILE != 0) begin
         initial begin
             $readmemh(MEM_FILE, ram);
