@@ -55,28 +55,6 @@ module ps_pl_top #(
         .s_apb    (apb)
     );
 
-    wire [14:0] DDR_0_addr;
-    wire [ 2:0] DDR_0_ba;
-    wire        DDR_0_cas_n;
-    wire        DDR_0_ck_n;
-    wire        DDR_0_ck_p;
-    wire        DDR_0_cke;
-    wire        DDR_0_cs_n;
-    wire [ 3:0] DDR_0_dm;
-    wire [31:0] DDR_0_dq;
-    wire [ 3:0] DDR_0_dqs_n;
-    wire [ 3:0] DDR_0_dqs_p;
-    wire        DDR_0_odt;
-    wire        DDR_0_ras_n;
-    wire        DDR_0_reset_n;
-    wire        DDR_0_we_n;
-    wire        FIXED_IO_0_ddr_vrn;
-    wire        FIXED_IO_0_ddr_vrp;
-    wire [53:0] FIXED_IO_0_mio;
-    wire        FIXED_IO_0_ps_clk;
-    wire        FIXED_IO_0_ps_porb;
-    wire        FIXED_IO_0_ps_srstb;
-
     zynq_bd zynq_bd_i (
         .APB_M_0_paddr       (apb.paddr),
         .APB_M_0_penable     (apb.penable),

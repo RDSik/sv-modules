@@ -30,8 +30,9 @@ module apb_reg_file #(
     logic clk_i;
     logic rstn_i;
 
-    assign clk_i  = s_apb.clk_i;
-    assign rstn_i = s_apb.rstn_i;
+    assign clk_i         = s_apb.clk_i;
+    assign rstn_i        = s_apb.rstn_i;
+    assign s_apb.pslverr = 1'b0;
 
     logic write;
     logic read;
