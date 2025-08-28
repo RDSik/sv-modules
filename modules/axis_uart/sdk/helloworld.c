@@ -53,31 +53,31 @@
 #include "sleep.h"
 
 int main() {
-	init_platform();
+    init_platform();
 
-	while(1) {
-		int control     = 0;
-		int clk_divider = 50e6/115200;
-		int tx_data     = 0x4D; // ASCII - M
+    while(1) {
+        int control     = 0;
+        int clk_divider = 50e6/115200;
+        int tx_data     = 0x4D; // ASCII - M
 
-		Xil_Out32(XPAR_APB_M_0_BASEADDR + 0, control);
-		Xil_Out32(XPAR_APB_M_0_BASEADDR + 4, clk_divider);
-		Xil_Out32(XPAR_APB_M_0_BASEADDR + 8, tx_data);
+        Xil_Out32(XPAR_APB_M_0_BASEADDR + 0, control);
+        Xil_Out32(XPAR_APB_M_0_BASEADDR + 4, clk_divider);
+        Xil_Out32(XPAR_APB_M_0_BASEADDR + 8, tx_data);
 
-		int regs_num    = 5;
-		int addr_offset = 4;
-		int rd_data;
+        int regs_num    = 5;
+        int addr_offset = 4;
+        int rd_data;
 
-		for (int i = 0; i < regs_num*addr_offset; i += addr_offset) {
-			rd_data = Xil_In32(XPAR_APB_M_0_BASEADDR + i);
-	        xil_printf("The data at 0x%x is 0x%x \n\r", XPAR_APB_M_0_BASEADDR + i, rd_data);
-	        xil_printf("\n\r");
-    	}
+        for (int i = 0; i < regs_num*addr_offset; i += addr_offset) {
+            rd_data = Xil_In32(XPAR_APB_M_0_BASEADDR + i);
+            xil_printf("The data at 0x%x is 0x%x \n\r", XPAR_APB_M_0_BASEADDR + i, rd_data);
+            xil_printf("\n\r");
+        }
 
         usleep(100000);
-	}
+    }
 
-	cleanup_platform();
+    cleanup_platform();
 
-	return 0;
+    return 0;
 }
