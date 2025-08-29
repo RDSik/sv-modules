@@ -12,7 +12,7 @@ module counter #(
 
     always @(posedge clk_i) begin
         if (~rstn_i) begin
-            cnt <= '0;
+            cnt_o <= '0;
         end else if (en_i) begin
             if (cnt_done_o) begin
                 cnt_o <= '0;
