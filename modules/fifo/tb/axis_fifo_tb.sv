@@ -7,8 +7,7 @@ module axis_fifo_tb ();
     import test_pkg::*;
 
     localparam int FIFO_WIDTH = 8;
-    localparam int FIFO_DEPTH = 3;
-    localparam int CIRCLE_BUF = 1;
+    localparam int FIFO_DEPTH = 16;
     localparam FIFO_MODE = "sync";
     localparam FIFO_TYPE = "block";
 

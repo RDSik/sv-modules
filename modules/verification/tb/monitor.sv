@@ -15,7 +15,9 @@ class master_monitor_base;
                     forever begin
                         monitor_master();
                     end
-                join
+                join_none
+                wait (~axis.rstn_i);
+                disable fork;
             end
         end
     endtask
@@ -49,7 +51,9 @@ class slave_monitor_base;
                     forever begin
                         monitor_slave();
                     end
-                join
+                join_none
+                wait (~axis.rstn_i);
+                disable fork;
             end
         end
     endtask

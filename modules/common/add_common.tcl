@@ -8,7 +8,6 @@ if {$xilinx == 1} {
         $path/rtl/bram_true_dp.sv
         $path/rtl/shift_reg.sv
         $path/rtl/apb_reg_file.sv
-        $path/rtl/counter.sv
     "
 
     add_files -norecurse $xil_defaultlib
@@ -18,6 +17,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/ram_dp_2clk.sv
     add_file $path/rtl/bram_true_dp.sv
     add_file $path/rtl/shift_reg.sv
-    add_file $path/rtl/counter.sv
     add_file $path/rtl/apb_reg_file.sv
 }

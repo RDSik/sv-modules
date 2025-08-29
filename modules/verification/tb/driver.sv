@@ -19,8 +19,20 @@ class master_driver_base;
                         gen2drv.get(p);
                         drive_master(p);
                     end
-                join
+                join_none
+                wait (~axis.rstn_i);
+                disable fork;
+                reset_master();
+                wait (axis.rstn_i);
             end
+        end
+    endtask
+
+    virtual task reset_master();
+        begin
+            axis.tvalid <= '0;
+            axis.tdata  <= '0;
+            axis.tid    <= '0;
         end
     endtask
 
@@ -42,6 +54,7 @@ class master_driver_base;
                 @(posedge axis.clk_i);
             end while (~axis.tready);
             axis.tvalid = 1'b0;
+            axis.tlast  = 1'b0;
         end
     endtask
 
@@ -61,8 +74,18 @@ class slave_driver_base;
                     forever begin
                         drive_slave();
                     end
-                join
+                join_none
+                wait (~axis.rstn_i);
+                disable fork;
+                reset_slave();
+                wait (axis.rstn_i);
             end
+        end
+    endtask
+
+    virtual task reset_slave();
+        begin
+            axis.tready <= '0;
         end
     endtask
 

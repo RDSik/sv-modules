@@ -19,7 +19,12 @@ class checker_base;
                 wait (~in_reset);
                 fork
                     do_check();
-                join
+                    wait (in_reset);
+                join_any
+                disable fork;
+                if (done) begin
+                    break;
+                end
             end
         end
     endtask
