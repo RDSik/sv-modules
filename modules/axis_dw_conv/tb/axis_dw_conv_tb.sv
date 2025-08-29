@@ -43,8 +43,8 @@ module axis_dw_conv_tb ();
     end
 
     initial begin
-        $dumpfile("axis_uart_tb.vcd");
-        $dumpvars(0, axis_uart_tb);
+        $dumpfile("axis_dw_conv_tb.vcd");
+        $dumpvars(0, axis_dw_conv_tb);
     end
 
     axis_dw_conv #(
