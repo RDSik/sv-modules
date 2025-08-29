@@ -38,7 +38,7 @@ module round #(
         multadd_reg    <= multadd;
     end
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (pattern_detect) begin
             if (odd_even_i) begin
                 round_data_o <= {multadd_reg[DATA_IN_WIDTH-1:SHIFT+1], 1'b1};
