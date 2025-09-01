@@ -1,7 +1,7 @@
 /* verilator lint_off TIMESCALEMOD */
 module ram_true_dp #(
     parameter int MEM_DEPTH  = 1024,
-    parameter int BYTE_WIDTH = BYTE_WIDTH,
+    parameter int BYTE_WIDTH = 8,
     parameter int BYTE_NUM   = 4,
     parameter int PIPE_NUM   = 5,
     parameter     MEM_MODE   = "no_change",
