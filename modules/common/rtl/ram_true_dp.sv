@@ -1,13 +1,14 @@
 /* verilator lint_off TIMESCALEMOD */
 module ram_true_dp #(
-    parameter int MEM_WIDTH  = 32,
     parameter int MEM_DEPTH  = 1024,
+    parameter int BYTE_WIDTH = BYTE_WIDTH,
+    parameter int BYTE_NUM   = 4,
     parameter int PIPE_NUM   = 5,
     parameter     MEM_MODE   = "no_change",
     parameter     MEM_TYPE   = "block",
     parameter     MEM_FILE   = "",
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
-    parameter int BYTE_NUM   = MEM_WIDTH / 8
+    parameter int MEM_WIDTH  = BYTE_WIDTH * BYTE_NUM
 ) (
     input  logic                  a_clk_i,
     input  logic                  a_en_i,
@@ -42,8 +43,8 @@ module ram_true_dp #(
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
-                        ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
-                        a_data                <= a_data_i[i*8+:8];
+                        ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        a_data <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     end else begin
                         a_data <= ram[a_addr_i];
                     end
@@ -55,8 +56,8 @@ module ram_true_dp #(
             if (b_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
-                        b_data                <= b_data_i[i*8+:8];
+                        ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        b_data <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     end else begin
                         b_data <= ram[b_addr_i];
                     end
@@ -69,7 +70,7 @@ module ram_true_dp #(
                 a_data <= ram[a_addr_i];
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
-                        ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
+                        ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     end
                 end
             end
@@ -80,7 +81,7 @@ module ram_true_dp #(
                 b_data <= ram[b_addr_i];
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
+                        ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     end
                 end
             end
@@ -90,7 +91,7 @@ module ram_true_dp #(
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
-                        ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
+                        ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     end
                 end
             end
@@ -108,7 +109,7 @@ module ram_true_dp #(
             if (b_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
-                        ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
+                        ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                     end
                 end
             end
