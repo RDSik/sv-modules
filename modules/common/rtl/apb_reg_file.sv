@@ -20,7 +20,7 @@ module apb_reg_file #(
     typedef logic [REG_DATA_WIDTH-1:0] reg_unpack_t[RD_REG_NUM-1:0];
 
     localparam int BYTE_WIDTH = 8;
-    localparam int ADDR_OFFSET = REG_ADDR_WIDTH / BYTE_WIDTH;
+    localparam int ADDR_OFFSET = REG_DATA_WIDTH / BYTE_WIDTH;
     localparam reg_unpack_t REG_INIT_UNPACK = reg_unpack_t'(REG_INIT);
 
     logic [REG_DATA_WIDTH-1:0] wr_reg[WR_REG_NUM-1:0];
