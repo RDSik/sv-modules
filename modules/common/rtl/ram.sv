@@ -33,8 +33,26 @@ module ram #(
         end
     end else if (MEM_TYPE == "distributed") begin : g_distributed_ram
         assign data_o = ram[addr_i];
+    end else if (MEM_TYPE == "ultra") begin : g_ultra_ram
+        logic [MEM_WIDTH-1:0] ram_pipe[PIPE_NUM];
+        logic [MEM_WIDTH-1:0] ram_reg;
+
+        always_ff @(posedge clk_i) begin
+            ram_reg <= ram[rd_addr_i];
+        end
+
+        always_ff @(posedge clk_i) begin
+            ram_pipe[0] <= ram_reg;
+            for (int i = 1; i < PIPE_NUM; i++) begin
+                ram_pipe[i] <= ram_pipe[i-1];
+            end
+        end
+
+        always_ff @(posedge clk_i) begin
+            data_o <= ram_pipe[PIPE_NUM-1];
+        end
     end else begin : g_ram_err
-        $error("Only block and distributed ram type supported!");
+        $error("Only ultra, block and distributed ram type supported!");
     end
 
 endmodule

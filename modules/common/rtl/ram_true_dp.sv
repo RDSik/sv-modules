@@ -1,14 +1,17 @@
 /* verilator lint_off TIMESCALEMOD */
-module bram_true_dp #(
+module ram_true_dp #(
     parameter int MEM_WIDTH  = 32,
     parameter int MEM_DEPTH  = 1024,
-    parameter     MODE       = "no_change",
+    parameter int PIPE_NUM   = 5,
+    parameter     MEM_MODE   = "no_change",
+    parameter     MEM_TYPE   = "block",
     parameter     MEM_FILE   = "",
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
     parameter int BYTE_NUM   = MEM_WIDTH / 8
 ) (
     input  logic                  a_clk_i,
     input  logic                  a_en_i,
+    input  logic                  a_rd_en_i,
     input  logic [  BYTE_NUM-1:0] a_wr_en_i,
     input  logic [ADDR_WIDTH-1:0] a_addr_i,
     input  logic [ MEM_WIDTH-1:0] a_data_i,
@@ -16,6 +19,7 @@ module bram_true_dp #(
 
     input  logic                  b_clk_i,
     input  logic                  b_en_i,
+    input  logic                  b_rd_en_i,
     input  logic [  BYTE_NUM-1:0] b_wr_en_i,
     input  logic [ADDR_WIDTH-1:0] b_addr_i,
     input  logic [ MEM_WIDTH-1:0] b_data_i,
@@ -24,21 +28,24 @@ module bram_true_dp #(
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
+    logic [MEM_WIDTH-1:0] a_data;
+    logic [MEM_WIDTH-1:0] b_data;
+
     if (MEM_FILE != 0) begin : g_mem_file_init
         initial begin
             $readmemh(MEM_FILE, ram);
         end
     end
 
-    if (MODE == "write_first") begin : g_wr_first
+    if (MEM_MODE == "write_first") begin : g_wr_first
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
                         ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
-                        a_data_o              <= a_data_i[i*8+:8];
+                        a_data                <= a_data_i[i*8+:8];
                     end else begin
-                        a_data_o <= ram[a_addr_i];
+                        a_data <= ram[a_addr_i];
                     end
                 end
             end
@@ -49,17 +56,17 @@ module bram_true_dp #(
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
                         ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
-                        b_data_o              <= b_data_i[i*8+:8];
+                        b_data                <= b_data_i[i*8+:8];
                     end else begin
-                        b_data_o <= ram[b_addr_i];
+                        b_data <= ram[b_addr_i];
                     end
                 end
             end
         end
-    end else if (MODE == "read_first") begin : g_rd_first
+    end else if (MEM_MODE == "read_first") begin : g_rd_first
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
-                a_data_o <= ram[a_addr_i];
+                a_data <= ram[a_addr_i];
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (a_wr_en_i[i]) begin
                         ram[a_addr_i][i*8+:8] <= a_data_i[i*8+:8];
@@ -70,7 +77,7 @@ module bram_true_dp #(
 
         always_ff @(posedge b_clk_i) begin
             if (b_en_i) begin
-                b_data_o <= ram[b_addr_i];
+                b_data <= ram[b_addr_i];
                 for (int i = 0; i < BYTE_NUM; i++) begin
                     if (b_wr_en_i[i]) begin
                         ram[b_addr_i][i*8+:8] <= b_data_i[i*8+:8];
@@ -78,7 +85,7 @@ module bram_true_dp #(
                 end
             end
         end
-    end else if (MODE == "no_change") begin : g_no_change
+    end else if (MEM_MODE == "no_change") begin : g_no_change
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 for (int i = 0; i < BYTE_NUM; i++) begin
@@ -92,7 +99,7 @@ module bram_true_dp #(
         always_ff @(posedge a_clk_i) begin
             if (a_en_i) begin
                 if (~|a_wr_en_i) begin
-                    a_data_o <= ram[a_addr_i];
+                    a_data <= ram[a_addr_i];
                 end
             end
         end
@@ -110,12 +117,75 @@ module bram_true_dp #(
         always_ff @(posedge b_clk_i) begin
             if (b_en_i) begin
                 if (~|b_wr_en_i) begin
-                    b_data_o <= ram[b_addr_i];
+                    b_data <= ram[b_addr_i];
                 end
             end
         end
     end else begin : g_mode_err
         $error("Only no_change, read_first and write_first MODE is available!");
+    end
+
+    if (MEM_TYPE == "block") begin : g_block_ram
+        assign a_data_o = a_data;
+        assign b_data_o = b_data;
+    end else if (MEM_TYPE == "ultra") begin : g_ultra_ram
+        logic [MEM_WIDTH-1:0] a_data_pipe[PIPE_NUM];
+        logic a_en_pipe[PIPE_NUM];
+
+        always_ff @(posedge a_clk_i) begin
+            a_en_pipe[0] <= a_en_i;
+            for (int i = 1; i < PIPE_NUM; i++) begin
+                a_en_pipe[i] <= a_en_pipe[i-1];
+            end
+        end
+
+        always_ff @(posedge a_clk_i) begin
+            if (a_en_pipe[0]) begin
+                a_pipe[0] <= a_data;
+            end
+        end
+
+        always_ff @(posedge a_clk_i) begin
+            for (int i = 1; i < PIPE_NUM; i++) begin
+                a_pipe[i] <= a_pipe[i-1];
+            end
+        end
+
+        always_ff @(posedge a_clk_i) begin
+            if (a_en_pipe[PIPE_NUM-1] & a_rd_en_i) begin
+                a_data_o <= a_pipe[PIPE_NUM-1];
+            end
+        end
+
+        logic [MEM_WIDTH-1:0] b_pipe[PIPE_NUM];
+        logic b_en_pipe[PIPE_NUM];
+
+        always_ff @(posedge a_clk_i) begin
+            b_en_pipe[0] <= b_en_i;
+            for (int i = 1; i < PIPE_NUM; i++) begin
+                b_en_pipe[i] <= b_en_pipe[i-1];
+            end
+        end
+
+        always_ff @(posedge a_clk_i) begin
+            if (b_en_pipe[0]) begin
+                b_pipe[0] <= b_data;
+            end
+        end
+
+        always_ff @(posedge a_clk_i) begin
+            for (int i = 1; i < PIPE_NUM; i++) begin
+                b_pipe[i] <= b_pipe[i-1];
+            end
+        end
+
+        always_ff @(posedge a_clk_i) begin
+            if (b_en_pipe[PIPE_NUM-1] & b_rd_en_i) begin
+                b_data_o <= b_pipe[PIPE_NUM-1];
+            end
+        end
+    end else begin : g_ram_err
+        $error("Only ultra and block ram type supported!");
     end
 
 endmodule

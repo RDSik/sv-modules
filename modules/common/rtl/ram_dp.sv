@@ -2,6 +2,7 @@
 module ram_dp #(
     parameter int MEM_WIDTH  = 16,
     parameter int MEM_DEPTH  = 64,
+    parameter int PIPE_NUM   = 5,
     parameter     MEM_TYPE   = "block",
     parameter     MEM_FILE   = "",
     parameter int ADDR_WIDTH = $clog2(MEM_DEPTH)
@@ -39,8 +40,28 @@ module ram_dp #(
         end
     end else if (MEM_TYPE == "distributed") begin : g_distributed_ram
         assign rd_data_o = ram[rd_addr_i];
+    end else if (MEM_TYPE == "ultra") begin : g_ultra_ram
+        logic [MEM_WIDTH-1:0] ram_pipe[PIPE_NUM];
+        logic [MEM_WIDTH-1:0] ram_reg;
+
+        always_ff @(posedge clk_i) begin
+            ram_reg <= ram[rd_addr_i];
+        end
+
+        always_ff @(posedge clk_i) begin
+            ram_pipe[0] <= ram_reg;
+            for (int i = 1; i < PIPE_NUM; i++) begin
+                ram_pipe[i] <= ram_pipe[i-1];
+            end
+        end
+
+        always_ff @(posedge clk_i) begin
+            if (rd_en_i) begin
+                rd_data_o <= ram_pipe[PIPE_NUM-1];
+            end
+        end
     end else begin : g_ram_err
-        $error("Only block and distributed ram type supported!");
+        $error("Only ultra, block and distributed ram type supported!");
     end
 
 endmodule
