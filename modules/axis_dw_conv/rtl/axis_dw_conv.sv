@@ -76,22 +76,28 @@ module axis_dw_conv #(
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
-                cnt           <= '0;
-                m_axis_tvalid <= '0;
+                cnt <= '0;
             end else if (s_handshake) begin
                 if (cnt_done) begin
                     cnt <= '0;
                 end else begin
                     cnt <= cnt + 1'b1;
                 end
-                m_axis_tvalid <= cnt_done;
             end
         end
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
-                m_axis_tdata <= '0;
-            end else if (s_handshake) begin
+                m_axis_tvalid <= 1'b0;
+            end else if (cnt_done & s_handshake) begin
+                m_axis_tvalid <= 1'b1;
+            end else if (m_handshake) begin
+                m_axis_tvalid <= 1'b0;
+            end
+        end
+
+        always_ff @(posedge clk_i) begin
+            if (s_handshake) begin
                 m_axis_tdata[cnt] <= s_axis.tdata;
             end
         end

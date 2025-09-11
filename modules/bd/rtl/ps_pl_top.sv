@@ -6,6 +6,7 @@ module ps_pl_top #(
     parameter int   AXIS_DATA_WIDTH = 8,
     parameter logic ILA_EN          = 1
 ) (
+    input  logic clk_i,
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
@@ -32,15 +33,15 @@ module ps_pl_top #(
     inout        FIXED_IO_0_ps_srstb
 );
 
-    logic clk_i;
-    logic rstn_i;
+    logic ps_clk;
+    logic ps_arstn;
 
     apb_if #(
         .ADDR_WIDTH(APB_ADDR_WIDTH),
         .DATA_WIDTH(APB_DATA_WIDTH)
     ) apb (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i (ps_clk),
+        .rstn_i(ps_arstn)
     );
 
     apb_uart #(
@@ -79,14 +80,14 @@ module ps_pl_top #(
         .DDR_0_ras_n         (DDR_0_ras_n),
         .DDR_0_reset_n       (DDR_0_reset_n),
         .DDR_0_we_n          (DDR_0_we_n),
-        .FCLK_CLK0_0         (clk_i),
+        .FCLK_CLK0_0         (ps_clk),
         .FIXED_IO_0_ddr_vrn  (FIXED_IO_0_ddr_vrn),
         .FIXED_IO_0_ddr_vrp  (FIXED_IO_0_ddr_vrp),
         .FIXED_IO_0_mio      (FIXED_IO_0_mio),
         .FIXED_IO_0_ps_clk   (FIXED_IO_0_ps_clk),
         .FIXED_IO_0_ps_porb  (FIXED_IO_0_ps_porb),
         .FIXED_IO_0_ps_srstb (FIXED_IO_0_ps_srstb),
-        .peripheral_aresetn_0(rstn_i)
+        .peripheral_aresetn_0(ps_arstn)
     );
 
 endmodule

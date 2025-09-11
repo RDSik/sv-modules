@@ -10,6 +10,8 @@ module axis_uart_tb ();
     localparam int BAUD_RATE = 115_200;
     localparam logic PARITY_ODD = 1;
     localparam logic PARITY_EVEN = 0;
+    localparam int DATA_WIDTH = 8;
+    localparam int DIVIDER_WIDTH = 32;
     localparam int DIVIDER = (CLK_MHZ * 1_000_000) / BAUD_RATE;
     localparam int RESET_DELAY = 10;
     localparam int CLK_PER_NS = 1_000_000_000 / (CLK_MHZ * 1_000_000);
@@ -19,12 +21,16 @@ module axis_uart_tb ();
     logic uart_data;
     logic parity_err;
 
-    axis_if s_axis (
+    axis_if #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) s_axis (
         .clk_i (clk_i),
         .rstn_i(rstn_i)
     );
 
-    axis_if m_axis (
+    axis_if #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) m_axis (
         .clk_i (clk_i),
         .rstn_i(rstn_i)
     );
@@ -44,9 +50,12 @@ module axis_uart_tb ();
     end
 
     initial begin
-        test_base test;
-        test = new(s_axis, m_axis);
-        test.run();
+        env_base #(
+            .DATA_WIDTH_IN (DATA_WIDTH),
+            .DATA_WIDTH_OUT(DATA_WIDTH)
+        ) env;
+        env = new(s_axis, m_axis);
+        env.run();
     end
 
     initial begin
@@ -54,7 +63,10 @@ module axis_uart_tb ();
         $dumpvars(0, axis_uart_tb);
     end
 
-    axis_uart_tx i_axis_uart_tx (
+    axis_uart_tx #(
+        .DATA_WIDTH   (DATA_WIDTH),
+        .DIVIDER_WIDTH(DIVIDER_WIDTH)
+    ) i_axis_uart_tx (
         .clk_divider_i(DIVIDER),
         .parity_odd_i (PARITY_ODD),
         .parity_even_i(PARITY_EVEN),
@@ -62,7 +74,10 @@ module axis_uart_tb ();
         .s_axis       (m_axis)
     );
 
-    axis_uart_rx i_axis_uart_rx (
+    axis_uart_rx #(
+        .DATA_WIDTH   (DATA_WIDTH),
+        .DIVIDER_WIDTH(DIVIDER_WIDTH)
+    ) i_axis_uart_rx (
         .clk_divider_i(DIVIDER),
         .parity_odd_i (PARITY_ODD),
         .parity_even_i(PARITY_EVEN),

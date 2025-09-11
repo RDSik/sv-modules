@@ -26,12 +26,16 @@ module axis_spi_tb ();
 
     assign m_spi.miso = m_spi.mosi;
 
-    axis_if s_axis (
+    axis_if #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) s_axis (
         .clk_i (clk_i),
         .rstn_i(rstn_i)
     );
 
-    axis_if m_axis (
+    axis_if #(
+        .DATA_WIDTH(DATA_WIDTH)
+    ) m_axis (
         .clk_i (clk_i),
         .rstn_i(rstn_i)
     );
@@ -51,9 +55,12 @@ module axis_spi_tb ();
     end
 
     initial begin
-        test_base test;
-        test = new(s_axis, m_axis);
-        test.run();
+        env_base #(
+            .DATA_WIDTH_IN (DATA_WIDTH),
+            .DATA_WIDTH_OUT(DATA_WIDTH)
+        ) env;
+        env = new(s_axis, m_axis);
+        env.run();
     end
 
     initial begin

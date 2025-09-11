@@ -131,12 +131,12 @@ module ram_true_dp #(
         assign b_data_o = b_data;
     end else if (MEM_TYPE == "ultra") begin : g_ultra_ram
         logic [MEM_WIDTH-1:0] a_data_pipe[PIPE_NUM];
-        logic a_en_pipe[PIPE_NUM];
+        logic a_en_pipe[PIPE_NUM+1];
 
         always_ff @(posedge a_clk_i) begin
             a_en_pipe[0] <= a_en_i;
-            for (int i = 1; i < PIPE_NUM; i++) begin
-                a_en_pipe[i] <= a_en_pipe[i-1];
+            for (int i = 0; i < PIPE_NUM; i++) begin
+                a_en_pipe[i+1] <= a_en_pipe[i];
             end
         end
 
@@ -147,24 +147,26 @@ module ram_true_dp #(
         end
 
         always_ff @(posedge a_clk_i) begin
-            for (int i = 1; i < PIPE_NUM; i++) begin
-                a_pipe[i] <= a_pipe[i-1];
+            for (int i = 0; i < PIPE_NUM - 1; i++) begin
+                if (a_en_pipe[i+1]) begin
+                    a_pipe[i+1] <= a_pipe[i];
+                end
             end
         end
 
         always_ff @(posedge a_clk_i) begin
-            if (a_en_pipe[PIPE_NUM-1] & a_rd_en_i) begin
+            if (a_en_pipe[PIPE_NUM] & a_rd_en_i) begin
                 a_data_o <= a_pipe[PIPE_NUM-1];
             end
         end
 
         logic [MEM_WIDTH-1:0] b_pipe[PIPE_NUM];
-        logic b_en_pipe[PIPE_NUM];
+        logic b_en_pipe[PIPE_NUM+1];
 
         always_ff @(posedge a_clk_i) begin
             b_en_pipe[0] <= b_en_i;
-            for (int i = 1; i < PIPE_NUM; i++) begin
-                b_en_pipe[i] <= b_en_pipe[i-1];
+            for (int i = 0; i < PIPE_NUM; i++) begin
+                b_en_pipe[i+1] <= b_en_pipe[i];
             end
         end
 
@@ -175,13 +177,15 @@ module ram_true_dp #(
         end
 
         always_ff @(posedge a_clk_i) begin
-            for (int i = 1; i < PIPE_NUM; i++) begin
-                b_pipe[i] <= b_pipe[i-1];
+            for (int i = 0; i < PIPE_NUM - 1; i++) begin
+                if (b_en_pipe[i+1]) begin
+                    b_pipe[i+1] <= b_pipe[i];
+                end
             end
         end
 
         always_ff @(posedge a_clk_i) begin
-            if (b_en_pipe[PIPE_NUM-1] & b_rd_en_i) begin
+            if (b_en_pipe[PIPE_NUM] & b_rd_en_i) begin
                 b_data_o <= b_pipe[PIPE_NUM-1];
             end
         end

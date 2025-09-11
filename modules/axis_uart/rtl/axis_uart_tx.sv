@@ -3,7 +3,10 @@
 
 module axis_uart_tx
     import uart_pkg::*;
-(
+#(
+    parameter int DATA_WIDTH    = 8,
+    parameter int DIVIDER_WIDTH = 32
+) (
     input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
     input  logic                     parity_odd_i,
     input  logic                     parity_even_i,

@@ -104,7 +104,10 @@ module apb_uart
         .wr_valid_o(wr_valid)
     );
 
-    axis_uart_tx i_axis_uart_tx (
+    axis_uart_tx #(
+        .DATA_WIDTH   (AXIS_DATA_WIDTH),
+        .DIVIDER_WIDTH(APB_DATA_WIDTH)
+    ) i_axis_uart_tx (
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
         .parity_even_i(wr_regs.control.parity_even),
@@ -112,7 +115,10 @@ module apb_uart
         .s_axis       (uart_tx)
     );
 
-    axis_uart_rx i_axis_uart_rx (
+    axis_uart_rx #(
+        .DATA_WIDTH   (AXIS_DATA_WIDTH),
+        .DIVIDER_WIDTH(APB_DATA_WIDTH)
+    ) i_axis_uart_rx (
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
         .parity_even_i(wr_regs.control.parity_even),
