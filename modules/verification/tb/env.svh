@@ -55,6 +55,11 @@ class env_base #(
         end
     endtask
 
+    task static reset_master();
+        s_axis.tvalid <= 0;
+        s_axis.tdata  <= 0;
+    endtask
+
     task static drive_master(packet_in_t p);
         repeat (p.delay) @(posedge s_axis.clk_i);
         s_axis.tvalid <= 1;
@@ -79,8 +84,7 @@ class env_base #(
             join_none
             wait (~s_axis.rstn_i);
             disable fork;
-            s_axis.tvalid <= 0;
-            s_axis.tdata  <= 0;
+            reset_master();
             wait (s_axis.rstn_i);
         end
     endtask
@@ -117,6 +121,10 @@ class env_base #(
         join
     endtask
 
+    task static reset_slave();
+        m_axis.tready <= 0;
+    endtask
+
     task static drive_slave(int delay_min, int delay_max);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
@@ -136,7 +144,7 @@ class env_base #(
             join_none
             wait (~m_axis.rstn_i);
             disable fork;
-            m_axis.tready <= 0;
+            reset_slave();
             wait (m_axis.rstn_i);
         end
     endtask

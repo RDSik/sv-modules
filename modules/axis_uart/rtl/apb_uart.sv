@@ -166,7 +166,9 @@ module apb_uart
             .probe9 (wr_regs.clk_divider),
             .probe10(wr_regs.tx.data),
             .probe11(rd_regs.rx.data),
-            .probe12(rd_regs.status)
+            .probe12(rd_regs.status),
+            .probe13(wr_valid),
+            .probe14(rstn_i)
         );
     end
 endmodule

@@ -165,24 +165,24 @@ module axis_spi_master #(
             trailing_edge <= 1'b0;
             leading_edge  <= 1'b0;
             if (s_handshake) begin
-                /* verilator lint_off WIDTHTRUNC */
-                edge_cnt <= EDGE_NUM;
-                /* verilator lint_on WIDTHTRUNC */
+                edge_cnt <= '0;
             end else if (~edge_done) begin
                 if (clk_done) begin
                     trailing_edge <= 1'b1;
-                    edge_cnt      <= edge_cnt - 1'b1;
+                    edge_cnt      <= edge_cnt + 1'b1;
                     spi_clk_reg   <= ~spi_clk_reg;
                 end else if (half_clk_done) begin
                     leading_edge <= 1'b1;
-                    edge_cnt     <= edge_cnt - 1'b1;
+                    edge_cnt     <= edge_cnt + 1'b1;
                     spi_clk_reg  <= ~spi_clk_reg;
                 end
             end
         end
     end
 
-    assign edge_done = ~(|edge_cnt);
+    /* verilator lint_off WIDTHEXPAND */
+    assign edge_done = (edge_cnt == EDGE_NUM);
+    /* verilator lint_on WIDTHEXPAND */
 
     always_ff @(posedge clk_i) begin
         edge_done_d <= (state == WAIT) ? 1'b0 : edge_done;

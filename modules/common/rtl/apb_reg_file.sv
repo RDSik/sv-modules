@@ -19,8 +19,9 @@ module apb_reg_file #(
 
     typedef logic [REG_DATA_WIDTH-1:0] reg_unpack_t[RD_REG_NUM-1:0];
 
-    localparam int BYTE_WIDTH = 8;
-    localparam int ADDR_OFFSET = REG_DATA_WIDTH / BYTE_WIDTH;
+    localparam int ADDR_LSB = 2;
+    localparam int ADDR_MSB = 19;
+
     localparam reg_unpack_t REG_INIT_UNPACK = reg_unpack_t'(REG_INIT);
 
     logic [REG_DATA_WIDTH-1:0] wr_reg[WR_REG_NUM-1:0];
@@ -59,7 +60,7 @@ module apb_reg_file #(
         end else begin
             if (write) begin
                 for (int reg_indx = 0; reg_indx < WR_REG_NUM; reg_indx++) begin
-                    if (s_apb.paddr == reg_indx * ADDR_OFFSET) begin
+                    if (s_apb.paddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         wr_reg[reg_indx]   <= s_apb.pwdata;
                         wr_valid[reg_indx] <= 1'b1;
                     end else begin
@@ -87,7 +88,7 @@ module apb_reg_file #(
     always_ff @(posedge clk_i) begin
         if (read) begin
             for (int reg_indx = 0; reg_indx < RD_REG_NUM; reg_indx++) begin
-                if (s_apb.paddr == reg_indx * ADDR_OFFSET) begin
+                if (s_apb.paddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                     s_apb.prdata <= rd_reg[reg_indx];
                 end
             end

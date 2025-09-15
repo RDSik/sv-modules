@@ -61,8 +61,11 @@ int main() {
         int tx_data     = 0x4D; // ASCII - M
 
         Xil_Out32(XPAR_APB_M_0_BASEADDR + 0, control);
+        xil_printf("Write data 0x%x to 0x%x \n\r", control, XPAR_APB_M_0_BASEADDR + 0);
         Xil_Out32(XPAR_APB_M_0_BASEADDR + 4, clk_divider);
+        xil_printf("Write data 0x%x to 0x%x \n\r", clk_divider, XPAR_APB_M_0_BASEADDR + 4);
         Xil_Out32(XPAR_APB_M_0_BASEADDR + 8, tx_data);
+        xil_printf("Write data 0x%x to 0x%x \n\r", tx_data, XPAR_APB_M_0_BASEADDR + 8);
 
         int regs_num    = 5;
         int addr_offset = 4;
@@ -70,7 +73,7 @@ int main() {
 
         for (int i = 0; i < regs_num*addr_offset; i += addr_offset) {
             rd_data = Xil_In32(XPAR_APB_M_0_BASEADDR + i);
-            xil_printf("The data at 0x%x is 0x%x \n\r", XPAR_APB_M_0_BASEADDR + i, rd_data);
+            xil_printf("Read data from 0x%x equal 0x%x \n\r", XPAR_APB_M_0_BASEADDR + i, rd_data);
             xil_printf("\n\r");
         }
 
