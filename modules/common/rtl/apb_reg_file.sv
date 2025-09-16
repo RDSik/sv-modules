@@ -19,8 +19,8 @@ module apb_reg_file #(
 
     typedef logic [REG_DATA_WIDTH-1:0] reg_unpack_t[RD_REG_NUM-1:0];
 
-    localparam int ADDR_LSB = 2;
-    localparam int ADDR_MSB = 19;
+    localparam int ADDR_LSB = REG_DATA_WIDTH/32 + 1;
+    localparam int ADDR_MSB = ADDR_LSB + $clog2(RD_REG_NUM);
 
     localparam reg_unpack_t REG_INIT_UNPACK = reg_unpack_t'(REG_INIT);
 
