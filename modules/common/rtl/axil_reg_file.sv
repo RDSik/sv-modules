@@ -178,8 +178,8 @@ module axil_reg_file #(
             .probe14(s_axil.rdata),
             .probe15(s_axil.wstrb),
             .probe16(s_axil.rvalid),
-            .probe17(),
-            .probe18()
+            .probe17(s_axil.arprot),
+            .probe18(s_axil.awprot)
         );
     end
 

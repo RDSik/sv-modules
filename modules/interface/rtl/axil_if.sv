@@ -11,6 +11,7 @@ interface axil_if #(
     logic [ADDR_WIDTH-1:0] awaddr;
     logic                  awvalid;
     logic                  awready;
+    logic [           2:0] awprot;
 
     logic [DATA_WIDTH-1:0] wdata;
     logic [STRB_WIDTH-1:0] wstrb;
@@ -24,6 +25,7 @@ interface axil_if #(
     logic [ADDR_WIDTH-1:0] araddr;
     logic                  arvalid;
     logic                  arready;
+    logic [           2:0] arprot;
 
     logic [DATA_WIDTH-1:0] rdata;
     logic                  rvalid;
@@ -34,6 +36,7 @@ interface axil_if #(
         input clk_i,
         input rstn_i,
         output awaddr,
+        output awprot,
         output awvalid,
         input awready,
         output wdata,
@@ -45,6 +48,7 @@ interface axil_if #(
         input bvalid,
         output bready,
         output araddr,
+        output arprot,
         output arvalid,
         input arready,
         input rdata,
@@ -56,6 +60,7 @@ interface axil_if #(
         input clk_i,
         input rstn_i,
         input awaddr,
+        input awprot,
         input awvalid,
         output awready,
         input wdata,
@@ -67,6 +72,7 @@ interface axil_if #(
         output bvalid,
         input bready,
         input araddr,
+        input arprot,
         input arvalid,
         output arready,
         output rdata,
