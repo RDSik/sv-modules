@@ -1,32 +1,32 @@
 /* verilator lint_off TIMESCALEMOD */
 `include "../rtl/uart_pkg.svh"
 
-module apb_uart
+module axil_uart
     import uart_pkg::*;
 #(
     parameter int   FIFO_DEPTH      = 128,
-    parameter int   APB_ADDR_WIDTH  = 32,
-    parameter int   APB_DATA_WIDTH  = 32,
+    parameter int   AXIL_ADDR_WIDTH = 32,
+    parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIS_DATA_WIDTH = 8,
     parameter logic ILA_EN          = 0
 ) (
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
-    apb_if.slave s_apb
+    axil_if.slave s_axil
 );
 
-    uart_rd_regs_t                  rd_regs;
-    uart_wr_regs_t                  wr_regs;
+    uart_regs_t               rd_regs;
+    uart_regs_t               wr_regs;
 
-    logic          [RD_REG_NUM-1:0] rd_valid;
-    logic          [WR_REG_NUM-1:0] wr_valid;
+    logic       [REG_NUM-1:0] rd_valid;
+    logic       [REG_NUM-1:0] wr_valid;
 
-    logic                           clk_i;
-    logic                           rstn_i;
+    logic                     clk_i;
+    logic                     rstn_i;
 
-    assign clk_i  = s_apb.clk_i;
-    assign rstn_i = s_apb.rstn_i;
+    assign clk_i  = s_axil.clk_i;
+    assign rstn_i = s_axil.rstn_i;
 
     logic tx_reset;
     logic rx_reset;
@@ -70,43 +70,43 @@ module apb_uart
     assign rx_handshake = fifo_rx.tvalid & fifo_rx.tready;
 
     always_comb begin
-        rd_valid                     = '1;
-        rd_regs.wr                   = wr_regs;
+        rd_regs                      = wr_regs;
+
+        rd_regs.param.data_width     = AXIS_DATA_WIDTH;
+        rd_regs.param.fifo_depth     = FIFO_DEPTH;
+        rd_regs.param.reg_num        = REG_NUM;
 
         rd_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
         rd_regs.status.tx_fifo_empty = ~uart_tx.tvalid;
         rd_regs.status.rx_fifo_full  = ~uart_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
         rd_regs.status.parity_err    = parity_err;
-        rd_regs.status.rsrvd         = '0;
 
         rd_regs.rx.data              = fifo_rx.tdata;
-        rd_regs.rx.rsrvd             = '0;
     end
 
     assign fifo_tx.tdata  = wr_regs.tx.data;
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_valid[RX_DATA_REG_POS];
 
-    apb_reg_file #(
-        .REG_DATA_WIDTH(APB_DATA_WIDTH),
-        .REG_ADDR_WIDTH(APB_ADDR_WIDTH),
-        .RD_REG_NUM    (RD_REG_NUM),
-        .WR_REG_NUM    (WR_REG_NUM),
-        .rd_reg_t      (uart_rd_regs_t),
-        .wr_reg_t      (uart_wr_regs_t),
-        .REG_INIT      (REG_INIT)
-    ) i_apb_reg_file (
-        .s_apb     (s_apb),
+    axil_reg_file #(
+        .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .REG_NUM       (REG_NUM),
+        .reg_t         (uart_regs_t),
+        .REG_INIT      (REG_INIT),
+        .ILA_EN        (ILA_EN)
+    ) i_axil_reg_file (
+        .s_axil    (s_axil),
         .rd_regs_i (rd_regs),
-        .rd_valid_i(rd_valid),
+        .rd_valid_i('1),
         .wr_regs_o (wr_regs),
         .wr_valid_o(wr_valid)
     );
 
     axis_uart_tx #(
         .DATA_WIDTH   (AXIS_DATA_WIDTH),
-        .DIVIDER_WIDTH(APB_DATA_WIDTH)
+        .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
     ) i_axis_uart_tx (
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
@@ -117,7 +117,7 @@ module apb_uart
 
     axis_uart_rx #(
         .DATA_WIDTH   (AXIS_DATA_WIDTH),
-        .DIVIDER_WIDTH(APB_DATA_WIDTH)
+        .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
     ) i_axis_uart_rx (
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
@@ -151,24 +151,4 @@ module apb_uart
         .a_empty_o()
     );
 
-    if (ILA_EN) begin : g_ila
-        apb_ila i_apb_ila (
-            .clk    (clk_i),
-            .probe0 (s_apb.paddr),
-            .probe1 (s_apb.prdata),
-            .probe2 (s_apb.pwdata),
-            .probe3 (s_apb.pwrite),
-            .probe4 (s_apb.psel),
-            .probe5 (s_apb.penable),
-            .probe6 (s_apb.pready),
-            .probe7 (s_apb.pslverr),
-            .probe8 (wr_regs.control),
-            .probe9 (wr_regs.clk_divider),
-            .probe10(wr_regs.tx.data),
-            .probe11(rd_regs.rx.data),
-            .probe12(rd_regs.status),
-            .probe13(wr_valid),
-            .probe14(rstn_i)
-        );
-    end
 endmodule

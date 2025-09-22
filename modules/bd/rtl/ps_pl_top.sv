@@ -1,9 +1,10 @@
 /* verilator lint_off TIMESCALEMOD */
 module ps_pl_top #(
     parameter int   FIFO_DEPTH      = 128,
-    parameter int   APB_ADDR_WIDTH  = 32,
-    parameter int   APB_DATA_WIDTH  = 32,
+    parameter int   AXIL_ADDR_WIDTH = 32,
+    parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIS_DATA_WIDTH = 8,
+    parameter int   MODULES_NUM     = 2,
     parameter logic ILA_EN          = 1
 ) (
     input  logic clk_i,
@@ -36,35 +37,65 @@ module ps_pl_top #(
     logic ps_clk;
     logic ps_arstn;
 
-    apb_if #(
-        .ADDR_WIDTH(APB_ADDR_WIDTH),
-        .DATA_WIDTH(APB_DATA_WIDTH)
-    ) apb (
+    axil_if #(
+        .ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
+    ) axil[MODULES_NUM-1:0] (
         .clk_i (ps_clk),
         .rstn_i(ps_arstn)
     );
 
-    apb_uart #(
+    axil_uart #(
         .FIFO_DEPTH     (FIFO_DEPTH),
-        .APB_ADDR_WIDTH (APB_ADDR_WIDTH),
-        .APB_DATA_WIDTH (APB_DATA_WIDTH),
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .ILA_EN         (ILA_EN)
-    ) i_apb_uart (
+    ) i_axil_uart (
         .uart_rx_i(uart_rx_i),
         .uart_tx_o(uart_tx_o),
-        .s_apb    (apb)
+        .s_axil   (axil[0])
     );
 
     zynq_bd zynq_bd_i (
-        .APB_M_0_paddr       (apb.paddr),
-        .APB_M_0_penable     (apb.penable),
-        .APB_M_0_prdata      (apb.prdata),
-        .APB_M_0_pready      (apb.pready),
-        .APB_M_0_psel        (apb.psel),
-        .APB_M_0_pslverr     (apb.pslverr),
-        .APB_M_0_pwdata      (apb.pwdata),
-        .APB_M_0_pwrite      (apb.pwrite),
+        .M00_AXI_0_araddr    (axil[0].araddr),
+        .M00_AXI_0_arprot    (),
+        .M00_AXI_0_arready   (axil[0].arready),
+        .M00_AXI_0_arvalid   (axil[0].arvalid),
+        .M00_AXI_0_awaddr    (axil[0].awaddr),
+        .M00_AXI_0_awprot    (),
+        .M00_AXI_0_awready   (axil[0].awready),
+        .M00_AXI_0_awvalid   (axil[0].awvalid),
+        .M00_AXI_0_bready    (axil[0].bready),
+        .M00_AXI_0_bresp     (axil[0].bresp),
+        .M00_AXI_0_bvalid    (axil[0].bvalid),
+        .M00_AXI_0_rdata     (axil[0].rdata),
+        .M00_AXI_0_rready    (axil[0].rready),
+        .M00_AXI_0_rresp     (axil[0].rresp),
+        .M00_AXI_0_rvalid    (axil[0].rvalid),
+        .M00_AXI_0_wdata     (axil[0].wdata),
+        .M00_AXI_0_wready    (axil[0].wready),
+        .M00_AXI_0_wstrb     (axil[0].wstrb),
+        .M00_AXI_0_wvalid    (axil[0].wvalid),
+        .M01_AXI_0_araddr    (axil[1].araddr),
+        .M01_AXI_0_arprot    (),
+        .M01_AXI_0_arready   (axil[1].arready),
+        .M01_AXI_0_arvalid   (axil[1].arvalid),
+        .M01_AXI_0_awaddr    (axil[1].awaddr),
+        .M01_AXI_0_awprot    (),
+        .M01_AXI_0_awready   (axil[1].awready),
+        .M01_AXI_0_awvalid   (axil[1].awvalid),
+        .M01_AXI_0_bready    (axil[1].bready),
+        .M01_AXI_0_bresp     (axil[1].bresp),
+        .M01_AXI_0_bvalid    (axil[1].bvalid),
+        .M01_AXI_0_rdata     (axil[1].rdata),
+        .M01_AXI_0_rready    (axil[1].rready),
+        .M01_AXI_0_rresp     (axil[1].rresp),
+        .M01_AXI_0_rvalid    (axil[1].rvalid),
+        .M01_AXI_0_wdata     (axil[1].wdata),
+        .M01_AXI_0_wready    (axil[1].wready),
+        .M01_AXI_0_wstrb     (axil[1].wstrb),
+        .M01_AXI_0_wvalid    (axil[1].wvalid),
         .DDR_0_addr          (DDR_0_addr),
         .DDR_0_ba            (DDR_0_ba),
         .DDR_0_cas_n         (DDR_0_cas_n),

@@ -7,6 +7,13 @@ package uart_pkg;
     localparam int DATA_WIDTH = 8;
 
     typedef struct packed {
+        logic [7:0] rsrvd;
+        logic [7:0] fifo_depth;
+        logic [7:0] reg_num;
+        logic [7:0] data_width;
+    } uart_param_reg_t;
+
+    typedef struct packed {
         logic [26:0] rsrvd;
         logic        rx_fifo_empty;
         logic        tx_fifo_empty;
@@ -31,27 +38,27 @@ package uart_pkg;
     } uart_data_reg_t;
 
     typedef struct packed {
+        uart_param_reg_t       param;
+        uart_status_reg_t      status;
+        uart_data_reg_t        rx;
         uart_data_reg_t        tx;
         uart_clk_divider_reg_t clk_divider;
         uart_control_reg_t     control;
-    } uart_wr_regs_t;
-
-    typedef struct packed {
-        uart_status_reg_t status;
-        uart_data_reg_t   rx;
-        uart_wr_regs_t    wr;
-    } uart_rd_regs_t;
+    } uart_regs_t;
 
     localparam int CONTROL_REG_POS = 0;
     localparam int CLK_DIVIDER_REG_POS = CONTROL_REG_POS + $bits(uart_control_reg_t) / 32;
     localparam int TX_DATA_REG_POS = CLK_DIVIDER_REG_POS + $bits(uart_clk_divider_reg_t) / 32;
     localparam int RX_DATA_REG_POS = TX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
     localparam int STATUS_REG_POS = RX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
+    localparam int PARAM_REG_POS = STATUS_REG_POS + $bits(uart_status_reg_t) / 32;
 
-    localparam int RD_REG_NUM = $bits(uart_rd_regs_t) / 32;
-    localparam int WR_REG_NUM = $bits(uart_wr_regs_t) / 32;
+    localparam int REG_NUM = $bits(uart_regs_t) / 32;
 
-    localparam uart_rd_regs_t REG_INIT = '{wr : '{control : {30'd0, 1'b1, 1'b1}, default: '0}, default: '0};
+    localparam uart_regs_t REG_INIT = '{
+        control : '{tx_reset: 1'b1, rx_reset: 1'b1, default: '0},
+        default: '0
+    };
 
     function automatic logic parity;
         input logic [DATA_WIDTH-1:0] data;

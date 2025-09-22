@@ -36,7 +36,7 @@ module sfir_even_symmetric_systolic_top #(
     shift_reg #(
         .RESET_EN  (0),
         .DATA_WIDTH(DATA_WIDTH),
-        .DELAY     (TAP_NUM * 2)
+        .DELAY     ((TAP_NUM * 2) - 1)
     ) shift_reg (
         .clk_i (clk_i),
         .rstn_i(1'b1),

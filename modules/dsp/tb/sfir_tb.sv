@@ -2,28 +2,29 @@
 
 module sfir_tb ();
 
+    localparam int DDS_NUM = 2;
+    localparam int PHASE_INC[0:DDS_NUM-1] = '{2000, 200};
+    localparam int PHASE_OFF[0:DDS_NUM-1] = '{0, 0};
+
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 16;
     localparam int TAP_NUM = 28;
-    localparam int PHASE_WIDTH = 16;
-    localparam int OUT_WIDTH = DATA_WIDTH + COEF_WIDTH;
+    localparam int IQ_NUM = 2;
     localparam logic ROUND_ODD_EVEN = 1;
 
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
     localparam int SIM_TIME = 1000;
-    localparam PHASE_INC_1 = PHASE_WIDTH'(2000);
-    localparam PHASE_INC_2 = PHASE_WIDTH'(200);
 
-    logic                  clk_i;
-    logic                  rstn_i;
-    logic [DATA_WIDTH-1:0] sin_out_1;
-    logic [DATA_WIDTH-1:0] sin_out_2;
-    logic [ OUT_WIDTH-1:0] fir_o;
-    logic [DATA_WIDTH-1:0] round_data_o;
-    logic [DATA_WIDTH-1:0] noise;
+    logic                                               clk_i;
+    logic                                               rstn_i;
+    logic [DDS_NUM-1:0][    IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
+    logic [DDS_NUM-1:0]                                 dds_tvalid;
+    logic [ IQ_NUM-1:0][DATA_WIDTH-1:0]                 fir_tdata_o;
+    logic                                               fir_tvalid_o;
+    logic [ IQ_NUM-1:0][DATA_WIDTH-1:0]                 noise;
 
-    assign noise = (sin_out_1 + sin_out_2) / 2;
+    assign noise = (dds_tdata[0] + dds_tdata[1]) / 2;
 
     initial begin
         clk_i = 1'b0;
@@ -49,47 +50,32 @@ module sfir_tb ();
         $dumpvars(0, sfir_tb);
     end
 
-
-    sfir_even_symmetric_systolic_top #(
+    sfir_top #(
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),
-        .TAP_NUM   (TAP_NUM)
-    ) i_sfir_even_symmetric_systolic_top (
-        .clk_i (clk_i),
-        .data_i(noise),
-        .fir_o (fir_o)
+        .TAP_NUM   (TAP_NUM),
+        .IQ_NUM    (IQ_NUM)
+    ) i_sfir_top (
+        .clk_i     (clk_i),
+        .rstn_i    (rstn_i),
+        .en_i      ('1),
+        .odd_even_i(ROUND_ODD_EVEN),
+        .tvalid_i  (&dds_tvalid),
+        .tdata_i   (noise),
+        .tvalid_o  (tvalid_o),
+        .tdata_o   (tdata_o)
     );
 
-    round #(
-        .DATA_IN_WIDTH (OUT_WIDTH),
-        .DATA_OUT_WIDTH(DATA_WIDTH)
-    ) i_round (
-        .clk_i       (clk_i),
-        .odd_even_i  (ROUND_ODD_EVEN),
-        .data_i      (fir_o),
-        .round_data_o(round_data_o)
-    );
-
-    dds #(
-        .PHASE_WIDTH(PHASE_WIDTH),
-        .DATA_WIDTH (DATA_WIDTH)
-    ) i_dds_1 (
-        .clk_i      (clk_i),
-        .rstn_i     (rstn_i),
-        .en_i       (1'b1),
-        .phase_inc_i(PHASE_INC_1),
-        .sin_o      (sin_out_1)
-    );
-
-    dds #(
-        .PHASE_WIDTH(PHASE_WIDTH),
-        .DATA_WIDTH (DATA_WIDTH)
-    ) i_dds_2 (
-        .clk_i      (clk_i),
-        .rstn_i     (rstn_i),
-        .en_i       (1'b1),
-        .phase_inc_i(PHASE_INC_2),
-        .sin_o      (sin_out_2)
-    );
+    for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
+        dds_compiler i_dds (
+            .aclk               (clk_i),
+            .aresetn            (rstn_i),
+            .aclken             ('1),
+            .s_axis_phase_tdata ({PHASE_OFF[dds_indx], PHASE_INC[dds_indx]}),
+            .s_axis_phase_tvalid('1),
+            .m_axis_tdata       (dds_tdata[dds_indx]),
+            .m_axis_tvalid      (dds_tvalid[dds_indx])
+        );
+    end
 
 endmodule

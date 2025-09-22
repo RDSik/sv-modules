@@ -31,7 +31,7 @@ module round #(
 
     assign c = {{(DATA_WIDTH_IN - SHIFT) {1'b0}}, {SHIFT{1'b1}}};
 
-    assign multadd = (odd_even_i) ? data_i + c : data_i + c + 1'b1;
+    assign multadd = (odd_even_i) ? (data_i + c) : (data_i + c + 1'b1);
 
     always_ff @(posedge clk_i) begin
         pattern_detect <= (multadd[SHIFT-1:0] == pattern);
