@@ -70,6 +70,7 @@ module axil_uart
     assign rx_handshake = fifo_rx.tvalid & fifo_rx.tready;
 
     always_comb begin
+        rd_valid                     = '1;
         rd_regs                      = wr_regs;
 
         rd_regs.param.data_width     = AXIS_DATA_WIDTH;
@@ -99,7 +100,7 @@ module axil_uart
     ) i_axil_reg_file (
         .s_axil    (s_axil),
         .rd_regs_i (rd_regs),
-        .rd_valid_i('1),
+        .rd_valid_i(rd_valid),
         .wr_regs_o (wr_regs),
         .wr_valid_o(wr_valid)
     );

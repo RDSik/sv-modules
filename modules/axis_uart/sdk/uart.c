@@ -78,7 +78,7 @@ int main() {
             Xil_Out32(XPAR_APB_M_0_BASEADDR + 0, regs_pt->control);
             xil_printf("Write data 0x%x to 0x%x \n\r", regs_pt->control, XPAR_APB_M_0_BASEADDR + 0);
 
-            uint8_t regs_num    = 5;
+            uint8_t regs_num    = 6;
             uint8_t addr_offset = sizeof(uint32_t);
             uint32_t rd_data;
 
