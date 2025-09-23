@@ -152,12 +152,14 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.rvalid <= 1'b0;
+            s_axil.rvalid <= '0;
+            s_axil.rresp  <= '0;
         end else begin
             if (ar_handshake) begin
-                s_axil.rvalid <= 1'b1;
+                s_axil.rvalid <= '1;
+                s_axil.rresp  <= '0;
             end else if (s_axil.rvalid & s_axil.rready) begin
-                s_axil.rvalid <= 1'b0;
+                s_axil.rvalid <= '0;
             end
         end
     end
