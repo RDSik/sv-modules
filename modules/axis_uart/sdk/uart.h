@@ -29,7 +29,7 @@ typedef struct {
     uint32_t rsrvd : 24;
 } uart_data_reg_t;
 
-typedef struct {
+typedef volatile struct {
     uart_param_reg_t   param;
     uart_status_reg_t  status;
     uart_data_reg_t    rx;

@@ -4,7 +4,6 @@ module ps_pl_top #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIS_DATA_WIDTH = 8,
-    parameter int   MODULES_NUM     = 2,
     parameter logic ILA_EN          = 1
 ) (
     input  logic clk_i,
@@ -40,7 +39,7 @@ module ps_pl_top #(
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
-    ) axil[MODULES_NUM-1:0] (
+    ) axil[1:0] (
         .clk_i (ps_clk),
         .rstn_i(ps_arstn)
     );
