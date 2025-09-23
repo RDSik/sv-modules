@@ -164,7 +164,7 @@ module axis_spi_master #(
         end else begin
             trailing_edge <= 1'b0;
             leading_edge  <= 1'b0;
-            if (s_handshake) begin
+            if (s_handshake || (state == WAIT)) begin
                 edge_cnt <= '0;
             end else if (~edge_done) begin
                 if (clk_done) begin
@@ -185,7 +185,7 @@ module axis_spi_master #(
     /* verilator lint_on WIDTHEXPAND */
 
     always_ff @(posedge clk_i) begin
-        edge_done_d <= (state == WAIT) ? 1'b0 : edge_done;
+        edge_done_d <= edge_done;
     end
     // ------------------------------------------------------------
 
