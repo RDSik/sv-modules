@@ -4,14 +4,12 @@ module axil_ram #(
     parameter int BYTE_WIDTH = 8,
     parameter int BYTE_NUM   = 4,
     parameter     MEM_MODE   = "no_change",
-    parameter     MEM_FILE   = "",
-    parameter int ADDR_WIDTH = $clog2(MEM_DEPTH),
-    parameter int MEM_WIDTH  = BYTE_WIDTH * BYTE_NUM
+    parameter     MEM_FILE   = ""
 ) (
     axil_if.slave s_axil
 );
 
-    localparam int ADDR_LSB = MEM_WIDTH / 32 + 1;
+    localparam int ADDR_LSB = (BYTE_WIDTH * BYTE_NUM) / 32 + 1;
     localparam int ADDR_MSB = ADDR_LSB + $clog2(MEM_DEPTH);
 
     logic clk_i;
