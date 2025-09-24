@@ -8,8 +8,7 @@ vlog ../rtl/axis_fifo_wrap.sv
 vlog ../rtl/rd_ptr_empty.sv
 vlog ../rtl/sync_fifo.sv
 vlog ../rtl/wr_ptr_full.sv
-vlog ../../common/rtl/ram_dp.sv
-vlog ../../common/rtl/ram_dp_2clk.sv
+vlog ../../common/rtl/ram_sdp.sv
 vlog ../../common/rtl/shift_reg.sv
 
 vlog axis_fifo_tb.sv

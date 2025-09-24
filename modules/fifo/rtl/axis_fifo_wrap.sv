@@ -1,10 +1,10 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_fifo_wrap #(
-    parameter int FIFO_WIDTH  = 32,
-    parameter int FIFO_DEPTH  = 128,
-    parameter int CDC_REG_NUM = 2,
-    parameter     FIFO_MODE   = "sync",
-    parameter     FIFO_TYPE   = "block"
+    parameter int FIFO_WIDTH       = 32,
+    parameter int FIFO_DEPTH       = 128,
+    parameter int CDC_REG_NUM      = 2,
+    parameter int RAM_READ_LATENCY = 1,
+    parameter     FIFO_MODE        = "sync"
 ) (
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -22,13 +22,13 @@ module axis_fifo_wrap #(
     assign m_axis.tvalid = ~empty;
 
     assign push = s_axis.tvalid & s_axis.tready;
-    assign pop  = m_axis.tvalid & m_axis.tready;
+    assign pop = m_axis.tvalid & m_axis.tready;
 
     if (FIFO_MODE == "sync") begin : g_fifo
         sync_fifo #(
-            .FIFO_WIDTH(FIFO_WIDTH),
-            .FIFO_DEPTH(FIFO_DEPTH),
-            .FIFO_TYPE (FIFO_TYPE)
+            .FIFO_WIDTH      (FIFO_WIDTH),
+            .FIFO_DEPTH      (FIFO_DEPTH),
+            .RAM_READ_LATENCY(RAM_READ_LATENCY)
         ) i_fifo (
             .clk_i    (s_axis.clk_i),
             .rstn_i   (s_axis.rstn_i),
@@ -43,10 +43,10 @@ module axis_fifo_wrap #(
         );
     end else if (FIFO_MODE == "async") begin : g_fifo
         async_fifo #(
-            .FIFO_WIDTH (FIFO_WIDTH),
-            .FIFO_DEPTH (FIFO_DEPTH),
-            .FIFO_TYPE  (FIFO_TYPE),
-            .CDC_REG_NUM(CDC_REG_NUM)
+            .FIFO_WIDTH      (FIFO_WIDTH),
+            .FIFO_DEPTH      (FIFO_DEPTH),
+            .CDC_REG_NUM     (CDC_REG_NUM),
+            .RAM_READ_LATENCY(RAM_READ_LATENCY)
         ) i_fifo (
             .wr_clk_i (s_axis.clk_i),
             .wr_rstn_i(s_axis.rstn_i),

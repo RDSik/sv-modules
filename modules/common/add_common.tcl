@@ -2,11 +2,11 @@ set path [file dirname [info script]]
 
 if {$xilinx == 1} {
     set xil_defaultlib "
-        $path/rtl/ram.sv
-        $path/rtl/ram_dp.sv
-        $path/rtl/ram_dp_2clk.sv
-        $path/rtl/ram_true_dp.sv
+        $path/rtl/ram_sp.sv
+        $path/rtl/ram_sdp.sv
+        $path/rtl/ram_tdp.sv
         $path/rtl/shift_reg.sv
+        $path/rtl/axil_ram.sv
         $path/rtl/axil_reg_file.sv
     "
 

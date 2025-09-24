@@ -128,14 +128,11 @@ module axil_uart
         .m_axis       (uart_rx)
     );
 
-    localparam FIFO_MODE = "sync";
-    localparam FIFO_TYPE = "distributed";
-
     axis_fifo_wrap #(
-        .FIFO_DEPTH(FIFO_DEPTH),
-        .FIFO_WIDTH(AXIS_DATA_WIDTH),
-        .FIFO_MODE (FIFO_MODE),
-        .FIFO_TYPE (FIFO_TYPE)
+        .FIFO_DEPTH      (FIFO_DEPTH),
+        .FIFO_WIDTH      (AXIS_DATA_WIDTH),
+        .FIFO_MODE       ("sync"),
+        .RAM_READ_LATENCY(0)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
         .m_axis   (uart_tx),
@@ -144,10 +141,10 @@ module axil_uart
     );
 
     axis_fifo_wrap #(
-        .FIFO_DEPTH(FIFO_DEPTH),
-        .FIFO_WIDTH(AXIS_DATA_WIDTH),
-        .FIFO_MODE (FIFO_MODE),
-        .FIFO_TYPE (FIFO_TYPE)
+        .FIFO_DEPTH      (FIFO_DEPTH),
+        .FIFO_WIDTH      (AXIS_DATA_WIDTH),
+        .FIFO_MODE       ("sync"),
+        .RAM_READ_LATENCY(0)
     ) i_axis_fifo_rx (
         .s_axis   (uart_rx),
         .m_axis   (fifo_rx),
