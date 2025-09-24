@@ -38,7 +38,8 @@ class env_base #(
         void'(cfg.randomize());
     endfunction
 
-    task do_master_gen(int pkt_amount, int size_min, int size_max, int delay_min, int delay_max);
+    task static do_master_gen(int pkt_amount, int size_min, int size_max, int delay_min,
+                              int delay_max);
         repeat (pkt_amount) begin
             packet_in_t p;
             int size;
@@ -172,7 +173,7 @@ class env_base #(
         end
     endtask
 
-    task slave(int delay_min, int delay_max);
+    task static slave(int delay_min, int delay_max);
         fork
             do_slave_drive(delay_min, delay_max);
             do_slave_monitor();
