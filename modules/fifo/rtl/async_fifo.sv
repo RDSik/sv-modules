@@ -3,7 +3,7 @@ module async_fifo #(
     parameter int FIFO_WIDTH       = 32,
     parameter int FIFO_DEPTH       = 64,
     parameter int CDC_REG_NUM      = 2,
-    parameter int RAM_READ_LATENCY = 1
+    parameter int RAM_READ_LATENCY = 0
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rstn_i,

@@ -2,7 +2,7 @@
 module sync_fifo #(
     parameter int FIFO_WIDTH       = 32,
     parameter int FIFO_DEPTH       = 64,
-    parameter int RAM_READ_LATENCY = 1
+    parameter int RAM_READ_LATENCY = 0
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -18,7 +18,6 @@ module sync_fifo #(
     output logic empty_o
 );
 
-    localparam logic SHOW_AHEAD_EN = (RAM_READ_LATENCY > 0);
     localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
@@ -56,41 +55,34 @@ module sync_fifo #(
     logic                  rd_en;
     logic [FIFO_WIDTH-1:0] ram_data;
 
-    if (SHOW_AHEAD_EN) begin : g_show_ahead
-        logic [FIFO_WIDTH-1:0] bypass_data;
-        logic                  bypass_valid;
-        logic                  bypass_en;
+    logic [FIFO_WIDTH-1:0] bypass_data;
+    logic                  bypass_valid;
+    logic                  bypass_en;
 
-        assign wr_en = push_i & ~bypass_en;
-        assign rd_en = pop_i & ~a_empty_o;
+    assign wr_en = push_i & ~bypass_en;
+    assign rd_en = pop_i & ~a_empty_o;
 
-        assign prefetch_ptr = (rd_ptr == MAX_PTR) ? '0 : rd_ptr + 1'b1;
+    assign prefetch_ptr = (rd_ptr == MAX_PTR) ? '0 : rd_ptr + 1'b1;
 
-        assign bypass_en = push_i && (empty_o || (pop_i && a_empty_o));
+    assign bypass_en = push_i && (empty_o || (pop_i && a_empty_o));
 
-        always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
-                bypass_valid <= 1'b0;
-            end else if (bypass_en) begin
-                bypass_valid <= 1'b1;
-            end else if (pop_i) begin
-                bypass_valid <= 1'b0;
-            end
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            bypass_valid <= 1'b0;
+        end else if (bypass_en) begin
+            bypass_valid <= 1'b1;
+        end else if (pop_i) begin
+            bypass_valid <= 1'b0;
         end
-
-        always_ff @(posedge clk_i) begin
-            if (bypass_en) begin
-                bypass_data <= data_i;
-            end
-        end
-
-        assign data_o = bypass_valid ? bypass_data : ram_data;
-    end else begin : g_others
-        assign wr_en        = push_i & ~full_o;
-        assign rd_en        = pop_i & ~empty_o;
-        assign prefetch_ptr = rd_ptr;
-        assign data_o       = ram_data;
     end
+
+    always_ff @(posedge clk_i) begin
+        if (bypass_en) begin
+            bypass_data <= data_i;
+        end
+    end
+
+    assign data_o = bypass_valid ? bypass_data : ram_data;
 
     ram_sdp #(
         .MEM_DEPTH   (FIFO_DEPTH),

@@ -3,7 +3,7 @@ module axis_fifo_wrap #(
     parameter int FIFO_WIDTH       = 32,
     parameter int FIFO_DEPTH       = 128,
     parameter int CDC_REG_NUM      = 2,
-    parameter int RAM_READ_LATENCY = 1,
+    parameter int RAM_READ_LATENCY = 0,
     parameter     FIFO_MODE        = "sync"
 ) (
     axis_if.slave  s_axis,
