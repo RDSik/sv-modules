@@ -18,11 +18,13 @@ module axil_ram #(
     assign clk_i  = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic wr_handshake;
     logic write_valid;
+    logic wr_handshake;
+    logic ar_handshake;
 
-    assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
     assign write_valid  = s_axil.awvalid & s_axil.wvalid;
+    assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
+    assign ar_handshake = s_axil.arvalid & s_axil.arready;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -61,10 +63,6 @@ module axil_ram #(
             end
         end
     end
-
-    logic ar_handshake;
-
-    assign ar_handshake = s_axil.arvalid & s_axil.arready;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
