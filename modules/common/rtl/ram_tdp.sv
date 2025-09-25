@@ -107,8 +107,10 @@ module ram_tdp #(
         assign a_data_o = a_data;
         assign b_data_o = b_data;
     end else begin : g_read_latency
-        logic [MEM_WIDTH-1:0] a_data_pipe[READ_LATENCY];
+        logic [MEM_WIDTH-1:0] a_pipe[READ_LATENCY];
+        logic [MEM_WIDTH-1:0] b_pipe[READ_LATENCY];
         logic a_en_pipe[READ_LATENCY+1];
+        logic b_en_pipe[READ_LATENCY+1];
 
         always_ff @(posedge a_clk_i) begin
             a_en_pipe[0] <= a_en_i;
@@ -136,9 +138,6 @@ module ram_tdp #(
                 a_data_o <= a_pipe[READ_LATENCY-1];
             end
         end
-
-        logic [MEM_WIDTH-1:0] b_pipe[READ_LATENCY];
-        logic b_en_pipe[READ_LATENCY+1];
 
         always_ff @(posedge b_clk_i) begin
             b_en_pipe[0] <= b_en_i;
