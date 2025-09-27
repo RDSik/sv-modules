@@ -42,11 +42,15 @@ module axil_reg_file #(
         rd_valid      <= rd_valid_i;
     end
 
-    logic wr_handshake;
-    logic write_valid;
+    logic [REG_ADDR_WIDTH-1:0] awaddr;
+    logic [REG_ADDR_WIDTH-1:0] araddr;
+    logic                      ar_handshake;
+    logic                      wr_handshake;
+    logic                      write_valid;
 
-    assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
     assign write_valid  = s_axil.awvalid & s_axil.wvalid;
+    assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
+    assign ar_handshake = s_axil.arvalid & s_axil.arready;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -57,7 +61,7 @@ module axil_reg_file #(
         end else begin
             if (wr_handshake) begin
                 for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                    if (s_axil.awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
+                    if (awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         for (int i = 0; i < s_axil.STRB_WIDTH; i++) begin
                             if (s_axil.wstrb[i]) begin
                                 wr_reg[reg_indx][i*8+:8] <= s_axil.wdata[i*8+:8];
@@ -74,12 +78,14 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.awready <= 1'b0;
+            s_axil.awready <= '0;
+            awaddr         <= '0;
         end else begin
             if (write_valid & ~s_axil.awready) begin
-                s_axil.awready <= 1'b1;
+                s_axil.awready <= '1;
+                awaddr         <= s_axil.awaddr;
             end else begin
-                s_axil.awready <= 1'b0;
+                s_axil.awready <= '0;
             end
         end
     end
@@ -110,10 +116,6 @@ module axil_reg_file #(
         end
     end
 
-    logic ar_handshake;
-
-    assign ar_handshake = s_axil.arvalid & s_axil.arready;
-
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
@@ -131,7 +133,7 @@ module axil_reg_file #(
     always_ff @(posedge clk_i) begin
         if (ar_handshake) begin
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                if (s_axil.araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
+                if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                     s_axil.rdata <= rd_reg[reg_indx];
                 end
             end
@@ -140,12 +142,14 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.arready <= 1'b0;
+            s_axil.arready <= '0;
+            araddr         <= '0;
         end else begin
             if (s_axil.arvalid & ~s_axil.arready) begin
-                s_axil.arready <= 1'b1;
+                s_axil.arready <= '1;
+                araddr         <= s_axil.araddr;
             end else begin
-                s_axil.arready <= 1'b0;
+                s_axil.arready <= '0;
             end
         end
     end

@@ -18,9 +18,11 @@ module axil_ram #(
     assign clk_i  = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic write_valid;
-    logic wr_handshake;
-    logic ar_handshake;
+    logic [ADDR_WIDTH-1:0] awaddr;
+    logic [ADDR_WIDTH-1:0] araddr;
+    logic                  write_valid;
+    logic                  wr_handshake;
+    logic                  ar_handshake;
 
     assign write_valid  = s_axil.awvalid & s_axil.wvalid;
     assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
@@ -28,12 +30,14 @@ module axil_ram #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.awready <= 1'b0;
+            s_axil.awready <= '0;
+            awaddr         <= '0;
         end else begin
             if (write_valid & ~s_axil.awready) begin
-                s_axil.awready <= 1'b1;
+                s_axil.awready <= '1;
+                awaddr         <= s_axil.awaddr;
             end else begin
-                s_axil.awready <= 1'b0;
+                s_axil.awready <= '0;
             end
         end
     end
@@ -66,12 +70,14 @@ module axil_ram #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.arready <= 1'b0;
+            s_axil.arready <= '0;
+            araddr         <= '0;
         end else begin
             if (s_axil.arvalid & ~s_axil.arready) begin
-                s_axil.arready <= 1'b1;
+                s_axil.arready <= '1;
+                araddr         <= s_axil.araddr;
             end else begin
-                s_axil.arready <= 1'b0;
+                s_axil.arready <= '0;
             end
         end
     end
@@ -100,11 +106,11 @@ module axil_ram #(
         .a_clk_i  (clk_i),
         .a_en_i   (wr_handshake),
         .a_wr_en_i(s_axil.wstrb),
-        .a_addr_i (s_axil.awaddr[ADDR_MSB:ADDR_LSB]),
+        .a_addr_i (awaddr[ADDR_MSB:ADDR_LSB]),
         .a_data_i (s_axil.wdata),
         .b_clk_i  (clk_i),
         .b_en_i   (ar_handshake),
-        .b_addr_i (s_axil.araddr[ADDR_MSB:ADDR_LSB]),
+        .b_addr_i (araddr[ADDR_MSB:ADDR_LSB]),
         .b_data_o (s_axil.rdata)
     );
 
