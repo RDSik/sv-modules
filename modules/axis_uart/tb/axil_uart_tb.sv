@@ -60,7 +60,7 @@ module axil_uart_tb ();
         env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, uart_regs.clk_divider);
         env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, uart_regs.tx.data);
         for (int i = 0; i < REG_NUM; i++) begin
-            rdara = env.slave_read_reg(BASE_ADDR + ADDR_OFFSET * i);
+            rdata = env.slave_read_reg(BASE_ADDR + ADDR_OFFSET * i);
         end
         if (wdata == rdata) begin
             $display("[%0t] Transaction success: wdata = 0x%0h, rdata = 0x%0h", $time, wdata,
@@ -73,7 +73,7 @@ module axil_uart_tb ();
 
     initial begin
         $dumpfile("axil_uart_tb.vcd");
-        $dumpvars(0, apb_uart_tb);
+        $dumpvars(0, axil_uart_tb);
     end
 
     axil_uart #(
