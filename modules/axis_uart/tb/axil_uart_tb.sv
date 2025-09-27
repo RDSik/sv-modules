@@ -1,11 +1,10 @@
 `timescale 1ns / 1ps
 
 `include "../rtl/uart_pkg.svh"
-`include "../../verification/tb/test_pkg.svh"
+`include "../../verification/tb/axil_env.svh"
 
 module axil_uart_tb ();
 
-    import test_pkg::*;
     import uart_pkg::*;
 
     localparam int FIFO_DEPTH = 128;

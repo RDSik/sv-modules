@@ -1,6 +1,8 @@
 `ifndef AXIL_ENV_SVH
 `define AXIL_ENV_SVH
 
+`include "../../verification/tb/cfg.svh"
+
 class axil_env #(
     parameter int ADDR_WIDTH = 32,
     parameter int DATA_WIDTH = 32
@@ -49,9 +51,9 @@ class axil_env #(
         $display("[%0t] Write awaddr = 0x%0h", $time, addr);
     endtask
 
-    task static slave_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data);
-        int slave_delay_min = cfg.slave_min_delay;
-        int slave_delay_max = cfg.slave_max_delay;
+    task static slave_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data,
+                                int slave_delay_min = cfg.slave_min_delay,
+                                int slave_delay_max = cfg.slave_max_delay);
         wait (~s_axis.rstn_i);
         slave_write_awaddr(slave_delay_min, slave_delay_max, addr);
         slave_write_wdata(slave_delay_min, slave_delay_max, data);
@@ -80,15 +82,15 @@ class axil_env #(
             @(posedge s_axis.clk_i);
         end while (~s_axil.arvalid);
         s_axil.arready <= 0;
-        data = s_axil.rdata;
+        data           <= s_axil.rdata;
         $display("[%0t] Read rdara = 0x%0h", $time, data);
-        retrun data;
+        return data;
     endtask
 
-    task static slave_read_reg(logic [ADDR_WIDTH-1:0] addr);
+    task static slave_read_reg(logic [ADDR_WIDTH-1:0] addr,
+                               int slave_delay_min = cfg.slave_min_delay,
+                               int slave_delay_max = cfg.slave_max_delay);
         logic [DATA_WIDTH-1:0] data;
-        int slave_delay_min = cfg.slave_min_delay;
-        int slave_delay_max = cfg.slave_max_delay;
         wait (~s_axis.rstn_i);
         slave_write_araddr(slave_delay_min, slave_delay_max, addr);
         slave_read_rdata(slave_delay_min, slave_delay_max, data);
