@@ -17,11 +17,10 @@ module axil_uart_tb ();
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    logic                                clk_i;
-    logic                                rstn_i;
-    uart_wr_regs_t                       uart_regs;
-    logic          [AXIL_DATA_WIDTH-1:0] wdata;
-    logic          [AXIL_DATA_WIDTH-1:0] rdata;
+    logic                       clk_i;
+    logic                       rstn_i;
+    logic [AXIL_DATA_WIDTH-1:0] wdata;
+    logic [AXIL_DATA_WIDTH-1:0] rdata;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -46,20 +45,17 @@ module axil_uart_tb ();
     end
 
     initial begin
-        wdata                 = $urandom_range(0, (2 * 8) - 1);
-        uart_regs             = '0;
-        uart_regs.clk_divider = 10;
-        uart_regs.tx.data     = wdata;
         axil_env #(
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
             .DATA_WIDTH(AXIL_ADDR_WIDTH)
         ) env;
-        env = new(s_axis);
-        env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, uart_regs.control);
-        env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, uart_regs.clk_divider);
-        env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, uart_regs.tx.data);
+        env   = new(s_axil);
+        wdata = $urandom_range(0, (2 * 8) - 1);
+        env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
+        env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
+        env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
         for (int i = 0; i < REG_NUM; i++) begin
-            rdata = env.slave_read_reg(BASE_ADDR + ADDR_OFFSET * i);
+            env.slave_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
         if (wdata == rdata) begin
             $display("[%0t] Transaction success: wdata = 0x%0h, rdata = 0x%0h", $time, wdata,
