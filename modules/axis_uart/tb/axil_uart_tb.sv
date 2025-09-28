@@ -11,7 +11,7 @@ module axil_uart_tb ();
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
     localparam int AXIS_DATA_WIDTH = 8;
-    localparam int ADDR_OFFSET = AXIS_DATA_WIDTH / 8;
+    localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
     localparam int CLK_PER_NS = 2;
