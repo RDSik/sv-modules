@@ -22,6 +22,8 @@ module fir_filter #(
     output logic signed [DATA_WIDTH+COEF_WIDTH-1:0] tdata_o
 );
 
+    localparam int DELAY = ($countones(TAP_NUM) == 1) ? 1 : 0;
+
     logic signed [                   COEF_WIDTH-1:0] coef     [  TAP_NUM];
     logic signed [                   DATA_WIDTH-1:0] delay    [  TAP_NUM];
     logic signed [        DATA_WIDTH+COEF_WIDTH-1:0] mult     [  TAP_NUM];
@@ -31,7 +33,7 @@ module fir_filter #(
 
     shift_reg #(
         .DATA_WIDTH($bits(tvalid_i)),
-        .DELAY     (TAP_NUM),
+        .DELAY     (TAP_NUM + $clog2(TAP_NUM) + DELAY),
         .RESET_EN  (1)
     ) i_shift_reg (
         .clk_i (clk_i),
