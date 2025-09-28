@@ -22,12 +22,12 @@ module fir_filter #(
     output logic signed [DATA_WIDTH+COEF_WIDTH-1:0] tdata_o
 );
 
-    logic signed [                 COEF_WIDTH-1:0] coef     [  TAP_NUM];
-    logic signed [                 DATA_WIDTH-1:0] delay    [  TAP_NUM];
-    logic signed [      DATA_WIDTH+COEF_WIDTH-1:0] mult     [  TAP_NUM];
-    logic signed [DATA_WIDTH+COEF_WIDTH+TAP_NUM:0] acc      [TAP_NUM-1];
+    logic signed [                   COEF_WIDTH-1:0] coef     [  TAP_NUM];
+    logic signed [                   DATA_WIDTH-1:0] delay    [  TAP_NUM];
+    logic signed [        DATA_WIDTH+COEF_WIDTH-1:0] mult     [  TAP_NUM];
+    logic signed [DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc      [TAP_NUM-1];
 
-    logic                                          tvalid_d;
+    logic                                            tvalid_d;
 
     shift_reg #(
         .DATA_WIDTH($bits(tvalid_i)),
