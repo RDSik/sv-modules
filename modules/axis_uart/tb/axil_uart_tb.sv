@@ -50,7 +50,7 @@ module axil_uart_tb ();
             .DATA_WIDTH(AXIL_ADDR_WIDTH)
         ) env;
         env   = new(s_axil);
-        wdata = $urandom_range(0, (2 * 8) - 1);
+        wdata = $urandom_range(0, (2 * AXIS_DATA_WIDTH) - 1);
         env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
         env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.slave_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
