@@ -1,13 +1,13 @@
 #include <stdint.h>
 
-typedef struct {
+typedef struct __attribute__((packed)) {
     uint8_t fifo_depth;
     uint8_t reg_num;
     uint8_t data_width;
     uint8_t rsrvd;
 } uart_param_reg_t;
 
-typedef struct {
+typedef struct __attribute__((packed)) {
     uint32_t rx_fifo_empty : 1;
     uint32_t tx_fifo_empty : 1;
     uint32_t rx_fifo_full  : 1;
@@ -16,7 +16,7 @@ typedef struct {
     uint32_t rsrvd         : 27;
 } uart_status_reg_t;
 
-typedef struct {
+typedef struct __attribute__((packed)) {
     uint32_t parity_even : 1;
     uint32_t parity_odd  : 1;
     uint32_t tx_reset    : 1;
@@ -24,7 +24,7 @@ typedef struct {
     uint32_t rsrvd       : 27;
 } uart_control_reg_t;
 
-typedef struct {
+typedef struct __attribute__((packed)) {
     uint8_t  data;
     uint32_t rsrvd : 24;
 } uart_data_reg_t;

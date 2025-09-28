@@ -78,14 +78,14 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.awready <= '0;
+            s_axil.awready <= 1'b0;
             awaddr         <= '0;
         end else begin
             if (write_valid & ~s_axil.awready) begin
-                s_axil.awready <= '1;
+                s_axil.awready <= 1'b1;
                 awaddr         <= s_axil.awaddr;
             end else begin
-                s_axil.awready <= '0;
+                s_axil.awready <= 1'b0;
             end
         end
     end
@@ -104,14 +104,14 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.bvalid <= '0;
+            s_axil.bvalid <= 1'b0;
             s_axil.bresp  <= '0;
         end else begin
             if (wr_handshake) begin
-                s_axil.bvalid <= '1;
+                s_axil.bvalid <= 1'b1;
                 s_axil.bresp  <= '0;
             end else if (s_axil.bvalid & s_axil.bready) begin
-                s_axil.bvalid <= '0;
+                s_axil.bvalid <= 1'b0;
             end
         end
     end
@@ -142,28 +142,28 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.arready <= '0;
+            s_axil.arready <= 1'b0;
             araddr         <= '0;
         end else begin
             if (s_axil.arvalid & ~s_axil.arready) begin
-                s_axil.arready <= '1;
+                s_axil.arready <= 1'b1;
                 araddr         <= s_axil.araddr;
             end else begin
-                s_axil.arready <= '0;
+                s_axil.arready <= 1'b0;
             end
         end
     end
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.rvalid <= '0;
+            s_axil.rvalid <= 1'b0;
             s_axil.rresp  <= '0;
         end else begin
             if (ar_handshake) begin
-                s_axil.rvalid <= '1;
+                s_axil.rvalid <= 1'b1;
                 s_axil.rresp  <= '0;
             end else if (s_axil.rvalid & s_axil.rready) begin
-                s_axil.rvalid <= '0;
+                s_axil.rvalid <= 1'b0;
             end
         end
     end

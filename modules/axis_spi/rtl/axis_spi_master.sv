@@ -223,7 +223,7 @@ module axis_spi_master #(
             /* verilator lint_off WIDTHTRUNC */
             tx_bit_cnt <= DATA_WIDTH - 1;
             /* verilator lint_on WIDTHTRUNC */
-            m_spi.mosi <= '0;
+            m_spi.mosi <= 1'b0;
         end else if (s_handshake) begin
             /* verilator lint_off WIDTHTRUNC */
             tx_bit_cnt <= DATA_WIDTH - 1;
@@ -260,8 +260,8 @@ module axis_spi_master #(
     // Master AXI-Stream data--------------------------------------
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            m_axis.tlast  <= '0;
-            m_axis.tvalid <= '0;
+            m_axis.tvalid <= 1'b0;
+            m_axis.tlast  <= 1'b0;
         end else if (m_handshake) begin
             m_axis.tvalid <= 1'b0;
             m_axis.tlast  <= 1'b0;

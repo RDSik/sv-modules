@@ -1,7 +1,8 @@
 #include "uart.h"
-#include <stdint.h>
+
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "platform.h"
 #include "xil_printf.h"
 #include "xil_io.h"
