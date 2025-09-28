@@ -58,6 +58,7 @@ module fir_filter_tb ();
     ) i_fir_filter (
         .clk_i   (clk_i),
         .rstn_i  (rstn_i),
+        .en_i    ('1),
         .tvalid_i(&dds_tvalid),
         .tdata_i (noise),
         .tvalid_o(tvalid_o),
