@@ -79,7 +79,7 @@ module fir_filter #(
             end
         end else begin : g_acc_second_stage
             always_ff @(posedge clk_i) begin
-                acc[tap_indx] <= mult[2*(tap_indx-(TAP_NUM/2))] + mult[2*(tap_indx-(TAP_NUM/2))+1];
+                acc[tap_indx] <= acc[2*(tap_indx-(TAP_NUM/2))] + acc[2*(tap_indx-(TAP_NUM/2))+1];
             end
         end
     end
