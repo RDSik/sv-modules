@@ -13,6 +13,7 @@ module fir_filter #(
 ) (
     input logic clk_i,
     input logic rstn_i,
+    input logic en_i,
 
     input logic                         tvalid_i,
     input logic signed [DATA_WIDTH-1:0] tdata_i,
@@ -35,14 +36,22 @@ module fir_filter #(
     ) i_shift_reg (
         .clk_i (clk_i),
         .rstn_i(rstn_i),
-        .en_i  ('1),
+        .en_i  (en_i),
         .data_i(tvalid_i),
         .data_o(tvalid_d)
     );
 
     always_ff @(posedge clk_i) begin
-        tvalid_o <= tvalid_d;
-        tdata_o  <= acc[TAP_NUM-2];
+        if (~rstn_i) begin
+            tvalid_o <= 1'b0;
+        end else begin
+            if (en_i) begin
+                tvalid_o <= 1'b1;
+            end else begin
+                tvalid_o <= 1'b0;
+            end
+        end
+        tdata_o <= acc[TAP_NUM-2];
     end
 
     for (genvar tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin : g_tap
