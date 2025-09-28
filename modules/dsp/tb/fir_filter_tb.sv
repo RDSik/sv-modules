@@ -1,10 +1,9 @@
 `timescale 1ns / 1ps
 
-module sfir_tb ();
+module fir_filter_tb ();
 
     localparam int DDS_NUM = 2;
     localparam int PHASE_INC[0:DDS_NUM-1] = '{2000, 200};
-    localparam int PHASE_OFF[0:DDS_NUM-1] = '{0, 0};
 
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 16;
@@ -46,28 +45,25 @@ module sfir_tb ();
     end
 
     initial begin
-        $dumpfile("sfir_tb.vcd");
-        $dumpvars(0, sfir_tb);
+        $dumpfile("fir_filter_tb.vcd");
+        $dumpvars(0, fir_filter_tb);
     end
 
-    sfir_top #(
+    fir_filter #(
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),
-        .TAP_NUM   (TAP_NUM),
-        .IQ_NUM    (IQ_NUM)
-    ) i_sfir_top (
-        .clk_i     (clk_i),
-        .rstn_i    (rstn_i),
-        .en_i      ('1),
-        .odd_even_i(ROUND_ODD_EVEN),
-        .tvalid_i  (&dds_tvalid),
-        .tdata_i   (noise),
-        .tvalid_o  (tvalid_o),
-        .tdata_o   (tdata_o)
+        .TAP_NUM   (TAP_NUM)
+    ) i_fir_filter (
+        .clk_i   (clk_i),
+        .rstn_i  (rstn_i),
+        .tvalid_i(&dds_tvalid),
+        .tdata_i (noise),
+        .tvalid_o(tvalid_o),
+        .tdata_o (tdata_o)
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds_compiler i_dds (
+        dds i_dds (
             .aclk               (clk_i),
             .aresetn            (rstn_i),
             .aclken             ('1),
