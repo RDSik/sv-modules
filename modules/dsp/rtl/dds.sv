@@ -14,7 +14,7 @@ module dds #(
 );
 
     localparam int SIN_NUM = 2 ** PHASE_WIDTH;
-    localparam int A = 2 ** (DATA_WIDTH - 1) - 1;
+    localparam int AMPL = 2 ** (DATA_WIDTH - 1) - 1;
     localparam real PI = 3.14159265359;
 
     logic [DATA_WIDTH-1:0] sin_lut[0:SIN_NUM-1];
@@ -23,7 +23,7 @@ module dds #(
     initial begin
         for (int i = 0; i < SIN_NUM; i++) begin
             /* verilator lint_off WIDTHTRUNC */
-            sin_lut[i] = $rtoi(A * (1 + $sin(2 * PI * i / SIN_NUM)));
+            sin_lut[i] = $rtoi(AMPL * (1 + $sin(2 * PI * i / SIN_NUM)));
             /* verilator lint_on WIDTHTRUNC */
         end
     end
