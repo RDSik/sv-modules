@@ -1,4 +1,4 @@
-TOP ?= sfir
+TOP ?= fir_filter
 
 SIM ?= questa
 

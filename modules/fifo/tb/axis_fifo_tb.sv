@@ -9,7 +9,6 @@ module axis_fifo_tb ();
     localparam int FIFO_WIDTH = 16;
     localparam int FIFO_DEPTH = 64;
     localparam FIFO_MODE = "sync";
-    localparam FIFO_TYPE = "block";
 
     localparam int M_CLK_PER = 2;
     localparam int S_CLK_PER = 2;
@@ -77,8 +76,7 @@ module axis_fifo_tb ();
     axis_fifo_wrap #(
         .FIFO_DEPTH(FIFO_DEPTH),
         .FIFO_WIDTH(FIFO_WIDTH),
-        .FIFO_MODE (FIFO_MODE),
-        .FIFO_TYPE (FIFO_TYPE)
+        .FIFO_MODE (FIFO_MODE)
     ) dut (
         .s_axis   (m_axis),
         .m_axis   (s_axis),
