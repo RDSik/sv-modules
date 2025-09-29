@@ -18,6 +18,7 @@ module fir_filter_tb ();
     logic                                          rstn_i;
     logic [           DDS_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
     logic [           DDS_NUM-1:0]                 dds_tvalid;
+    logic [        DATA_WIDTH-1:0]                 sfir_tdata_o;
     logic [        DATA_WIDTH-1:0]                 fir_tdata_o;
     logic                                          fir_tvalid_o;
     logic [DDS_NUM*DATA_WIDTH-1:0]                 noise;
@@ -63,6 +64,16 @@ module fir_filter_tb ();
         .tdata_i (noise),
         .tvalid_o(tvalid_o),
         .tdata_o (tdata_o)
+    );
+
+    sfir_even_symmetric_systolic_top #(
+        .NBTAP(TAP_NUM),
+        .DSIZE(DATA_WIDTH),
+        .CSIZE(COEF_WIDTH)
+    ) i_sfir (
+        .clk   (clk_i),
+        .datain(noise),
+        .firout(sfir_tdata_o)
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
