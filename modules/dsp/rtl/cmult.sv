@@ -36,30 +36,30 @@ module cmult #(
     //
     always @(posedge clk) begin
         addcommon <= ar_d - ai_d;
-        mult0 <= addcommon * bi_dd;
-        common <= mult0;
+        mult0     <= addcommon * bi_dd;
+        common    <= mult0;
     end
 
     // Real product
     //
     always @(posedge clk) begin
-        ar_ddd <= ar_dd;
-        ar_dddd <= ar_ddd;
-        addr <= br_ddd - bi_ddd;
-        multr <= addr * ar_dddd;
+        ar_ddd   <= ar_dd;
+        ar_dddd  <= ar_ddd;
+        addr     <= br_ddd - bi_ddd;
+        multr    <= addr * ar_dddd;
         commonr1 <= common;
-        pr_int <= multr + commonr1;
+        pr_int   <= multr + commonr1;
     end
 
     // Imaginary product
     //
     always @(posedge clk) begin
-        ai_ddd <= ai_dd;
-        ai_dddd <= ai_ddd;
-        addi <= br_ddd + bi_ddd;
-        multi <= addi * ai_dddd;
+        ai_ddd   <= ai_dd;
+        ai_dddd  <= ai_ddd;
+        addi     <= br_ddd + bi_ddd;
+        multi    <= addi * ai_dddd;
         commonr2 <= common;
-        pi_int <= multi + commonr2;
+        pi_int   <= multi + commonr2;
     end
 
     assign pr = pr_int;
