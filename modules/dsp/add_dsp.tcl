@@ -9,7 +9,7 @@ if {$xilinx == 1} {
     set xil_defaultlib "
         $path/rtl/fir_filter.sv
         $path/rtl/dds.sv
-        $path/rtl/complex_mult.sv
+        $path/rtl/cmult.sv
         $path/rtl/round.sv
         $path/rtl/sfir_even_symmetric_systolic_top.sv
     "
@@ -22,7 +22,7 @@ if {$xilinx == 1} {
 } elseif {$gowin == 1} {
     add_file $path/rtl/fir_filter.sv
     add_file $path/rtl/dds.sv
-    add_file $path/rtl/complex_mult.sv
+    add_file $path/rtl/cmult.sv
     add_file $path/rtl/round.sv
     add_file $path/rtl/sfir_even_symmetric_systolic_top.sv
 }
