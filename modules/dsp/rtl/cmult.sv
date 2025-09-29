@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module cmult #(
     parameter integer AWIDTH = 16,
     parameter integer BWIDTH = 18
