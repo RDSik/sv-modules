@@ -47,7 +47,7 @@ module axil_uart_tb ();
     initial begin
         axil_env #(
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .DATA_WIDTH(AXIL_ADDR_WIDTH)
+            .DATA_WIDTH(AXIL_DATA_WIDTH)
         ) env;
         env   = new(s_axil);
         wdata = $urandom_range(0, (2 * AXIS_DATA_WIDTH) - 1);
