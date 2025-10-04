@@ -63,7 +63,7 @@ module fir_filter #(
             if (tap_indx == 0) begin : g_first_delay
                 always_ff @(posedge clk_i) begin
                     if (tvalid_i) begin
-                        delay[tap_indx] <= tdata_i;
+                        delay[tap_indx] <= tdata_i[ch_indx];
                     end
                 end
             end else begin : g_others_delay

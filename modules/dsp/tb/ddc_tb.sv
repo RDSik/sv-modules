@@ -3,7 +3,7 @@
 module ddc_tb ();
 
     localparam int DDS_NUM = 2;
-    localparam int PINC[0:DDS_NUM-1] = '{511, 263};
+    localparam int PINC[0:DDS_NUM-1] = '{27, 263};
 
     localparam int IQ_NUM = 2;
     localparam int DECIMATION = 4;

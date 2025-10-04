@@ -38,11 +38,13 @@ module round #(
         logic [DATA_WIDTH_IN-1:0] multadd;
         logic [DATA_WIDTH_IN-1:0] multadd_reg;
 
-        assign multadd = (odd_even_i) ? (tdata_i + c) : (tdata_i + c + 1'b1);
+        assign multadd = (odd_even_i) ? (tdata_i[ch_indx] + c) : (tdata_i[ch_indx] + c + 1'b1);
 
         always_ff @(posedge clk_i) begin
+            if (tvalid_i) begin
+                multadd_reg <= multadd;
+            end
             pattern_detect <= (multadd[SHIFT-1:0] == pattern);
-            multadd_reg    <= multadd;
         end
 
         always_ff @(posedge clk_i) begin

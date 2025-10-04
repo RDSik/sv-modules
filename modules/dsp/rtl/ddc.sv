@@ -103,7 +103,7 @@ module ddc #(
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM),
         .COEF      (COEF)
-    ) fir_filter_i (
+    ) i_fir_filter (
         .clk_i   (clk_i),
         .rstn_i  (rstn_i),
         .en_i    (en_i),

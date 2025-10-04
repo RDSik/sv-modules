@@ -103,8 +103,8 @@ module sfir_even_symmetric_systolic_element #(
 ) (
     input  logic                          clk,
     input  logic signed [      CSIZE-1:0] coeffin,
-    input  logic                          datain,
-    input  logic                          datazin,
+    input  logic signed [      DSIZE-1:0] datain,
+    input  logic signed [      DSIZE-1:0] datazin,
     input  logic signed [CSIZE+DSIZE-1:0] cascin,
     output logic signed [      DSIZE-1:0] cascdata,
     output logic signed [CSIZE+DSIZE-1:0] cascout
