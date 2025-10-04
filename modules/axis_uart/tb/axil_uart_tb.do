@@ -24,13 +24,13 @@ vlog axil_uart_tb.sv
 vsim -voptargs="+acc" axil_uart_tb
 add log -r /*
 
-add wave -expand -group TOP      /apb_uart_tb/axil_uart_tb/*
-add wave -expand -group FIFO_RX  /apb_uart_tb/axil_uart_tb/i_axis_fifo_rx/*
-add wave -expand -group UART_RX  /apb_uart_tb/axil_uart_tb/i_axis_uart_rx/*
-add wave -expand -group FIFO_TX  /apb_uart_tb/axil_uart_tb/i_axis_fifo_tx/*
-add wave -expand -group UART_TX  /apb_uart_tb/axil_uart_tb/i_axis_uart_tx/*
-add wave -expand -group REG_FILE /apb_uart_tb/axil_uart_tb/i_axil_reg_file/*
-add wave -expand -group APB      /apb_uart_tb/axil_uart_tb/s_axil/*
+add wave -expand -group TOP      /axil_uart_tb/*
+add wave -expand -group FIFO_RX  /axil_uart_tb/i_axil_uart/i_axis_fifo_rx/*
+add wave -expand -group UART_RX  /axil_uart_tb/i_axil_uart/i_axis_uart_rx/*
+add wave -expand -group FIFO_TX  /axil_uart_tb/i_axil_uart/i_axis_fifo_tx/*
+add wave -expand -group UART_TX  /axil_uart_tb/i_axil_uart/i_axis_uart_tx/*
+add wave -expand -group REG_FILE /axil_uart_tb/i_axil_uart/i_axil_reg_file/*
+add wave -expand -group AXIL     /axil_uart_tb/i_axil_uart/s_axil/*
 
 run -all
 wave zoom full

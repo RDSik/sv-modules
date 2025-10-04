@@ -75,7 +75,7 @@ module axil_uart_tb ();
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .AXIL_DATA_WIDTH(AXIS_DATA_WIDTH),
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .ILA_EN         (0)
     ) i_axil_uart (
         .uart_rx_i(uart),
