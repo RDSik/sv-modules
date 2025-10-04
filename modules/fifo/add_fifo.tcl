@@ -7,10 +7,14 @@ if {$xilinx == 1} {
         $path/rtl/rd_ptr_empty.sv
         $path/rtl/sync_fifo.sv
         $path/rtl/wr_ptr_full.sv
-        $path/tb/axis_fifo_tb.sv
     "
        
     add_files -norecurse $xil_defaultlib
+
+    set xil_defaultlib "
+        $path/tb/axis_fifo_tb.sv
+    "
+    add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {
     add_file $path/rtl/async_fifo.sv
     add_file $path/rtl/axis_fifo_wrap.sv

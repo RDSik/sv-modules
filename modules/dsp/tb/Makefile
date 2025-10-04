@@ -1,4 +1,4 @@
-TOP ?= fir_filter
+TOP ?= ddc
 
 SIM ?= questa
 

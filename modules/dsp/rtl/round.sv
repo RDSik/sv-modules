@@ -1,12 +1,18 @@
 /* verilator lint_off TIMESCALEMOD */
 module round #(
+    parameter int CH_NUM         = 2,
     parameter int DATA_WIDTH_IN  = 40,
     parameter int DATA_WIDTH_OUT = 16
 ) (
-    input  logic                      clk_i,
-    input  logic                      odd_even_i,   // 1 - round to odd, 0 - round to even
-    input  logic [ DATA_WIDTH_IN-1:0] data_i,
-    output logic [DATA_WIDTH_OUT-1:0] round_data_o
+    input logic clk_i,
+    input logic rstn_i,
+    input logic odd_even_i, // 1 - round to odd, 0 - round to even
+
+    input logic tvalid_i,
+    input logic [CH_NUM-1:0][DATA_WIDTH_IN-1:0] tdata_i,
+
+    output logic tvalid_o,
+    output logic [CH_NUM-1:0][DATA_WIDTH_OUT-1:0] tdata_o
 );
 
     // Convergent Rounding: LSB Correction Technique
@@ -24,30 +30,46 @@ module round #(
     logic [        SHIFT-1:0] pattern;
     logic [DATA_WIDTH_IN-1:0] c;
 
-    logic [DATA_WIDTH_IN-1:0] multadd;
-    logic [DATA_WIDTH_IN-1:0] multadd_reg;
-
     assign pattern = (odd_even_i) ? {SHIFT{1'b1}} : {SHIFT{1'b0}};
 
     assign c = {{(DATA_WIDTH_IN - SHIFT) {1'b0}}, {SHIFT{1'b1}}};
 
-    assign multadd = (odd_even_i) ? (data_i + c) : (data_i + c + 1'b1);
+    for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
+        logic [DATA_WIDTH_IN-1:0] multadd;
+        logic [DATA_WIDTH_IN-1:0] multadd_reg;
 
-    always_ff @(posedge clk_i) begin
-        pattern_detect <= (multadd[SHIFT-1:0] == pattern);
-        multadd_reg    <= multadd;
-    end
+        assign multadd = (odd_even_i) ? (tdata_i + c) : (tdata_i + c + 1'b1);
 
-    always_ff @(posedge clk_i) begin
-        if (pattern_detect) begin
-            if (odd_even_i) begin
-                round_data_o <= {multadd_reg[DATA_WIDTH_IN-1:SHIFT+1], 1'b1};
+        always_ff @(posedge clk_i) begin
+            pattern_detect <= (multadd[SHIFT-1:0] == pattern);
+            multadd_reg    <= multadd;
+        end
+
+        always_ff @(posedge clk_i) begin
+            if (pattern_detect) begin
+                if (odd_even_i) begin
+                    tdata_o[ch_indx] <= {multadd_reg[DATA_WIDTH_IN-1:SHIFT+1], 1'b1};
+                end else begin
+                    tdata_o[ch_indx] <= {multadd_reg[DATA_WIDTH_IN-1:SHIFT+1], 1'b0};
+                end
             end else begin
-                round_data_o <= {multadd_reg[DATA_WIDTH_IN-1:SHIFT+1], 1'b0};
+                tdata_o[ch_indx] <= multadd_reg[DATA_WIDTH_IN-1:SHIFT];
             end
-        end else begin
-            round_data_o <= multadd_reg[DATA_WIDTH_IN-1:SHIFT];
         end
     end
+
+    localparam int DELAY = 3;
+
+    logic [DELAY-1:0] tvalid_d;
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            tvalid_d <= '0;
+        end else begin
+            tvalid_d <= {tvalid_d[DELAY-2:0], tvalid_i};
+        end
+    end
+
+    assign tvalid_o = tvalid_d[DELAY-1];
 
 endmodule
