@@ -25,7 +25,9 @@ module axis_dw_conv #(
         logic                                         busy;
         logic [        RATIO-1:0][DATA_WIDTH_OUT-1:0] m_axis_tdata;
 
+        /* verilator lint_off WIDTHEXPAND */
         assign cnt_done = (cnt == RATIO - 1);
+        /* verilator lint_on WIDTHEXPAND */
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
@@ -72,7 +74,9 @@ module axis_dw_conv #(
         logic                                        m_axis_tvalid;
         logic [        RATIO-1:0][DATA_WIDTH_IN-1:0] m_axis_tdata;
 
+        /* verilator lint_off WIDTHEXPAND */
         assign cnt_done = (cnt == RATIO - 1);
+        /* verilator lint_on WIDTHEXPAND */
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
