@@ -14,6 +14,7 @@ if {$xilinx == 1} {
         $path/rtl/sfir_even_symmetric_systolic_top.sv
         $path/rtl/sfir.sv
         $path/rtl/ddc.sv
+        $path/rtl/mixer.sv
     "
     add_files -norecurse $xil_defaultlib
 

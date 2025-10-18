@@ -1,10 +1,11 @@
 /* verilator lint_off TIMESCALEMOD */
 module axil_ram #(
-    parameter int MEM_DEPTH  = 64,
-    parameter int BYTE_WIDTH = 8,
-    parameter int BYTE_NUM   = 4,
-    parameter     MEM_MODE   = "no_change",
-    parameter     MEM_FILE   = ""
+    parameter int MEM_DEPTH    = 64,
+    parameter int BYTE_WIDTH   = 8,
+    parameter int BYTE_NUM     = 4,
+    parameter int READ_LATENCY = 0,
+    parameter     MEM_MODE     = "no_change",
+    parameter     MEM_FILE     = ""
 ) (
     axil_if.slave s_axil
 );
@@ -100,7 +101,7 @@ module axil_ram #(
         .MEM_DEPTH   (MEM_DEPTH),
         .BYTE_WIDTH  (BYTE_WIDTH),
         .BYTE_NUM    (BYTE_NUM),
-        .READ_LATENCY(0),
+        .READ_LATENCY(READ_LATENCY),
         .MEM_MODE    (MEM_MODE),
     ) i_ram_sdp (
         .a_clk_i  (clk_i),

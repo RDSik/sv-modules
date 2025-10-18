@@ -9,6 +9,7 @@ vlog  ../rtl/fir_filter.sv
 vlog  ../rtl/sfir_even_symmetric_systolic_top.sv
 vlog  ../rtl/sfir.sv
 vlog  ../rtl/ddc.sv
+vlog  ../rtl/mixer.sv
 
 vlog ddc_tb.sv
 

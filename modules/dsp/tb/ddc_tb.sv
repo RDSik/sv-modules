@@ -24,8 +24,8 @@ module ddc_tb ();
     logic [DDS_NUM-1:0]                                 dds_tvalid;
     logic [DDS_NUM-1:0][    IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
     logic                                               ddc_tvalid;
-    logic [   IQ_NUM:0][DATA_WIDTH-1:0]                 ddc_tdata;
-    logic [   IQ_NUM:0][DATA_WIDTH-1:0]                 noise;
+    logic [ IQ_NUM-1:0][DATA_WIDTH-1:0]                 ddc_tdata;
+    logic [ IQ_NUM-1:0][DATA_WIDTH-1:0]                 noise;
 
     assign noise = (dds_tdata[0] + dds_tdata[1]) / 2;
 

@@ -34,42 +34,46 @@ module ram_sp #(
         end
     end
 
-    always_ff @(posedge clk_i) begin
-        if (en_i) begin
-            data <= ram[addr_i];
-        end
-    end
-
-    if (READ_LATENCY == 0) begin : g_no_read_latency
-        assign data_o = data;
-    end else begin : g_read_latency
-        logic [MEM_WIDTH-1:0] pipe[READ_LATENCY];
-        logic en_pipe[READ_LATENCY+1];
-
+    if (READ_LATENCY == 0) begin : g_distributed_ram
+        assign data_o = ram[addr_i];
+    end else begin : g_block_ultram_ram
         always_ff @(posedge clk_i) begin
-            en_pipe[0] <= en_i;
-            for (int i = 0; i < READ_LATENCY; i++) begin
-                en_pipe[i+1] <= en_pipe[i];
+            if (en_i) begin
+                data <= ram[addr_i];
             end
         end
 
-        always_ff @(posedge clk_i) begin
-            if (en_pipe[0]) begin
-                pipe[0] <= data;
-            end
-        end
+        if (READ_LATENCY == 1) begin : g_block_ram
+            assign data_o = data;
+        end else begin : g_ultra_ram
+            logic [MEM_WIDTH-1:0] pipe[READ_LATENCY];
+            logic en_pipe[READ_LATENCY+1];
 
-        always_ff @(posedge clk_i) begin
-            for (int i = 0; i < READ_LATENCY - 1; i++) begin
-                if (en_pipe[i+1]) begin
-                    pipe[i+1] <= pipe[i];
+            always_ff @(posedge clk_i) begin
+                en_pipe[0] <= en_i;
+                for (int i = 0; i < READ_LATENCY; i++) begin
+                    en_pipe[i+1] <= en_pipe[i];
                 end
             end
-        end
 
-        always_ff @(posedge clk_i) begin
-            if (en_pipe[READ_LATENCY]) begin
-                b_data_o <= pipe[READ_LATENCY-1];
+            always_ff @(posedge clk_i) begin
+                if (en_pipe[0]) begin
+                    pipe[0] <= data;
+                end
+            end
+
+            always_ff @(posedge clk_i) begin
+                for (int i = 0; i < READ_LATENCY - 1; i++) begin
+                    if (en_pipe[i+1]) begin
+                        pipe[i+1] <= pipe[i];
+                    end
+                end
+            end
+
+            always_ff @(posedge clk_i) begin
+                if (en_pipe[READ_LATENCY]) begin
+                    data_o <= pipe[READ_LATENCY-1];
+                end
             end
         end
     end

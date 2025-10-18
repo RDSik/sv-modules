@@ -8,10 +8,10 @@ module round #(
     input logic rstn_i,
     input logic odd_even_i, // 1 - round to odd, 0 - round to even
 
-    input logic tvalid_i,
+    input logic                                 tvalid_i,
     input logic [CH_NUM-1:0][DATA_WIDTH_IN-1:0] tdata_i,
 
-    output logic tvalid_o,
+    output logic                                  tvalid_o,
     output logic [CH_NUM-1:0][DATA_WIDTH_OUT-1:0] tdata_o
 );
 
@@ -60,7 +60,7 @@ module round #(
         end
     end
 
-    localparam int DELAY = 3;
+    localparam int DELAY = 2;
 
     logic [DELAY-1:0] tvalid_d;
 

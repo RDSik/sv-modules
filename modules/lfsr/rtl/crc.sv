@@ -21,8 +21,8 @@ module crc #(
     always @(posedge clk_i) begin
         if (~rstn_i) begin
             crc_o <= '1;
-        end else if (en_i) begin
-            crc_o <= crc_byte(crc_o, data_i);
+        end else begin
+            crc_o <= en_i ? crc_byte(crc_o, data_i) : crc_o;
         end
     end
 
