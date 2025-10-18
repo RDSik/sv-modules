@@ -1,4 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
+/* verilator lint_off WIDTHEXPAND */
 module ram_sdp #(
     parameter int MEM_DEPTH    = 64,
     parameter int BYTE_WIDTH   = 8,
