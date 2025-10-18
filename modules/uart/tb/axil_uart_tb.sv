@@ -57,7 +57,7 @@ module axil_uart_tb ();
         for (int i = 0; i < REG_NUM; i++) begin
             env.slave_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
-        #180 $stop;
+        #200 $stop;
     end
 
     initial begin
