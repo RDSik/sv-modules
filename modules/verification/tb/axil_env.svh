@@ -29,12 +29,14 @@ class axil_env #(
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
-        s_axil.wvalid = 1;
+        s_axil.wvalid = '1;
+        s_axil.wstrb  = '1;
         s_axil.wdata  = data;
         do begin
             @(posedge s_axil.clk_i);
         end while (~s_axil.wready);
-        s_axil.wvalid = 0;
+        s_axil.wvalid = '0;
+        s_axil.wstrb  = '0;
         $display("[%0t] Write wdata = 0x%0h", $time, data);
     endtask
 
@@ -54,7 +56,7 @@ class axil_env #(
     task automatic slave_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data,
                                    int slave_delay_min = cfg.slave_min_delay,
                                    int slave_delay_max = cfg.slave_max_delay);
-        wait (~s_axil.rstn_i);
+        wait (s_axil.rstn_i);
         fork
             slave_write_awaddr(slave_delay_min, slave_delay_max, addr);
             slave_write_wdata(slave_delay_min, slave_delay_max, data);
@@ -91,7 +93,7 @@ class axil_env #(
     task automatic slave_read_reg(logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
                                   int slave_delay_min = cfg.slave_min_delay,
                                   int slave_delay_max = cfg.slave_max_delay);
-        wait (~s_axil.rstn_i);
+        wait (s_axil.rstn_i);
         fork
             slave_write_araddr(slave_delay_min, slave_delay_max, addr);
             slave_read_rdata(slave_delay_min, slave_delay_max, data);
