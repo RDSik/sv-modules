@@ -16,5 +16,6 @@ if {$xilinx == 1} {
     add_file $path/rtl/ram_sdp.sv
     add_file $path/rtl/ram_tdp.sv
     add_file $path/rtl/shift_reg.sv
+    add_file $path/rtl/axil_ram.sv
     add_file $path/rtl/axil_reg_file.sv
 }
