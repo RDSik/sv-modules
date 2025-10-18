@@ -12,6 +12,7 @@ module sync_fifo #(
 
     input  logic push_i,
     input  logic pop_i,
+
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
