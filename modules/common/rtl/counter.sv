@@ -6,7 +6,7 @@ module counter #(
     input  logic                 rstn_i,
     input  logic                 en_i,
     input  logic [CNT_WIDTH-1:0] num_i,
-    output logic [CNT_WIDTH-1:0] cnt_o 
+    output logic [CNT_WIDTH-1:0] cnt_o,
     output logic                 cnt_done_o
 );
 
