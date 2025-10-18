@@ -2,25 +2,9 @@
 `define TEST_PKG_SVH
 
 package test_pkg;
-
-    `include "../../verification/tb/packet.sv"
-
-    `include "../../verification/tb/cfg.sv"
-
-    `include "../../verification/tb/gen.sv"
-
-    `include "../../verification/tb/driver.sv"
-
-    `include "../../verification/tb/monitor.sv"
-
-    `include "../../verification/tb/agent.sv"
-
-    `include "../../verification/tb/checker.sv"
-
-    `include "../../verification/tb/env.sv"
-
-    `include "../../verification/tb/test.sv"
-
+    `include "../../verification/tb/cfg.svh"
+    `include "../../verification/tb/env.svh"
+    `include "../../verification/tb/axil_env.svh"
 endpackage
 
 `endif  // TEST_PKG_SVH

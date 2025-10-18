@@ -1,9 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
 module async_fifo #(
-    parameter int FIFO_WIDTH  = 32,
-    parameter int FIFO_DEPTH  = 64,
-    parameter int CDC_REG_NUM = 2,
-    parameter     FIFO_TYPE   = "block"
+    parameter int FIFO_WIDTH       = 32,
+    parameter int FIFO_DEPTH       = 64,
+    parameter int CDC_REG_NUM      = 2,
+    parameter int RAM_READ_LATENCY = 0
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rstn_i,
@@ -62,19 +62,22 @@ module async_fifo #(
         .empty_o   (empty_o)
     );
 
-    ram_dp_2clk #(
-        .MEM_WIDTH(FIFO_WIDTH),
-        .MEM_DEPTH(FIFO_DEPTH),
-        .MEM_TYPE (FIFO_TYPE)
-    ) i_ram_dp_2clk (
-        .wr_clk_i (wr_clk_i),
-        .wr_en_i  (wr_en),
-        .wr_addr_i(wr_addr),
-        .wr_data_i(wr_data_i),
-        .rd_clk_i (rd_clk_i),
-        .rd_en_i  (rd_en),
-        .rd_addr_i(rd_addr),
-        .rd_data_o(rd_data_o)
+    ram_sdp #(
+        .MEM_DEPTH   (FIFO_DEPTH),
+        .BYTE_WIDTH  (FIFO_WIDTH),
+        .BYTE_NUM    (1),
+        .READ_LATENCY(RAM_READ_LATENCY),
+        .MEM_MODE    ("read_first")
+    ) i_ram_sdp (
+        .a_clk_i  (wr_clk_i),
+        .a_en_i   (wr_en),
+        .a_wr_en_i(wr_en),
+        .a_addr_i (wr_addr),
+        .a_data_i (wr_data_i),
+        .b_clk_i  (rd_clk_i),
+        .b_en_i   (rd_en),
+        .b_addr_i (rd_addr),
+        .b_data_o (rd_data_o)
     );
 
     shift_reg #(

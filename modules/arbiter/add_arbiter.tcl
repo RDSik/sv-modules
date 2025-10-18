@@ -5,10 +5,13 @@ if {$xilinx == 1} {
         $path/rtl/axis_fork.sv
         $path/rtl/axis_rr_arb_wrap.sv
         $path/rtl/round_robin_arbiter.sv
+    "
+    add_files -norecurse $xil_defaultlib
+
+    set xil_defaultlib "
         $path/tb/axis_rr_arb_tb.sv
     "
-
-    add_files -norecurse $xil_defaultlib
+    add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {
     add_file $path/rtl/axis_fork.sv
     add_file $path/rtl/axis_rr_arb_wrap.sv

@@ -14,6 +14,7 @@
 !project/**/ps_pl_top.xdc
 !project/**/*.sdc
 !project/**/*.cst
+!project/**/Makefile
 
 # !modules/
 # !modules/**/
@@ -29,6 +30,7 @@
 !modules/**/tb/*.svh
 !modules/**/tb/*.do
 !modules/**/tb/*.m
+!modules/**/tb/Makefile
 
 # !modules/**/ip/
 
@@ -46,6 +48,5 @@
 !modules/**/*.tcl
 
 !.gitignore
-!Makefile
 !LICENSE.txt
 !*.md

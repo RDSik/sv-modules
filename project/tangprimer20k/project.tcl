@@ -1,12 +1,13 @@
-set top      "apb_uart"
+set top      "axil_uart"
 set part     "GW2A-LV18PG256C8/I7"
 set dev_ver  "C"
 set language "sysv2017"
 
 set modules_dirs [list \
+    ../../modules/axis_dw_conv \
     ../../modules/arbiter \
-    ../../modules/axis_spi \
-    ../../modules/axis_uart \
+    ../../modules/spi \
+    ../../modules/uart \
     ../../modules/fifo \
     ../../modules/common \
     ../../modules/dsp \

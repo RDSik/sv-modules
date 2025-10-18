@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module sync_fifo #(
-    parameter int FIFO_WIDTH = 32,
-    parameter int FIFO_DEPTH = 64,
-    parameter     FIFO_TYPE  = "block"
+    parameter int FIFO_WIDTH       = 32,
+    parameter int FIFO_DEPTH       = 64,
+    parameter int RAM_READ_LATENCY = 0
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -18,12 +18,10 @@ module sync_fifo #(
     output logic empty_o
 );
 
-    localparam logic SHOW_AHEAD_EN = (FIFO_TYPE == "block");
+    localparam logic SHOW_AHEAD_EN = (RAM_READ_LATENCY > 0);
     localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
-    logic [   PTR_WIDTH:0] data_cnt;
-    logic [   PTR_WIDTH:0] data_cnt_next;
     logic [ PTR_WIDTH-1:0] wr_ptr;
     logic [ PTR_WIDTH-1:0] rd_ptr;
     logic [ PTR_WIDTH-1:0] prefetch_ptr;
@@ -93,19 +91,30 @@ module sync_fifo #(
         assign data_o       = ram_data;
     end
 
-    ram_dp #(
-        .MEM_WIDTH(FIFO_WIDTH),
-        .MEM_DEPTH(FIFO_DEPTH),
-        .MEM_TYPE (FIFO_TYPE)
-    ) i_ram_dp (
-        .clk_i    (clk_i),
-        .wr_en_i  (wr_en),
-        .wr_addr_i(wr_ptr),
-        .wr_data_i(data_i),
-        .rd_en_i  (rd_en),
-        .rd_addr_i(prefetch_ptr),
-        .rd_data_o(ram_data)
+    ram_sdp #(
+        .MEM_DEPTH   (FIFO_DEPTH),
+        .BYTE_WIDTH  (FIFO_WIDTH),
+        .BYTE_NUM    (1),
+        .READ_LATENCY(RAM_READ_LATENCY),
+        .MEM_MODE    ("read_first")
+    ) i_ram_sdp (
+        .a_clk_i  (clk_i),
+        .a_en_i   (wr_en),
+        .a_wr_en_i(wr_en),
+        .a_addr_i (wr_ptr),
+        .a_data_i (data_i),
+        .b_clk_i  (clk_i),
+        .b_en_i   (rd_en),
+        .b_addr_i (prefetch_ptr),
+        .b_data_o (ram_data)
     );
+
+    logic [PTR_WIDTH:0] data_cnt;
+    logic [PTR_WIDTH:0] data_cnt_next;
+    logic               a_full;
+    logic               full;
+    logic               a_empty;
+    logic               empty;
 
     always_comb begin
         data_cnt_next = data_cnt;
@@ -124,6 +133,13 @@ module sync_fifo #(
         end
     end
 
+    /* verilator lint_off WIDTHEXPAND*/
+    assign a_full  = (data_cnt_next == FIFO_DEPTH - 1);
+    assign full    = (data_cnt_next == FIFO_DEPTH);
+    assign a_empty = (data_cnt_next == 1);
+    assign empty   = (data_cnt_next == 0);
+    /* verilator lint_on WIDTHEXPAND*/
+
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             a_full_o  <= 1'b0;
@@ -131,12 +147,10 @@ module sync_fifo #(
             a_empty_o <= 1'b0;
             empty_o   <= 1'b1;
         end else begin
-            /* verilator lint_off WIDTHEXPAND*/
-            a_full_o  <= (data_cnt_next == FIFO_DEPTH - 1);
-            full_o    <= (data_cnt_next == FIFO_DEPTH);
-            /* verilator lint_on WIDTHEXPAND*/
-            a_empty_o <= (data_cnt_next == 1);
-            empty_o   <= (data_cnt_next == 0);
+            a_full_o  <= a_full;
+            full_o    <= full;
+            a_empty_o <= a_empty;
+            empty_o   <= empty;
         end
     end
 

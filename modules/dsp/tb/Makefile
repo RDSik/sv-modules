@@ -1,4 +1,4 @@
-TOP ?= sfir
+TOP ?= ddc
 
 SIM ?= questa
 
