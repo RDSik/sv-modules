@@ -4,12 +4,11 @@
 module axil_uart
     import uart_pkg::*;
 #(
-    parameter int   FIFO_DEPTH       = 128,
-    parameter int   AXIL_ADDR_WIDTH  = 32,
-    parameter int   AXIL_DATA_WIDTH  = 32,
-    parameter int   AXIS_DATA_WIDTH  = 8,
-    parameter int   RAM_READ_LATENCY = 0,
-    parameter logic ILA_EN           = 0
+    parameter int   FIFO_DEPTH      = 128,
+    parameter int   AXIL_ADDR_WIDTH = 32,
+    parameter int   AXIL_DATA_WIDTH = 32,
+    parameter int   AXIS_DATA_WIDTH = 8,
+    parameter logic ILA_EN          = 0
 ) (
     input logic clk_i,
 
@@ -107,6 +106,8 @@ module axil_uart
         .wr_regs_o (wr_regs),
         .wr_valid_o(wr_valid)
     );
+
+    localparam int RAM_READ_LATENCY = 0;
 
     axis_uart_tx #(
         .DATA_WIDTH   (AXIS_DATA_WIDTH),
