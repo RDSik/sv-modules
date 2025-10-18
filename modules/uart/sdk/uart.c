@@ -51,5 +51,5 @@ int main() {
 
     cleanup_platform();
 
-    return 0EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
