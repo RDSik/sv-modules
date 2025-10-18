@@ -19,11 +19,11 @@ module axil_ram #(
     assign clk_i  = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic [ADDR_WIDTH-1:0] awaddr;
-    logic [ADDR_WIDTH-1:0] araddr;
-    logic                  write_valid;
-    logic                  wr_handshake;
-    logic                  ar_handshake;
+    logic [s_axil.ADDR_WIDTH-1:0] awaddr;
+    logic [s_axil.ADDR_WIDTH-1:0] araddr;
+    logic                         write_valid;
+    logic                         wr_handshake;
+    logic                         ar_handshake;
 
     assign write_valid  = s_axil.awvalid & s_axil.wvalid;
     assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
