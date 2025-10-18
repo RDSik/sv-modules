@@ -222,14 +222,10 @@ module axis_spi_master #(
         if (~rstn_i) begin
             /* verilator lint_off WIDTHTRUNC */
             tx_bit_cnt <= DATA_WIDTH - 1;
-            /* verilator lint_on WIDTHTRUNC */
             m_spi.mosi <= 1'b0;
         end else if (s_handshake) begin
-            /* verilator lint_off WIDTHTRUNC */
             tx_bit_cnt <= DATA_WIDTH - 1;
-            /* verilator lint_on WIDTHTRUNC */
         end else if (s_handshake_d & ~cpha_i) begin // Catch the case where we start transaction and CPHA = 0
-            /* verilator lint_off WIDTHTRUNC */
             tx_bit_cnt <= DATA_WIDTH - 2;
             /* verilator lint_on WIDTHTRUNC */
             m_spi.mosi <= tx_data[DATA_WIDTH-1];
