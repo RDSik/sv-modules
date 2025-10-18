@@ -23,8 +23,6 @@ module sfir #(
     output logic signed [CH_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] tdata_o
 );
 
-    localparam int DELAY = ($countones(TAP_NUM) == 1) ? 1 : 0;
-
     logic tvalid_d;
 
     shift_reg #(
