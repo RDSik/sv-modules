@@ -57,13 +57,7 @@ module axil_uart_tb ();
         for (int i = 0; i < REG_NUM; i++) begin
             env.slave_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
-        if (wdata == rdata) begin
-            $display("[%0t] Transaction success: wdata = 0x%0h, rdata = 0x%0h", $time, wdata,
-                     rdata);
-        end else begin
-            $display("[%0t] Transaction error: wdata = 0x%0h, rdata = 0x%0h", $time, wdata, rdata);
-        end
-        $stop;
+        #180 $stop;
     end
 
     initial begin
