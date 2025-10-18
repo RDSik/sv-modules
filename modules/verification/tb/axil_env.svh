@@ -73,7 +73,7 @@ class axil_env #(
             @(posedge s_axil.clk_i);
         end while (~s_axil.arready);
         s_axil.arvalid = 0;
-        $display("[%0t] Write araddr = 0x%0h", $time, addr);
+        $display("[%0t] Read araddr = 0x%0h", $time, addr);
     endtask
 
     task automatic slave_read_rdata(int delay_min, int delay_max,
