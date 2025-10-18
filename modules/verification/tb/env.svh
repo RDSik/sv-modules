@@ -35,7 +35,9 @@ class env_base #(
         gen2drv     = new();
         in_mbx      = new();
         out_mbx     = new();
+        /* verilator lint_off CONSTRAINTIGN */
         void'(cfg.randomize());
+        /* verilator lint_on CONSTRAINTIGN */
     endfunction
 
     task static do_master_gen(int pkt_amount, int size_min, int size_max, int delay_min,
@@ -45,12 +47,14 @@ class env_base #(
             int size;
             void'(std::randomize(size) with {size inside {[size_min : size_max]};});
             for (int i = 0; i < size; i = i + 1) begin
+                /* verilator lint_off CONSTRAINTIGN */
                 void'(std::randomize(
                     p
                 ) with {
                     p.delay inside {[delay_min : delay_max]};
                     p.tlast == (i == size - 1);
                 });
+                /* verilator lint_on CONSTRAINTIGN */
                 gen2drv.put(p);
             end
         end
@@ -128,7 +132,9 @@ class env_base #(
 
     task static drive_slave(int delay_min, int delay_max);
         int delay;
+        /* verilator lint_off CONSTRAINTIGN */
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
+        /* verilator lint_on CONSTRAINTIGN */
         repeat (delay) @(posedge m_axis.clk_i);
         m_axis.tready <= 1;
         @(posedge m_axis.clk_i);
