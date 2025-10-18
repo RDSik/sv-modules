@@ -39,28 +39,28 @@ module axil_uart
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_tx (
-        .ps_clk(ps_clk),
+        .clk_i (ps_clk),
         .rstn_i(tx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_rx (
-        .ps_clk(ps_clk),
+        .clk_i (ps_clk),
         .rstn_i(rx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) uart_tx (
-        .ps_clk(ps_clk),
+        .clk_i (ps_clk),
         .rstn_i(tx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) uart_rx (
-        .ps_clk(ps_clk),
+        .clk_i (ps_clk),
         .rstn_i(rx_reset)
     );
 
