@@ -181,9 +181,11 @@ class env_base #(
     endtask
 
     task static check(packet_in_t in, packet_out_t out);
+        /* verilator lint_off WIDTHEXPAND */
         if (out.tdata !== in.tdata) begin
             $error("%0t Invalid TDATA: Real: %0h, Expected: %0h", $time(), out.tdata, in.tdata);
         end
+        /* verilator lint_on WIDTHEXPAND */
     endtask
 
     task automatic do_check(ref bit done, input int pkt_amount);
@@ -197,7 +199,9 @@ class env_base #(
                     in_mbx.get(in_p);
                     out_mbx.get(out_p);
                     check(in_p, out_p);
+                    /* verilator lint_off WIDTHEXPAND */
                     cnt = cnt + out_p.tlast;
+                    /* verilator lint_on WIDTHEXPAND */
                     if (cnt == pkt_amount) begin
                         break;
                     end
