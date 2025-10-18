@@ -27,8 +27,8 @@ jobs:
         with:
             image: ${{env.image_name}}
             run: |
-              git clone https://github.com/RDSik/axis-modules.git
-              cd axis-modules/modules/${{matrix.arg}}/tb
+              git clone https://github.com/RDSik/sv-modules.git
+              cd sv-modules/modules/${{matrix.arg}}/tb
               make SIM=verilator
   build-project:
     runs-on: ubuntu-latest
@@ -44,6 +44,6 @@ jobs:
         with:
             image: ${{env.image_name}}
             run: |
-              git clone https://github.com/RDSik/axis-modules.git
-              cd axis-modules
+              git clone https://github.com/RDSik/sv-modules.git
+              cd sv-modules
               make BOARD=tangprimer20k project
