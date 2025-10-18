@@ -22,7 +22,7 @@ module axis_fifo_wrap #(
     assign m_axis.tvalid = ~empty;
 
     assign push = s_axis.tvalid & s_axis.tready;
-    assign pop = m_axis.tvalid & m_axis.tready;
+    assign pop  = m_axis.tvalid & m_axis.tready;
 
     if (FIFO_MODE == "sync") begin : g_fifo
         sync_fifo #(
