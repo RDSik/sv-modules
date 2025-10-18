@@ -22,6 +22,6 @@ if {$xilinx == 1} {
 } elseif {$gowin == 1} {
     add_file $path/rtl/axis_uart_tx.sv
     add_file $path/rtl/axis_uart_rx.sv
-    add_file $path/rtl/apb_uart.sv
+    add_file $path/rtl/axil_uart.sv
     add_file $path/rtl/uart_pkg.svh
 }
