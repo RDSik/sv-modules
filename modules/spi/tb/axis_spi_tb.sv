@@ -22,7 +22,7 @@ module axis_spi_tb ();
     logic clk_i;
     logic rstn_i;
 
-    spi_if m_spi ();
+    spi_if #(.CS_WIDTH(SLAVE_NUM)) m_spi ();
 
     assign m_spi.miso = m_spi.mosi;
 
