@@ -45,9 +45,9 @@ class env_base #(
         repeat (pkt_amount) begin
             packet_in_t p;
             int size;
+            /* verilator lint_off CONSTRAINTIGN */
             void'(std::randomize(size) with {size inside {[size_min : size_max]};});
             for (int i = 0; i < size; i = i + 1) begin
-                /* verilator lint_off CONSTRAINTIGN */
                 void'(std::randomize(
                     p
                 ) with {
