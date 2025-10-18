@@ -10,7 +10,9 @@ module axil_uart
     parameter int   AXIS_DATA_WIDTH = 8,
     parameter logic ILA_EN          = 0
 ) (
+    /* verilator lint_off PINMISSING */
     input logic clk_i,
+    /* verilator lint_on PINMISSING */
 
     input  logic uart_rx_i,
     output logic uart_tx_o,
@@ -107,8 +109,6 @@ module axil_uart
         .wr_valid_o(wr_valid)
     );
 
-    localparam int RAM_READ_LATENCY = 0;
-
     axis_uart_tx #(
         .DATA_WIDTH   (AXIS_DATA_WIDTH),
         .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
@@ -131,6 +131,8 @@ module axil_uart
         .parity_err_o (parity_err),
         .m_axis       (uart_rx)
     );
+
+    localparam int RAM_READ_LATENCY = 0;
 
     axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
