@@ -4,12 +4,15 @@
 module axil_uart
     import uart_pkg::*;
 #(
-    parameter int   FIFO_DEPTH      = 128,
-    parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   AXIS_DATA_WIDTH = 8,
-    parameter logic ILA_EN          = 0
+    parameter int   FIFO_DEPTH       = 128,
+    parameter int   AXIL_ADDR_WIDTH  = 32,
+    parameter int   AXIL_DATA_WIDTH  = 32,
+    parameter int   AXIS_DATA_WIDTH  = 8,
+    parameter int   RAM_READ_LATENCY = 0,
+    parameter logic ILA_EN           = 0
 ) (
+    input logic clk_i,
+
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
@@ -22,10 +25,10 @@ module axil_uart
     logic       [REG_NUM-1:0] rd_valid;
     logic       [REG_NUM-1:0] wr_valid;
 
-    logic                     clk_i;
+    logic                     ps_clk;
     logic                     rstn_i;
 
-    assign clk_i  = s_axil.clk_i;
+    assign ps_clk = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
     logic tx_reset;
@@ -37,28 +40,28 @@ module axil_uart
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_tx (
-        .clk_i (clk_i),
+        .ps_clk(ps_clk),
         .rstn_i(tx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_rx (
-        .clk_i (clk_i),
+        .ps_clk(ps_clk),
         .rstn_i(rx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) uart_tx (
-        .clk_i (clk_i),
+        .ps_clk(ps_clk),
         .rstn_i(tx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) uart_rx (
-        .clk_i (clk_i),
+        .ps_clk(ps_clk),
         .rstn_i(rx_reset)
     );
 
@@ -132,7 +135,7 @@ module axil_uart
         .FIFO_DEPTH      (FIFO_DEPTH),
         .FIFO_WIDTH      (AXIS_DATA_WIDTH),
         .FIFO_MODE       ("sync"),
-        .RAM_READ_LATENCY(0)
+        .RAM_READ_LATENCY(RAM_READ_LATENCY)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
         .m_axis   (uart_tx),
@@ -144,7 +147,7 @@ module axil_uart
         .FIFO_DEPTH      (FIFO_DEPTH),
         .FIFO_WIDTH      (AXIS_DATA_WIDTH),
         .FIFO_MODE       ("sync"),
-        .RAM_READ_LATENCY(0)
+        .RAM_READ_LATENCY(RAM_READ_LATENCY)
     ) i_axis_fifo_rx (
         .s_axis   (uart_rx),
         .m_axis   (fifo_rx),

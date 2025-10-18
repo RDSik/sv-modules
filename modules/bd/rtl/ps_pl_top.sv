@@ -1,10 +1,11 @@
 /* verilator lint_off TIMESCALEMOD */
 module ps_pl_top #(
-    parameter int   FIFO_DEPTH      = 128,
-    parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   AXIS_DATA_WIDTH = 8,
-    parameter logic ILA_EN          = 1
+    parameter int   FIFO_DEPTH       = 128,
+    parameter int   AXIL_ADDR_WIDTH  = 32,
+    parameter int   AXIL_DATA_WIDTH  = 32,
+    parameter int   AXIS_DATA_WIDTH  = 8,
+    parameter int   RAM_READ_LATENCY = 0,
+    parameter logic ILA_EN           = 1
 ) (
     input  logic clk_i,
     input  logic uart_rx_i,
@@ -45,12 +46,14 @@ module ps_pl_top #(
     );
 
     axil_uart #(
-        .FIFO_DEPTH     (FIFO_DEPTH),
-        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .ILA_EN         (ILA_EN)
+        .FIFO_DEPTH      (FIFO_DEPTH),
+        .AXIL_ADDR_WIDTH (AXIL_ADDR_WIDTH),
+        .AXIL_DATA_WIDTH (AXIL_DATA_WIDTH),
+        .AXIS_DATA_WIDTH (AXIS_DATA_WIDTH),
+        .RAM_READ_LATENCY(RAM_READ_LATENCY),
+        .ILA_EN          (ILA_EN)
     ) i_axil_uart (
+        .clk_i    (clk_i),
         .uart_rx_i(uart_rx_i),
         .uart_tx_o(uart_tx_o),
         .s_axil   (axil[0])
