@@ -1,6 +1,6 @@
 /* verilator lint_off TIMESCALEMOD */
 module sfir #(
-    parameter int CH_NUM      = 2,
+    parameter int CH_NUM     = 2,
     parameter int DATA_WIDTH = 16,
     parameter int COEF_WIDTH = 18,
     parameter int TAP_NUM    = 28,
