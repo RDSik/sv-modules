@@ -83,13 +83,13 @@ module ddc_tb ();
             .aclken             (en_i),
             .aresetn            (rstn_i),
             .s_axis_phase_tvalid(en_i),
-            .s_axis_phase_tdata (freq_to_phase(FREQ[dds_indx])),
+            .s_axis_phase_tdata ({PHASE_WIDTH'(0), freq_to_phase(FREQ[dds_indx])}),
             .m_axis_data_tvalid (dds_tvalid[dds_indx]),
             .m_axis_data_tdata  (dds_tdata[dds_indx])
         );
     end
 
-    function automatic logic [2*PHASE_WIDTH-1:0] freq_to_phase(logic [PHASE_WIDTH-1:0] freq);
+    function automatic logic [PHASE_WIDTH-1:0] freq_to_phase(logic [PHASE_WIDTH-1:0] freq);
         logic [PHASE_WIDTH-1:0] Fs = 100e6;
         begin
             freq_to_phase = (freq * 2 ** PHASE_WIDTH) / Fs;
