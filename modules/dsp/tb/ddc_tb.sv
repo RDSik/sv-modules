@@ -2,9 +2,6 @@
 
 module ddc_tb ();
 
-    localparam int DDS_NUM = 2;
-    localparam logic [PHASE_WIDTH-1:0] FREQ[DDS_NUM-1:0] = '{50e6, 550e6};
-
     localparam int IQ_NUM = 2;
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
@@ -14,6 +11,8 @@ module ddc_tb ();
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 28;
 
+    localparam int DDS_NUM = 2;
+    localparam logic [PHASE_WIDTH-1:0] FREQ[DDS_NUM-1:0] = '{50e6, 550e6};
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
     localparam int SIM_TIME = 100_000;
