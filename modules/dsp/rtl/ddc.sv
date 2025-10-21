@@ -19,7 +19,7 @@ module ddc #(
 
     input logic round_type_i,
 
-    input logic [$clog2(DATA_WIDTH)-1:0] decimation_i,
+    input logic [DATA_WIDTH-1:0] decimation_i,
 
     input logic [PHASE_WIDTH-1:0] phase_inc_i,
     input logic [PHASE_WIDTH-1:0] phase_offset_i,
@@ -54,7 +54,7 @@ module ddc #(
     logic [IQ_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] fir_tdata;
     logic                                         fir_tvalid;
 
-    sfir #(
+    fir_filter #(
         .CH_NUM    (IQ_NUM),
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),

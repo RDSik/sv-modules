@@ -21,18 +21,14 @@ module mixer #(
     logic                              dds_tvalid;
     logic [IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
 
-    dds #(
-        .IQ_NUM     (IQ_NUM),
-        .DATA_WIDTH (DATA_WIDTH),
-        .PHASE_WIDTH(PHASE_WIDTH)
-    ) i_dds (
-        .clk_i         (clk_i),
-        .rstn_i        (rstn_i),
-        .en_i          (en_i),
-        .phase_inc_i   (phase_inc_i),
-        .phase_offset_i(phase_offset_i),
-        .tvalid_o      (dds_tvalid),
-        .tdata_o       (dds_tdata)
+    dds_compiler i_dds_compiler (
+        .aclk               (clk_i),
+        .aclken             (en_i),
+        .aresetn            (rstn_i),
+        .s_axis_phase_tvalid(en_i),
+        .s_axis_phase_tdata ({phase_offset_i, phase_inc_i}),
+        .m_axis_data_tvalid (dds_tdata),
+        .m_axis_data_tdata  (dds_tvalid)
     );
 
     localparam int CMULT_DELAY = 6;
