@@ -35,7 +35,7 @@ module resampler #(
 
     assign clk_i         = s_axis.clk_i;
     assign rstn_i        = s_axis.rstn_i;
-    assign s_axis.tready = (state == IDLE);
+    assign s_axis.tready = (state == IDLE) && rstn_i;
 
     logic [$clog2(DATA_WIDTH)-1:0] int_cnt;
     logic                          int_cnt_done;
@@ -76,7 +76,7 @@ module resampler #(
                     int_tdata  <= '0;
                     int_tvalid <= '1;
                     if (int_cnt_done) begin
-                        state <= DONE;
+                        state <= IDLE;
                     end
                 end
             endcase

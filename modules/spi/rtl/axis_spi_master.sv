@@ -245,7 +245,7 @@ module axis_spi_master #(
         end
     end
 
-    assign s_axis.tready = (state == IDLE);
+    assign s_axis.tready = (state == IDLE) && rstn_i;
     assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
     always_ff @(posedge clk_i) begin
