@@ -41,7 +41,7 @@ module resampler #(
     logic                              int_tvalid;
     logic [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;
 
-    if (INTERPOLATION_EN) begin
+    if (INTERPOLATION_EN) begin : g_int_en
         assign s_axis.tready = (state == IDLE) && rstn_i;
 
         logic [$clog2(DATA_WIDTH)-1:0] int_cnt;
@@ -86,7 +86,7 @@ module resampler #(
                 endcase
             end
         end
-    end else begin
+    end else begin : g_int_disable
         assign s_axis.tready = rstn_i;
         assign int_tdata     = s_axis.tdata;
         assign int_tvalid    = s_axis.tvalid;
@@ -110,7 +110,7 @@ module resampler #(
 
     logic dec_tvalid;
 
-    if (DECIMATION_EN) begin
+    if (DECIMATION_EN) begin : g_dec_en
         logic [$clog2(DATA_WIDTH)-1:0] dec_cnt;
         logic                          dec_cnt_done;
 
@@ -131,7 +131,7 @@ module resampler #(
         end
 
         assign dec_tvalid = fir_tvalid && (dec_cnt == '0);
-    end else begin
+    end else begin : g_dec_disable
         assign dec_tvalid = fir_tvalid;
     end
 
