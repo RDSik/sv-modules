@@ -27,8 +27,8 @@ module mixer #(
         .aresetn            (rstn_i),
         .s_axis_phase_tvalid(en_i),
         .s_axis_phase_tdata ({phase_offset_i, phase_inc_i}),
-        .m_axis_data_tvalid (dds_tdata),
-        .m_axis_data_tdata  (dds_tvalid)
+        .m_axis_data_tvalid (dds_tvalid),
+        .m_axis_data_tdata  (dds_tdata)
     );
 
     localparam int CMULT_DELAY = 6;
