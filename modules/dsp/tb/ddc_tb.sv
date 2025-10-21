@@ -79,7 +79,7 @@ module ddc_tb ();
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds_compilter i_dds_compiler (
+        dds_compiler i_dds_compiler (
             .aclk               (clk_i),
             .aclken             (en_i),
             .aresetn            (rstn_i),
