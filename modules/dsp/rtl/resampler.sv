@@ -93,7 +93,7 @@ module resampler #(
     end
 
     fir_filter #(
-        .CH_NUM    (IQ_NUM),
+        .CH_NUM    (CH_NUM),
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM),
