@@ -26,7 +26,6 @@ module round #(
 
     localparam int SHIFT = DATA_WIDTH_IN - DATA_WIDTH_OUT;
 
-    logic                     pattern_detect;
     logic [        SHIFT-1:0] pattern;
     logic [DATA_WIDTH_IN-1:0] c;
 
@@ -35,6 +34,7 @@ module round #(
     assign c = {{(DATA_WIDTH_IN - SHIFT) {1'b0}}, {SHIFT{1'b1}}};
 
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
+        logic                     pattern_detect;
         logic [DATA_WIDTH_IN-1:0] multadd;
         logic [DATA_WIDTH_IN-1:0] multadd_reg;
 

@@ -15,6 +15,7 @@ if {$xilinx == 1} {
         $path/rtl/sfir.sv
         $path/rtl/ddc.sv
         $path/rtl/mixer.sv
+        $path/rtl/resampler.sv
     "
     add_files -norecurse $xil_defaultlib
 
@@ -28,5 +29,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/cmult.sv
     add_file $path/rtl/round.sv
     add_file $path/rtl/sfir_even_symmetric_systolic_top.sv
-    add_file $path/rtl/ddc.sv
+    add_file $path/rtl/resampler.sv
 }

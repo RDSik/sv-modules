@@ -19,7 +19,7 @@ module ddc #(
 
     input logic round_type_i,
 
-    input logic [$clog2(DATA_WIDTH)-1:0] decimation_i,
+    input logic [DATA_WIDTH-1:0] decimation_i,
 
     input logic [PHASE_WIDTH-1:0] phase_inc_i,
     input logic [PHASE_WIDTH-1:0] phase_offset_i,
@@ -54,42 +54,32 @@ module ddc #(
     logic [IQ_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] fir_tdata;
     logic                                         fir_tvalid;
 
-    sfir #(
-        .CH_NUM    (IQ_NUM),
-        .DATA_WIDTH(DATA_WIDTH),
-        .COEF_WIDTH(COEF_WIDTH),
-        .TAP_NUM   (TAP_NUM),
-        .COEF      (COEF)
-    ) i_fir_filter (
-        .clk_i   (clk_i),
-        .rstn_i  (rstn_i),
-        .en_i    (en_i),
-        .tvalid_i(mixed_tvalid),
-        .tdata_i (mixed_tdata),
-        .tvalid_o(fir_tvalid),
-        .tdata_o (fir_tdata)
+    axis_if #(
+        .DATA_WIDTH(IQ_NUM * DATA_WIDTH)
+    ) s_axis (
+        .clk_i (clk_i),
+        .rstn_i(rstn_i)
     );
 
-    logic [$clog2(DATA_WIDTH)-1:0] dec_cnt;
-    logic                          dec_cnt_done;
-    logic                          fir_dec_tvalid;
+    assign s_axis.tdata  = mixed_tdata;
+    assign s_axis.tvalid = mixed_tvalid;
 
-    assign dec_cnt_done   = (dec_cnt == decimation_i - 1);
-    assign fir_dec_tvalid = fir_tvalid && (dec_cnt == '0);
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            dec_cnt <= '0;
-        end else if (en_i) begin
-            if (fir_tvalid) begin
-                if (dec_cnt_done) begin
-                    dec_cnt <= '0;
-                end else begin
-                    dec_cnt <= dec_cnt + 1'b1;
-                end
-            end
-        end
-    end
+    resampler #(
+        .INTERPOLATION_EN(0),
+        .DECIMATION_EN   (1),
+        .CH_NUM          (IQ_NUM),
+        .DATA_WIDTH      (DATA_WIDTH),
+        .COEF_WIDTH      (COEF_WIDTH),
+        .TAP_NUM         (TAP_NUM),
+        .COEF            (COEF)
+    ) i_resampler (
+        .s_axis         (s_axis),
+        .interpolation_i('0),
+        .decimation_i   (decimation_i),
+        .en_i           (en_i),
+        .tvalid_o       (fir_tvalid),
+        .tdata_o        (fir_tdata)
+    );
 
     round #(
         .CH_NUM        (IQ_NUM),
@@ -99,7 +89,7 @@ module ddc #(
         .clk_i     (clk_i),
         .rstn_i    (rstn_i),
         .odd_even_i(round_type_i),
-        .tvalid_i  (fir_dec_tvalid),
+        .tvalid_i  (fir_tvalid),
         .tdata_i   (fir_tdata),
         .tvalid_o  (tvalid_o),
         .tdata_o   (tdata_o)

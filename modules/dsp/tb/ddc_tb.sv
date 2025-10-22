@@ -2,21 +2,20 @@
 
 module ddc_tb ();
 
-    localparam int DDS_NUM = 2;
-    localparam int PINC[0:DDS_NUM-1] = '{27, 263};
-
     localparam int IQ_NUM = 2;
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
 
-    localparam int PHASE_WIDTH = 16;
+    localparam int PHASE_WIDTH = 32;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 28;
 
+    localparam int DDS_NUM = 2;
+    localparam logic [PHASE_WIDTH-1:0] FREQ[DDS_NUM-1:0] = '{50e6, 550e6};
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
-    localparam int SIM_TIME = 1000;
+    localparam int SIM_TIME = 100_000;
 
     logic                                               clk_i;
     logic                                               rstn_i;
@@ -70,8 +69,8 @@ module ddc_tb ();
         .en_i          (en_i),
         .round_type_i  (ROUND_TYPE),
         .decimation_i  (DECIMATION),
-        .phase_inc_i   (0),
-        .phase_offset_i(0),
+        .phase_inc_i   ('0),
+        .phase_offset_i('0),
         .tdata_i       (noise),
         .tvalid_i      (&dds_tvalid),
         .tvalid_o      (ddc_tvalid),
@@ -79,19 +78,22 @@ module ddc_tb ();
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds #(
-            .IQ_NUM     (IQ_NUM),
-            .DATA_WIDTH (DATA_WIDTH),
-            .PHASE_WIDTH(PHASE_WIDTH)
-        ) i_dds (
-            .clk_i         (clk_i),
-            .rstn_i        (rstn_i),
-            .en_i          (en_i),
-            .phase_inc_i   (PINC[dds_indx]),
-            .phase_offset_i('0),
-            .tvalid_o      (dds_tvalid[dds_indx]),
-            .tdata_o       (dds_tdata[dds_indx])
+        dds_compiler i_dds_compiler (
+            .aclk               (clk_i),
+            .aclken             (en_i),
+            .aresetn            (rstn_i),
+            .s_axis_phase_tvalid(en_i),
+            .s_axis_phase_tdata ({PHASE_WIDTH'(0), freq_to_phase(FREQ[dds_indx])}),
+            .m_axis_data_tvalid (dds_tvalid[dds_indx]),
+            .m_axis_data_tdata  (dds_tdata[dds_indx])
         );
     end
+
+    function automatic logic [PHASE_WIDTH-1:0] freq_to_phase(logic [PHASE_WIDTH-1:0] freq);
+        logic [PHASE_WIDTH-1:0] Fs = 100e6;
+        begin
+            freq_to_phase = (freq * 2 ** PHASE_WIDTH) / Fs;
+        end
+    endfunction
 
 endmodule
