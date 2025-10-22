@@ -7,20 +7,23 @@ module ram_sdp #(
     parameter int READ_LATENCY = 5,
     parameter     MEM_MODE     = "no_change",
     parameter     MEM_FILE     = "",
-    parameter int ADDR_WIDTH   = $clog2(MEM_DEPTH),
     parameter int MEM_WIDTH    = BYTE_WIDTH * BYTE_NUM
 ) (
-    input logic                  a_clk_i,
-    input logic                  a_en_i,
-    input logic [  BYTE_NUM-1:0] a_wr_en_i,
-    input logic [ADDR_WIDTH-1:0] a_addr_i,
-    input logic [ MEM_WIDTH-1:0] a_data_i,
+    input logic                         a_clk_i,
+    input logic                         a_en_i,
+    input logic [         BYTE_NUM-1:0] a_wr_en_i,
+    input logic [$clog2(MEM_DEPTH)-1:0] a_addr_i,
+    input logic [        MEM_WIDTH-1:0] a_data_i,
 
-    input  logic                  b_clk_i,
-    input  logic                  b_en_i,
-    input  logic [ADDR_WIDTH-1:0] b_addr_i,
-    output logic [ MEM_WIDTH-1:0] b_data_o
+    input  logic                         b_clk_i,
+    input  logic                         b_en_i,
+    input  logic [$clog2(MEM_DEPTH)-1:0] b_addr_i,
+    output logic [        MEM_WIDTH-1:0] b_data_o
 );
+
+    if (MEM_WIDTH != BYTE_WIDTH * BYTE_NUM) begin : g_mem_width_err
+        $error("MEM_WIDTH must be equal BYTE_WIDTH * BYTE_NUM!");
+    end
 
     logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 

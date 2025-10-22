@@ -1,15 +1,15 @@
 module mixer #(
-    parameter int IQ_NUM      = 2,
-    parameter int DATA_WIDTH  = 16,
-    parameter int PHASE_WIDTH = 32
+    parameter int IQ_NUM        = 2,
+    parameter int SIN_LUT_DEPTH = 8192,
+    parameter int DATA_WIDTH    = 16
 ) (
     input logic clk_i,
     input logic rstn_i,
     input logic en_i,
 
-    input logic                   round_type_i,   // 1 - round to odd, 0 - round to even
-    input logic [PHASE_WIDTH-1:0] phase_inc_i,
-    input logic [PHASE_WIDTH-1:0] phase_offset_i,
+    input logic                             round_type_i,   // 1 - round to odd, 0 - round to even
+    input logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_inc_i,
+    input logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_offset_i,
 
     input logic                              tvalid_i,
     input logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
@@ -21,14 +21,18 @@ module mixer #(
     logic                              dds_tvalid;
     logic [IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
 
-    dds_compiler i_dds_compiler (
-        .aclk               (clk_i),
-        .aclken             (en_i),
-        .aresetn            (rstn_i),
-        .s_axis_phase_tvalid(en_i),
-        .s_axis_phase_tdata ({phase_offset_i, phase_inc_i}),
-        .m_axis_data_tvalid (dds_tvalid),
-        .m_axis_data_tdata  (dds_tdata)
+    dds #(
+        .IQ_NUM       (IQ_NUM),
+        .SIN_LUT_DEPTH(SIN_LUT_DEPTH),
+        .DATA_WIDTH   (DATA_WIDTH)
+    ) i_dds (
+        .clk_i         (clk_i),
+        .rstn_i        (rstn_i),
+        .en_i          (en_i),
+        .phase_inc_i   (phase_inc_i),
+        .phase_offset_i(phase_offset_i),
+        .tvalid_o      (dds_tvalid),
+        .tdata_o       (dds_tdata)
     );
 
     localparam int CMULT_DELAY = 6;
