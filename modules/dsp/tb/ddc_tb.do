@@ -10,6 +10,7 @@ vlog  ../rtl/sfir_even_symmetric_systolic_top.sv
 vlog  ../rtl/sfir.sv
 vlog  ../rtl/ddc.sv
 vlog  ../rtl/mixer.sv
+vlog  ../rtl/resampler.sv
 
 vlog ddc_tb.sv
 

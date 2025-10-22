@@ -1,44 +1,43 @@
 /* verilator lint_off TIMESCALEMOD */
 module dds #(
-    parameter int IQ_NUM      = 2,
-    parameter int PHASE_WIDTH = 16,
-    parameter int DATA_WIDTH  = 16
+    parameter int IQ_NUM        = 2,
+    parameter int SIN_LUT_DEPTH = 8192,
+    parameter int DATA_WIDTH    = 16
 ) (
     input logic clk_i,
     input logic rstn_i,
     input logic en_i,
 
-    input logic [PHASE_WIDTH-1:0] phase_inc_i,
-    input logic [PHASE_WIDTH-1:0] phase_offset_i,
+    input logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_inc_i,
+    input logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_offset_i,
 
     output logic                                     tvalid_o,
     output logic signed [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_o
 );
 
-    if (IQ_NUM != 2) begin
+    if (IQ_NUM != 2) begin : g_iq_num_err
         $error("IQ_NUM must be 2!");
     end
 
-    localparam int SIN_NUM = 2 ** PHASE_WIDTH;
     localparam int AMPL = 2 ** (DATA_WIDTH - 1) - 1;
     localparam real PI = 3.14159265359;
 
-    logic [DATA_WIDTH-1:0] sin_lut[0:SIN_NUM-1];
+    logic [DATA_WIDTH-1:0] sin_lut[0:SIN_LUT_DEPTH-1];
 
     initial begin
-        for (int i = 0; i < SIN_NUM; i++) begin
+        for (int i = 0; i < SIN_LUT_DEPTH; i++) begin
             /* verilator lint_off WIDTHTRUNC */
-            sin_lut[i] = $rtoi(AMPL * (1 + $sin(2 * PI * i / SIN_NUM)));
+            sin_lut[i] = $rtoi(AMPL * (1 + $sin(2 * PI * i / SIN_LUT_DEPTH)));
             /* verilator lint_on WIDTHTRUNC */
         end
     end
 
-    logic [PHASE_WIDTH-1:0] phase_acc;
-    logic [PHASE_WIDTH-1:0] lut_addr_i;
-    logic [PHASE_WIDTH-1:0] lut_addr_q;
+    logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_acc;
+    logic [$clog2(SIN_LUT_DEPTH)-1:0] lut_addr_i;
+    logic [$clog2(SIN_LUT_DEPTH)-1:0] lut_addr_q;
 
     assign lut_addr_i = phase_acc + phase_offset_i;
-    assign lut_addr_q = lut_addr_i + (SIN_NUM / 4);
+    assign lut_addr_q = lut_addr_i + (SIN_LUT_DEPTH / 4);
 
     always @(posedge clk_i) begin
         if (~rstn_i) begin
