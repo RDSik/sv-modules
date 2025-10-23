@@ -227,9 +227,8 @@ module i2c_master_byte_ctrl (
 	      ld       <= #1 1'b0;
 	      cmd_ack  <= #1 1'b0;
 
-		  // verilator lint_off CASEINCOMPLETE
 	      case (c_state) // synopsys full_case parallel_case
-		 	 ST_IDLE:
+	        ST_IDLE:
 	          if (go)
 	            begin
 	                if (start)
@@ -341,6 +340,5 @@ module i2c_master_byte_ctrl (
 	            end
 
 	      endcase
-		  // verilator lint_on CASEINCOMPLETE
 	  end
 endmodule

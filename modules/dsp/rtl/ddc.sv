@@ -51,9 +51,6 @@ module ddc #(
         .tdata_o       (mixed_tdata)
     );
 
-    logic [IQ_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] fir_tdata;
-    logic                                         fir_tvalid;
-
     axis_if #(
         .DATA_WIDTH(IQ_NUM * DATA_WIDTH)
     ) s_axis (
@@ -76,23 +73,10 @@ module ddc #(
         .s_axis         (s_axis),
         .interpolation_i('0),
         .decimation_i   (decimation_i),
+        .round_type_i   (round_type_i),
         .en_i           (en_i),
-        .tvalid_o       (fir_tvalid),
-        .tdata_o        (fir_tdata)
-    );
-
-    round #(
-        .CH_NUM        (IQ_NUM),
-        .DATA_WIDTH_IN (DATA_WIDTH + COEF_WIDTH),
-        .DATA_WIDTH_OUT(DATA_WIDTH)
-    ) i_fir_round (
-        .clk_i     (clk_i),
-        .rstn_i    (rstn_i),
-        .odd_even_i(round_type_i),
-        .tvalid_i  (fir_tvalid),
-        .tdata_i   (fir_tdata),
-        .tvalid_o  (tvalid_o),
-        .tdata_o   (tdata_o)
+        .tvalid_o       (tvalid_o),
+        .tdata_o        (tdata_o)
     );
 
 endmodule

@@ -254,9 +254,7 @@ module i2c_master_bit_ctrl (
     always @(posedge clk or negedge nReset)
       if      (!nReset     ) filter_cnt <= 14'h0;
       else if (rst || !ena ) filter_cnt <= 14'h0;
-      // verilator lint_off WIDTHTRUNC
       else if (~|filter_cnt) filter_cnt <= clk_cnt >> 2; //16x I2C bus frequency
-      // verilator lint_on WIDTHTRUNC
       else                   filter_cnt <= filter_cnt -1;
 
 

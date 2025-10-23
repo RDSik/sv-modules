@@ -18,6 +18,7 @@ module resampler #(
 
     input logic en_i,
 
+    input logic                  round_type_i,
     input logic [DATA_WIDTH-1:0] decimation_i,
     input logic [DATA_WIDTH-1:0] interpolation_i,
 
@@ -92,6 +93,9 @@ module resampler #(
         assign int_tvalid    = s_axis.tvalid;
     end
 
+    logic                                         fir_tvalid;
+    logic [CH_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] fir_tdata;
+
     fir_filter #(
         .CH_NUM    (CH_NUM),
         .DATA_WIDTH(DATA_WIDTH),
@@ -135,20 +139,20 @@ module resampler #(
         assign dec_tvalid = fir_tvalid;
     end
 
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            tvalid_o <= 1'b0;
-        end else begin
-            if (en_i) begin
-                tvalid_o <= dec_tvalid;
-            end else begin
-                tvalid_o <= 1'b0;
-            end
-        end
-    end
+    assign dec_tdata = fir_tdata;
 
-    always_ff @(posedge clk_i) begin
-        tdata_o <= fir_tdata;
-    end
+    round #(
+        .CH_NUM        (CH_NUM),
+        .DATA_WIDTH_IN (DATA_WIDTH + COEF_WIDTH),
+        .DATA_WIDTH_OUT(DATA_WIDTH)
+    ) i_round (
+        .clk_i     (clk_i),
+        .rstn_i    (rstn_i),
+        .odd_even_i(round_type_i),
+        .tvalid_i  (dec_tvalid),
+        .tdata_i   (fir_tdata),
+        .tvalid_o  (tvalid_o),
+        .tdata_o   (tdata_o)
+    );
 
 endmodule
