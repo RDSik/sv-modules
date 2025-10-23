@@ -45,6 +45,10 @@
 !modules/**/sdk/*.c
 !modules/**/sdk/*.h
 
+# !modules/**/doc/
+
+!modules/**/doc/*.pdf
+
 !modules/**/*.tcl
 
 !.gitignore
