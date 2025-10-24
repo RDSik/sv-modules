@@ -52,23 +52,10 @@ module resampler #(
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
-                int_cnt <= '0;
-            end else if (en_i) begin
-                if (state == INTERP) begin
-                    if (int_cnt_done) begin
-                        int_cnt <= '0;
-                    end else begin
-                        int_cnt <= int_cnt + 1'b1;
-                    end
-                end
-            end
-        end
-
-        always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
                 int_tvalid <= 1'b0;
+                int_cnt    <= '0;
                 state      <= IDLE;
-            end else begin
+            end else if (en_i) begin
                 unique case (state)
                     IDLE: begin
                         if (s_axis.tvalid) begin
@@ -81,7 +68,10 @@ module resampler #(
                         int_tdata  <= '0;
                         int_tvalid <= '1;
                         if (int_cnt_done) begin
-                            state <= IDLE;
+                            int_cnt <= '0;
+                            state   <= IDLE;
+                        end else begin
+                            int_cnt <= int_cnt + 1'b1;
                         end
                     end
                 endcase
