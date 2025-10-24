@@ -1,11 +1,11 @@
-module axilite_master #(
+module axil_master #(
     parameter int DATA_WIDTH = 32,
     parameter int ADDR_WIDTH = 32
 ) (
     axil_if.slave s_axil
 );
 
-    task automatic master_write_wdata(int delay_min, int delay_max, logic [DATA_WIDTH-1:0] data);
+    task static master_write_wdata(int delay_min, int delay_max, logic [DATA_WIDTH-1:0] data);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -19,7 +19,7 @@ module axilite_master #(
         s_axil.wstrb  = '0;
     endtask
 
-    task automatic master_write_awaddr(int delay_min, int delay_max, logic [ADDR_WIDTH-1:0] addr);
+    task static master_write_awaddr(int delay_min, int delay_max, logic [ADDR_WIDTH-1:0] addr);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -31,8 +31,8 @@ module axilite_master #(
         s_axil.awvalid = '0;
     endtask
 
-    task automatic master_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data,
-                                    int master_delay_min, int master_delay_max);
+    task static master_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data,
+                                 int master_delay_min, int master_delay_max);
         wait (s_axil.rstn_i);
         fork
             master_write_awaddr(master_delay_min, master_delay_max, addr);
@@ -41,7 +41,7 @@ module axilite_master #(
         $display("[%0t] Write addr = 0x%0h, wdata = 0x%0h", $time, addr, data);
     endtask
 
-    task automatic master_write_araddr(int delay_min, int delay_max, logic [ADDR_WIDTH-1:0] addr);
+    task static master_write_araddr(int delay_min, int delay_max, logic [ADDR_WIDTH-1:0] addr);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -53,8 +53,7 @@ module axilite_master #(
         s_axil.arvalid = '0;
     endtask
 
-    task automatic master_read_rdata(int delay_min, int delay_max,
-                                     output logic [DATA_WIDTH-1:0] data);
+    task static master_read_rdata(int delay_min, int delay_max, output logic [DATA_WIDTH-1:0] data);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -66,8 +65,8 @@ module axilite_master #(
         data          = s_axil.rdata;
     endtask
 
-    task automatic master_read_reg(logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
-                                   int master_delay_min, int master_delay_max);
+    task static master_read_reg(logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
+                                int master_delay_min, int master_delay_max);
         wait (s_axil.rstn_i);
         fork
             master_write_araddr(master_delay_min, master_delay_max, addr);

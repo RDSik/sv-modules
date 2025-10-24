@@ -4,7 +4,7 @@ set xil_defaultlib "
     $path/tb/cfg.svh
     $path/tb/env.svh
     $path/tb/test_pkg.svh
-    $path/rtl/axilite_master.sv
+    $path/rtl/axil_master.sv
 "
 
 add_files -norecurse $xil_defaultlib

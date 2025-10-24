@@ -70,7 +70,7 @@ module axil_uart_tb ();
         $dumpvars(0, axil_uart_tb);
     end
 
-    axilite_master #(
+    axil_master #(
         .DATA_WIDTH(AXIL_DATA_WIDTH),
         .ADDR_WIDTH(AXIL_ADDR_WIDTH)
     ) i_vip (
