@@ -60,14 +60,12 @@ module fir_filter #(
         for (genvar tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin : g_tap
             assign coef[tap_indx] = COEF[tap_indx][COEF_WIDTH-1:0];
 
-            if (tap_indx == 0) begin : g_first_delay
-                always_ff @(posedge clk_i) begin
+            always_ff @(posedge clk_i) begin
+                if (tap_indx == 0) begin
                     if (tvalid_i) begin
                         delay[tap_indx] <= tdata_i[ch_indx];
                     end
-                end
-            end else begin : g_others_delay
-                always_ff @(posedge clk_i) begin
+                end else begin
                     delay[tap_indx] <= delay[tap_indx-1];
                 end
             end
@@ -76,12 +74,10 @@ module fir_filter #(
                 mult[tap_indx] <= delay[tap_indx] * coef[tap_indx];
             end
 
-            if (tap_indx < TAP_NUM / 2) begin : g_acc_first_stage
-                always_ff @(posedge clk_i) begin
+            always_ff @(posedge clk_i) begin
+                if (tap_indx < TAP_NUM / 2) begin
                     acc[tap_indx] <= mult[2*tap_indx] + mult[2*tap_indx+1];
-                end
-            end else begin : g_acc_second_stage
-                always_ff @(posedge clk_i) begin
+                end else begin
                     acc[tap_indx] <= acc[2*(tap_indx-(TAP_NUM/2))] + acc[2*(tap_indx-(TAP_NUM/2))+1];
                 end
             end
