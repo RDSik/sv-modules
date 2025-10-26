@@ -19,6 +19,8 @@ vlog ../../common/rtl/ram_sdp.sv
 vlog ../../common/rtl/shift_reg.sv
 vlog ../../common/rtl/axil_reg_file.sv
 
+vlog ../../verification/rtl/axil_master.sv
+
 vlog axil_uart_tb.sv
 
 vsim -voptargs="+acc" axil_uart_tb

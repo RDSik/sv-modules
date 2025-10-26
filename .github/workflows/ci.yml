@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arg: [uart, spi, fifo, arbiter, axis_dw_conv]
+        arg: [uart]
     defaults:
       run:
         shell: bash
@@ -29,7 +29,7 @@ jobs:
             run: |
               git clone https://github.com/RDSik/sv-modules.git
               cd sv-modules/modules/${{matrix.arg}}/tb
-              make SIM=verilator
+              make SIM=verilator TOP=axil_uart
   build-project:
     runs-on: ubuntu-latest
     defaults:

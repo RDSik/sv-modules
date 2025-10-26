@@ -2,13 +2,13 @@ clc
 clear
 close
 
-COE_WIDTH     = 16;
+COE_WIDTH     = 18;
 COE_FILE_NAME = 'fir.coe';
 
-Fs          = 250e6;
-Fpass       = 55e6;
-Fstop       = 62.5e6;
-Astop       = 40;
+Fs          = 100e6;
+Fpass       = 20e6;
+Fstop       = 30e6;
+Astop       = 60;
 PASS_RIPPLE = 0.5;
 DESIGN      = 'equiripple';
 
@@ -21,4 +21,4 @@ fvtool(filter_coe, 'Fs', Fs);
 hq = dfilt.dffir(filter_coe); 
 set(hq,'arithmetic','fixed');
 set(hq, 'coeffwordlength', COE_WIDTH);
-coewrite(hq, 16, COE_FILE_NAME);
+coewrite(hq, 10, COE_FILE_NAME);
