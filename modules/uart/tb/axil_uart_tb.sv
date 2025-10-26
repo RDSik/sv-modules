@@ -24,7 +24,6 @@ module axil_uart_tb ();
     logic [AXIL_DATA_WIDTH-1:0] wdata;
     logic [AXIL_DATA_WIDTH-1:0] rdata;
 
-
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)

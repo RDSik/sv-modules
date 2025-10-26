@@ -6,13 +6,14 @@ module ddc_tb ();
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
 
-    localparam int SIN_LUT_DEPTH = 8192;
+    localparam int SIN_LUT_DEPTH = 4096 * 4;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 28;
 
+    localparam int FS = 100_000_000;
     localparam int DDS_NUM = 2;
-    localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{50e6, 550e6};
+    localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{50e6, 500e6};
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
     localparam int SIM_TIME = 100_000;
@@ -78,21 +79,28 @@ module ddc_tb ();
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds_compiler i_dds_compiler (
-            .aclk               (clk_i),
-            .aclken             (en_i),
-            .aresetn            (rstn_i),
-            .s_axis_phase_tvalid(en_i),
-            .s_axis_phase_tdata ({0, freq_to_phase(FREQ[dds_indx])}),
-            .m_axis_data_tvalid (dds_tvalid[dds_indx]),
-            .m_axis_data_tdata  (dds_tdata[dds_indx])
+        dds #(
+            .IQ_NUM       (IQ_NUM),
+            .SIN_LUT_DEPTH(SIN_LUT_DEPTH),
+            .DATA_WIDTH   (DATA_WIDTH)
+        ) i_dds (
+            .clk_i         (clk_i),
+            .rstn_i        (rstn_i),
+            .en_i          (en_i),
+            .phase_inc_i   (freq_to_phase(FREQ[dds_indx])),
+            .phase_offset_i('0),
+            .tvalid_o      (dds_tvalid[dds_indx]),
+            .tdata_o       (dds_tdata[dds_indx])
         );
     end
 
     function automatic logic [31:0] freq_to_phase(logic [31:0] freq);
         logic [31:0] Fs = 100e6;
+        logic [31:0] phase_width = $clog2(SIN_LUT_DEPTH);
+        logic [61:0] tmp;
         begin
-            freq_to_phase = (freq * 2 ** 32) / Fs;
+            tmp = (freq * 2 ** phase_width);
+            freq_to_phase = tmp / Fs;
         end
     endfunction
 
