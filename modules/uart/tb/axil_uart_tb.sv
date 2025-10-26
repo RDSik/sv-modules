@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 `include "../rtl/uart_pkg.svh"
-`include "../../verification/tb/cfg.svh"
+`include "../../verification/tb/axil_env.svh"
 
 module axil_uart_tb ();
 
@@ -19,12 +19,11 @@ module axil_uart_tb ();
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    logic                               clk_i;
-    logic                               rstn_i;
-    logic         [AXIL_DATA_WIDTH-1:0] wdata;
-    logic         [AXIL_DATA_WIDTH-1:0] rdata;
+    logic                       clk_i;
+    logic                       rstn_i;
+    logic [AXIL_DATA_WIDTH-1:0] wdata;
+    logic [AXIL_DATA_WIDTH-1:0] rdata;
 
-    test_cfg_base                       cfg;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -49,18 +48,14 @@ module axil_uart_tb ();
     end
 
     initial begin
-        cfg = new();
-        void'(cfg.randomize());
+        axil_env env;
+        env   = new(s_axil);
         wdata = $urandom_range(0, (2 * AXIS_DATA_WIDTH) - 1);
-        i_vip.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0, cfg.master_min_delay,
-                               cfg.master_max_delay);
-        i_vip.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10,
-                               cfg.master_min_delay, cfg.master_max_delay);
-        i_vip.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata,
-                               cfg.master_min_delay, cfg.master_max_delay);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
         for (int i = 0; i < REG_NUM; i++) begin
-            i_vip.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata, cfg.master_min_delay,
-                                  cfg.master_max_delay);
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
         #WAT_CYCLES $stop;
     end
@@ -69,13 +64,6 @@ module axil_uart_tb ();
         $dumpfile("axil_uart_tb.vcd");
         $dumpvars(0, axil_uart_tb);
     end
-
-    axil_master #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH),
-        .ADDR_WIDTH(AXIL_ADDR_WIDTH)
-    ) i_vip (
-        .s_axil(s_axil)
-    );
 
     axil_uart #(
         .FIFO_DEPTH     (FIFO_DEPTH),
