@@ -1,4 +1,4 @@
-module axil_to_wb_bridge #(
+module axil2wb_bridge #(
     parameter int DATA_WIDTH = 32,
     parameter int ADDR_WIDTH = 32
 ) (
@@ -9,18 +9,11 @@ module axil_to_wb_bridge #(
     localparam logic [1:0] AXIL_OKAY = 2'b00;
     localparam logic [1:0] AXIL_SLVERR = 2'b10;
 
-    typedef enum logic {
-        IDLE = 1'b0,
-        RESP = 1'b1
-    } stat_e;
-
-    state_e state;
-
-    logic   clk_i;
-    logic   rstn_i;
-    logic   ar_handshake;
-    logic   wr_handshake;
-    logic   write_valid;
+    logic clk_i;
+    logic rstn_i;
+    logic ar_handshake;
+    logic wr_handshake;
+    logic write_valid;
 
     assign clk_i        = s_axil.clk_i;
     assign rstn_i       = s_axil.rstn_i;
@@ -57,8 +50,8 @@ module axil_to_wb_bridge #(
             s_axil.bvalid <= 1'b0;
             s_axil.bresp  <= AXIL_OKAY;
         end else begin
-            if (wr_handshake) begin
-                s_axil.bvalid <= m_wb.ack;
+            if (m_wb.ack) begin
+                s_axil.bvalid <= 1'b1;
                 if (m_wb.err) begin
                     s_axil.bresp <= AXIL_SLVERR;
                 end else begin
@@ -74,7 +67,7 @@ module axil_to_wb_bridge #(
         if (~rstn_i) begin
             s_axil.arready <= 1'b0;
         end else begin
-            if (s_axil.arvalid && (state == IDLE)) begin
+            if (s_axil.arvalid & ~s_axil.arready) begin
                 s_axil.arready <= 1'b1;
             end else begin
                 s_axil.arready <= 1'b0;
@@ -85,10 +78,10 @@ module axil_to_wb_bridge #(
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             s_axil.rvalid <= 1'b0;
-            s_axil.rresp  <= '0;
+            s_axil.rresp  <= AXIL_OKAY;
         end else begin
-            if (ar_handshake) begin
-                s_axil.rvalid <= m_wb.ack;
+            if (m_wb.ack) begin
+                s_axil.rvalid <= 1'b1;
                 s_axil.rdata  <= m_wb.rdat;
                 if (m_wb.err) begin
                     s_axil.rresp <= AXIL_SLVERR;
@@ -112,36 +105,23 @@ module axil_to_wb_bridge #(
             m_wb.we   <= '0;
             m_wb.stb  <= '0;
             m_wb.cyc  <= '0;
+        end else if (m_wb.ack) begin
+            m_wb.stb <= 1'b0;
+            m_wb.cyc <= 1'b0;
         end else begin
-            case (state)
-                IDLE: begin
-                    if (write_valid) begin
-                        state     <= RESP;
-                        m_wb.adr  <= s_axil.awaddr;
-                        m_wb.wdat <= s_axil.wdata;
-                        m_wb.sel  <= s_axil.wstrb;
-                        m_wb.we   <= 1'b1;
-                        m_wb.stb  <= 1'b1;
-                        m_wb.cyc  <= 1'b1;
-                    end else if (s_axil.arvalid) begin
-                        state    <= RESP;
-                        m_wb.adr <= s_axil.araddr;
-                        m_wb.we  <= 1'b0;
-                        m_wb.stb <= 1'b1;
-                        m_wb.cyc <= 1'b1;
-                    end
-                end
-                RESP: begin
-                    if (m_wb.ack) begin
-                        state    <= IDLE;
-                        m_wb.stb <= 1'b0;
-                        m_wb.cyc <= 1'b0;
-                    end
-                end
-                default: begin
-                    state <= IDLE;
-                end
-            endcase
+            if (write_valid) begin
+                m_wb.adr  <= s_axil.awaddr;
+                m_wb.wdat <= s_axil.wdata;
+                m_wb.sel  <= s_axil.wstrb;
+                m_wb.we   <= 1'b1;
+                m_wb.stb  <= 1'b1;
+                m_wb.cyc  <= 1'b1;
+            end else if (s_axil.arvalid) begin
+                m_wb.adr <= s_axil.araddr;
+                m_wb.we  <= 1'b0;
+                m_wb.stb <= 1'b1;
+                m_wb.cyc <= 1'b1;
+            end
         end
     end
 
