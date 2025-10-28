@@ -52,7 +52,7 @@ module resampler #(
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
-                int_tvalid <= 1'b0;
+                int_tvalid <= '0;
                 int_cnt    <= '0;
                 state      <= IDLE;
             end else if (en_i) begin
@@ -65,13 +65,14 @@ module resampler #(
                         end
                     end
                     INTERP: begin
-                        int_tdata  <= '0;
-                        int_tvalid <= '1;
+                        int_tdata <= '0;
                         if (int_cnt_done) begin
-                            int_cnt <= '0;
-                            state   <= IDLE;
+                            int_cnt    <= '0;
+                            int_tvalid <= '0;
+                            state      <= IDLE;
                         end else begin
-                            int_cnt <= int_cnt + 1'b1;
+                            int_cnt    <= int_cnt + 1'b1;
+                            int_tvalid <= '1;
                         end
                     end
                 endcase

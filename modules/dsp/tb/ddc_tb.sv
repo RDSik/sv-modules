@@ -6,7 +6,7 @@ module ddc_tb ();
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
 
-    localparam int SIN_LUT_DEPTH = 4096 * 4;
+    localparam int SIN_LUT_DEPTH = 16384;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 28;
