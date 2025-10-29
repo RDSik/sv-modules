@@ -23,10 +23,13 @@ for i = 1:SIN_NUM/2
     phase_acc = phase_acc+phase_inc;
 end
 
-file_name = 'dds_out.bin';
-fid = fopen(file_name, 'rb');
-dds_rtl = fread(fid, 'uint32');
-
 dds_matlab = reshape([dds_i dds_q].', [], 1);
 
-signalAnalyzer(dds_matlab, sin_lut);
+file_name = 'dds_out.bin';
+fid = fopen(file_name, 'rb');
+dds_rtl = fread(fid, 'uint16');
+dds_rtl_cut = dds_rtl(1:length(dds_matlab));
+
+diff = dds_rtl_cut - dds_matlab;
+
+signalAnalyzer(dds_matlab, dds_rtl_cut, sin_lut);

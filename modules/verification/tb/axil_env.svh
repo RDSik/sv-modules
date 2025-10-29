@@ -51,6 +51,20 @@ class axil_env #(
         s_axil.awvalid = 0;
     endtask
 
+    task automatic master_read_bresp(int delay_min, int delay_max);
+        int delay;
+        void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
+        repeat (delay) @(posedge s_axil.clk_i);
+        s_axil.bready = 1;
+        do begin
+            @(posedge s_axil.clk_i);
+        end while (~s_axil.bvalid);
+        s_axil.bready = 0;
+        if (s_axil.bresp == 2'b10) begin
+            $error("[%0t] bresp = slverr!", $time);
+        end
+    endtask
+
     task automatic master_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data,
                                     int master_delay_min = cfg.master_min_delay,
                                     int master_delay_max = cfg.master_max_delay);
@@ -58,6 +72,7 @@ class axil_env #(
         fork
             master_write_awaddr(master_delay_min, master_delay_max, addr);
             master_write_wdata(master_delay_min, master_delay_max, data);
+            master_read_bresp(master_delay_min, master_delay_max);
         join
         $display("[%0t] Write addr = 0x%0h, wdata = 0x%0h", $time, addr, data);
     endtask
@@ -95,7 +110,7 @@ class axil_env #(
             master_write_araddr(master_delay_min, master_delay_max, addr);
             master_read_rdata(master_delay_min, master_delay_max, data);
         join
-        $display("[%0t] Read addr = 0x%0h, wdata = 0x%0h", $time, addr, data);
+        $display("[%0t] Read addr = 0x%0h, rdata = 0x%0h", $time, addr, data);
     endtask
 
 endclass

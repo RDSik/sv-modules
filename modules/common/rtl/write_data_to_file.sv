@@ -21,8 +21,7 @@ module write_data_to_file #(
 
     always_ff @(posedge clk_i) begin
         if (tvalid_i) begin
-            $fwrite(fid, "%u", int'(signed'(tdata_i[0])));
-            $fwrite(fid, "%u", int'(signed'(tdata_i[1])));
+            $fwrite(fid, "%u", int'(signed'(tdata_i)));
         end
     end
 
