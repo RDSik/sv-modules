@@ -50,9 +50,9 @@ module axil_uart_tb ();
         axil_env env;
         env   = new(s_axil);
         wdata = $urandom_range(0, (2 * AXIS_DATA_WIDTH) - 1);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
         for (int i = 0; i < REG_NUM; i++) begin
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end

@@ -1,6 +1,11 @@
 set path [file dirname [info script]]
 
 if {$xilinx == 1} {
+    set xci_defaultlib "
+        $path/ip/axil_ila.xci
+    "
+    add_files -norecurse $xci_defaultlib
+    
     set xil_defaultlib "
         $path/rtl/ram_sp.sv
         $path/rtl/ram_sdp.sv

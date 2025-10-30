@@ -1,15 +1,18 @@
 `timescale 1ns / 1ps
 
+`include "../rtl/i2c_pkg.svh"
 `include "../../verification/tb/axil_env.svh"
 
 module axil_i2c_tb ();
 
-    localparam int ADDR_WIDTH = 32;
-    localparam int DATA_WIDTH = 32;
+    import i2c_pkg::*;
+
+    localparam int AXIL_ADDR_WIDTH = 32;
+    localparam int AXIL_DATA_WIDTH = 32;
 
     localparam int WAT_CYCLES = 200;
-    localparam int ADDR_OFFSET = DATA_WIDTH / 8;
-    localparam logic [ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
+    localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
@@ -20,8 +23,8 @@ module axil_i2c_tb ();
     logic [DATA_WIDTH-1:0] rdata;
 
     axil_if #(
-        .ADDR_WIDTH(ADDR_WIDTH),
-        .DATA_WIDTH(DATA_WIDTH)
+        .ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) s_axil (
         .clk_i (clk_i),
         .rstn_i(rstn_i)
@@ -44,11 +47,12 @@ module axil_i2c_tb ();
     initial begin
         axil_env env;
         env   = new(s_axil);
-        wdata = $urandom_range(0, (2 * DATA_WIDTH) - 1);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * 2, 8'b1000_0000);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * 3, wdata);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * 4, 8'b1001_0000);
-        for (int i = 0; i < 5; i++) begin
+        wdata = 8'b10101011;
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, 5'b10011);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_PRESCALE_REG_POS, 10);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
+        for (int i = 0; i < REG_NUM; i++) begin
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
         #WAT_CYCLES $stop;
@@ -60,8 +64,9 @@ module axil_i2c_tb ();
     end
 
     axil_i2c #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .ADDR_WIDTH(ADDR_WIDTH)
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .ILA_EN         (0)
     ) i_axil_i2c (
         .scl_pad_i   (),
         .scl_pad_o   (),
