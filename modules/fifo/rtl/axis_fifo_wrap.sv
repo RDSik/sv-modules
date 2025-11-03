@@ -22,7 +22,7 @@ module axis_fifo_wrap #(
     assign m_axis.tvalid = ~empty;
 
     assign push = s_axis.tvalid & s_axis.tready;
-    assign pop  = m_axis.tvalid & m_axis.tready;
+    assign pop = m_axis.tvalid & m_axis.tready;
 
     if (FIFO_MODE == "sync") begin : g_fifo
         sync_fifo #(
@@ -43,10 +43,9 @@ module axis_fifo_wrap #(
         );
     end else if (FIFO_MODE == "async") begin : g_fifo
         async_fifo #(
-            .FIFO_WIDTH      (FIFO_WIDTH),
-            .FIFO_DEPTH      (FIFO_DEPTH),
-            .CDC_REG_NUM     (CDC_REG_NUM),
-            .RAM_READ_LATENCY(RAM_READ_LATENCY)
+            .FIFO_WIDTH (FIFO_WIDTH),
+            .FIFO_DEPTH (FIFO_DEPTH),
+            .CDC_REG_NUM(CDC_REG_NUM)
         ) i_fifo (
             .wr_clk_i (s_axis.clk_i),
             .wr_rstn_i(s_axis.rstn_i),

@@ -134,14 +134,15 @@ module axil_uart
         .m_axis       (uart_rx)
     );
 
-    localparam int RAM_READ_LATENCY = 0;
+    localparam int CDC_REG_NUM = 2;
     localparam FIFO_MODE = "sync";
 
     axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
         .FIFO_WIDTH      (AXIS_DATA_WIDTH),
         .FIFO_MODE       (FIFO_MODE),
-        .RAM_READ_LATENCY(RAM_READ_LATENCY)
+        .CDC_REG_NUM     (CDC_REG_NUM),
+        .RAM_READ_LATENCY(0)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
         .m_axis   (uart_tx),
@@ -153,7 +154,8 @@ module axil_uart
         .FIFO_DEPTH      (FIFO_DEPTH),
         .FIFO_WIDTH      (AXIS_DATA_WIDTH),
         .FIFO_MODE       (FIFO_MODE),
-        .RAM_READ_LATENCY(RAM_READ_LATENCY)
+        .CDC_REG_NUM     (CDC_REG_NUM),
+        .RAM_READ_LATENCY(0)
     ) i_axis_fifo_rx (
         .s_axis   (uart_rx),
         .m_axis   (fifo_rx),
