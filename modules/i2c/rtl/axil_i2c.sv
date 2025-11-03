@@ -31,10 +31,11 @@ module axil_i2c
     assign clk_i  = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic i2c_busy;
-    logic i2c_al;
-    logic irxack;
-    logic cmd_ack;
+    logic [DATA_WIDTH-1:0] rx_data;
+    logic                  i2c_busy;
+    logic                  i2c_al;
+    logic                  i2c_ack;
+    logic                  cmd_ack;
 
     always_comb begin
         rd_valid               = '1;
@@ -42,8 +43,9 @@ module axil_i2c
 
         rd_regs.status.busy    = i2c_busy;
         rd_regs.status.al      = i2c_al;
-        rd_regs.status.rx_ack  = irxack;
+        rd_regs.status.rx_ack  = i2c_ack;
         rd_regs.status.cmd_ack = cmd_ack;
+        rd_regs.rx.data        = rx_data;
     end
 
     axil_reg_file #(
@@ -74,8 +76,8 @@ module axil_i2c
         .ack_in  (wr_regs.command.ack),
         .din     (wr_regs.tx.data),
         .cmd_ack (cmd_ack),
-        .ack_out (irxack),
-        .dout    (wr_regs.rx.data),
+        .ack_out (i2c_ack),
+        .dout    (rx_data),
         .i2c_busy(i2c_busy),
         .i2c_al  (i2c_al),
         .scl_i   (scl_pad_i),

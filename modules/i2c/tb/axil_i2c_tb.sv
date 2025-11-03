@@ -17,10 +17,10 @@ module axil_i2c_tb ();
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    logic                  clk_i;
-    logic                  rstn_i;
-    logic [DATA_WIDTH-1:0] wdata;
-    logic [DATA_WIDTH-1:0] rdata;
+    logic                       clk_i;
+    logic                       rstn_i;
+    logic [     DATA_WIDTH-1:0] wdata;
+    logic [AXIL_DATA_WIDTH-1:0] rdata;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -46,15 +46,29 @@ module axil_i2c_tb ();
 
     initial begin
         axil_env env;
-        env   = new(s_axil);
-        wdata = 8'b10101011;
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, 5'b10011);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_PRESCALE_REG_POS, 10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
+        env = new(s_axil);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
-        for (int i = 0; i < REG_NUM; i++) begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
-        end
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, 5'b10010);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, 8'ha2);
+
+        do begin
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
+        end while (~rdata[0]);
+
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, 8'hac);
+
+        do begin
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
+        end while (~rdata[0]);
+
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, 5'b01010);
+
+        do begin
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
+        end while (~rdata[0]);
+
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, '0);
+
         #WAT_CYCLES $stop;
     end
 

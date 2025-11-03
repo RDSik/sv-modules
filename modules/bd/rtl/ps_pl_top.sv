@@ -11,8 +11,8 @@ module ps_pl_top #(
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
-    inout scl,
-    inout sda,
+    inout scl_io,
+    inout sda_io,
 
     inout [14:0] DDR_0_addr,
     inout [ 2:0] DDR_0_ba,
@@ -50,14 +50,14 @@ module ps_pl_top #(
 
     IOBUF i_scl_IOBUF (
         .O (scl_pad_i),
-        .IO(scl),
+        .IO(scl_io),
         .I (scl_pad_o),
         .T (scl_padoen_o)
     );
 
     IOBUF i_sda_IOBUF (
         .O (sda_pad_i),
-        .IO(sda),
+        .IO(sda_io),
         .I (sda_pad_o),
         .T (sda_padoen_o)
     );
