@@ -78,6 +78,8 @@ module axil_spi
         rd_regs.status.tx_fifo_empty = ~spi_tx.tvalid;
         rd_regs.status.rx_fifo_full  = ~spi_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
+
+        rd_regs.rx.data              = fifo_rx.data;
     end
 
     assign fifo_tx.tdata  = wr_regs.tx.data;

@@ -5,8 +5,6 @@ vlog  ../../interface/rtl/axis_if.sv
 vlog  ../../interface/rtl/spi_if.sv
 
 vlog  ../rtl/axis_spi_master.sv
-vlog  ../rtl/spi_shift.sv
-vlog  ../rtl/spi_clk_gen.sv
 
 vlog axis_spi_tb.sv
 

@@ -18,8 +18,8 @@ module axis_spi_tb ();
     localparam int CLK_PER_NS = 10 ** 9 / MAIN_CLK;
     localparam int RESET_DELAY = 10;
 
-    localparam logic CPHA = 1;
-    localparam logic CPOL = 1;
+    localparam logic CPHA = 0;
+    localparam logic CPOL = 0;
     localparam int DIVIDER = MAIN_CLK / SPI_CLK;
 
     logic clk_i;

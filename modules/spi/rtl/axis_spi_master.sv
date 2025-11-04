@@ -13,21 +13,60 @@ module axis_spi_master #(
     parameter int DATA_WIDTH    = 8,
     parameter int DIVIDER_WIDTH = 32,
     parameter int WAIT_WIDTH    = 32,
-    parameter int SLAVE_NUM     = 1
+    parameter int SLAVE_NUM     = 1,
+    parameter int ADDR_WIDTH    = $clog2(SLAVE_NUM)
 ) (
     /* verilator lint_off ASCRANGE */
-    input logic [$clog2(SLAVE_NUM)-1:0] addr_i,
+    input logic [   ADDR_WIDTH-1:0] addr_i,
     /* verilator lint_on ASCRANGE */
-    input logic [       WAIT_WIDTH-1:0] wait_time_i,
-    input logic [    DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                         cpha_i,
-    input logic                         cpol_i,
+    input logic [   WAIT_WIDTH-1:0] wait_time_i,
+    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
+    input logic                     cpha_i,
+    input logic                     cpol_i,
 
     spi_if.master m_spi,
 
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );
+
+    localparam int EDGE_NUM = DATA_WIDTH * 2;  // need 16 edges to transmit 8 bits
+    localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
+
+    logic [    WAIT_WIDTH-1:0] wait_cnt;
+    logic                      wait_done;
+
+    logic [ DIVIDER_WIDTH-1:0] clk_cnt;
+    logic                      clk_done;
+    logic                      half_clk_done;
+
+    logic [$clog2(EDGE_NUM):0] edge_cnt;
+    logic                      edge_done;
+    logic                      edge_done_d;
+
+    logic                      spi_clk_reg;
+    logic                      spi_cs_reg;
+    logic                      tlast_flag;
+
+    logic [    DATA_WIDTH-1:0] tx_data;
+    logic [DATA_CNT_WIDTH-1:0] tx_bit_cnt;
+
+    logic [    DATA_WIDTH-1:0] rx_data;
+    logic [DATA_CNT_WIDTH-1:0] rx_bit_cnt;
+    logic                      rx_bit_done;
+
+    logic                      pos_edge;
+    logic                      neg_edge;
+
+    logic                      m_handshake;
+    logic                      s_handshake;
+    logic                      s_handshake_d;
+
+    logic                      clk_i;
+    logic                      rstn_i;
+
+    assign clk_i  = s_axis.clk_i;
+    assign rstn_i = s_axis.rstn_i;
 
     typedef enum logic [1:0] {
         IDLE = 2'b00,
@@ -36,57 +75,6 @@ module axis_spi_master #(
     } state_e;
 
     state_e state;
-
-    logic   clk_i;
-    logic   rstn_i;
-
-    assign clk_i  = s_axis.clk_i;
-    assign rstn_i = s_axis.rstn_i;
-
-    logic m_handshake;
-    logic s_handshake;
-
-    logic pos_edge;
-    logic neg_edge;
-    logic edge_done;
-    logic edge_done_d;
-
-    spi_clk_gen #(
-        .DIVIDER_WIDTH(DIVIDER_WIDTH)
-    ) i_spi_clk_gen (
-        .clk_i        (clk_i),
-        .rstn_i       (rstn_i),
-        .enable_i     (s_handshake || (state == WAIT)),
-        .cpol_i       (cpol_i),
-        .clk_divider_i(clk_divider_i),
-        .edge_done_o  (edge_done),
-        .neg_edge_o   (neg_edge),
-        .pos_edge_o   (pos_edge),
-        .clk_o        (m_spi.clk)
-    );
-
-    always_ff @(posedge clk_i) begin
-        edge_done_d <= edge_done;
-    end
-
-    logic [DATA_WIDTH-1:0] rx_data;
-
-    spi_shift #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) i_spi_shift (
-        .clk_i     (clk_i),
-        .rstn_i    (rstn_i),
-        .enable_i  (s_handshake),
-        .cpha_i    (cpha_i),
-        .pos_edge_i(pos_edge),
-        .neg_edge_i(neg_edge),
-        .data_i    (s_axis.tdata),
-        .data_o    (rx_data),
-        .miso_i    (m_spi.miso),
-        .mosi_o    (m_spi.mosi)
-    );
-
-    logic spi_cs_reg;
 
     if (SLAVE_NUM == 1) begin : g_one_slave
         assign m_spi.cs = spi_cs_reg;
@@ -101,11 +89,6 @@ module axis_spi_master #(
             end
         end
     end
-
-    logic [WAIT_WIDTH-1:0] wait_cnt;
-    logic                  wait_done;
-
-    logic                  tlast_flag;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -148,8 +131,114 @@ module axis_spi_master #(
 
     assign wait_done = (wait_cnt == wait_time_i - 1);
 
+    // SPI clock counters------------------------------------------
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            clk_cnt <= '0;
+        end else if (clk_done || (state != DATA)) begin
+            clk_cnt <= '0;
+        end else if (state == DATA) begin
+            clk_cnt <= clk_cnt + 1'b1;
+        end
+    end
+
+    /* verilator lint_off WIDTHEXPAND */
+    assign clk_done      = (clk_cnt == clk_divider_i - 1);
+    assign half_clk_done = (clk_cnt == (clk_divider_i / 2) - 1);
+    /* verilator lint_on WIDTHEXPAND */
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            neg_edge    <= '0;
+            pos_edge    <= '0;
+            edge_cnt    <= '0;
+            spi_clk_reg <= cpol_i;
+        end else begin
+            neg_edge <= clk_done;
+            pos_edge <= half_clk_done;
+            if (state != DATA) begin
+                edge_cnt <= '0;
+            end else if (~edge_done) begin
+                if (clk_done | half_clk_done) begin
+                    edge_cnt    <= edge_cnt + 1'b1;
+                    spi_clk_reg <= ~spi_clk_reg;
+                end
+            end
+        end
+    end
+
+    /* verilator lint_off WIDTHEXPAND */
+    assign edge_done = (edge_cnt == EDGE_NUM);
+    /* verilator lint_on WIDTHEXPAND */
+
+    always_ff @(posedge clk_i) begin
+        edge_done_d <= edge_done;
+    end
+    // ------------------------------------------------------------
+
+    // SPI clock---------------------------------------------------
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            m_spi.clk <= cpol_i;
+        end else begin
+            m_spi.clk <= spi_clk_reg;
+        end
+    end
+    // ------------------------------------------------------------
+
+    // MISO data---------------------------------------------------
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            rx_bit_cnt <= '0;
+            rx_data    <= '0;
+        end else if (rx_bit_done) begin
+            rx_bit_cnt <= '0;
+        end else if ((pos_edge & ~cpha_i) || (neg_edge & cpha_i)) begin
+            rx_bit_cnt <= rx_bit_cnt + 1'b1;
+            rx_data    <= {rx_data[DATA_WIDTH-2:0], m_spi.miso};
+        end
+    end
+
+    /* verilator lint_off WIDTHEXPAND */
+    assign rx_bit_done = (rx_bit_cnt == DATA_WIDTH - 1);
+    /* verilator lint_on WIDTHEXPAND */
+    // ------------------------------------------------------------
+
+    // MOSI data---------------------------------------------------
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            /* verilator lint_off WIDTHTRUNC */
+            tx_bit_cnt <= DATA_WIDTH - 1;
+            m_spi.mosi <= 1'b0;
+        end else if (s_handshake) begin
+            tx_bit_cnt <= DATA_WIDTH - 1;
+        end else if (s_handshake_d & ~cpha_i) begin // Catch the case where we start transaction and CPHA = 0
+            tx_bit_cnt <= DATA_WIDTH - 2;
+            /* verilator lint_on WIDTHTRUNC */
+            m_spi.mosi <= tx_data[DATA_WIDTH-1];
+        end else if ((pos_edge & cpha_i) || (neg_edge & ~cpha_i)) begin
+            tx_bit_cnt <= tx_bit_cnt - 1'b1;
+            m_spi.mosi <= tx_data[tx_bit_cnt];
+        end
+    end
+    // ------------------------------------------------------------
+
+    // Slave AXI-Stream data---------------------------------------
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            tx_data <= '0;
+        end else if (s_handshake) begin
+            tx_data <= s_axis.tdata;
+        end
+    end
+
     assign s_axis.tready = (state == IDLE) && rstn_i;
-    assign s_handshake = s_axis.tvalid & s_axis.tready;
+    assign s_handshake   = s_axis.tvalid & s_axis.tready;
+
+    always_ff @(posedge clk_i) begin
+        s_handshake_d <= s_handshake;
+    end
+    // ------------------------------------------------------------
 
     // Master AXI-Stream data--------------------------------------
     always_ff @(posedge clk_i) begin

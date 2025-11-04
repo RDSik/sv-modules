@@ -18,8 +18,6 @@ vlog ../../common/rtl/axil_reg_file.sv
 
 vlog  ../rtl/axil_spi.sv
 vlog  ../rtl/axis_spi_master.sv
-vlog  ../rtl/spi_shift.sv
-vlog  ../rtl/spi_clk_gen.sv
 vlog  ../rtl/spi_pkg.svh
 
 vlog axil_spi_tb.sv
