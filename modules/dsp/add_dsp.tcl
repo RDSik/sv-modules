@@ -1,11 +1,6 @@
 set path [file dirname [info script]]
 
 if {$xilinx == 1} {
-    set xci_defaultlib "
-        $path/ip/dds_compiler.xci
-    "
-    add_files -norecurse $xci_defaultlib
-
     set xil_defaultlib "
         $path/rtl/fir_filter.sv
         $path/rtl/cmult.sv
@@ -28,4 +23,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/round.sv
     add_file $path/rtl/sfir_even_symmetric_systolic_top.sv
     add_file $path/rtl/resampler.sv
+    add_file $path/rtl/ddc.sv
 }

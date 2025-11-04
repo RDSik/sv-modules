@@ -13,7 +13,7 @@ if {$xilinx == 1} {
     add_files -norecurse $xil_defaultlib
 
     set xil_defaultlib "
-        $path/tb/ddc_tb.sv
+        $path/tb/dds_tb.sv
     "
     add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {
