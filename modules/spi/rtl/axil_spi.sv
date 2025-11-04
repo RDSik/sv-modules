@@ -82,6 +82,7 @@ module axil_spi
         rd_regs.rx.data              = fifo_rx.tdata;
     end
 
+    assign spi_tx.tlast   = wr_regs.control.stop;
     assign fifo_tx.tdata  = wr_regs.tx.data;
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_req[RX_DATA_REG_POS];

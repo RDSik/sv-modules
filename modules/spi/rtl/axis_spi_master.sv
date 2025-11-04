@@ -107,9 +107,9 @@ module axis_spi_master #(
                 end
                 DATA: begin
                     if (edge_done) begin
+                        spi_cs_reg <= 1'b1;
                         if (tlast_flag) begin
                             state      <= WAIT;
-                            spi_cs_reg <= 1'b1;
                             tlast_flag <= 1'b0;
                         end else begin
                             state <= IDLE;
@@ -156,9 +156,9 @@ module axis_spi_master #(
         end else begin
             neg_edge <= clk_done;
             pos_edge <= half_clk_done;
-            if (state != DATA) begin
+            if (edge_done) begin
                 edge_cnt <= '0;
-            end else if (~edge_done) begin
+            end else begin
                 if (clk_done | half_clk_done) begin
                     edge_cnt    <= edge_cnt + 1'b1;
                     spi_clk_reg <= ~spi_clk_reg;

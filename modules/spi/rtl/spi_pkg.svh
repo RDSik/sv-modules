@@ -32,9 +32,10 @@ package spi_pkg;
     } spi_slave_select_reg_t;
 
     typedef struct packed {
-        logic [28:0] rsrvd;
+        logic [27:0] rsrvd;
         logic        cpol;
         logic        cpha;
+        logic        stop;
         logic        reset;
     } spi_control_reg_t;
 
