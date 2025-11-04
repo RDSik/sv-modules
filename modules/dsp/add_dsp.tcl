@@ -23,4 +23,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/round.sv
     add_file $path/rtl/sfir_even_symmetric_systolic_top.sv
     add_file $path/rtl/resampler.sv
+    add_file $path/rtl/ddc.sv
 }
