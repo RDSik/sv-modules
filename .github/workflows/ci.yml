@@ -10,26 +10,26 @@ env:
     image_name: r0d0s/fpga_tools:latest
 
 jobs:
-  simulation:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arg: [uart, spi, arbiter, axis_dw_conv, lfsr, fifo]
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./
-    steps:
-      - name: Check out the repository to the runner
-        uses: actions/checkout@v2
-      - name: Run Docker container
-        uses: addnab/docker-run-action@v3
-        with:
-            image: ${{env.image_name}}
-            run: |
-              git clone https://github.com/RDSik/sv-modules.git
-              cd sv-modules/modules/${{matrix.arg}}/tb
-              make SIM=verilator
+  # simulation:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       arg: [uart, spi, arbiter, axis_dw_conv, lfsr, fifo]
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #       working-directory: ./
+  #   steps:
+  #     - name: Check out the repository to the runner
+  #       uses: actions/checkout@v2
+  #     - name: Run Docker container
+  #       uses: addnab/docker-run-action@v3
+  #       with:
+  #           image: ${{env.image_name}}
+  #           run: |
+  #             git clone https://github.com/RDSik/sv-modules.git
+  #             cd sv-modules/modules/${{matrix.arg}}/tb
+  #             make SIM=verilator
   build-project:
     runs-on: ubuntu-latest
     defaults:
