@@ -45,10 +45,11 @@ module dds_tb ();
         $dumpvars(0, dds_tb);
     end
 
-    dds #(
+    dds_wrap #(
         .IQ_NUM     (IQ_NUM),
         .PHASE_WIDTH(PHASE_WIDTH),
-        .DATA_WIDTH (DATA_WIDTH)
+        .DATA_WIDTH (DATA_WIDTH),
+        .IP_EN      (0)
     ) dut (
         .clk_i         (clk_i),
         .rstn_i        (rstn_i),

@@ -2,6 +2,7 @@ vlib work
 vmap work
 
 vlog  ../rtl/dds.sv
+vlog  ../rtl/dds_wrap.sv
 vlog  ../../common/rtl/write_data_to_file.sv
 
 vlog dds_tb.sv
