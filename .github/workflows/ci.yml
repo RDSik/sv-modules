@@ -14,7 +14,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   strategy:
   #     matrix:
-  #       arg: [uart, spi, arbiter, axis_dw_conv, lfsr, fifo]
+  #       arg: [uart, spi, i2c, arbiter, axis_dw_conv, fifo]
   #   defaults:
   #     run:
   #       shell: bash
