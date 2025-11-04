@@ -117,7 +117,7 @@ module ps_pl_top #(
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .SLAVE_NUM      (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN)
-    ) i_axil_uart (
+    ) i_axil_spi (
         .clk_i (clk_i),
         .s_axil(axil[2]),
         .m_spi (m_spi)
