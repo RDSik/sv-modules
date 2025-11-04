@@ -1,11 +1,6 @@
 set path [file dirname [info script]]
 
 if {$xilinx == 1} {
-    set xci_defaultlib "
-        $path/ip/dds_compiler.xci
-    "
-    add_files -norecurse $xci_defaultlib
-
     set xil_defaultlib "
         $path/rtl/fir_filter.sv
         $path/rtl/cmult.sv
