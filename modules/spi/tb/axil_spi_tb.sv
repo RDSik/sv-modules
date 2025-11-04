@@ -57,7 +57,7 @@ module axil_spi_tb ();
         wdata = $urandom_range(0, (2 ** AXIS_DATA_WIDTH) - 1);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * WAIT_TIME_REG_POS, 10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b00);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
         #WAT_CYCLES;
         for (int i = 0; i < REG_NUM; i++) begin
