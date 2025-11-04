@@ -4,6 +4,7 @@ module ps_pl_top #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIS_DATA_WIDTH = 8,
+    parameter int   SPI_CS_WIDTH    = 1,
     parameter logic ILA_EN          = 1
 ) (
     input logic clk_i,
@@ -11,8 +12,13 @@ module ps_pl_top #(
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
-    inout scl_io,
-    inout sda_io,
+    input  logic                    spi_miso_i,
+    output logic                    spi_mosi_o,
+    output logic                    spi_cs_o,
+    output logic [SPI_CS_WIDTH-1:0] spi_clk_o,
+
+    inout i2c_scl_io,
+    inout i2c_sda_io,
 
     inout [14:0] DDR_0_addr,
     inout [ 2:0] DDR_0_ba,
@@ -50,17 +56,24 @@ module ps_pl_top #(
 
     IOBUF i_scl_IOBUF (
         .O (scl_pad_i),
-        .IO(scl_io),
+        .IO(i2c_scl_io),
         .I (scl_pad_o),
         .T (scl_padoen_o)
     );
 
     IOBUF i_sda_IOBUF (
         .O (sda_pad_i),
-        .IO(sda_io),
+        .IO(i2c_sda_io),
         .I (sda_pad_o),
         .T (sda_padoen_o)
     );
+
+    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
+
+    assign spi_cs_o   = m_spi.cs;
+    assign spi_clk_o  = m_spi.clk;
+    assign spi_mosi_o = m_spi.mosi;
+    assign m_spi.miso = spi_miso_i;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -95,6 +108,19 @@ module ps_pl_top #(
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
         .s_axil      (axil[1])
+    );
+
+    axil_spi #(
+        .FIFO_DEPTH     (FIFO_DEPTH),
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
+        .SLAVE_NUM      (SPI_CS_WIDTH),
+        .ILA_EN         (ILA_EN)
+    ) i_axil_uart (
+        .clk_i (clk_i),
+        .s_axil(axil[2]),
+        .m_spi (m_spi)
     );
 
     zynq_bd zynq_bd_i (

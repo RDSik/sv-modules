@@ -19,7 +19,6 @@ module axil_i2c_tb ();
 
     logic                       clk_i;
     logic                       rstn_i;
-    logic [     DATA_WIDTH-1:0] wdata;
     logic [AXIL_DATA_WIDTH-1:0] rdata;
 
     axil_if #(

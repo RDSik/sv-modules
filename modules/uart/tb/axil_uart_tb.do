@@ -11,6 +11,7 @@ vlog ../rtl/axis_uart_rx.sv
 
 vlog ../../fifo/rtl/async_fifo.sv
 vlog ../../fifo/rtl/axis_fifo_wrap.sv
+vlog ../../fifo/rtl/fifo_wrap.sv
 vlog ../../fifo/rtl/rd_ptr_empty.sv
 vlog ../../fifo/rtl/sync_fifo.sv
 vlog ../../fifo/rtl/wr_ptr_full.sv

@@ -1,13 +1,14 @@
 `timescale 1ns / 1ps
 
-`include "../rtl/uart_pkg.svh"
+`include "../rtl/spi_pkg.svh"
 `include "../../verification/tb/axil_env.svh"
 
-module axil_uart_tb ();
+module axil_spi_tb ();
 
-    import uart_pkg::*;
+    import spi_pkg::*;
 
     localparam int FIFO_DEPTH = 128;
+    localparam int CS_WIDTH = 8;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
     localparam int AXIS_DATA_WIDTH = 8;
@@ -21,8 +22,12 @@ module axil_uart_tb ();
 
     logic                       clk_i;
     logic                       rstn_i;
-    logic [AXIL_DATA_WIDTH-1:0] wdata;
     logic [AXIL_DATA_WIDTH-1:0] rdata;
+    logic [AXIL_DATA_WIDTH-1:0] wdata;
+
+    spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
+
+    assign m_spi.miso = m_spi.mosi;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -61,20 +66,20 @@ module axil_uart_tb ();
     end
 
     initial begin
-        $dumpfile("axil_uart_tb.vcd");
-        $dumpvars(0, axil_uart_tb);
+        $dumpfile("axil_spi_tb.vcd");
+        $dumpvars(0, axil_spi_tb);
     end
 
-    axil_uart #(
+    axil_spi #(
         .FIFO_DEPTH     (FIFO_DEPTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
+        .SLAVE_NUM      (CS_WIDTH),
         .ILA_EN         (0)
-    ) i_axil_uart (
-        .uart_rx_i(uart),
-        .uart_tx_o(uart),
-        .s_axil   (s_axil)
+    ) i_axil_spi (
+        .s_axil(s_axil),
+        .m_spi (m_spi)
     );
 
 endmodule

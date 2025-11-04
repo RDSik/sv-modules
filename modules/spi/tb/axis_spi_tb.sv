@@ -6,18 +6,21 @@ module axis_spi_tb ();
 
     import test_pkg::*;
 
-    localparam logic CPHA = 1;
-    localparam logic CPOL = 1;
     localparam int MAIN_CLK = 27_000_000;
     localparam int SPI_CLK = 6_750_000;
+
     localparam int SLAVE_NUM = 1;
     localparam int WAIT_TIME = 100;
     localparam int DIVIDER_WIDTH = 32;
     localparam int WAIT_WIDTH = 32;
     localparam int DATA_WIDTH = 8;
-    localparam int DIVIDER = MAIN_CLK / SPI_CLK;
+
     localparam int CLK_PER_NS = 10 ** 9 / MAIN_CLK;
     localparam int RESET_DELAY = 10;
+
+    localparam logic CPHA = 1;
+    localparam logic CPOL = 1;
+    localparam int DIVIDER = MAIN_CLK / SPI_CLK;
 
     logic clk_i;
     logic rstn_i;

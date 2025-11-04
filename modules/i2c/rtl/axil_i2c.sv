@@ -19,23 +19,23 @@ module axil_i2c
     axil_if.slave s_axil
 );
 
-    i2c_regs_t               rd_regs;
-    i2c_regs_t               wr_regs;
-
-    logic      [REG_NUM-1:0] rd_valid;
-    logic      [REG_NUM-1:0] wr_valid;
-
-    logic                    clk_i;
-    logic                    rstn_i;
+    logic clk_i;
+    logic rstn_i;
 
     assign clk_i  = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic [DATA_WIDTH-1:0] rx_data;
-    logic                  i2c_busy;
-    logic                  i2c_al;
-    logic                  i2c_ack;
-    logic                  cmd_ack;
+    i2c_regs_t                  rd_regs;
+    i2c_regs_t                  wr_regs;
+
+    logic      [   REG_NUM-1:0] rd_valid;
+    logic      [   REG_NUM-1:0] wr_valid;
+
+    logic      [DATA_WIDTH-1:0] rx_data;
+    logic                       i2c_busy;
+    logic                       i2c_al;
+    logic                       i2c_ack;
+    logic                       cmd_ack;
 
     always_comb begin
         rd_valid               = '1;
@@ -60,6 +60,7 @@ module axil_i2c
         .rd_regs_i (rd_regs),
         .rd_valid_i(rd_valid),
         .wr_regs_o (wr_regs),
+        .rd_req_o  (),
         .wr_valid_o(wr_valid)
     );
 
