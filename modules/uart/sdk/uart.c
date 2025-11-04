@@ -9,8 +9,6 @@
 #include "xparameters.h"
 #include "sleep.h"
 
-#define BASE_ADDR 0x43c00000
-
 int main() {
     init_platform();
 
@@ -26,9 +24,9 @@ int main() {
         uart_regs->clk_divider         = 50e6/115200;
         uart_regs->tx.data             = 0x4D; // ASCII - M
 
-        Xil_Out32(BASE_ADDR + 0, uart_regs->control);
-        Xil_Out32(BASE_ADDR + 4, uart_regs->clk_divider);
-        Xil_Out32(BASE_ADDR + 8, uart_regs->tx.data);
+        Xil_Out32(UART_BASE_ADDR + 0, uart_regs->control);
+        Xil_Out32(UART_BASE_ADDR + 4, uart_regs->clk_divider);
+        Xil_Out32(UART_BASE_ADDR + 8, uart_regs->tx.data);
 
         uint32_t reg_num;
         uint32_t addr_offset;
@@ -39,8 +37,8 @@ int main() {
         xil_printf("Number of regs %0d\n\r", reg_num);    
 
         for (uint32_t i = 0; i < regs_num*addr_offset; i += addr_offset) {
-            rd_data = Xil_In32(BASE_ADDR + i);
-            xil_printf("The data at 0x%x is 0x%x \n\r", BASE_ADDR + i, rd_data);
+            rd_data = Xil_In32(UART_BASE_ADDR + i);
+            xil_printf("The data at 0x%x is 0x%x \n\r", UART_BASE_ADDR + i, rd_data);
             xil_printf("\n\r");
         }
 

@@ -101,7 +101,7 @@ module axil_ram #(
         .MEM_DEPTH   (MEM_DEPTH),
         .BYTE_WIDTH  (BYTE_WIDTH),
         .BYTE_NUM    (BYTE_NUM),
-        .READ_LATENCY(READ_LATENCY),
+        .READ_LATENCY(1),
         .MEM_MODE    (MEM_MODE)
     ) i_ram_sdp (
         .a_clk_i  (clk_i),

@@ -10,6 +10,8 @@ module axil_reg_file #(
     input reg_t               rd_regs_i,
     input logic [REG_NUM-1:0] rd_valid_i,
 
+    output logic [REG_NUM-1:0] rd_req_o,
+
     output reg_t               wr_regs_o,
     output logic [REG_NUM-1:0] wr_valid_o,
 
@@ -59,8 +61,8 @@ module axil_reg_file #(
                 wr_valid[reg_indx] <= 1'b0;
             end
         end else begin
-            if (wr_handshake) begin
-                for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
+            for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
+                if (wr_handshake) begin
                     if (awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         for (int i = 0; i < s_axil.STRB_WIDTH; i++) begin
                             if (s_axil.wstrb[i]) begin
@@ -68,9 +70,9 @@ module axil_reg_file #(
                             end
                         end
                         wr_valid[reg_indx] <= 1'b1;
-                    end else begin
-                        wr_valid[reg_indx] <= 1'b0;
                     end
+                end else begin
+                    wr_valid[reg_indx] <= 1'b0;
                 end
             end
         end
@@ -125,6 +127,22 @@ module axil_reg_file #(
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                 if (rd_valid[reg_indx]) begin
                     rd_reg[reg_indx] <= rd_reg_unpack[reg_indx];
+                end
+            end
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            rd_req_o <= '0;
+        end else begin
+            for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
+                if (s_axil.arvalid) begin
+                    if (s_axil.araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
+                        rd_req_o[reg_indx] <= 1'b1;
+                    end
+                end else begin
+                    rd_req_o[reg_indx] <= 1'b0;
                 end
             end
         end

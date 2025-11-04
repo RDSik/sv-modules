@@ -1,16 +1,10 @@
 /* verilator lint_off TIMESCALEMOD */
 module fir_filter #(
-    parameter int CH_NUM      = 2,
+    parameter     COE_FILE   = "fir.mem",
+    parameter int CH_NUM     = 2,
     parameter int DATA_WIDTH = 16,
     parameter int COEF_WIDTH = 18,
-    parameter int TAP_NUM    = 28,
-    // verilog_format: off
-    parameter int COEF         [0:TAP_NUM-1] = '{
-        560, 608, -120, -354, -34, 538, 40, -560,
-        -250, 692, 412, -710, -704, 740, 1014,  -662,
-        -1436, 514, 1936, -198, -2608, -354, 3572, 1438,
-        -5354, -4176, 11198, 27938}
-    // verilog_format: on
+    parameter int TAP_NUM    = 25
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -24,6 +18,12 @@ module fir_filter #(
 );
 
     localparam int DELAY = ($countones(TAP_NUM) == 1) ? 1 : 0;
+
+    logic [COEF_WIDTH-1:0] coe_mem[TAP_NUM];
+
+    initial begin
+        $readmemh(COE_FILE, coe_mem);
+    end
 
     logic tvalid_d;
 
@@ -52,14 +52,11 @@ module fir_filter #(
     end
 
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
-        logic signed [                   COEF_WIDTH-1:0] coef [  TAP_NUM];
         logic signed [                   DATA_WIDTH-1:0] delay[  TAP_NUM];
         logic signed [        DATA_WIDTH+COEF_WIDTH-1:0] mult [  TAP_NUM];
         logic signed [DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc  [TAP_NUM-1];
 
         for (genvar tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin : g_tap
-            assign coef[tap_indx] = COEF[tap_indx][COEF_WIDTH-1:0];
-
             always_ff @(posedge clk_i) begin
                 if (tap_indx == 0) begin
                     if (tvalid_i) begin
@@ -71,7 +68,7 @@ module fir_filter #(
             end
 
             always_ff @(posedge clk_i) begin
-                mult[tap_indx] <= delay[tap_indx] * coef[tap_indx];
+                mult[tap_indx] <= delay[tap_indx] * coe_mem[tap_indx];
             end
 
             always_ff @(posedge clk_i) begin

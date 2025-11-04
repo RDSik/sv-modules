@@ -1,78 +1,70 @@
 /* verilator lint_off TIMESCALEMOD */
-`include "../rtl/uart_pkg.svh"
+`include "../rtl/spi_pkg.svh"
 
-module axil_uart
-    import uart_pkg::*;
+module axil_spi
+    import spi_pkg::*;
 #(
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIS_DATA_WIDTH = 8,
+    parameter int   SLAVE_NUM       = 1,
     parameter logic ILA_EN          = 0
+
 ) (
     /* verilator lint_off PINMISSING */
     input logic clk_i,
     /* verilator lint_on PINMISSING */
 
-    input  logic uart_rx_i,
-    output logic uart_tx_o,
+    axil_if.slave s_axil,
 
-    axil_if.slave s_axil
+    spi_if.master m_spi
 );
 
-    uart_regs_t               rd_regs;
-    uart_regs_t               wr_regs;
+    spi_regs_t               rd_regs;
+    spi_regs_t               wr_regs;
 
-    logic       [REG_NUM-1:0] rd_valid;
-    logic       [REG_NUM-1:0] rd_req;
-    logic       [REG_NUM-1:0] wr_valid;
+    logic      [REG_NUM-1:0] rd_valid;
+    logic      [REG_NUM-1:0] rd_req;
+    logic      [REG_NUM-1:0] wr_valid;
 
-    logic                     ps_clk;
-    logic                     rstn_i;
+    logic                    ps_clk;
+    logic                    rstn_i;
 
     assign ps_clk = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic tx_reset;
-    logic rx_reset;
+    logic reset;
 
-    assign tx_reset = ~wr_regs.control.tx_reset;
-    assign rx_reset = ~wr_regs.control.rx_reset;
+    assign reset = ~wr_regs.control.reset;
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_tx (
         .clk_i (ps_clk),
-        .rstn_i(tx_reset)
+        .rstn_i(reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) fifo_rx (
         .clk_i (ps_clk),
-        .rstn_i(rx_reset)
+        .rstn_i(reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) uart_tx (
+    ) spi_tx (
         .clk_i (ps_clk),
-        .rstn_i(tx_reset)
+        .rstn_i(reset)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) uart_rx (
+    ) spi_rx (
         .clk_i (ps_clk),
-        .rstn_i(rx_reset)
+        .rstn_i(reset)
     );
-
-    logic parity_err;
-    logic tx_handshake;
-    logic rx_handshake;
-
-    assign tx_handshake = fifo_tx.tvalid & fifo_tx.tready;
-    assign rx_handshake = fifo_rx.tvalid & fifo_rx.tready;
 
     always_comb begin
         rd_valid                     = '1;
@@ -83,10 +75,9 @@ module axil_uart
         rd_regs.param.reg_num        = REG_NUM;
 
         rd_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
-        rd_regs.status.tx_fifo_empty = ~uart_tx.tvalid;
-        rd_regs.status.rx_fifo_full  = ~uart_rx.tready;
+        rd_regs.status.tx_fifo_empty = ~spi_tx.tvalid;
+        rd_regs.status.rx_fifo_full  = ~spi_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
-        rd_regs.status.parity_err    = parity_err;
 
         rd_regs.rx.data              = fifo_rx.tdata;
     end
@@ -99,39 +90,32 @@ module axil_uart
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .REG_NUM       (REG_NUM),
-        .reg_t         (uart_regs_t),
+        .reg_t         (spi_regs_t),
         .REG_INIT      (REG_INIT),
         .ILA_EN        (ILA_EN)
     ) i_axil_reg_file (
         .s_axil    (s_axil),
         .rd_regs_i (rd_regs),
         .rd_valid_i(rd_valid),
-        .rd_req_o  (rd_req),
         .wr_regs_o (wr_regs),
+        .rd_req_o  (rd_req),
         .wr_valid_o(wr_valid)
     );
 
-    axis_uart_tx #(
+    axis_spi_master #(
         .DATA_WIDTH   (AXIS_DATA_WIDTH),
-        .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
-    ) i_axis_uart_tx (
+        .SLAVE_NUM    (SLAVE_NUM),
+        .DIVIDER_WIDTH(AXIS_DATA_WIDTH),
+        .WAIT_WIDTH   (AXIS_DATA_WIDTH)
+    ) i_axis_spi_master (
+        .addr_i       (wr_regs.slave.select),
+        .cpol_i       (wr_regs.control.cpol),
+        .cpha_i       (wr_regs.control.cpha),
         .clk_divider_i(wr_regs.clk_divider),
-        .parity_odd_i (wr_regs.control.parity_odd),
-        .parity_even_i(wr_regs.control.parity_even),
-        .uart_tx_o    (uart_tx_o),
-        .s_axis       (uart_tx)
-    );
-
-    axis_uart_rx #(
-        .DATA_WIDTH   (AXIS_DATA_WIDTH),
-        .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
-    ) i_axis_uart_rx (
-        .clk_divider_i(wr_regs.clk_divider),
-        .parity_odd_i (wr_regs.control.parity_odd),
-        .parity_even_i(wr_regs.control.parity_even),
-        .uart_rx_i    (uart_rx_i),
-        .parity_err_o (parity_err),
-        .m_axis       (uart_rx)
+        .wait_time_i  (wr_regs.wait_time),
+        .m_axis       (spi_rx),
+        .s_axis       (spi_tx),
+        .m_spi        (m_spi)
     );
 
     localparam int CDC_REG_NUM = 2;
@@ -145,7 +129,7 @@ module axil_uart
         .RAM_READ_LATENCY(0)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
-        .m_axis   (uart_tx),
+        .m_axis   (spi_tx),
         .a_full_o (),
         .a_empty_o()
     );
@@ -157,7 +141,7 @@ module axil_uart
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(0)
     ) i_axis_fifo_rx (
-        .s_axis   (uart_rx),
+        .s_axis   (spi_rx),
         .m_axis   (fifo_rx),
         .a_full_o (),
         .a_empty_o()

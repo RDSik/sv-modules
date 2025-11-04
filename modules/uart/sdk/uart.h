@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+#define UART_BASE_ADDR 0x43c00000
+
 typedef struct __attribute__((packed)) {
     uint8_t fifo_depth;
     uint8_t reg_num;

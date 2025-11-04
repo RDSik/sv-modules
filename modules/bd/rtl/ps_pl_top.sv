@@ -4,12 +4,21 @@ module ps_pl_top #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIS_DATA_WIDTH = 8,
+    parameter int   SPI_CS_WIDTH    = 1,
     parameter logic ILA_EN          = 1
 ) (
-    input  logic clk_i,
+    input logic clk_i,
 
     input  logic uart_rx_i,
     output logic uart_tx_o,
+
+    input  logic                    spi_miso_i,
+    output logic                    spi_mosi_o,
+    output logic                    spi_cs_o,
+    output logic [SPI_CS_WIDTH-1:0] spi_clk_o,
+
+    inout i2c_scl_io,
+    inout i2c_sda_io,
 
     inout [14:0] DDR_0_addr,
     inout [ 2:0] DDR_0_ba,
@@ -37,10 +46,39 @@ module ps_pl_top #(
     logic ps_clk;
     logic ps_arstn;
 
+    logic scl_pad_i;
+    logic scl_pad_o;
+    logic scl_padoen_o;
+
+    logic sda_pad_i;
+    logic sda_pad_o;
+    logic sda_padoen_o;
+
+    IOBUF i_scl_IOBUF (
+        .O (scl_pad_i),
+        .IO(i2c_scl_io),
+        .I (scl_pad_o),
+        .T (scl_padoen_o)
+    );
+
+    IOBUF i_sda_IOBUF (
+        .O (sda_pad_i),
+        .IO(i2c_sda_io),
+        .I (sda_pad_o),
+        .T (sda_padoen_o)
+    );
+
+    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
+
+    assign spi_cs_o   = m_spi.cs;
+    assign spi_clk_o  = m_spi.clk;
+    assign spi_mosi_o = m_spi.mosi;
+    assign m_spi.miso = spi_miso_i;
+
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
-    ) axil[1:0] (
+    ) axil[2:0] (
         .clk_i (ps_clk),
         .rstn_i(ps_arstn)
     );
@@ -56,6 +94,33 @@ module ps_pl_top #(
         .uart_rx_i(uart_rx_i),
         .uart_tx_o(uart_tx_o),
         .s_axil   (axil[0])
+    );
+
+    axil_i2c #(
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .ILA_EN         (ILA_EN)
+    ) i_axil_i2c (
+        .scl_pad_i   (scl_pad_i),
+        .scl_pad_o   (scl_pad_o),
+        .scl_padoen_o(scl_padoen_o),
+        .sda_pad_i   (sda_pad_i),
+        .sda_pad_o   (sda_pad_o),
+        .sda_padoen_o(sda_padoen_o),
+        .s_axil      (axil[1])
+    );
+
+    axil_spi #(
+        .FIFO_DEPTH     (FIFO_DEPTH),
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
+        .SLAVE_NUM      (SPI_CS_WIDTH),
+        .ILA_EN         (ILA_EN)
+    ) i_axil_uart (
+        .clk_i (clk_i),
+        .s_axil(axil[2]),
+        .m_spi (m_spi)
     );
 
     zynq_bd zynq_bd_i (
@@ -97,6 +162,25 @@ module ps_pl_top #(
         .M01_AXI_0_wready    (axil[1].wready),
         .M01_AXI_0_wstrb     (axil[1].wstrb),
         .M01_AXI_0_wvalid    (axil[1].wvalid),
+        .M02_AXI_0_araddr    (axil[2].araddr),
+        .M02_AXI_0_arprot    (axil[2].arprot),
+        .M02_AXI_0_arready   (axil[2].arready),
+        .M02_AXI_0_arvalid   (axil[2].arvalid),
+        .M02_AXI_0_awaddr    (axil[2].awaddr),
+        .M02_AXI_0_awprot    (axil[2].awprot),
+        .M02_AXI_0_awready   (axil[2].awready),
+        .M02_AXI_0_awvalid   (axil[2].awvalid),
+        .M02_AXI_0_bready    (axil[2].bready),
+        .M02_AXI_0_bresp     (axil[2].bresp),
+        .M02_AXI_0_bvalid    (axil[2].bvalid),
+        .M02_AXI_0_rdata     (axil[2].rdata),
+        .M02_AXI_0_rready    (axil[2].rready),
+        .M02_AXI_0_rresp     (axil[2].rresp),
+        .M02_AXI_0_rvalid    (axil[2].rvalid),
+        .M02_AXI_0_wdata     (axil[2].wdata),
+        .M02_AXI_0_wready    (axil[2].wready),
+        .M02_AXI_0_wstrb     (axil[2].wstrb),
+        .M02_AXI_0_wvalid    (axil[2].wvalid),
         .DDR_0_addr          (DDR_0_addr),
         .DDR_0_ba            (DDR_0_ba),
         .DDR_0_cas_n         (DDR_0_cas_n),

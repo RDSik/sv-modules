@@ -1,18 +1,12 @@
 /* verilator lint_off TIMESCALEMOD */
 module resampler #(
+    parameter       COE_FILE         = "fir.mem",
     parameter logic INTERPOLATION_EN = 1,
     parameter logic DECIMATION_EN    = 1,
-    parameter int CH_NUM             = 2,
-    parameter int DATA_WIDTH         = 16,
-    parameter int COEF_WIDTH         = 18,
-    parameter int TAP_NUM            = 28,
-    // verilog_format: off
-    parameter int COEF         [0:TAP_NUM-1] = '{
-        560, 608, -120, -354, -34, 538, 40, -560,
-        -250, 692, 412, -710, -704, 740, 1014,  -662,
-        -1436, 514, 1936, -198, -2608, -354, 3572, 1438,
-        -5354, -4176, 11198, 27938}
-    // verilog_format: on
+    parameter int   CH_NUM           = 2,
+    parameter int   DATA_WIDTH       = 16,
+    parameter int   COEF_WIDTH       = 18,
+    parameter int   TAP_NUM          = 25
 ) (
     axis_if.slave s_axis,
 
@@ -52,7 +46,7 @@ module resampler #(
 
         always_ff @(posedge clk_i) begin
             if (~rstn_i) begin
-                int_tvalid <= 1'b0;
+                int_tvalid <= '0;
                 int_cnt    <= '0;
                 state      <= IDLE;
             end else if (en_i) begin
@@ -65,13 +59,14 @@ module resampler #(
                         end
                     end
                     INTERP: begin
-                        int_tdata  <= '0;
-                        int_tvalid <= '1;
+                        int_tdata <= '0;
                         if (int_cnt_done) begin
-                            int_cnt <= '0;
-                            state   <= IDLE;
+                            int_cnt    <= '0;
+                            int_tvalid <= '0;
+                            state      <= IDLE;
                         end else begin
-                            int_cnt <= int_cnt + 1'b1;
+                            int_cnt    <= int_cnt + 1'b1;
+                            int_tvalid <= '1;
                         end
                     end
                 endcase
@@ -91,7 +86,7 @@ module resampler #(
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM),
-        .COEF      (COEF)
+        .COE_FILE  (COE_FILE)
     ) i_fir_filter (
         .clk_i   (clk_i),
         .rstn_i  (rstn_i),

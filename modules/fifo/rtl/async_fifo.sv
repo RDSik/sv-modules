@@ -1,9 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module async_fifo #(
-    parameter int FIFO_WIDTH       = 32,
-    parameter int FIFO_DEPTH       = 64,
-    parameter int CDC_REG_NUM      = 2,
-    parameter int RAM_READ_LATENCY = 0
+    parameter int FIFO_WIDTH  = 32,
+    parameter int FIFO_DEPTH  = 64,
+    parameter int CDC_REG_NUM = 2
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rstn_i,
@@ -13,14 +12,18 @@ module async_fifo #(
     input  logic                  rd_rstn_i,
     output logic [FIFO_WIDTH-1:0] rd_data_o,
 
-    input  logic push_i,
-    input  logic pop_i,
+    input logic push_i,
+    input logic pop_i,
 
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
     output logic empty_o
 );
+
+    if (CDC_REG_NUM < 2) begin : g_mem_width_err
+        $error("CDC_REG_NUM must greater or equal 2!");
+    end
 
     localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
@@ -67,7 +70,7 @@ module async_fifo #(
         .MEM_DEPTH   (FIFO_DEPTH),
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
-        .READ_LATENCY(RAM_READ_LATENCY),
+        .READ_LATENCY(0),
         .MEM_MODE    ("read_first")
     ) i_ram_sdp (
         .a_clk_i  (wr_clk_i),

@@ -14,6 +14,7 @@ add log -r /*
 add wave -expand -group SPI_MASSTER /axis_spi_tb/dut/*
 add wave -expand -group M_AXIS      /axis_spi_tb/dut/m_axis/*
 add wave -expand -group S_AXIS      /axis_spi_tb/dut/s_axis/*
+add wave -expand -group SPI         /axis_spi_tb/dut/m_spi/*
 
 run -all
 wave zoom full

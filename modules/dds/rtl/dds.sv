@@ -1,15 +1,16 @@
 /* verilator lint_off TIMESCALEMOD */
 module dds #(
-    parameter int IQ_NUM        = 2,
-    parameter int SIN_LUT_DEPTH = 8192,
-    parameter int DATA_WIDTH    = 16
+    parameter     DATA_PATH   = "dds_out.bin",
+    parameter int IQ_NUM      = 2,
+    parameter int PHASE_WIDTH = 14,
+    parameter int DATA_WIDTH  = 16
 ) (
     input logic clk_i,
     input logic rstn_i,
     input logic en_i,
 
-    input logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_inc_i,
-    input logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_offset_i,
+    input logic [PHASE_WIDTH-1:0] phase_inc_i,
+    input logic [PHASE_WIDTH-1:0] phase_offset_i,
 
     output logic                                     tvalid_o,
     output logic signed [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_o
@@ -19,25 +20,26 @@ module dds #(
         $error("IQ_NUM must be 2!");
     end
 
+    localparam int SIN_NUM = 2 ** PHASE_WIDTH;
     localparam int AMPL = 2 ** (DATA_WIDTH - 1) - 1;
     localparam real PI = 3.14159265359;
 
-    logic [DATA_WIDTH-1:0] sin_lut[0:SIN_LUT_DEPTH-1];
+    logic [DATA_WIDTH-1:0] sin_lut[0:SIN_NUM-1];
 
     initial begin
-        for (int i = 0; i < SIN_LUT_DEPTH; i++) begin
+        for (int i = 0; i < SIN_NUM; i++) begin
             /* verilator lint_off WIDTHTRUNC */
-            sin_lut[i] = $rtoi(AMPL * (1 + $sin(2 * PI * i / SIN_LUT_DEPTH)));
+            sin_lut[i] = $rtoi(AMPL * (1 + $sin(2 * PI * i / SIN_NUM)));
             /* verilator lint_on WIDTHTRUNC */
         end
     end
 
-    logic [$clog2(SIN_LUT_DEPTH)-1:0] phase_acc;
-    logic [$clog2(SIN_LUT_DEPTH)-1:0] lut_addr_i;
-    logic [$clog2(SIN_LUT_DEPTH)-1:0] lut_addr_q;
+    logic [PHASE_WIDTH-1:0] phase_acc;
+    logic [PHASE_WIDTH-1:0] lut_addr_i;
+    logic [PHASE_WIDTH-1:0] lut_addr_q;
 
     assign lut_addr_i = phase_acc + phase_offset_i;
-    assign lut_addr_q = lut_addr_i + (SIN_LUT_DEPTH / 4);
+    assign lut_addr_q = lut_addr_i + (SIN_NUM / 4);
 
     always @(posedge clk_i) begin
         if (~rstn_i) begin
@@ -55,5 +57,17 @@ module dds #(
         end
         tdata_o <= {sin_lut[lut_addr_q], sin_lut[lut_addr_i]};
     end
+
+    //synchesis translate_off
+    write_data_to_file #(
+        .DATA_PATH (DATA_PATH),
+        .IQ_NUM    (IQ_NUM),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) i_dump_out (
+        .clk_i   (clk_i),
+        .tvalid_i(tvalid_o),
+        .tdata_i (tdata_o)
+    );
+    //synchesis translate_on
 
 endmodule
