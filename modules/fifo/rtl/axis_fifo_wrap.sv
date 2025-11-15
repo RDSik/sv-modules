@@ -4,6 +4,7 @@ module axis_fifo_wrap #(
     parameter int FIFO_DEPTH       = 128,
     parameter int CDC_REG_NUM      = 2,
     parameter int RAM_READ_LATENCY = 0,
+    parameter int PTR_WIDTH        = $clog2(FIFO_DEPTH),
     parameter     FIFO_MODE        = "sync",
     parameter     RAM_STYLE        = "distributed"
 ) (
@@ -11,7 +12,9 @@ module axis_fifo_wrap #(
     axis_if.master m_axis,
 
     output logic a_full_o,
-    output logic a_empty_o
+    output logic a_empty_o,
+
+    output logic [PTR_WIDTH-1:0] data_cnt_o
 );
 
     logic pop;
@@ -31,20 +34,22 @@ module axis_fifo_wrap #(
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(RAM_READ_LATENCY),
         .FIFO_MODE       (FIFO_MODE),
-        .RAM_STYLE       (RAM_STYLE)
+        .RAM_STYLE       (RAM_STYLE),
+        .PTR_WIDTH       (PTR_WIDTH)
     ) i_fifo_wrap (
-        .wr_clk_i (s_axis.clk_i),
-        .wr_rstn_i(s_axis.rstn_i),
-        .wr_data_i(s_axis.tdata),
-        .rd_clk_i (m_axis.clk_i),
-        .rd_rstn_i(m_axis.rstn_i),
-        .rd_data_o(m_axis.tdata),
-        .push_i   (push),
-        .pop_i    (pop),
-        .empty_o  (empty),
-        .full_o   (full),
-        .a_empty_o(a_empty_o),
-        .a_full_o (a_full_o)
+        .wr_clk_i  (s_axis.clk_i),
+        .wr_rstn_i (s_axis.rstn_i),
+        .wr_data_i (s_axis.tdata),
+        .rd_clk_i  (m_axis.clk_i),
+        .rd_rstn_i (m_axis.rstn_i),
+        .rd_data_o (m_axis.tdata),
+        .push_i    (push),
+        .pop_i     (pop),
+        .empty_o   (empty),
+        .full_o    (full),
+        .a_empty_o (a_empty_o),
+        .a_full_o  (a_full_o),
+        .data_cnt_o(data_cnt_o)
     );
 
 endmodule

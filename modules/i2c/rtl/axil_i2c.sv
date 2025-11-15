@@ -48,6 +48,7 @@ module axil_i2c
     logic      [I2C_DATA_WIDTH-1:0] rx_data;
     logic                           i2c_busy;
     logic                           i2c_ack;
+    logic                           i2c_al;
 
     always_comb begin
         rd_valid                     = '1;
@@ -62,6 +63,7 @@ module axil_i2c
         rd_regs.status.tx_fifo_empty = tx_fifo_empty;
         rd_regs.status.tx_fifo_full  = tx_fifo_full;
         rd_regs.status.busy          = i2c_busy;
+        rd_regs.status.al            = i2c_al;
         rd_regs.status.rx_ack        = i2c_ack;
 
         rd_regs.rx.data              = rx_data;
@@ -83,39 +85,85 @@ module axil_i2c
         .wr_valid_o(wr_valid)
     );
 
-    logic i2c_al;
-    logic cmd_ack;
-    logic done;
-    logic start;
-    logic write;
-    logic read;
+    typedef enum logic [1:0] {
+        IDLE = 2'b00,
+        ADDR = 2'b01,
+        DATA = 2'b10,
+        STOP = 2'b11
+    } state_t;
 
-    assign done = cmd_ack | i2c_al;
+    state_t state;
 
-    always_ff @(posedge ps_clk) begin
-        if (~wr_regs.control.core_en) begin
-            read  <= 1'b0;
+    logic   cmd_ack;
+    logic   stop;
+    logic   start;
+    logic   write;
+    logic   read;
+    logic   core_en;
+    logic   rw;
+
+    always @(posedge ps_clk) begin
+        if (wr_valid[CONTROL_REG_POS]) begin
+            core_en <= wr_regs.control.core_en;
+            rw      <= wr_regs.control.rw;
+        end else if (cmd_ack && (state == STOP)) begin
+            core_en <= 1'b0;
+            rw      <= 1'b0;
+        end
+    end
+
+    always @(posedge ps_clk) begin
+        if (wr_regs.control.core_rst | i2c_al) begin
+            state <= IDLE;
             write <= 1'b0;
+            read  <= 1'b0;
             start <= 1'b0;
+            stop  <= 1'b0;
         end else begin
-            if (done) begin
-                start <= 1'b0;
-            end else if (~tx_fifo_empty | rx_fifo_empty) begin
-                start <= 1'b1;
-            end
-            write <= ~tx_fifo_empty;
-            read  <= tx_fifo_empty & ~rx_fifo_full;
+            case (state)
+                IDLE: begin
+                    if (core_en) begin
+                        state <= ADDR;
+                        start <= 1'b1;
+                        write <= 1'b1;
+                        read  <= 1'b0;
+                    end
+                end
+                ADDR: begin
+                    if (cmd_ack) begin
+                        state <= DATA;
+                        start <= 1'b0;
+                        write <= rw;
+                        read  <= ~rw;
+                    end
+                end
+                DATA: begin
+                    if (cmd_ack) begin
+                        state <= STOP;
+                        stop  <= 1'b1;
+                        write <= 1'b0;
+                        read  <= 1'b0;
+                    end
+                end
+                STOP: begin
+                    if (cmd_ack) begin
+                        state <= IDLE;
+                        stop  <= 1'b0;
+                    end
+                end
+                default: state <= IDLE;
+            endcase
         end
     end
 
     i2c_master_byte_ctrl i_i2c_master_byte_ctrl (
         .clk     (ps_clk),
-        .rst     ('0),
-        .nReset  (wr_regs.control.core_en),
-        .ena     (wr_regs.control.core_en),
+        .rst     (wr_regs.control.core_rst),
+        .nReset  ('1),
+        .ena     (core_en),
         .clk_cnt (wr_regs.clk.prescale),
         .start   (start),
-        .stop    ('0),
+        .stop    (stop),
         .read    (read),
         .write   (write),
         .ack_in  (read),
@@ -157,18 +205,19 @@ module axil_i2c
         .RAM_READ_LATENCY(0),
         .FIFO_MODE       (FIFO_MODE)
     ) i_fifo_tx (
-        .wr_clk_i (ps_clk),
-        .wr_rstn_i(fifo_rst),
-        .wr_data_i(wr_regs.tx.data),
-        .rd_clk_i (ps_clk),
-        .rd_rstn_i(rstn_i),
-        .rd_data_o(i2c_tx_data),
-        .push_i   (tx_fifo_push),
-        .pop_i    (tx_fifo_pop),
-        .empty_o  (tx_fifo_empty),
-        .full_o   (tx_fifo_full),
-        .a_empty_o(),
-        .a_full_o ()
+        .wr_clk_i  (ps_clk),
+        .wr_rstn_i (fifo_rst),
+        .wr_data_i (wr_regs.tx.data),
+        .rd_clk_i  (ps_clk),
+        .rd_rstn_i (rstn_i),
+        .rd_data_o (i2c_tx_data),
+        .push_i    (tx_fifo_push),
+        .pop_i     (tx_fifo_pop),
+        .empty_o   (tx_fifo_empty),
+        .full_o    (tx_fifo_full),
+        .a_empty_o (),
+        .a_full_o  (),
+        .data_cnt_o()
     );
 
     fifo_wrap #(
@@ -178,18 +227,19 @@ module axil_i2c
         .RAM_READ_LATENCY(0),
         .FIFO_MODE       (FIFO_MODE)
     ) i_fifo_rx (
-        .wr_clk_i (ps_clk),
-        .wr_rstn_i(fifo_rst),
-        .wr_data_i(i2c_rx_data),
-        .rd_clk_i (ps_clk),
-        .rd_rstn_i(rstn_i),
-        .rd_data_o(rx_data),
-        .push_i   (rx_fifo_push),
-        .pop_i    (rx_fifo_pop),
-        .empty_o  (rx_fifo_empty),
-        .full_o   (rx_fifo_full),
-        .a_empty_o(),
-        .a_full_o ()
+        .wr_clk_i  (ps_clk),
+        .wr_rstn_i (fifo_rst),
+        .wr_data_i (i2c_rx_data),
+        .rd_clk_i  (ps_clk),
+        .rd_rstn_i (rstn_i),
+        .rd_data_o (rx_data),
+        .push_i    (rx_fifo_push),
+        .pop_i     (rx_fifo_pop),
+        .empty_o   (rx_fifo_empty),
+        .full_o    (rx_fifo_full),
+        .a_empty_o (),
+        .a_full_o  (),
+        .data_cnt_o()
     );
 
 endmodule
