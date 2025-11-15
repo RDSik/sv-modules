@@ -136,15 +136,18 @@ module axil_i2c
     localparam int CDC_REG_NUM = 2;
     localparam FIFO_MODE = "sync";
 
+    logic fifo_rst;
     logic tx_fifo_push;
     logic tx_fifo_pop;
     logic rx_fifo_push;
     logic rx_fifo_pop;
 
-    assign tx_fifo_push = wr_valid[TX_DATA_REG_POS];
-    assign tx_fifo_pop  = cmd_ack & write;
+    assign fifo_rst = ~wr_regs.control.core_rst;
 
-    assign rx_fifo_pop  = rd_req[RX_DATA_REG_POS];
+    assign tx_fifo_push = wr_valid[TX_DATA_REG_POS];
+    assign tx_fifo_pop = cmd_ack & write;
+
+    assign rx_fifo_pop = rd_req[RX_DATA_REG_POS];
     assign rx_fifo_push = cmd_ack & read;
 
     fifo_wrap #(
@@ -155,7 +158,7 @@ module axil_i2c
         .FIFO_MODE       (FIFO_MODE)
     ) i_fifo_tx (
         .wr_clk_i (ps_clk),
-        .wr_rstn_i(~wr_regs.control.core_rst),
+        .wr_rstn_i(fifo_rst),
         .wr_data_i(wr_regs.tx.data),
         .rd_clk_i (ps_clk),
         .rd_rstn_i(rstn_i),
@@ -176,7 +179,7 @@ module axil_i2c
         .FIFO_MODE       (FIFO_MODE)
     ) i_fifo_rx (
         .wr_clk_i (ps_clk),
-        .wr_rstn_i(~wr_regs.control.core_rst),
+        .wr_rstn_i(fifo_rst),
         .wr_data_i(i2c_rx_data),
         .rd_clk_i (ps_clk),
         .rd_rstn_i(rstn_i),
