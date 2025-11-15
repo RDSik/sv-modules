@@ -3,6 +3,7 @@ module sync_fifo #(
     parameter int FIFO_WIDTH       = 32,
     parameter int FIFO_DEPTH       = 64,
     parameter int RAM_READ_LATENCY = 0,
+    parameter int PTR_WIDTH        = $clog2(FIFO_DEPTH),
     parameter     RAM_STYLE        = "block"
 ) (
     input logic clk_i,
@@ -17,11 +18,12 @@ module sync_fifo #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o
+    output logic empty_o,
+
+    output logic [PTR_WIDTH-1:0] data_cnt_o
 );
 
     localparam logic SHOW_AHEAD_EN = (RAM_READ_LATENCY > 0);
-    localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
     logic [ PTR_WIDTH-1:0] wr_ptr;
@@ -113,34 +115,33 @@ module sync_fifo #(
     );
 
     logic [PTR_WIDTH:0] data_cnt;
-    logic [PTR_WIDTH:0] data_cnt_next;
     logic               a_full;
     logic               full;
     logic               a_empty;
     logic               empty;
 
     always_comb begin
-        data_cnt_next = data_cnt;
+        data_cnt = data_cnt_o;
         if (push_i & ~pop_i) begin
-            data_cnt_next = data_cnt + 1'b1;
+            data_cnt = data_cnt_o + 1'b1;
         end else if (pop_i & ~push_i) begin
-            data_cnt_next = data_cnt - 1'b1;
+            data_cnt = data_cnt_o - 1'b1;
         end
     end
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            data_cnt <= '0;
+            data_cnt_o <= '0;
         end else begin
-            data_cnt <= data_cnt_next;
+            data_cnt_o <= data_cnt;
         end
     end
 
     /* verilator lint_off WIDTHEXPAND*/
-    assign a_full  = (data_cnt_next == FIFO_DEPTH - 1);
-    assign full    = (data_cnt_next == FIFO_DEPTH);
-    assign a_empty = (data_cnt_next == 1);
-    assign empty   = (data_cnt_next == 0);
+    assign a_full  = (data_cnt == FIFO_DEPTH - 1);
+    assign full    = (data_cnt == FIFO_DEPTH);
+    assign a_empty = (data_cnt == 1);
+    assign empty   = (data_cnt == 0);
     /* verilator lint_on WIDTHEXPAND*/
 
     always_ff @(posedge clk_i) begin

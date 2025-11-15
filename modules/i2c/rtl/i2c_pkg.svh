@@ -29,7 +29,8 @@ package i2c_pkg;
     } i2c_clk_prescale_reg_t;
 
     typedef struct packed {
-        logic [29:0] rsrvd;
+        logic [28:0] rsrvd;
+        logic        rw;
         logic        core_en;
         logic        core_rst;
     } i2c_control_reg_t;
