@@ -7,7 +7,6 @@ module axil_uart
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   AXIS_DATA_WIDTH = 8,
     parameter logic ILA_EN          = 0
 ) (
     /* verilator lint_off PINMISSING */
@@ -40,28 +39,28 @@ module axil_uart
     assign rx_reset = ~wr_regs.control.rx_reset;
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(UART_DATA_WIDTH)
     ) fifo_tx (
         .clk_i (ps_clk),
         .rstn_i(tx_reset)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(UART_DATA_WIDTH)
     ) fifo_rx (
         .clk_i (ps_clk),
         .rstn_i(rx_reset)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(UART_DATA_WIDTH)
     ) uart_tx (
         .clk_i (ps_clk),
         .rstn_i(tx_reset)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(UART_DATA_WIDTH)
     ) uart_rx (
         .clk_i (ps_clk),
         .rstn_i(rx_reset)
@@ -78,7 +77,7 @@ module axil_uart
         rd_valid                     = '1;
         rd_regs                      = wr_regs;
 
-        rd_regs.param.data_width     = AXIS_DATA_WIDTH;
+        rd_regs.param.data_width     = UART_DATA_WIDTH;
         rd_regs.param.fifo_depth     = FIFO_DEPTH;
         rd_regs.param.reg_num        = REG_NUM;
 
@@ -112,8 +111,8 @@ module axil_uart
     );
 
     axis_uart_tx #(
-        .DATA_WIDTH   (AXIS_DATA_WIDTH),
-        .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH   (UART_DATA_WIDTH),
+        .DIVIDER_WIDTH(UART_DIVIDER_WIDTH)
     ) i_axis_uart_tx (
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
@@ -123,8 +122,8 @@ module axil_uart
     );
 
     axis_uart_rx #(
-        .DATA_WIDTH   (AXIS_DATA_WIDTH),
-        .DIVIDER_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH   (UART_DATA_WIDTH),
+        .DIVIDER_WIDTH(UART_DIVIDER_WIDTH)
     ) i_axis_uart_rx (
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
@@ -139,7 +138,7 @@ module axil_uart
 
     axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (AXIS_DATA_WIDTH),
+        .FIFO_WIDTH      (UART_DATA_WIDTH),
         .FIFO_MODE       (FIFO_MODE),
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(0)
@@ -152,7 +151,7 @@ module axil_uart
 
     axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (AXIS_DATA_WIDTH),
+        .FIFO_WIDTH      (UART_DATA_WIDTH),
         .FIFO_MODE       (FIFO_MODE),
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(0)

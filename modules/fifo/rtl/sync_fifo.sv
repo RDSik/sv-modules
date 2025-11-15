@@ -2,7 +2,8 @@
 module sync_fifo #(
     parameter int FIFO_WIDTH       = 32,
     parameter int FIFO_DEPTH       = 64,
-    parameter int RAM_READ_LATENCY = 0
+    parameter int RAM_READ_LATENCY = 0,
+    parameter     RAM_STYLE        = "block"
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -10,8 +11,8 @@ module sync_fifo #(
     input  logic [FIFO_WIDTH-1:0] data_i,
     output logic [FIFO_WIDTH-1:0] data_o,
 
-    input  logic push_i,
-    input  logic pop_i,
+    input logic push_i,
+    input logic pop_i,
 
     output logic a_full_o,
     output logic full_o,
@@ -97,6 +98,7 @@ module sync_fifo #(
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
         .READ_LATENCY(RAM_READ_LATENCY),
+        .RAM_STYLE   (RAM_STYLE),
         .MEM_MODE    ("read_first")
     ) i_ram_sdp (
         .a_clk_i  (clk_i),

@@ -4,7 +4,8 @@ module axis_fifo_wrap #(
     parameter int FIFO_DEPTH       = 128,
     parameter int CDC_REG_NUM      = 2,
     parameter int RAM_READ_LATENCY = 0,
-    parameter     FIFO_MODE        = "sync"
+    parameter     FIFO_MODE        = "sync",
+    parameter     RAM_STYLE        = "distributed"
 ) (
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -29,7 +30,8 @@ module axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(RAM_READ_LATENCY),
-        .FIFO_MODE       (FIFO_MODE)
+        .FIFO_MODE       (FIFO_MODE),
+        .RAM_STYLE       (RAM_STYLE)
     ) i_fifo_wrap (
         .wr_clk_i (s_axis.clk_i),
         .wr_rstn_i(s_axis.rstn_i),

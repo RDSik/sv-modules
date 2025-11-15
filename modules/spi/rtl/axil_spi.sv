@@ -7,7 +7,6 @@ module axil_spi
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   AXIS_DATA_WIDTH = 8,
     parameter int   SLAVE_NUM       = 1,
     parameter logic ILA_EN          = 0
 
@@ -39,28 +38,28 @@ module axil_spi
     assign reset = ~wr_regs.control.reset;
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_tx (
         .clk_i (ps_clk),
         .rstn_i(reset)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_rx (
         .clk_i (ps_clk),
         .rstn_i(reset)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_tx (
         .clk_i (ps_clk),
         .rstn_i(reset)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
+        .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_rx (
         .clk_i (ps_clk),
         .rstn_i(reset)
@@ -70,7 +69,7 @@ module axil_spi
         rd_valid                     = '1;
         rd_regs                      = wr_regs;
 
-        rd_regs.param.data_width     = AXIS_DATA_WIDTH;
+        rd_regs.param.data_width     = SPI_DATA_WIDTH;
         rd_regs.param.fifo_depth     = FIFO_DEPTH;
         rd_regs.param.reg_num        = REG_NUM;
 
@@ -104,10 +103,10 @@ module axil_spi
     );
 
     axis_spi_master #(
-        .DATA_WIDTH   (AXIS_DATA_WIDTH),
+        .DATA_WIDTH   (SPI_DATA_WIDTH),
         .SLAVE_NUM    (SLAVE_NUM),
-        .DIVIDER_WIDTH(AXIS_DATA_WIDTH),
-        .WAIT_WIDTH   (AXIS_DATA_WIDTH)
+        .DIVIDER_WIDTH(SPI_DIVIDER_WIDTH),
+        .WAIT_WIDTH   (SPI_WAIT_WIDTH)
     ) i_axis_spi_master (
         .addr_i       (wr_regs.slave.select),
         .cpol_i       (wr_regs.control.cpol),
@@ -124,7 +123,7 @@ module axil_spi
 
     axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (AXIS_DATA_WIDTH),
+        .FIFO_WIDTH      (SPI_DATA_WIDTH),
         .FIFO_MODE       (FIFO_MODE),
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(0)
@@ -137,7 +136,7 @@ module axil_spi
 
     axis_fifo_wrap #(
         .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (AXIS_DATA_WIDTH),
+        .FIFO_WIDTH      (SPI_DATA_WIDTH),
         .FIFO_MODE       (FIFO_MODE),
         .CDC_REG_NUM     (CDC_REG_NUM),
         .RAM_READ_LATENCY(0)

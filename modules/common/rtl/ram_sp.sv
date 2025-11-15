@@ -5,6 +5,7 @@ module ram_sp #(
     parameter int BYTE_WIDTH   = 8,
     parameter int BYTE_NUM     = 4,
     parameter int READ_LATENCY = 5,
+    parameter     RAM_STYLE    = "block",
     parameter     MEM_FILE     = "",
     parameter int MEM_WIDTH    = BYTE_WIDTH * BYTE_NUM
 ) (
@@ -20,7 +21,7 @@ module ram_sp #(
         $error("MEM_WIDTH must be equal BYTE_WIDTH * BYTE_NUM!");
     end
 
-    logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
+    (* ram_style = RAM_STYLE *) logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
     if (MEM_FILE != 0) begin : g_mem_file_init
         initial begin

@@ -10,7 +10,6 @@ module axil_uart_tb ();
     localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
-    localparam int AXIS_DATA_WIDTH = 8;
 
     localparam int WAT_CYCLES = 200;
     localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
@@ -49,7 +48,7 @@ module axil_uart_tb ();
     initial begin
         axil_env env;
         env   = new(s_axil);
-        wdata = $urandom_range(0, (2 ** AXIS_DATA_WIDTH) - 1);
+        wdata = $urandom_range(0, (2 ** UART_DATA_WIDTH) - 1);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
@@ -67,7 +66,6 @@ module axil_uart_tb ();
 
     axil_uart #(
         .FIFO_DEPTH     (FIFO_DEPTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .ILA_EN         (0)

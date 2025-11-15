@@ -78,8 +78,10 @@ module resampler #(
         assign int_tvalid    = s_axis.tvalid;
     end
 
-    logic                                         fir_tvalid;
-    logic [CH_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] fir_tdata;
+    localparam int FIT_WIDTH = DATA_WIDTH + COEF_WIDTH + TAP_NUM;
+
+    logic                             fir_tvalid;
+    logic [CH_NUM-1:0][FIT_WIDTH-1:0] fir_tdata;
 
     fir_filter #(
         .CH_NUM    (CH_NUM),
@@ -128,7 +130,7 @@ module resampler #(
 
     round #(
         .CH_NUM        (CH_NUM),
-        .DATA_WIDTH_IN (DATA_WIDTH + COEF_WIDTH),
+        .DATA_WIDTH_IN (FIT_WIDTH),
         .DATA_WIDTH_OUT(DATA_WIDTH)
     ) i_round (
         .clk_i     (clk_i),

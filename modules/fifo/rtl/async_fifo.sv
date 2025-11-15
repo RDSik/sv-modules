@@ -2,7 +2,8 @@
 module async_fifo #(
     parameter int FIFO_WIDTH  = 32,
     parameter int FIFO_DEPTH  = 64,
-    parameter int CDC_REG_NUM = 2
+    parameter int CDC_REG_NUM = 2,
+    parameter     RAM_STYLE   = "block"
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rstn_i,
@@ -71,7 +72,8 @@ module async_fifo #(
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
         .READ_LATENCY(0),
-        .MEM_MODE    ("read_first")
+        .MEM_MODE    ("read_first"),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_ram_sdp (
         .a_clk_i  (wr_clk_i),
         .a_en_i   (wr_en),

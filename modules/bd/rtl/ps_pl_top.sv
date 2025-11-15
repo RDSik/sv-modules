@@ -3,7 +3,6 @@ module ps_pl_top #(
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   AXIS_DATA_WIDTH = 8,
     parameter int   SPI_CS_WIDTH    = 1,
     parameter logic ILA_EN          = 1
 ) (
@@ -87,7 +86,6 @@ module ps_pl_top #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .ILA_EN         (ILA_EN)
     ) i_axil_uart (
         .clk_i    (clk_i),
@@ -97,10 +95,12 @@ module ps_pl_top #(
     );
 
     axil_i2c #(
+        .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .ILA_EN         (ILA_EN)
     ) i_axil_i2c (
+        .clk_i       (clk_i),
         .scl_pad_i   (scl_pad_i),
         .scl_pad_o   (scl_pad_o),
         .scl_padoen_o(scl_padoen_o),
@@ -114,7 +114,6 @@ module ps_pl_top #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .SLAVE_NUM      (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN)
     ) i_axil_spi (

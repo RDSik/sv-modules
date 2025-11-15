@@ -18,19 +18,28 @@ module axis_uart_rx
 
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
 
-    logic                             clk_i;
-    logic                             rstn_i;
-    logic        [DATA_CNT_WIDTH-1:0] bit_cnt;
-    logic        [ DIVIDER_WIDTH-1:0] baud_cnt;
-    logic        [    DATA_WIDTH-1:0] rx_data;
-    logic                             bit_done;
-    logic                             baud_done;
-    logic                             baud_en;
-    logic                             start_bit_check;
-    logic                             m_handshake;
-    logic                             parity_bit;
+    logic                      clk_i;
+    logic                      rstn_i;
+    logic [DATA_CNT_WIDTH-1:0] bit_cnt;
+    logic [ DIVIDER_WIDTH-1:0] baud_cnt;
+    logic [    DATA_WIDTH-1:0] rx_data;
+    logic                      bit_done;
+    logic                      baud_done;
+    logic                      baud_en;
+    logic                      start_bit_check;
+    logic                      m_handshake;
+    logic                      parity_bit;
 
-    uart_state_e                      state;
+    typedef enum logic [2:0] {
+        IDLE   = 3'b000,
+        START  = 3'b001,
+        DATA   = 3'b010,
+        PARITY = 3'b011,
+        STOP   = 3'b100,
+        WAIT   = 3'b101
+    } uart_state_e;
+
+    uart_state_e state;
 
     assign clk_i  = m_axis.clk_i;
     assign rstn_i = m_axis.rstn_i;

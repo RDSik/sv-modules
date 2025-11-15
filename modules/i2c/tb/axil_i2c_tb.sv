@@ -7,6 +7,7 @@ module axil_i2c_tb ();
 
     import i2c_pkg::*;
 
+    localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
 
@@ -46,29 +47,12 @@ module axil_i2c_tb ();
     initial begin
         axil_env env;
         env = new(s_axil);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, 5'b10010);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, '0);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, 8'ha2);
-
-        do begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
-        end while (~rdata[0]);
-
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, 8'hac);
-
-        do begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
-        end while (~rdata[0]);
-
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, 5'b01010);
-
-        do begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
-        end while (~rdata[0]);
-
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * COMMAND_REG_POS, '0);
-
-        #WAT_CYCLES $stop;
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
+        #WAT_CYCLES;
+        $stop;
     end
 
     initial begin
@@ -77,6 +61,7 @@ module axil_i2c_tb ();
     end
 
     axil_i2c #(
+        .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .ILA_EN         (0)

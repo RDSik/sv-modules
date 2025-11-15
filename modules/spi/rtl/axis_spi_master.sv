@@ -13,16 +13,15 @@ module axis_spi_master #(
     parameter int DATA_WIDTH    = 8,
     parameter int DIVIDER_WIDTH = 32,
     parameter int WAIT_WIDTH    = 32,
-    parameter int SLAVE_NUM     = 1,
-    parameter int ADDR_WIDTH    = $clog2(SLAVE_NUM)
+    parameter int SLAVE_NUM     = 1
 ) (
     /* verilator lint_off ASCRANGE */
-    input logic [   ADDR_WIDTH-1:0] addr_i,
+    input logic [$clog2(SLAVE_NUM)-1:0] addr_i,
     /* verilator lint_on ASCRANGE */
-    input logic [   WAIT_WIDTH-1:0] wait_time_i,
-    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                     cpha_i,
-    input logic                     cpol_i,
+    input logic [       WAIT_WIDTH-1:0] wait_time_i,
+    input logic [    DIVIDER_WIDTH-1:0] clk_divider_i,
+    input logic                         cpha_i,
+    input logic                         cpol_i,
 
     spi_if.master m_spi,
 
