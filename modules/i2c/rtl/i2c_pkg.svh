@@ -14,14 +14,13 @@ package i2c_pkg;
     } i2c_param_reg_t;
 
     typedef struct packed {
-        logic [24:0] rsrvd;
+        logic [25:0] rsrvd;
         logic        rx_fifo_empty;
         logic        tx_fifo_empty;
         logic        rx_fifo_full;
         logic        tx_fifo_full;
         logic        rx_ack;
         logic        busy;
-        logic        al;
     } i2c_status_reg_t;
 
     typedef struct packed {

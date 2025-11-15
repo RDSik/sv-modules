@@ -63,7 +63,6 @@ module axil_i2c
         rd_regs.status.tx_fifo_empty = tx_fifo_empty;
         rd_regs.status.tx_fifo_full  = tx_fifo_full;
         rd_regs.status.busy          = i2c_busy;
-        rd_regs.status.al            = i2c_al;
         rd_regs.status.rx_ack        = i2c_ack;
 
         rd_regs.rx.data              = rx_data;
@@ -103,12 +102,17 @@ module axil_i2c
     logic   rw;
 
     always @(posedge ps_clk) begin
-        if (wr_valid[CONTROL_REG_POS]) begin
-            core_en <= wr_regs.control.core_en;
-            rw      <= wr_regs.control.rw;
-        end else if (cmd_ack && (state == STOP)) begin
+        if (~rstn_i) begin
             core_en <= 1'b0;
             rw      <= 1'b0;
+        end else begin
+            if (wr_valid[CONTROL_REG_POS]) begin
+                core_en <= wr_regs.control.core_en;
+                rw      <= wr_regs.control.rw;
+            end else if (cmd_ack && (state == STOP)) begin
+                core_en <= 1'b0;
+                rw      <= 1'b0;
+            end
         end
     end
 
