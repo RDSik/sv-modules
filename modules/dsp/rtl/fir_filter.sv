@@ -13,11 +13,9 @@ module fir_filter #(
     input logic                                     tvalid_i,
     input logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
 
-    output logic                                                tvalid_o,
-    output logic signed [CH_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] tdata_o
+    output logic                                                        tvalid_o,
+    output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+TAP_NUM-1:0] tdata_o
 );
-
-    localparam int DELAY = ($countones(TAP_NUM) == 1) ? 1 : 0;
 
     logic [COEF_WIDTH-1:0] coe_mem[TAP_NUM];
 
@@ -25,26 +23,24 @@ module fir_filter #(
         $readmemh(COE_FILE, coe_mem);
     end
 
-    logic tvalid_d;
+    localparam int DELAY = TAP_NUM + $clog2(TAP_NUM);
 
-    shift_reg #(
-        .DATA_WIDTH($bits(tvalid_i)),
-        .DELAY     (TAP_NUM + $clog2(TAP_NUM) + DELAY),
-        .RESET_EN  (1)
-    ) i_shift_reg (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i),
-        .en_i  (en_i),
-        .data_i(tvalid_i),
-        .data_o(tvalid_d)
-    );
+    logic [DELAY-1:0] tvalid_d;
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            tvalid_d <= '0;
+        end else begin
+            tvalid_d <= {tvalid_d[DELAY-2:0], tvalid_i};
+        end
+    end
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             tvalid_o <= 1'b0;
         end else begin
             if (en_i) begin
-                tvalid_o <= tvalid_d;
+                tvalid_o <= tvalid_d[DELAY-1];
             end else begin
                 tvalid_o <= 1'b0;
             end
@@ -52,26 +48,27 @@ module fir_filter #(
     end
 
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
-        logic signed [                   DATA_WIDTH-1:0] delay[  TAP_NUM];
-        logic signed [        DATA_WIDTH+COEF_WIDTH-1:0] mult [  TAP_NUM];
-        logic signed [DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc  [TAP_NUM-1];
+        logic signed [TAP_NUM-1:0][                   DATA_WIDTH-1:0] delay;
+        logic signed [TAP_NUM-1:0][        DATA_WIDTH+COEF_WIDTH-1:0] mult;
+        logic signed [TAP_NUM-2:0][DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc;
 
-        for (genvar tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin : g_tap
-            always_ff @(posedge clk_i) begin
-                if (tap_indx == 0) begin
-                    if (tvalid_i) begin
-                        delay[tap_indx] <= tdata_i[ch_indx];
-                    end
-                end else begin
-                    delay[tap_indx] <= delay[tap_indx-1];
-                end
+        always_ff @(posedge clk_i) begin
+            if (tvalid_i) begin
+                delay[0] <= tdata_i[ch_indx];
             end
+            for (int tap_indx = 1; tap_indx < TAP_NUM; tap_indx++) begin
+                delay[tap_indx] <= delay[tap_indx-1];
+            end
+        end
 
-            always_ff @(posedge clk_i) begin
+        always_ff @(posedge clk_i) begin
+            for (int tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin
                 mult[tap_indx] <= delay[tap_indx] * coe_mem[tap_indx];
             end
+        end
 
-            always_ff @(posedge clk_i) begin
+        always_ff @(posedge clk_i) begin
+            for (int tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin
                 if (tap_indx < TAP_NUM / 2) begin
                     acc[tap_indx] <= mult[2*tap_indx] + mult[2*tap_indx+1];
                 end else begin

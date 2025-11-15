@@ -1,8 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
 module shift_reg #(
-    parameter logic RESET_EN   = 1,
+    parameter logic RESET_EN   = 0,
     parameter int   DATA_WIDTH = 16,
-    parameter int   DELAY      = 16
+    parameter int   DELAY      = 16,
+    parameter       SRL_STYLE  = "srl"
 ) (
     input  logic                  clk_i,
     input  logic                  rstn_i,
@@ -30,7 +31,7 @@ module shift_reg #(
             end
         end
     end else begin : g_delay_many
-        logic [DELAY-1:0] delay[DATA_WIDTH];
+        (* srl_style = SRL_STYLE *) logic [DELAY-1:0] delay[DATA_WIDTH];
 
         for (genvar i = 0; i < DATA_WIDTH; i++) begin : g_shift_reg
             if (RESET_EN) begin : g_reset

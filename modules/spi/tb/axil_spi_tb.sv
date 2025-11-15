@@ -11,7 +11,6 @@ module axil_spi_tb ();
     localparam int CS_WIDTH = 8;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
-    localparam int AXIS_DATA_WIDTH = 8;
 
     localparam int WAT_CYCLES = 200;
     localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
@@ -54,7 +53,7 @@ module axil_spi_tb ();
     initial begin
         axil_env env;
         env   = new(s_axil);
-        wdata = $urandom_range(0, (2 ** AXIS_DATA_WIDTH) - 1);
+        wdata = $urandom_range(0, (2 ** SPI_DATA_WIDTH) - 1);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * WAIT_TIME_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
@@ -75,7 +74,6 @@ module axil_spi_tb ();
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .SLAVE_NUM      (CS_WIDTH),
         .ILA_EN         (0)
     ) i_axil_spi (

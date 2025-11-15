@@ -3,8 +3,8 @@
 
 package uart_pkg;
 
-    localparam int DIVIDER_WIDTH = 32;
-    localparam int DATA_WIDTH = 8;
+    localparam int UART_DIVIDER_WIDTH = 32;
+    localparam int UART_DATA_WIDTH = 8;
 
     typedef struct packed {
         logic [7:0] rsrvd;
@@ -22,7 +22,7 @@ package uart_pkg;
         logic        parity_err;
     } uart_status_reg_t;
 
-    typedef logic [DIVIDER_WIDTH-1:0] uart_clk_divider_reg_t;
+    typedef logic [UART_DIVIDER_WIDTH-1:0] uart_clk_divider_reg_t;
 
     typedef struct packed {
         logic [27:0] rsrvd;
@@ -33,8 +33,8 @@ package uart_pkg;
     } uart_control_reg_t;
 
     typedef struct packed {
-        logic [23:0]           rsrvd;
-        logic [DATA_WIDTH-1:0] data;
+        logic [23:0]                rsrvd;
+        logic [UART_DATA_WIDTH-1:0] data;
     } uart_data_reg_t;
 
     typedef struct packed {
@@ -61,7 +61,7 @@ package uart_pkg;
     };
 
     function automatic logic parity;
-        input logic [DATA_WIDTH-1:0] data;
+        input logic [UART_DATA_WIDTH-1:0] data;
         input logic parity_odd;
         input logic parity_even;
         begin
@@ -72,15 +72,6 @@ package uart_pkg;
             end
         end
     endfunction
-
-    typedef enum logic [2:0] {
-        IDLE   = 3'b000,
-        START  = 3'b001,
-        DATA   = 3'b010,
-        PARITY = 3'b011,
-        STOP   = 3'b100,
-        WAIT   = 3'b101
-    } uart_state_e;
 
 endpackage
 

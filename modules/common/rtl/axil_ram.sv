@@ -4,6 +4,7 @@ module axil_ram #(
     parameter int BYTE_WIDTH   = 8,
     parameter int BYTE_NUM     = 4,
     parameter int READ_LATENCY = 0,
+    parameter     RAM_STYLE    = "block",
     parameter     MEM_MODE     = "no_change",
     parameter     MEM_FILE     = ""
 ) (
@@ -102,7 +103,8 @@ module axil_ram #(
         .BYTE_WIDTH  (BYTE_WIDTH),
         .BYTE_NUM    (BYTE_NUM),
         .READ_LATENCY(1),
-        .MEM_MODE    (MEM_MODE)
+        .MEM_MODE    (MEM_MODE),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_ram_sdp (
         .a_clk_i  (clk_i),
         .a_en_i   (wr_handshake),
