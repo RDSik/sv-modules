@@ -4,7 +4,7 @@ module ctrl_top #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SPI_CS_WIDTH    = 1,
-    parameter logic ILA_EN          = 1,
+    parameter logic ILA_EN          = 0,
     parameter       RAM_STYLE       = "distributed"
 ) (
     input logic clk_i,
