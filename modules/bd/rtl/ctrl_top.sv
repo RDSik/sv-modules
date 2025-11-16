@@ -1,8 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module ctrl_top #(
     parameter int   FIFO_DEPTH      = 128,
-    parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter int   AXIL_DATA_WIDTH = 32,
+    parameter int   AXIL_ADDR_WIDTH = 16,
+    parameter int   AXIL_DATA_WIDTH = 16,
     parameter int   SPI_CS_WIDTH    = 1,
     parameter logic ILA_EN          = 0,
     parameter       RAM_STYLE       = "distributed"
