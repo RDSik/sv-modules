@@ -41,8 +41,8 @@ proc source_scripts {dirs} {
 
 source_scripts $modules_dirs
 
-add_file $constrain_dir/axis_uart_top.sdc
-add_file $constrain_dir/axis_uart_top.cst
+add_file $constrain_dir/top.sdc
+add_file $constrain_dir/top.cst
 
 set_option -top_module $top
 set_option -verilog_std $language

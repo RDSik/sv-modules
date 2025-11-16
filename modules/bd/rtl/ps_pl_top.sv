@@ -1,11 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
 module ps_pl_top #(
-    parameter int   FIFO_DEPTH      = 128,
-    parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   SPI_CS_WIDTH    = 1,
-    parameter logic ILA_EN          = 1,
-    parameter       RAM_STYLE       = "distributed"
+    parameter int   FIFO_DEPTH   = 128,
+    parameter int   SPI_CS_WIDTH = 1,
+    parameter logic ILA_EN       = 1,
+    parameter       RAM_STYLE    = "distributed"
 ) (
     input logic clk_i,
 
@@ -42,6 +40,9 @@ module ps_pl_top #(
     inout        FIXED_IO_0_ps_porb,
     inout        FIXED_IO_0_ps_srstb
 );
+
+    localparam int AXIL_ADDR_WIDTH = 32;
+    localparam int AXIL_DATA_WIDTH = 32;
 
     logic ps_clk;
     logic ps_arstn;
@@ -84,6 +85,9 @@ module ps_pl_top #(
     );
 
     ctrl_top #(
+        .UART_EN        (1),
+        .SPI_EN         (1),
+        .I2C_EN         (1),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
