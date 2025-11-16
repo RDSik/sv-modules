@@ -1,10 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module sync_fifo #(
-    parameter int FIFO_WIDTH       = 32,
-    parameter int FIFO_DEPTH       = 64,
-    parameter int RAM_READ_LATENCY = 0,
-    parameter int PTR_WIDTH        = $clog2(FIFO_DEPTH),
-    parameter     RAM_STYLE        = "block"
+    parameter int FIFO_WIDTH = 32,
+    parameter int FIFO_DEPTH = 64,
+    parameter     RAM_STYLE  = "block"
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -18,12 +16,11 @@ module sync_fifo #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o,
-
-    output logic [PTR_WIDTH-1:0] data_cnt_o
+    output logic empty_o
 );
 
-    localparam logic SHOW_AHEAD_EN = (RAM_READ_LATENCY > 0);
+    localparam logic SHOW_AHEAD_EN = 0;
+    localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
     logic [ PTR_WIDTH-1:0] wr_ptr;
@@ -99,9 +96,9 @@ module sync_fifo #(
         .MEM_DEPTH   (FIFO_DEPTH),
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
-        .READ_LATENCY(RAM_READ_LATENCY),
-        .RAM_STYLE   (RAM_STYLE),
-        .MEM_MODE    ("read_first")
+        .READ_LATENCY(0),
+        .MEM_MODE    ("read_first"),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_ram_sdp (
         .a_clk_i  (clk_i),
         .a_en_i   (wr_en),
@@ -114,6 +111,7 @@ module sync_fifo #(
         .b_data_o (ram_data)
     );
 
+    logic [PTR_WIDTH:0] data_cnt_next;
     logic [PTR_WIDTH:0] data_cnt;
     logic               a_full;
     logic               full;
@@ -121,27 +119,27 @@ module sync_fifo #(
     logic               empty;
 
     always_comb begin
-        data_cnt = data_cnt_o;
+        data_cnt_next = data_cnt;
         if (push_i & ~pop_i) begin
-            data_cnt = data_cnt_o + 1'b1;
+            data_cnt_next = data_cnt + 1'b1;
         end else if (pop_i & ~push_i) begin
-            data_cnt = data_cnt_o - 1'b1;
+            data_cnt_next = data_cnt - 1'b1;
         end
     end
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            data_cnt_o <= '0;
+            data_cnt <= '0;
         end else begin
-            data_cnt_o <= data_cnt;
+            data_cnt <= data_cnt_next;
         end
     end
 
     /* verilator lint_off WIDTHEXPAND*/
-    assign a_full  = (data_cnt == FIFO_DEPTH - 1);
-    assign full    = (data_cnt == FIFO_DEPTH);
-    assign a_empty = (data_cnt == 1);
-    assign empty   = (data_cnt == 0);
+    assign a_full  = (data_cnt_next == FIFO_DEPTH - 1);
+    assign full    = (data_cnt_next == FIFO_DEPTH);
+    assign a_empty = (data_cnt_next == 1);
+    assign empty   = (data_cnt_next == 0);
     /* verilator lint_on WIDTHEXPAND*/
 
     always_ff @(posedge clk_i) begin

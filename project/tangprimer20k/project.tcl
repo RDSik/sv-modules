@@ -1,4 +1,4 @@
-set top      "axil_uart"
+set top      "ctrl_top"
 set part     "GW2A-LV18PG256C8/I7"
 set dev_ver  "C"
 set language "sysv2017"
@@ -10,7 +10,9 @@ set modules_dirs [list \
     ../../modules/uart \
     ../../modules/fifo \
     ../../modules/common \
+    ../../modules/bd \
     ../../modules/dsp \
+    ../../modules/dds \
     ../../modules/lfsr \
     ../../modules/interface \
 ]

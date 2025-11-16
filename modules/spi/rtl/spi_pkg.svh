@@ -32,15 +32,15 @@ package spi_pkg;
     } spi_slave_select_reg_t;
 
     typedef struct packed {
-        logic [27:0] rsrvd;
+        logic [28:0] rsrvd;
         logic        cpol;
         logic        cpha;
-        logic        stop;
         logic        reset;
     } spi_control_reg_t;
 
     typedef struct packed {
-        logic [23:0]               rsrvd;
+        logic [22:0]               rsrvd;
+        logic                      last;
         logic [SPI_DATA_WIDTH-1:0] data;
     } spi_data_reg_t;
 
@@ -66,7 +66,11 @@ package spi_pkg;
 
     localparam int REG_NUM = $bits(spi_regs_t) / 32;
 
-    localparam spi_regs_t REG_INIT = '{control : '{reset: 1'b1, default: '0}, default: '0};
+    localparam spi_regs_t REG_INIT = '{
+        control : '{reset: 1'b1, default: '0},
+        wait_time: '1,
+        default: '0
+    };
 
 endpackage
 

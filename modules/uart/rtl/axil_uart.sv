@@ -7,7 +7,8 @@ module axil_uart
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
-    parameter logic ILA_EN          = 0
+    parameter logic ILA_EN          = 0,
+    parameter       RAM_STYLE       = "distributed"
 ) (
     /* verilator lint_off PINMISSING */
     input logic clk_i,
@@ -137,11 +138,11 @@ module axil_uart
     localparam FIFO_MODE = "sync";
 
     axis_fifo_wrap #(
-        .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (UART_DATA_WIDTH),
-        .FIFO_MODE       (FIFO_MODE),
-        .CDC_REG_NUM     (CDC_REG_NUM),
-        .RAM_READ_LATENCY(0)
+        .FIFO_DEPTH (FIFO_DEPTH),
+        .FIFO_WIDTH (UART_DATA_WIDTH),
+        .FIFO_MODE  (FIFO_MODE),
+        .RAM_STYLE  (RAM_STYLE),
+        .CDC_REG_NUM(CDC_REG_NUM)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
         .m_axis   (uart_tx),
@@ -150,11 +151,11 @@ module axil_uart
     );
 
     axis_fifo_wrap #(
-        .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (UART_DATA_WIDTH),
-        .FIFO_MODE       (FIFO_MODE),
-        .CDC_REG_NUM     (CDC_REG_NUM),
-        .RAM_READ_LATENCY(0)
+        .FIFO_DEPTH (FIFO_DEPTH),
+        .FIFO_WIDTH (UART_DATA_WIDTH),
+        .FIFO_MODE  (FIFO_MODE),
+        .RAM_STYLE  (RAM_STYLE),
+        .CDC_REG_NUM(CDC_REG_NUM)
     ) i_axis_fifo_rx (
         .s_axis   (uart_rx),
         .m_axis   (fifo_rx),
