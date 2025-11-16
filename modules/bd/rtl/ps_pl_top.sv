@@ -83,47 +83,25 @@ module ps_pl_top #(
         .rstn_i(ps_arstn)
     );
 
-    axil_uart #(
+    ctrl_top #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .SPI_CS_WIDTH   (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN),
         .RAM_STYLE      (RAM_STYLE)
-    ) i_axil_uart (
-        .clk_i    (clk_i),
-        .uart_rx_i(uart_rx_i),
-        .uart_tx_o(uart_tx_o),
-        .s_axil   (axil[0])
-    );
-
-    axil_i2c #(
-        .FIFO_DEPTH     (FIFO_DEPTH),
-        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .ILA_EN         (ILA_EN),
-        .RAM_STYLE      (RAM_STYLE)
-    ) i_axil_i2c (
+    ) i_ctrl_top (
         .clk_i       (clk_i),
+        .uart_rx_i   (uart_rx_i),
+        .uart_tx_o   (uart_tx_o),
         .scl_pad_i   (scl_pad_i),
         .scl_pad_o   (scl_pad_o),
         .scl_padoen_o(scl_padoen_o),
         .sda_pad_i   (sda_pad_i),
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
-        .s_axil      (axil[1])
-    );
-
-    axil_spi #(
-        .FIFO_DEPTH     (FIFO_DEPTH),
-        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .SLAVE_NUM      (SPI_CS_WIDTH),
-        .ILA_EN         (ILA_EN),
-        .RAM_STYLE      (RAM_STYLE)
-    ) i_axil_spi (
-        .clk_i (clk_i),
-        .s_axil(axil[2]),
-        .m_spi (m_spi)
+        .m_spi       (m_spi),
+        .s_axil      (axil)
     );
 
     zynq_bd zynq_bd_i (

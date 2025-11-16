@@ -1,3 +1,12 @@
-IO_LOC "clk_i"     H11;
-IO_LOC "uart_rx_i" T13;
-IO_LOC "uart_tx_o" M11;
+IO_LOC "clk_i"        H11;
+
+IO_LOC "uart_rx_i"    T13;
+IO_LOC "uart_tx_o"    M11;
+
+IO_LOC "scl_pad_i"    J14;
+IO_LOC "scl_pad_o"    M14;
+IO_LOC "scl_padoen_o" T11;
+
+IO_LOC "sda_pad_i"    J16;
+IO_LOC "sda_pad_o"    M15;
+IO_LOC "sda_padoen_o" R11;
