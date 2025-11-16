@@ -7,7 +7,8 @@ module axil_i2c
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter logic ILA_EN          = 0
+    parameter logic ILA_EN          = 0,
+    parameter       RAM_STYLE       = "distributed"
 ) (
     /* verilator lint_off PINMISSING */
     input logic clk_i,
@@ -109,7 +110,7 @@ module axil_i2c
             if (wr_valid[CONTROL_REG_POS]) begin
                 core_en <= wr_regs.control.core_en;
                 rw      <= wr_regs.control.rw;
-            end else if (cmd_ack && (state == STOP)) begin
+            end else if (cmd_ack & stop) begin
                 core_en <= 1'b0;
                 rw      <= 1'b0;
             end
@@ -203,47 +204,45 @@ module axil_i2c
     assign rx_fifo_push = cmd_ack & read;
 
     fifo_wrap #(
-        .FIFO_WIDTH      (I2C_DATA_WIDTH),
-        .FIFO_DEPTH      (FIFO_DEPTH),
-        .CDC_REG_NUM     (CDC_REG_NUM),
-        .RAM_READ_LATENCY(0),
-        .FIFO_MODE       (FIFO_MODE)
+        .FIFO_WIDTH (I2C_DATA_WIDTH),
+        .FIFO_DEPTH (FIFO_DEPTH),
+        .CDC_REG_NUM(CDC_REG_NUM),
+        .FIFO_MODE  (FIFO_MODE),
+        .RAM_STYLE  (RAM_STYLE)
     ) i_fifo_tx (
-        .wr_clk_i  (ps_clk),
-        .wr_rstn_i (fifo_rst),
-        .wr_data_i (wr_regs.tx.data),
-        .rd_clk_i  (ps_clk),
-        .rd_rstn_i (rstn_i),
-        .rd_data_o (i2c_tx_data),
-        .push_i    (tx_fifo_push),
-        .pop_i     (tx_fifo_pop),
-        .empty_o   (tx_fifo_empty),
-        .full_o    (tx_fifo_full),
-        .a_empty_o (),
-        .a_full_o  (),
-        .data_cnt_o()
+        .wr_clk_i (ps_clk),
+        .wr_rstn_i(fifo_rst),
+        .wr_data_i(wr_regs.tx.data),
+        .rd_clk_i (ps_clk),
+        .rd_rstn_i(rstn_i),
+        .rd_data_o(i2c_tx_data),
+        .push_i   (tx_fifo_push),
+        .pop_i    (tx_fifo_pop),
+        .empty_o  (tx_fifo_empty),
+        .full_o   (tx_fifo_full),
+        .a_empty_o(),
+        .a_full_o ()
     );
 
     fifo_wrap #(
-        .FIFO_WIDTH      (I2C_DATA_WIDTH),
-        .FIFO_DEPTH      (FIFO_DEPTH),
-        .CDC_REG_NUM     (CDC_REG_NUM),
-        .RAM_READ_LATENCY(0),
-        .FIFO_MODE       (FIFO_MODE)
+        .FIFO_WIDTH (I2C_DATA_WIDTH),
+        .FIFO_DEPTH (FIFO_DEPTH),
+        .CDC_REG_NUM(CDC_REG_NUM),
+        .FIFO_MODE  (FIFO_MODE),
+        .RAM_STYLE  (RAM_STYLE)
     ) i_fifo_rx (
-        .wr_clk_i  (ps_clk),
-        .wr_rstn_i (fifo_rst),
-        .wr_data_i (i2c_rx_data),
-        .rd_clk_i  (ps_clk),
-        .rd_rstn_i (rstn_i),
-        .rd_data_o (rx_data),
-        .push_i    (rx_fifo_push),
-        .pop_i     (rx_fifo_pop),
-        .empty_o   (rx_fifo_empty),
-        .full_o    (rx_fifo_full),
-        .a_empty_o (),
-        .a_full_o  (),
-        .data_cnt_o()
+        .wr_clk_i (ps_clk),
+        .wr_rstn_i(fifo_rst),
+        .wr_data_i(i2c_rx_data),
+        .rd_clk_i (ps_clk),
+        .rd_rstn_i(rstn_i),
+        .rd_data_o(rx_data),
+        .push_i   (rx_fifo_push),
+        .pop_i    (rx_fifo_pop),
+        .empty_o  (rx_fifo_empty),
+        .full_o   (rx_fifo_full),
+        .a_empty_o(),
+        .a_full_o ()
     );
 
 endmodule

@@ -19,10 +19,10 @@ module axil_spi_tb ();
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    logic                       clk_i;
-    logic                       rstn_i;
-    logic [AXIL_DATA_WIDTH-1:0] rdata;
-    logic [AXIL_DATA_WIDTH-1:0] wdata;
+    logic                      clk_i;
+    logic                      rstn_i;
+    logic [SPI_DATA_WIDTH-1:0] rdata;
+    logic [SPI_DATA_WIDTH-1:0] wdata;
 
     spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
 
@@ -57,7 +57,7 @@ module axil_spi_tb ();
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * WAIT_TIME_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {1'b1, wdata});
         #WAT_CYCLES;
         for (int i = 0; i < REG_NUM; i++) begin
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);

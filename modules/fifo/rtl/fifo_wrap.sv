@@ -1,12 +1,10 @@
 /* verilator lint_off TIMESCALEMOD */
 module fifo_wrap #(
-    parameter int FIFO_WIDTH       = 32,
-    parameter int FIFO_DEPTH       = 128,
-    parameter int CDC_REG_NUM      = 2,
-    parameter int RAM_READ_LATENCY = 0,
-    parameter int PTR_WIDTH        = $clog2(FIFO_DEPTH),
-    parameter     RAM_STYLE        = "distributed",
-    parameter     FIFO_MODE        = "sync"
+    parameter int FIFO_WIDTH  = 32,
+    parameter int FIFO_DEPTH  = 128,
+    parameter int CDC_REG_NUM = 2,
+    parameter     RAM_STYLE   = "distributed",
+    parameter     FIFO_MODE   = "sync"
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rstn_i,
@@ -22,30 +20,25 @@ module fifo_wrap #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o,
-
-    output logic [PTR_WIDTH-1:0] data_cnt_o
+    output logic empty_o
 );
 
     if (FIFO_MODE == "sync") begin : g_fifo
         sync_fifo #(
-            .FIFO_WIDTH      (FIFO_WIDTH),
-            .FIFO_DEPTH      (FIFO_DEPTH),
-            .RAM_READ_LATENCY(RAM_READ_LATENCY),
-            .RAM_STYLE       (RAM_STYLE),
-            .PTR_WIDTH       (PTR_WIDTH)
+            .FIFO_WIDTH(FIFO_WIDTH),
+            .FIFO_DEPTH(FIFO_DEPTH),
+            .RAM_STYLE (RAM_STYLE)
         ) i_fifo (
-            .clk_i     (wr_clk_i),
-            .rstn_i    (wr_rstn_i),
-            .data_i    (wr_data_i),
-            .data_o    (rd_data_o),
-            .push_i    (push_i),
-            .pop_i     (pop_i),
-            .empty_o   (empty_o),
-            .full_o    (full_o),
-            .a_empty_o (a_empty_o),
-            .a_full_o  (a_full_o),
-            .data_cnt_o(data_cnt_o)
+            .clk_i    (wr_clk_i),
+            .rstn_i   (wr_rstn_i),
+            .data_i   (wr_data_i),
+            .data_o   (rd_data_o),
+            .push_i   (push_i),
+            .pop_i    (pop_i),
+            .empty_o  (empty_o),
+            .full_o   (full_o),
+            .a_empty_o(a_empty_o),
+            .a_full_o (a_full_o)
         );
     end else if (FIFO_MODE == "async") begin : g_fifo
         async_fifo #(

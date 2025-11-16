@@ -4,7 +4,8 @@ module ps_pl_top #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SPI_CS_WIDTH    = 1,
-    parameter logic ILA_EN          = 1
+    parameter logic ILA_EN          = 1,
+    parameter       RAM_STYLE       = "distributed"
 ) (
     input logic clk_i,
 
@@ -86,7 +87,8 @@ module ps_pl_top #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .ILA_EN         (ILA_EN)
+        .ILA_EN         (ILA_EN),
+        .RAM_STYLE      (RAM_STYLE)
     ) i_axil_uart (
         .clk_i    (clk_i),
         .uart_rx_i(uart_rx_i),
@@ -98,7 +100,8 @@ module ps_pl_top #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .ILA_EN         (ILA_EN)
+        .ILA_EN         (ILA_EN),
+        .RAM_STYLE      (RAM_STYLE)
     ) i_axil_i2c (
         .clk_i       (clk_i),
         .scl_pad_i   (scl_pad_i),
@@ -115,7 +118,8 @@ module ps_pl_top #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .SLAVE_NUM      (SPI_CS_WIDTH),
-        .ILA_EN         (ILA_EN)
+        .ILA_EN         (ILA_EN),
+        .RAM_STYLE      (RAM_STYLE)
     ) i_axil_spi (
         .clk_i (clk_i),
         .s_axil(axil[2]),

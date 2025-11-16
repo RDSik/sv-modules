@@ -9,7 +9,7 @@ module axis_fifo_tb ();
     localparam int FIFO_WIDTH = 16;
     localparam int FIFO_DEPTH = 64;
     localparam int CDC_REG_NUM = 3;
-    localparam int RAM_READ_LATENCY = 2;
+    localparam logic TLAST_EN = 1;
     localparam FIFO_MODE = "sync";
 
     localparam int M_CLK_PER = 2;
@@ -76,11 +76,11 @@ module axis_fifo_tb ();
     end
 
     axis_fifo_wrap #(
-        .FIFO_DEPTH      (FIFO_DEPTH),
-        .FIFO_WIDTH      (FIFO_WIDTH),
-        .FIFO_MODE       (FIFO_MODE),
-        .CDC_REG_NUM     (CDC_REG_NUM),
-        .RAM_READ_LATENCY(RAM_READ_LATENCY)
+        .FIFO_DEPTH (FIFO_DEPTH),
+        .FIFO_WIDTH (FIFO_WIDTH),
+        .FIFO_MODE  (FIFO_MODE),
+        .CDC_REG_NUM(CDC_REG_NUM),
+        .TLAST_EN   (TLAST_EN)
     ) dut (
         .s_axis   (m_axis),
         .m_axis   (s_axis),
