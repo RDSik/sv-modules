@@ -8,6 +8,7 @@ set modules_dirs [list \
     ../../modules/arbiter \
     ../../modules/spi \
     ../../modules/uart \
+    ../../modules/i2c \
     ../../modules/fifo \
     ../../modules/common \
     ../../modules/bd \
