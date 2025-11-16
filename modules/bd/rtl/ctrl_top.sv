@@ -25,7 +25,7 @@ module ctrl_top #(
 
     spi_if.master m_spi,
 
-    axil_if.slave s_axil[UART_EN + SPI_EN + I2C_EN-1:0]
+    axil_if.slave s_axil[UART_EN+SPI_EN+I2C_EN-1:0]
 );
 
     if (UART_EN) begin : g_uart_en
