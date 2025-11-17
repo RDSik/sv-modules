@@ -4,7 +4,7 @@ module fir_filter #(
     parameter int CH_NUM     = 2,
     parameter int DATA_WIDTH = 16,
     parameter int COEF_WIDTH = 18,
-    parameter int TAP_NUM    = 4
+    parameter int TAP_NUM    = 25
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -17,13 +17,17 @@ module fir_filter #(
     output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+TAP_NUM-1:0] tdata_o
 );
 
+    if (TAP_NUM % 2 != 0) begin : g_tap_num_err
+        $error("");
+    end
+
     logic [COEF_WIDTH-1:0] coe_mem[TAP_NUM];
 
     initial begin
         $readmemh(COE_FILE, coe_mem);
     end
 
-    localparam int DELAY = 2 * TAP_NUM;
+    localparam int DELAY = TAP_NUM + $clog2(TAP_NUM);
 
     logic [DELAY-1:0] tvalid_d;
 
@@ -50,7 +54,7 @@ module fir_filter #(
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
         logic signed [TAP_NUM-1:0][                   DATA_WIDTH-1:0] delay;
         logic signed [TAP_NUM-1:0][        DATA_WIDTH+COEF_WIDTH-1:0] mult;
-        logic signed [TAP_NUM-1:0][DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc;
+        logic signed [TAP_NUM-2:0][DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc;
 
         always_ff @(posedge clk_i) begin
             if (tvalid_i) begin
@@ -68,9 +72,12 @@ module fir_filter #(
         end
 
         always_ff @(posedge clk_i) begin
-            acc[0] <= mult[0];
-            for (int tap_indx = 1; tap_indx < TAP_NUM; tap_indx++) begin
-                acc[tap_indx] <= mult[tap_indx] + acc[tap_indx-1];
+            for (int tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin
+                if (tap_indx < TAP_NUM / 2) begin
+                    acc[tap_indx] <= mult[2*tap_indx] + mult[2*tap_indx+1];
+                end else begin
+                    acc[tap_indx] <= acc[2*(tap_indx-(TAP_NUM/2))] + acc[2*(tap_indx-(TAP_NUM/2))+1];
+                end
             end
         end
 
