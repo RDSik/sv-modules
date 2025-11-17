@@ -2,7 +2,7 @@ set path [file dirname [info script]]
 
 if {$xilinx == 1} {
     set xci_defaultlib "
-        $path/ip/dds_compiler.xci
+        $path/ip/dds_compiler/dds_compiler.xci
     "
     add_files -norecurse $xci_defaultlib
 

@@ -23,6 +23,7 @@ b = firpm(n,fo,ao,w);
 filter_coe = round(b*(2^(COE_WIDTH-1)-1));
 fvtool(filter_coe, 'Fs', Fs);
 
+%% Write file
 if (strcmp(FILE_FORMAT, 'coe'))
     hq = dfilt.dffir(filter_coe); 
     set(hq,'arithmetic','fixed');
