@@ -2,8 +2,7 @@
 module ps_pl_top #(
     parameter int   FIFO_DEPTH   = 128,
     parameter int   SPI_CS_WIDTH = 1,
-    parameter logic ILA_EN       = 1,
-    parameter       RAM_STYLE    = "distributed"
+    parameter logic ILA_EN       = 1
 ) (
     input logic clk_i,
 
@@ -92,8 +91,7 @@ module ps_pl_top #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .SPI_CS_WIDTH   (SPI_CS_WIDTH),
-        .ILA_EN         (ILA_EN),
-        .RAM_STYLE      (RAM_STYLE)
+        .ILA_EN         (ILA_EN)
     ) i_ctrl_top (
         .clk_i       (clk_i),
         .uart_rx_i   (uart_rx_i),

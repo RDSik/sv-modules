@@ -1,7 +1,8 @@
 module mixer #(
-    parameter int IQ_NUM      = 2,
-    parameter int PHASE_WIDTH = 14,
-    parameter int DATA_WIDTH  = 16
+    parameter int   IQ_NUM      = 2,
+    parameter int   PHASE_WIDTH = 14,
+    parameter int   DATA_WIDTH  = 16,
+    parameter logic DDS_IP_EN   = 0
 ) (
     input logic clk_i,
     input logic rstn_i,
@@ -25,7 +26,7 @@ module mixer #(
         .IQ_NUM     (IQ_NUM),
         .PHASE_WIDTH(PHASE_WIDTH),
         .DATA_WIDTH (DATA_WIDTH),
-        .IP_EN      (0)
+        .IP_EN      (DDS_IP_EN)
     ) i_dds (
         .clk_i         (clk_i),
         .rstn_i        (rstn_i),
@@ -57,7 +58,8 @@ module mixer #(
     shift_reg #(
         .DATA_WIDTH($bits(tvalid_i)),
         .DELAY     (CMULT_DELAY),
-        .RESET_EN  (1)
+        .RESET_EN  (1),
+        .SRL_STYLE ("register")
     ) i_shift_reg (
         .clk_i (clk_i),
         .rstn_i(rstn_i),

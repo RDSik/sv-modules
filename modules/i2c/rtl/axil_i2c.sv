@@ -7,8 +7,7 @@ module axil_i2c
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter logic ILA_EN          = 0,
-    parameter       RAM_STYLE       = "distributed"
+    parameter logic ILA_EN          = 0
 ) (
     /* verilator lint_off PINMISSING */
     input logic clk_i,
@@ -207,8 +206,7 @@ module axil_i2c
         .FIFO_WIDTH (I2C_DATA_WIDTH),
         .FIFO_DEPTH (FIFO_DEPTH),
         .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE),
-        .RAM_STYLE  (RAM_STYLE)
+        .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_tx (
         .wr_clk_i (ps_clk),
         .wr_rstn_i(fifo_rst),
@@ -228,8 +226,7 @@ module axil_i2c
         .FIFO_WIDTH (I2C_DATA_WIDTH),
         .FIFO_DEPTH (FIFO_DEPTH),
         .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE),
-        .RAM_STYLE  (RAM_STYLE)
+        .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_rx (
         .wr_clk_i (ps_clk),
         .wr_rstn_i(fifo_rst),

@@ -3,25 +3,23 @@
 // FiR Symmetric Systolic Filter, Top module is sfir_even_symmetric_systolic_top
 
 module sfir_even_symmetric_systolic_top #(
-    parameter integer NBTAP = 28,
-    parameter integer DSIZE = 16,
-    parameter integer CSIZE = 18,
-    parameter integer PSIZE = CSIZE + DSIZE,
-    // verilog_format: off
-    parameter int COEF         [0:NBTAP-1] = '{
-        560, 608, -120, -354, -34, 538, 40, -560,
-        -250, 692, 412, -710, -704, 740, 1014,  -662,
-        -1436, 514, 1936, -198, -2608, -354, 3572, 1438,
-        -5354, -4176, 11198, 27938}
-    // verilog_format: on
-
+    parameter integer NBTAP    = 28,
+    parameter integer DSIZE    = 16,
+    parameter integer CSIZE    = 18,
+    parameter integer PSIZE    = CSIZE + DSIZE,
+    parameter         COE_FILE = "fir.mem"
 ) (
     input  logic                    clk,
     input  logic signed [DSIZE-1:0] datain,
     output logic signed [PSIZE-1:0] firout
 );
 
-    logic signed [CSIZE-1:0] h[NBTAP-1:0];
+    logic [CSIZE-1:0] h[NBTAP];
+
+    initial begin
+        $readmemh(COE_FILE, h);
+    end
+
     logic signed [DSIZE-1:0] arraydata[NBTAP-1:0];
     logic signed [PSIZE-1:0] arrayprod[NBTAP-1:0];
 
@@ -40,8 +38,6 @@ module sfir_even_symmetric_systolic_top #(
     );
 
     for (genvar i = 0; i < NBTAP; i = i + 1) begin
-        assign h[i] = COEF[i][CSIZE-1:0];
-
         if (i == 0) begin
             sfir_even_symmetric_systolic_element #(
                 .DSIZE(DSIZE),

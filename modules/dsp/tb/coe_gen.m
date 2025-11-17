@@ -8,17 +8,19 @@ COE_MEM_NAME  = 'fir.mem';
 
 FILE_FORMAT = 'mem';
 
-Fs          = 100e6;
-Fpass       = 20e6;
-Fstop       = 30e6;
-Astop       = 60;
-PASS_RIPPLE = 0.5;
-DESIGN      = 'equiripple';
+PASS_RIPPLE = 0.001;       % Passband ripple in dB 
+STOP_RIPPLE = 0.1;         % Stopband ripple in dB
+Fs          = 100e6;       % Sample rate
+F           = [20e6 30e6]; % Cutoff frequencies
+A           = [1 0];       % Desired amplitudes
+
+Fs_norm = F / (Fs/2);
 
 %% Filter coefficients generation
-lpFilt = designfilt('lowpassfir', 'PassbandFrequency', Fpass, 'StopbandFrequency', Fstop, ... 
-         'PassbandRipple', PASS_RIPPLE, 'StopbandAttenuation', Astop, 'SampleRate', Fs, 'DesignMethod', DESIGN);
-filter_coe = round(lpFilt.Coefficients*(2^(COE_WIDTH-1)-1));
+dev = [(10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1) 10^(-STOP_RIPPLE/20)]; 
+[n,fo,ao,w] = firpmord(F,A,dev,Fs);
+b = firpm(n,fo,ao,w);
+filter_coe = round(b*(2^(COE_WIDTH-1)-1));
 fvtool(filter_coe, 'Fs', Fs);
 
 if (strcmp(FILE_FORMAT, 'coe'))

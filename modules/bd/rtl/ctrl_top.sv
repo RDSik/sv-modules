@@ -7,9 +7,7 @@ module ctrl_top #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SPI_CS_WIDTH    = 1,
-    parameter logic ILA_EN          = 0,
-    parameter       RAM_STYLE       = "distributed",
-    parameter int   MODULES_NUM     = UART_EN + SPI_EN + I2C_EN
+    parameter logic ILA_EN          = 0
 ) (
     input logic clk_i,
 
@@ -26,7 +24,7 @@ module ctrl_top #(
 
     spi_if.master m_spi,
 
-    axil_if.slave s_axil[MODULES_NUM-1:0]
+    axil_if.slave s_axil[UART_EN+SPI_EN+I2C_EN-1:0]
 );
 
     if (UART_EN) begin : g_uart_en
@@ -34,8 +32,7 @@ module ctrl_top #(
             .FIFO_DEPTH     (FIFO_DEPTH),
             .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
             .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-            .ILA_EN         (ILA_EN),
-            .RAM_STYLE      (RAM_STYLE)
+            .ILA_EN         (ILA_EN)
         ) i_axil_uart (
             .clk_i    (clk_i),
             .uart_rx_i(uart_rx_i),
@@ -50,8 +47,7 @@ module ctrl_top #(
             .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
             .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
             .SLAVE_NUM      (SPI_CS_WIDTH),
-            .ILA_EN         (ILA_EN),
-            .RAM_STYLE      (RAM_STYLE)
+            .ILA_EN         (ILA_EN)
         ) i_axil_spi (
             .clk_i (clk_i),
             .m_spi (m_spi),
@@ -64,8 +60,7 @@ module ctrl_top #(
             .FIFO_DEPTH     (FIFO_DEPTH),
             .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
             .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-            .ILA_EN         (ILA_EN),
-            .RAM_STYLE      (RAM_STYLE)
+            .ILA_EN         (ILA_EN)
         ) i_axil_i2c (
             .clk_i       (clk_i),
             .scl_pad_i   (scl_pad_i),

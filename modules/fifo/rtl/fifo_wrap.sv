@@ -3,7 +3,6 @@ module fifo_wrap #(
     parameter int FIFO_WIDTH  = 32,
     parameter int FIFO_DEPTH  = 128,
     parameter int CDC_REG_NUM = 2,
-    parameter     RAM_STYLE   = "distributed",
     parameter     FIFO_MODE   = "sync"
 ) (
     input logic                  wr_clk_i,
@@ -26,8 +25,7 @@ module fifo_wrap #(
     if (FIFO_MODE == "sync") begin : g_fifo
         sync_fifo #(
             .FIFO_WIDTH(FIFO_WIDTH),
-            .FIFO_DEPTH(FIFO_DEPTH),
-            .RAM_STYLE (RAM_STYLE)
+            .FIFO_DEPTH(FIFO_DEPTH)
         ) i_fifo (
             .clk_i    (wr_clk_i),
             .rstn_i   (wr_rstn_i),
@@ -44,8 +42,7 @@ module fifo_wrap #(
         async_fifo #(
             .FIFO_WIDTH (FIFO_WIDTH),
             .FIFO_DEPTH (FIFO_DEPTH),
-            .CDC_REG_NUM(CDC_REG_NUM),
-            .RAM_STYLE  (RAM_STYLE)
+            .CDC_REG_NUM(CDC_REG_NUM)
         ) i_fifo (
             .wr_clk_i (wr_clk_i),
             .wr_rstn_i(wr_rstn_i),

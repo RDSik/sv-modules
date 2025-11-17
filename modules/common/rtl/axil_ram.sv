@@ -1,16 +1,16 @@
 /* verilator lint_off TIMESCALEMOD */
 module axil_ram #(
-    parameter int MEM_DEPTH    = 64,
-    parameter int BYTE_WIDTH   = 8,
-    parameter int BYTE_NUM     = 4,
-    parameter int READ_LATENCY = 0,
-    parameter     RAM_STYLE    = "block",
-    parameter     MEM_MODE     = "no_change",
-    parameter     MEM_FILE     = ""
+    parameter int MEM_DEPTH = 128,
+    parameter     RAM_STYLE = "block",
+    parameter     MEM_MODE  = "no_change",
+    parameter     MEM_FILE  = ""
 ) (
     axil_if.slave s_axil
 );
 
+    localparam int BYTE_WIDTH = 8;
+    localparam int BYTE_NUM = s_axil.STRB_WIDTH;
+    localparam int ADDR_WIDTH = s_axil.ADDR_WIDTH;
     localparam int ADDR_LSB = (BYTE_WIDTH * BYTE_NUM) / 32 + 1;
     localparam int ADDR_MSB = ADDR_LSB + $clog2(MEM_DEPTH);
 
@@ -20,22 +20,17 @@ module axil_ram #(
     assign clk_i  = s_axil.clk_i;
     assign rstn_i = s_axil.rstn_i;
 
-    logic [s_axil.ADDR_WIDTH-1:0] awaddr;
-    logic [s_axil.ADDR_WIDTH-1:0] araddr;
-    logic                         write_valid;
-    logic                         wr_handshake;
-    logic                         ar_handshake;
-
-    assign write_valid  = s_axil.awvalid & s_axil.wvalid;
-    assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
-    assign ar_handshake = s_axil.arvalid & s_axil.arready;
+    logic [ADDR_WIDTH-1:0] awaddr;
+    logic [ADDR_WIDTH-1:0] araddr;
+    logic                  slv_reg_wren;
+    logic                  slv_reg_rden;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.awready <= 1'b0;
+            s_axil.awready <= '0;
             awaddr         <= '0;
         end else begin
-            if (write_valid & ~s_axil.awready) begin
+            if (s_axil.awvalid & s_axil.wvalid & ~s_axil.awready) begin
                 s_axil.awready <= 1'b1;
                 awaddr         <= s_axil.awaddr;
             end else begin
@@ -48,7 +43,7 @@ module axil_ram #(
         if (~rstn_i) begin
             s_axil.wready <= 1'b0;
         end else begin
-            if (write_valid & ~s_axil.wready) begin
+            if (s_axil.awvalid & s_axil.wvalid & ~s_axil.wready) begin
                 s_axil.wready <= 1'b1;
             end else begin
                 s_axil.wready <= 1'b0;
@@ -56,15 +51,17 @@ module axil_ram #(
         end
     end
 
+    assign slv_reg_wren = s_axil.awvalid & s_axil.wvalid & s_axil.awready & s_axil.wready;
+
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             s_axil.bvalid <= 1'b0;
-            s_axil.bresp  <= '0;
+            s_axil.bresp  <= 2'b0;
         end else begin
-            if (wr_handshake) begin
+            if (slv_reg_wren & ~s_axil.bvalid) begin
                 s_axil.bvalid <= 1'b1;
-                s_axil.bresp  <= '0;
-            end else if (s_axil.bvalid & s_axil.bready) begin
+                s_axil.bresp  <= 2'b0;
+            end else if (s_axil.bready & s_axil.bvalid) begin
                 s_axil.bvalid <= 1'b0;
             end
         end
@@ -72,7 +69,7 @@ module axil_ram #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.arready <= 1'b0;
+            s_axil.arready <= '0;
             araddr         <= '0;
         end else begin
             if (s_axil.arvalid & ~s_axil.arready) begin
@@ -84,14 +81,16 @@ module axil_ram #(
         end
     end
 
+    assign slv_reg_rden = s_axil.arvalid & s_axil.arready & ~s_axil.rvalid;
+
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             s_axil.rvalid <= 1'b0;
-            s_axil.rresp  <= '0;
+            s_axil.rresp  <= 2'b0;
         end else begin
-            if (ar_handshake) begin
+            if (slv_reg_rden) begin
                 s_axil.rvalid <= 1'b1;
-                s_axil.rresp  <= '0;
+                s_axil.rresp  <= 2'b0;
             end else if (s_axil.rvalid & s_axil.rready) begin
                 s_axil.rvalid <= 1'b0;
             end
@@ -107,12 +106,12 @@ module axil_ram #(
         .RAM_STYLE   (RAM_STYLE)
     ) i_ram_sdp (
         .a_clk_i  (clk_i),
-        .a_en_i   (wr_handshake),
+        .a_en_i   (slv_reg_wren),
         .a_wr_en_i(s_axil.wstrb),
         .a_addr_i (awaddr[ADDR_MSB:ADDR_LSB]),
         .a_data_i (s_axil.wdata),
         .b_clk_i  (clk_i),
-        .b_en_i   (ar_handshake),
+        .b_en_i   (slv_reg_rden),
         .b_addr_i (araddr[ADDR_MSB:ADDR_LSB]),
         .b_data_o (s_axil.rdata)
     );

@@ -31,7 +31,8 @@ module ddc #(
     mixer #(
         .IQ_NUM     (IQ_NUM),
         .DATA_WIDTH (DATA_WIDTH),
-        .PHASE_WIDTH(PHASE_WIDTH)
+        .PHASE_WIDTH(PHASE_WIDTH),
+        .DDS_IP_EN  (0)
     ) i_mixed_round (
         .clk_i         (clk_i),
         .rstn_i        (rstn_i),

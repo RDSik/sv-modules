@@ -8,8 +8,7 @@ module axil_spi
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SLAVE_NUM       = 1,
-    parameter logic ILA_EN          = 0,
-    parameter       RAM_STYLE       = "distributed"
+    parameter logic ILA_EN          = 0
 
 ) (
     /* verilator lint_off PINMISSING */
@@ -128,7 +127,6 @@ module axil_spi
         .FIFO_WIDTH (SPI_DATA_WIDTH),
         .FIFO_MODE  (FIFO_MODE),
         .TLAST_EN   (TLAST_EN),
-        .RAM_STYLE  (RAM_STYLE),
         .CDC_REG_NUM(CDC_REG_NUM)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
@@ -142,7 +140,6 @@ module axil_spi
         .FIFO_WIDTH (SPI_DATA_WIDTH),
         .FIFO_MODE  (FIFO_MODE),
         .TLAST_EN   (TLAST_EN),
-        .RAM_STYLE  (RAM_STYLE),
         .CDC_REG_NUM(CDC_REG_NUM)
     ) i_axis_fifo_rx (
         .s_axis   (spi_rx),
