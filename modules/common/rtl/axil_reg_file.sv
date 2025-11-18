@@ -156,7 +156,7 @@ module axil_reg_file #(
     end
 
     always_ff @(posedge clk_i) begin
-        if (rstn_i) begin
+        if (~rstn_i) begin
             s_axil.rdata <= '0;
         end else if (slv_reg_rden) begin
             s_axil.rdata <= reg_data_out;
