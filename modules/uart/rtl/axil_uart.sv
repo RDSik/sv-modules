@@ -22,8 +22,8 @@ module axil_uart
     uart_regs_t               rd_regs;
     uart_regs_t               wr_regs;
 
+    logic       [REG_NUM-1:0] rd_request;
     logic       [REG_NUM-1:0] rd_valid;
-    logic       [REG_NUM-1:0] rd_req;
     logic       [REG_NUM-1:0] wr_valid;
 
     logic                     ps_clk;
@@ -92,7 +92,7 @@ module axil_uart
 
     assign fifo_tx.tdata  = wr_regs.tx.data;
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
-    assign fifo_rx.tready = rd_req[RX_DATA_REG_POS];
+    assign fifo_rx.tready = rd_request[RX_DATA_REG_POS];
 
     axil_reg_file #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
@@ -102,12 +102,12 @@ module axil_uart
         .REG_INIT      (REG_INIT),
         .ILA_EN        (ILA_EN)
     ) i_axil_reg_file (
-        .s_axil    (s_axil),
-        .rd_regs_i (rd_regs),
-        .rd_valid_i(rd_valid),
-        .rd_req_o  (rd_req),
-        .wr_regs_o (wr_regs),
-        .wr_valid_o(wr_valid)
+        .s_axil      (s_axil),
+        .rd_regs_i   (rd_regs),
+        .rd_valid_i  (rd_valid),
+        .rd_request_o(rd_request),
+        .wr_regs_o   (wr_regs),
+        .wr_valid_o  (wr_valid)
     );
 
     axis_uart_tx #(

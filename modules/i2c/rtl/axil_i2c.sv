@@ -33,7 +33,7 @@ module axil_i2c
     i2c_regs_t                      rd_regs;
     i2c_regs_t                      wr_regs;
 
-    logic      [       REG_NUM-1:0] rd_req;
+    logic      [       REG_NUM-1:0] rd_request;
     logic      [       REG_NUM-1:0] rd_valid;
     logic      [       REG_NUM-1:0] wr_valid;
 
@@ -76,12 +76,12 @@ module axil_i2c
         .REG_INIT      (REG_INIT),
         .ILA_EN        (ILA_EN)
     ) i_axil_reg_file (
-        .s_axil    (s_axil),
-        .rd_regs_i (rd_regs),
-        .rd_valid_i(rd_valid),
-        .wr_regs_o (wr_regs),
-        .rd_req_o  (rd_req),
-        .wr_valid_o(wr_valid)
+        .s_axil      (s_axil),
+        .rd_regs_i   (rd_regs),
+        .rd_valid_i  (rd_valid),
+        .wr_regs_o   (wr_regs),
+        .rd_request_o(rd_request),
+        .wr_valid_o  (wr_valid)
     );
 
     typedef enum logic [1:0] {
@@ -199,7 +199,7 @@ module axil_i2c
     assign tx_fifo_push = wr_valid[TX_DATA_REG_POS];
     assign tx_fifo_pop = cmd_ack & write;
 
-    assign rx_fifo_pop = rd_req[RX_DATA_REG_POS];
+    assign rx_fifo_pop = rd_request[RX_DATA_REG_POS];
     assign rx_fifo_push = cmd_ack & read;
 
     fifo_wrap #(
