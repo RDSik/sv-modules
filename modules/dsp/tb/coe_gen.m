@@ -8,14 +8,12 @@ COE_MEM_NAME  = 'fir.mem';
 
 FILE_FORMAT = 'mem';
 
-PASS_RIPPLE = 0.1;           % Passband ripple in dB 
-STOP_RIPPLE = 90;            % Stopband ripple in dB
-Fs          = 100e6;         % Sample rate
-F           = [20e6 30e6]/2; % Cutoff frequencies
-A           = [1 0];         % Desired amplitudes
-DENS        = 20;            % Density factor
-
-Fs_norm = F / (Fs/2);
+PASS_RIPPLE = 0.1;         % Passband ripple in dB 
+STOP_RIPPLE = 80;          % Stopband ripple in dB
+Fs          = 1;           % Sample rate
+F           = [0.4 0.6]/2; % Cutoff frequencies
+A           = [1 0];       % Desired amplitudes
+DENS        = 20;          % Density factor
 
 %% Filter coefficients generation
 dev = [(10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1) 10^(-STOP_RIPPLE/20)]; 
