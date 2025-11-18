@@ -36,13 +36,15 @@ module axil_reg_file #(
     logic [       REG_NUM-1:0] wr_valid;
     logic [       REG_NUM-1:0] rd_valid;
 
-    assign clk_i         = s_axil.clk_i;
-    assign rstn_i        = s_axil.rstn_i;
+    assign clk_i  = s_axil.clk_i;
+    assign rstn_i = s_axil.rstn_i;
 
-    assign wr_regs_o     = reg_t'(wr_reg);
-    assign wr_valid_o    = wr_valid;
-    assign rd_reg_unpack = reg_unpack_t'(rd_regs_i);
-    assign rd_valid      = rd_valid_i;
+    always_ff @(posedge clk_i) begin
+        wr_regs_o     <= reg_t'(wr_reg);
+        wr_valid_o    <= wr_valid;
+        rd_reg_unpack <= reg_unpack_t'(rd_regs_i);
+        rd_valid      <= rd_valid_i;
+    end
 
     logic [REG_ADDR_WIDTH-1:0] awaddr;
     logic [REG_ADDR_WIDTH-1:0] araddr;
