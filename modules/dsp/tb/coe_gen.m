@@ -13,14 +13,14 @@ STOP_RIPPLE = 90;          % Stopband ripple in dB
 Fs          = 100e6;       % Sample rate
 F           = [20e6 30e6]; % Cutoff frequencies
 A           = [1 0];       % Desired amplitudes
-DENS = 20;
+DENS        = 20;          % Density factor
 
 Fs_norm = F / (Fs/2);
 
 %% Filter coefficients generation
 dev = [(10^(PASS_RIPPLE/20)-1)/(10^(PASS_RIPPLE/20)+1) 10^(-STOP_RIPPLE/20)]; 
 [n,fo,ao,w] = firpmord(F/2,A,dev,Fs);
-b = firpm(n,fo,ao,w, DENS);
+b = firpm(n,fo,ao,w,DENS);
 filter_coe = round(b*(2^(COE_WIDTH-1)-1));
 fvtool(filter_coe, 'Fs', Fs);
 
