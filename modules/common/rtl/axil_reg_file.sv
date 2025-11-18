@@ -89,7 +89,7 @@ module axil_reg_file #(
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                 if (slv_reg_wren) begin
                     if (awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
-                        for (int i = 0; i < s_axil.STRB_WIDTH; i++) begin
+                        for (int i = 0; i < REG_DATA_WIDTH/8; i++) begin
                             if (s_axil.wstrb[i]) begin
                                 wr_reg[reg_indx][i*8+:8] <= s_axil.wdata[i*8+:8];
                             end
