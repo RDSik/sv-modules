@@ -98,23 +98,6 @@ module axil_i2c
     logic   start;
     logic   write;
     logic   read;
-    logic   core_en;
-    logic   rw;
-
-    always @(posedge ps_clk) begin
-        if (~rstn_i) begin
-            core_en <= 1'b0;
-            rw      <= 1'b0;
-        end else begin
-            if (wr_valid[CONTROL_REG_POS]) begin
-                core_en <= wr_regs.control.core_en;
-                rw      <= wr_regs.control.rw;
-            end else if (cmd_ack & stop) begin
-                core_en <= 1'b0;
-                rw      <= 1'b0;
-            end
-        end
-    end
 
     always @(posedge ps_clk) begin
         if (wr_regs.control.core_rst | i2c_al) begin
@@ -126,7 +109,7 @@ module axil_i2c
         end else begin
             case (state)
                 IDLE: begin
-                    if (core_en) begin
+                    if (wr_valid[TX_DATA_REG_POS]) begin
                         state <= ADDR;
                         start <= 1'b1;
                         write <= 1'b1;
@@ -137,8 +120,8 @@ module axil_i2c
                     if (cmd_ack) begin
                         state <= DATA;
                         start <= 1'b0;
-                        write <= rw;
-                        read  <= ~rw;
+                        write <= wr_regs.tx.rw;
+                        read  <= ~wr_regs.tx.rw;
                     end
                 end
                 DATA: begin
@@ -164,7 +147,7 @@ module axil_i2c
         .clk     (ps_clk),
         .rst     (wr_regs.control.core_rst),
         .nReset  ('1),
-        .ena     (core_en),
+        .ena     (wr_regs.control.core_en),
         .clk_cnt (wr_regs.clk.prescale),
         .start   (start),
         .stop    (stop),
