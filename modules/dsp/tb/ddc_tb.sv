@@ -9,9 +9,8 @@ module ddc_tb ();
     localparam int PHASE_WIDTH = 14;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
-    localparam int TAP_NUM = 25;
+    localparam int TAP_NUM = 32 / 2;
     localparam COE_FILE = "fir.mem";
-
 
     localparam int FS = 100_000_000;
     localparam int DDS_NUM = 2;

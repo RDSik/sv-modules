@@ -1,3 +1,5 @@
+// Based on https://github.com/ZipCPU/wb2axip/blob/53dafe2d54e7a72304afe36e73875a940a351b70/bench/formal/xlnxdemo.v#L309-L314
+
 /* verilator lint_off TIMESCALEMOD */
 module axil_reg_file #(
     parameter int   REG_DATA_WIDTH = 32,
@@ -10,7 +12,7 @@ module axil_reg_file #(
     input reg_t               rd_regs_i,
     input logic [REG_NUM-1:0] rd_valid_i,
 
-    output logic [REG_NUM-1:0] rd_req_o,
+    output logic [REG_NUM-1:0] rd_request_o,
 
     output reg_t               wr_regs_o,
     output logic [REG_NUM-1:0] wr_valid_o,
@@ -46,25 +48,49 @@ module axil_reg_file #(
 
     logic [REG_ADDR_WIDTH-1:0] awaddr;
     logic [REG_ADDR_WIDTH-1:0] araddr;
-    logic                      ar_handshake;
-    logic                      wr_handshake;
-    logic                      write_valid;
-
-    assign write_valid  = s_axil.awvalid & s_axil.wvalid;
-    assign wr_handshake = write_valid & s_axil.awready & s_axil.wready;
-    assign ar_handshake = s_axil.arvalid & s_axil.arready;
+    logic [REG_DATA_WIDTH-1:0] reg_data_out;
+    logic                      slv_reg_wren;
+    logic                      slv_reg_rden;
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
+            s_axil.awready <= '0;
+            awaddr         <= '0;
+        end else begin
+            if (s_axil.awvalid & s_axil.wvalid & ~s_axil.awready) begin
+                s_axil.awready <= 1'b1;
+                awaddr         <= s_axil.awaddr;
+            end else begin
+                s_axil.awready <= 1'b0;
+            end
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            s_axil.wready <= 1'b0;
+        end else begin
+            if (s_axil.awvalid & s_axil.wvalid & ~s_axil.wready) begin
+                s_axil.wready <= 1'b1;
+            end else begin
+                s_axil.wready <= 1'b0;
+            end
+        end
+    end
+
+    assign slv_reg_wren = s_axil.awvalid & s_axil.wvalid & s_axil.awready & s_axil.wready;
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            wr_valid <= '0;
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                wr_reg[reg_indx]   <= REG_INIT_UNPACK[reg_indx];
-                wr_valid[reg_indx] <= 1'b0;
+                wr_reg[reg_indx] <= REG_INIT_UNPACK[reg_indx];
             end
         end else begin
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                if (wr_handshake) begin
+                if (slv_reg_wren) begin
                     if (awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
-                        for (int i = 0; i < s_axil.STRB_WIDTH; i++) begin
+                        for (int i = 0; i < REG_DATA_WIDTH / 8; i++) begin
                             if (s_axil.wstrb[i]) begin
                                 wr_reg[reg_indx][i*8+:8] <= s_axil.wdata[i*8+:8];
                             end
@@ -80,41 +106,62 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            s_axil.awready <= 1'b0;
-            awaddr         <= '0;
-        end else begin
-            if (write_valid & ~s_axil.awready) begin
-                s_axil.awready <= 1'b1;
-                awaddr         <= s_axil.awaddr;
-            end else begin
-                s_axil.awready <= 1'b0;
-            end
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            s_axil.wready <= 1'b0;
-        end else begin
-            if (write_valid & ~s_axil.wready) begin
-                s_axil.wready <= 1'b1;
-            end else begin
-                s_axil.wready <= 1'b0;
-            end
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
             s_axil.bvalid <= 1'b0;
-            s_axil.bresp  <= '0;
+            s_axil.bresp  <= 2'b0;
         end else begin
-            if (wr_handshake) begin
+            if (slv_reg_wren & ~s_axil.bvalid) begin
                 s_axil.bvalid <= 1'b1;
-                s_axil.bresp  <= '0;
-            end else if (s_axil.bvalid & s_axil.bready) begin
+                s_axil.bresp  <= 2'b0;
+            end else if (s_axil.bready & s_axil.bvalid) begin
                 s_axil.bvalid <= 1'b0;
             end
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            s_axil.arready <= '0;
+            araddr         <= '0;
+        end else begin
+            if (s_axil.arvalid & ~s_axil.arready) begin
+                s_axil.arready <= 1'b1;
+                araddr         <= s_axil.araddr;
+            end else begin
+                s_axil.arready <= 1'b0;
+            end
+        end
+    end
+
+    assign slv_reg_rden = s_axil.arvalid & s_axil.arready & ~s_axil.rvalid;
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            s_axil.rvalid <= 1'b0;
+            s_axil.rresp  <= 2'b0;
+        end else begin
+            if (slv_reg_rden) begin
+                s_axil.rvalid <= 1'b1;
+                s_axil.rresp  <= 2'b0;
+            end else if (s_axil.rvalid & s_axil.rready) begin
+                s_axil.rvalid <= 1'b0;
+            end
+        end
+    end
+
+    always_comb begin
+        reg_data_out = '0;
+        for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
+            if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
+                reg_data_out = rd_reg[reg_indx];
+            end
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            s_axil.rdata <= '0;
+        end else if (slv_reg_rden) begin
+            s_axil.rdata <= reg_data_out;
         end
     end
 
@@ -134,54 +181,16 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            rd_req_o <= '0;
+            rd_request_o <= '0;
         end else begin
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                if (s_axil.arvalid) begin
-                    if (s_axil.araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
-                        rd_req_o[reg_indx] <= 1'b1;
+                if (slv_reg_rden) begin
+                    if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
+                        rd_request_o[reg_indx] <= 1'b1;
                     end
                 end else begin
-                    rd_req_o[reg_indx] <= 1'b0;
+                    rd_request_o[reg_indx] <= 1'b0;
                 end
-            end
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (ar_handshake) begin
-            for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
-                    s_axil.rdata <= rd_reg[reg_indx];
-                end
-            end
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            s_axil.arready <= 1'b0;
-            araddr         <= '0;
-        end else begin
-            if (s_axil.arvalid & ~s_axil.arready) begin
-                s_axil.arready <= 1'b1;
-                araddr         <= s_axil.araddr;
-            end else begin
-                s_axil.arready <= 1'b0;
-            end
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            s_axil.rvalid <= 1'b0;
-            s_axil.rresp  <= '0;
-        end else begin
-            if (ar_handshake) begin
-                s_axil.rvalid <= 1'b1;
-                s_axil.rresp  <= '0;
-            end else if (s_axil.rvalid & s_axil.rready) begin
-                s_axil.rvalid <= 1'b0;
             end
         end
     end

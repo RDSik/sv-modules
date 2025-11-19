@@ -11,7 +11,6 @@ module axil_uart_tb ();
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
 
-    localparam int WAT_CYCLES = 200;
     localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
@@ -52,7 +51,9 @@ module axil_uart_tb ();
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
-        #WAT_CYCLES;
+        do begin
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
+        end while (rdata[4]);
         for (int i = 0; i < REG_NUM; i++) begin
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end

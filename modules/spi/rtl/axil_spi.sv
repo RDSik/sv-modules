@@ -8,8 +8,7 @@ module axil_spi
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SLAVE_NUM       = 1,
-    parameter logic ILA_EN          = 0,
-    parameter       RAM_STYLE       = "distributed"
+    parameter logic ILA_EN          = 0
 
 ) (
     /* verilator lint_off PINMISSING */
@@ -24,8 +23,8 @@ module axil_spi
     spi_regs_t               rd_regs;
     spi_regs_t               wr_regs;
 
+    logic      [REG_NUM-1:0] rd_request;
     logic      [REG_NUM-1:0] rd_valid;
-    logic      [REG_NUM-1:0] rd_req;
     logic      [REG_NUM-1:0] wr_valid;
 
     logic                    ps_clk;
@@ -85,7 +84,7 @@ module axil_spi
     assign fifo_tx.tdata  = wr_regs.tx.data;
     assign fifo_tx.tlast  = wr_regs.tx.last;
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
-    assign fifo_rx.tready = rd_req[RX_DATA_REG_POS];
+    assign fifo_rx.tready = rd_request[RX_DATA_REG_POS];
 
     axil_reg_file #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
@@ -95,12 +94,12 @@ module axil_spi
         .REG_INIT      (REG_INIT),
         .ILA_EN        (ILA_EN)
     ) i_axil_reg_file (
-        .s_axil    (s_axil),
-        .rd_regs_i (rd_regs),
-        .rd_valid_i(rd_valid),
-        .wr_regs_o (wr_regs),
-        .rd_req_o  (rd_req),
-        .wr_valid_o(wr_valid)
+        .s_axil      (s_axil),
+        .rd_regs_i   (rd_regs),
+        .rd_valid_i  (rd_valid),
+        .wr_regs_o   (wr_regs),
+        .rd_request_o(rd_request),
+        .wr_valid_o  (wr_valid)
     );
 
     axis_spi_master #(
@@ -128,7 +127,6 @@ module axil_spi
         .FIFO_WIDTH (SPI_DATA_WIDTH),
         .FIFO_MODE  (FIFO_MODE),
         .TLAST_EN   (TLAST_EN),
-        .RAM_STYLE  (RAM_STYLE),
         .CDC_REG_NUM(CDC_REG_NUM)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
@@ -142,7 +140,6 @@ module axil_spi
         .FIFO_WIDTH (SPI_DATA_WIDTH),
         .FIFO_MODE  (FIFO_MODE),
         .TLAST_EN   (TLAST_EN),
-        .RAM_STYLE  (RAM_STYLE),
         .CDC_REG_NUM(CDC_REG_NUM)
     ) i_axis_fifo_rx (
         .s_axis   (spi_rx),

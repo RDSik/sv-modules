@@ -66,7 +66,7 @@ module resampler #(
                             state      <= IDLE;
                         end else begin
                             int_cnt    <= int_cnt + 1'b1;
-                            int_tvalid <= '1;
+                            int_tvalid <= 1'b1;
                         end
                     end
                 endcase
@@ -78,18 +78,18 @@ module resampler #(
         assign int_tvalid    = s_axis.tvalid;
     end
 
-    localparam int FIT_WIDTH = DATA_WIDTH + COEF_WIDTH + TAP_NUM;
+    localparam int FIR_WIDTH = DATA_WIDTH + COEF_WIDTH;
 
     logic                             fir_tvalid;
-    logic [CH_NUM-1:0][FIT_WIDTH-1:0] fir_tdata;
+    logic [CH_NUM-1:0][FIR_WIDTH-1:0] fir_tdata;
 
-    fir_filter #(
+    sfir #(
         .CH_NUM    (CH_NUM),
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM),
         .COE_FILE  (COE_FILE)
-    ) i_fir_filter (
+    ) i_sfir (
         .clk_i   (clk_i),
         .rstn_i  (rstn_i),
         .en_i    (en_i),
@@ -126,11 +126,9 @@ module resampler #(
         assign dec_tvalid = fir_tvalid;
     end
 
-    assign dec_tdata = fir_tdata;
-
     round #(
         .CH_NUM        (CH_NUM),
-        .DATA_WIDTH_IN (FIT_WIDTH),
+        .DATA_WIDTH_IN (FIR_WIDTH),
         .DATA_WIDTH_OUT(DATA_WIDTH)
     ) i_round (
         .clk_i     (clk_i),

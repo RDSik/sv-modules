@@ -14,6 +14,7 @@ module axil_i2c_tb ();
     localparam int WAT_CYCLES = 250;
     localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
+    localparam logic RW = 1'b1;
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
@@ -47,10 +48,9 @@ module axil_i2c_tb ();
     initial begin
         axil_env env;
         env = new(s_axil);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, '0);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, 8'ha2);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, 8'hac);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 3'b110);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {RW, 8'ha2});
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {RW, 8'hac});
         #WAT_CYCLES;
         $stop;
     end

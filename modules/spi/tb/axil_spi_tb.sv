@@ -12,7 +12,6 @@ module axil_spi_tb ();
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
 
-    localparam int WAT_CYCLES = 200;
     localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
@@ -55,12 +54,13 @@ module axil_spi_tb ();
         env   = new(s_axil);
         wdata = $urandom_range(0, (2 ** SPI_DATA_WIDTH) - 1);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * WAIT_TIME_REG_POS, 10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 3'b010);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {1'b1, wdata});
-        #WAT_CYCLES;
+        do begin
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
+        end while (rdata[3]);
         for (int i = 0; i < REG_NUM; i++) begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * RX_DATA_REG_POS, rdata);
         end
         #10 $stop;
     end

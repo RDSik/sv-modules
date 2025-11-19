@@ -2,7 +2,8 @@ set path [file dirname [info script]]
 
 if {$xilinx == 1} {
     set xci_defaultlib "
-        $path/ip/axil_ila.xci
+        $path/ip/axil_ila/axil_ila.xci
+        $path/ip/axi_clock_converter/axi_clock_converter.xci
     "
     add_files -norecurse $xci_defaultlib
     

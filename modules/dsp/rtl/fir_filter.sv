@@ -17,6 +17,10 @@ module fir_filter #(
     output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+TAP_NUM-1:0] tdata_o
 );
 
+    if (TAP_NUM % 2 != 0) begin : g_tap_num_err
+        $error("");
+    end
+
     logic [COEF_WIDTH-1:0] coe_mem[TAP_NUM];
 
     initial begin
@@ -78,7 +82,7 @@ module fir_filter #(
         end
 
         always_ff @(posedge clk_i) begin
-            tdata_o[ch_indx] <= acc[TAP_NUM-2];
+            tdata_o[ch_indx] <= acc[TAP_NUM-1];
         end
     end
 

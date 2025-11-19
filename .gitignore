@@ -34,7 +34,7 @@
 
 # !modules/**/ip/
 
-!modules/**/ip/*.xci
+!modules/**/ip/**/*.xci
 
 # !modules/**/bd/
 

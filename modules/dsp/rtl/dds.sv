@@ -58,16 +58,4 @@ module dds #(
         tdata_o <= {sin_lut[lut_addr_q], sin_lut[lut_addr_i]};
     end
 
-    //synchesis translate_off
-    write_data_to_file #(
-        .DATA_PATH (DATA_PATH),
-        .IQ_NUM    (IQ_NUM),
-        .DATA_WIDTH(DATA_WIDTH)
-    ) i_dump_out (
-        .clk_i   (clk_i),
-        .tvalid_i(tvalid_o),
-        .tdata_i (tdata_o)
-    );
-    //synchesis translate_on
-
 endmodule

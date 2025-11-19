@@ -13,7 +13,6 @@ set modules_dirs [list \
     ../../modules/common \
     ../../modules/bd \
     ../../modules/dsp \
-    ../../modules/dds \
     ../../modules/lfsr \
     ../../modules/interface \
 ]

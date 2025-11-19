@@ -30,7 +30,6 @@ module dds_wrap #(
 
         dds_compiler i_dds_compiler (
             .aclk               (clk_i),
-            .aclken             (en_i),
             .aresetn            (rstn_i),
             .s_axis_phase_tvalid(dds_tvalid),
             .s_axis_phase_tdata ({phase_offset_i, phase_inc_i}),

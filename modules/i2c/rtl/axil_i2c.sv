@@ -7,8 +7,7 @@ module axil_i2c
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter logic ILA_EN          = 0,
-    parameter       RAM_STYLE       = "distributed"
+    parameter logic ILA_EN          = 0
 ) (
     /* verilator lint_off PINMISSING */
     input logic clk_i,
@@ -34,7 +33,7 @@ module axil_i2c
     i2c_regs_t                      rd_regs;
     i2c_regs_t                      wr_regs;
 
-    logic      [       REG_NUM-1:0] rd_req;
+    logic      [       REG_NUM-1:0] rd_request;
     logic      [       REG_NUM-1:0] rd_valid;
     logic      [       REG_NUM-1:0] wr_valid;
 
@@ -77,12 +76,12 @@ module axil_i2c
         .REG_INIT      (REG_INIT),
         .ILA_EN        (ILA_EN)
     ) i_axil_reg_file (
-        .s_axil    (s_axil),
-        .rd_regs_i (rd_regs),
-        .rd_valid_i(rd_valid),
-        .wr_regs_o (wr_regs),
-        .rd_req_o  (rd_req),
-        .wr_valid_o(wr_valid)
+        .s_axil      (s_axil),
+        .rd_regs_i   (rd_regs),
+        .rd_valid_i  (rd_valid),
+        .wr_regs_o   (wr_regs),
+        .rd_request_o(rd_request),
+        .wr_valid_o  (wr_valid)
     );
 
     typedef enum logic [1:0] {
@@ -99,23 +98,6 @@ module axil_i2c
     logic   start;
     logic   write;
     logic   read;
-    logic   core_en;
-    logic   rw;
-
-    always @(posedge ps_clk) begin
-        if (~rstn_i) begin
-            core_en <= 1'b0;
-            rw      <= 1'b0;
-        end else begin
-            if (wr_valid[CONTROL_REG_POS]) begin
-                core_en <= wr_regs.control.core_en;
-                rw      <= wr_regs.control.rw;
-            end else if (cmd_ack & stop) begin
-                core_en <= 1'b0;
-                rw      <= 1'b0;
-            end
-        end
-    end
 
     always @(posedge ps_clk) begin
         if (wr_regs.control.core_rst | i2c_al) begin
@@ -127,7 +109,7 @@ module axil_i2c
         end else begin
             case (state)
                 IDLE: begin
-                    if (core_en) begin
+                    if (wr_valid[TX_DATA_REG_POS]) begin
                         state <= ADDR;
                         start <= 1'b1;
                         write <= 1'b1;
@@ -138,8 +120,8 @@ module axil_i2c
                     if (cmd_ack) begin
                         state <= DATA;
                         start <= 1'b0;
-                        write <= rw;
-                        read  <= ~rw;
+                        write <= wr_regs.tx.rw;
+                        read  <= ~wr_regs.tx.rw;
                     end
                 end
                 DATA: begin
@@ -165,7 +147,7 @@ module axil_i2c
         .clk     (ps_clk),
         .rst     (wr_regs.control.core_rst),
         .nReset  ('1),
-        .ena     (core_en),
+        .ena     (wr_regs.control.core_en),
         .clk_cnt (wr_regs.clk.prescale),
         .start   (start),
         .stop    (stop),
@@ -200,15 +182,14 @@ module axil_i2c
     assign tx_fifo_push = wr_valid[TX_DATA_REG_POS];
     assign tx_fifo_pop = cmd_ack & write;
 
-    assign rx_fifo_pop = rd_req[RX_DATA_REG_POS];
+    assign rx_fifo_pop = rd_request[RX_DATA_REG_POS];
     assign rx_fifo_push = cmd_ack & read;
 
     fifo_wrap #(
         .FIFO_WIDTH (I2C_DATA_WIDTH),
         .FIFO_DEPTH (FIFO_DEPTH),
         .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE),
-        .RAM_STYLE  (RAM_STYLE)
+        .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_tx (
         .wr_clk_i (ps_clk),
         .wr_rstn_i(fifo_rst),
@@ -228,8 +209,7 @@ module axil_i2c
         .FIFO_WIDTH (I2C_DATA_WIDTH),
         .FIFO_DEPTH (FIFO_DEPTH),
         .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE),
-        .RAM_STYLE  (RAM_STYLE)
+        .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_rx (
         .wr_clk_i (ps_clk),
         .wr_rstn_i(fifo_rst),
