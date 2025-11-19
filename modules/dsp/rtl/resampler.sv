@@ -89,7 +89,7 @@ module resampler #(
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM),
         .COE_FILE  (COE_FILE)
-    ) i_fir_filter (
+    ) i_sfir (
         .clk_i   (clk_i),
         .rstn_i  (rstn_i),
         .en_i    (en_i),

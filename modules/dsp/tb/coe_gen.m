@@ -9,7 +9,7 @@ COE_MEM_NAME  = 'fir.mem';
 FILE_FORMAT = 'mem';
 
 PASS_RIPPLE = 0.1;         % Passband ripple in dB 
-STOP_RIPPLE = 80;          % Stopband ripple in dB
+STOP_RIPPLE = 75;          % Stopband ripple in dB
 Fs          = 1;           % Sample rate
 F           = [0.4 0.6]/2; % Cutoff frequencies
 A           = [1 0];       % Desired amplitudes
