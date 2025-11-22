@@ -18,7 +18,7 @@ module axis_uart_tx
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
 
     logic                      clk_i;
-    logic                      rstn_i;
+    logic                      rst_i;
     logic [DATA_CNT_WIDTH-1:0] bit_cnt;
     logic [ DIVIDER_WIDTH-1:0] baud_cnt;
     logic [    DATA_WIDTH-1:0] tx_data;
@@ -38,11 +38,11 @@ module axis_uart_tx
 
     uart_state_e state;
 
-    assign clk_i  = s_axis.clk_i;
-    assign rstn_i = s_axis.rstn_i;
+    assign clk_i = s_axis.clk_i;
+    assign rst_i = s_axis.rst_i;
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             state     <= IDLE;
             uart_tx_o <= '1;
             bit_cnt   <= '0;
@@ -99,7 +99,7 @@ module axis_uart_tx
     end
 
     always @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             baud_cnt <= '0;
         end else if (baud_done) begin
             baud_cnt <= '0;
@@ -109,14 +109,14 @@ module axis_uart_tx
     end
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             tx_data <= '0;
         end else if (s_handshake) begin
             tx_data <= s_axis.tdata;
         end
     end
 
-    assign s_axis.tready = (state == IDLE) && rstn_i;
+    assign s_axis.tready = (state == IDLE) && ~rst_i;
     assign s_handshake = s_axis.tvalid & s_axis.tready;
 
     /* verilator lint_off WIDTHEXPAND */

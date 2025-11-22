@@ -3,7 +3,7 @@
 // FiR Symmetric Systolic Filter, Top module is sfir_even_symmetric_systolic_top
 
 module sfir_even_symmetric_systolic_top #(
-    parameter integer NBTAP    = 28,
+    parameter integer NBTAP    = 16,
     parameter integer DSIZE    = 16,
     parameter integer CSIZE    = 18,
     parameter integer PSIZE    = CSIZE + DSIZE,

@@ -6,7 +6,7 @@ module dds #(
     parameter int DATA_WIDTH  = 16
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic en_i,
 
     input logic [PHASE_WIDTH-1:0] phase_inc_i,
@@ -42,7 +42,7 @@ module dds #(
     assign lut_addr_q = lut_addr_i + (SIN_NUM / 4);
 
     always @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             phase_acc <= '0;
         end else if (en_i) begin
             phase_acc <= phase_acc + phase_inc_i;
@@ -50,7 +50,7 @@ module dds #(
     end
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             tvalid_o <= 1'b0;
         end else begin
             tvalid_o <= en_i;

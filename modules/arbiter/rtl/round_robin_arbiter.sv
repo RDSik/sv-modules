@@ -3,7 +3,7 @@ module round_robin_arbiter #(
     parameter int MASTER_NUM = 4
 ) (
     input  logic                  clk_i,
-    input  logic                  rstn_i,
+    input  logic                  rst_i,
     input  logic                  ack_i,
     input  logic [MASTER_NUM-1:0] req_i,
     output logic [MASTER_NUM-1:0] grant_o
@@ -49,7 +49,7 @@ module round_robin_arbiter #(
     end
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             ptr <= '0;
         end else if (ack_i) begin
             ptr <= ptr_next;

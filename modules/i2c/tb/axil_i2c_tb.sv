@@ -64,8 +64,10 @@ module axil_i2c_tb ();
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .ILA_EN         (0)
+        .ILA_EN         (0),
+        .MODE           ("sync")
     ) i_axil_i2c (
+        .clk_i       (clk_i),
         .scl_pad_i   (),
         .scl_pad_o   (),
         .scl_padoen_o(),

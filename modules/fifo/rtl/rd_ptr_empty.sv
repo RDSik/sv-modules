@@ -7,7 +7,7 @@ module rd_ptr_empty #(
     parameter int ADDR_WIDTH = 4
 ) (
     input  logic                  rd_clk_i,
-    input  logic                  rd_rstn_i,
+    input  logic                  rd_rst_i,
     input  logic                  rd_en_i,
     input  logic [  ADDR_WIDTH:0] rq2_wptr_i,
     output logic [ADDR_WIDTH-1:0] rd_addr_o,
@@ -24,7 +24,7 @@ module rd_ptr_empty #(
     logic                a_empty_val;
 
     always_ff @(posedge rd_clk_i) begin
-        if (~rd_rstn_i) begin
+        if (rd_rst_i) begin
             {rbin, rd_ptr_o} <= '0;
         end else begin
             {rbin, rd_ptr_o} <= {rbinnext, rgraynext};
@@ -40,7 +40,7 @@ module rd_ptr_empty #(
     assign a_empty_val = (rgraynextm1 == rq2_wptr_i);
 
     always_ff @(posedge rd_clk_i) begin
-        if (~rd_rstn_i) begin
+        if (rd_rst_i) begin
             a_empty_o <= 1'b0;
             empty_o   <= 1'b1;
         end else begin

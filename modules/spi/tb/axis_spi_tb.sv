@@ -23,7 +23,7 @@ module axis_spi_tb ();
     localparam int DIVIDER = MAIN_CLK / SPI_CLK;
 
     logic clk_i;
-    logic rstn_i;
+    logic rst_i;
 
     spi_if #(.CS_WIDTH(SLAVE_NUM)) m_spi ();
 
@@ -32,21 +32,21 @@ module axis_spi_tb ();
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
     ) s_axis (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i(clk_i),
+        .rst_i(rst_i)
     );
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
     ) m_axis (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i(clk_i),
+        .rst_i(rst_i)
     );
 
     initial begin
-        rstn_i = 1'b0;
+        rst_i = 1'b1;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rstn_i = 1'b1;
+        rst_i = 1'b0;
         $display("Reset done in: %0t ns\n.", $time());
     end
 
@@ -60,7 +60,8 @@ module axis_spi_tb ();
     initial begin
         env_base #(
             .DATA_WIDTH_IN (DATA_WIDTH),
-            .DATA_WIDTH_OUT(DATA_WIDTH)
+            .DATA_WIDTH_OUT(DATA_WIDTH),
+            .TLAST_EN      (1)
         ) env;
         env = new(s_axis, m_axis);
         env.run();

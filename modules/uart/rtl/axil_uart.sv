@@ -7,11 +7,10 @@ module axil_uart
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
-    parameter logic ILA_EN          = 0
+    parameter logic ILA_EN          = 0,
+    parameter       MODE            = "sync"
 ) (
-    /* verilator lint_off PINMISSING */
     input logic clk_i,
-    /* verilator lint_on PINMISSING */
 
     input  logic uart_rx_i,
     output logic uart_tx_o,
@@ -26,44 +25,38 @@ module axil_uart
     logic       [REG_NUM-1:0] rd_valid;
     logic       [REG_NUM-1:0] wr_valid;
 
-    logic                     ps_clk;
-    logic                     rstn_i;
+    logic                     tx_reset;
+    logic                     rx_reset;
 
-    assign ps_clk = s_axil.clk_i;
-    assign rstn_i = s_axil.rstn_i;
-
-    logic tx_reset;
-    logic rx_reset;
-
-    assign tx_reset = ~wr_regs.control.tx_reset;
-    assign rx_reset = ~wr_regs.control.rx_reset;
+    assign tx_reset = wr_regs.control.tx_reset;
+    assign rx_reset = wr_regs.control.rx_reset;
 
     axis_if #(
         .DATA_WIDTH(UART_DATA_WIDTH)
     ) fifo_tx (
-        .clk_i (ps_clk),
-        .rstn_i(tx_reset)
+        .clk_i(clk_i),
+        .rst_i(tx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(UART_DATA_WIDTH)
     ) fifo_rx (
-        .clk_i (ps_clk),
-        .rstn_i(rx_reset)
+        .clk_i(clk_i),
+        .rst_i(rx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(UART_DATA_WIDTH)
     ) uart_tx (
-        .clk_i (ps_clk),
-        .rstn_i(tx_reset)
+        .clk_i(clk_i),
+        .rst_i(tx_reset)
     );
 
     axis_if #(
         .DATA_WIDTH(UART_DATA_WIDTH)
     ) uart_rx (
-        .clk_i (ps_clk),
-        .rstn_i(rx_reset)
+        .clk_i(clk_i),
+        .rst_i(rx_reset)
     );
 
     logic parity_err;
@@ -94,14 +87,16 @@ module axil_uart
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_request[RX_DATA_REG_POS];
 
-    axil_reg_file #(
+    axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .REG_NUM       (REG_NUM),
         .reg_t         (uart_regs_t),
         .REG_INIT      (REG_INIT),
-        .ILA_EN        (ILA_EN)
+        .ILA_EN        (ILA_EN),
+        .MODE          (MODE)
     ) i_axil_reg_file (
+        .clk_i       (clk_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),

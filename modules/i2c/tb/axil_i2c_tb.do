@@ -12,6 +12,7 @@ vlog ../../fifo/rtl/wr_ptr_full.sv
 vlog ../../common/rtl/ram_sdp.sv
 vlog ../../common/rtl/shift_reg.sv
 vlog ../../common/rtl/axil_reg_file.sv
+vlog ../../common/rtl/axil_reg_file_wrap.sv
 
 vlog ../rtl/axil_i2c.sv
 vlog ../rtl/i2c_pkg.svh

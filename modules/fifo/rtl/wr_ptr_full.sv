@@ -8,7 +8,7 @@ module wr_ptr_full #(
 ) (
     input  logic                  wr_en_i,
     input  logic                  wr_clk_i,
-    input  logic                  wr_rstn_i,
+    input  logic                  wr_rst_i,
     input  logic [  ADDR_WIDTH:0] wq2_rptr_i,
     output logic [ADDR_WIDTH-1:0] wr_addr_o,
     output logic [  ADDR_WIDTH:0] wr_ptr_o,
@@ -24,7 +24,7 @@ module wr_ptr_full #(
     logic                a_full_val;
 
     always_ff @(posedge wr_clk_i) begin
-        if (~wr_rstn_i) begin
+        if (wr_rst_i) begin
             {wbin, wr_ptr_o} <= '0;
         end else begin
             {wbin, wr_ptr_o} <= {wbinnext, wgraynext};
@@ -40,7 +40,7 @@ module wr_ptr_full #(
     assign a_full_val = (wgraynextp1 == {~wq2_rptr_i[ADDR_WIDTH:ADDR_WIDTH-1], wq2_rptr_i[ADDR_WIDTH-2:0]});
 
     always_ff @(posedge wr_clk_i) begin
-        if (~wr_rstn_i) begin
+        if (wr_rst_i) begin
             a_full_o <= 1'b0;
             full_o   <= 1'b0;
         end else begin

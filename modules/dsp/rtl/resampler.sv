@@ -6,7 +6,7 @@ module resampler #(
     parameter int   CH_NUM           = 2,
     parameter int   DATA_WIDTH       = 16,
     parameter int   COEF_WIDTH       = 18,
-    parameter int   TAP_NUM          = 25
+    parameter int   TAP_NUM          = 16
 ) (
     axis_if.slave s_axis,
 
@@ -28,16 +28,16 @@ module resampler #(
     state_e state;
 
     logic   clk_i;
-    logic   rstn_i;
+    logic   rst_i;
 
-    assign clk_i  = s_axis.clk_i;
-    assign rstn_i = s_axis.rstn_i;
+    assign clk_i = s_axis.clk_i;
+    assign rst_i = s_axis.rst_i;
 
     logic                              int_tvalid;
     logic [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;
 
     if (INTERPOLATION_EN) begin : g_int_en
-        assign s_axis.tready = (state == IDLE) && rstn_i;
+        assign s_axis.tready = (state == IDLE) && ~rst_i;
 
         logic [$clog2(DATA_WIDTH)-1:0] int_cnt;
         logic                          int_cnt_done;
@@ -45,7 +45,7 @@ module resampler #(
         assign int_cnt_done = (int_cnt == interpolation_i - 1);
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 int_tvalid <= '0;
                 int_cnt    <= '0;
                 state      <= IDLE;
@@ -73,7 +73,7 @@ module resampler #(
             end
         end
     end else begin : g_int_disable
-        assign s_axis.tready = rstn_i;
+        assign s_axis.tready = ~rst_i;
         assign int_tdata     = s_axis.tdata;
         assign int_tvalid    = s_axis.tvalid;
     end
@@ -91,7 +91,7 @@ module resampler #(
         .COE_FILE  (COE_FILE)
     ) i_sfir (
         .clk_i   (clk_i),
-        .rstn_i  (rstn_i),
+        .rst_i   (rst_i),
         .en_i    (en_i),
         .tvalid_i(int_tvalid),
         .tdata_i (int_tdata),
@@ -108,7 +108,7 @@ module resampler #(
         assign dec_cnt_done = (dec_cnt == decimation_i - 1);
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 dec_cnt <= '0;
             end else if (en_i) begin
                 if (fir_tvalid) begin
@@ -132,7 +132,7 @@ module resampler #(
         .DATA_WIDTH_OUT(DATA_WIDTH)
     ) i_round (
         .clk_i     (clk_i),
-        .rstn_i    (rstn_i),
+        .rst_i     (rst_i),
         .odd_even_i(round_type_i),
         .tvalid_i  (dec_tvalid),
         .tdata_i   (fir_tdata),

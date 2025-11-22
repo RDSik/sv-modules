@@ -5,7 +5,7 @@ module mixer #(
     parameter logic DDS_IP_EN   = 0
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic en_i,
 
     input logic                   round_type_i,   // 1 - round to odd, 0 - round to even
@@ -29,7 +29,7 @@ module mixer #(
         .IP_EN      (DDS_IP_EN)
     ) i_dds (
         .clk_i         (clk_i),
-        .rstn_i        (rstn_i),
+        .rst_i         (rst_i),
         .en_i          (en_i),
         .phase_inc_i   (phase_inc_i),
         .phase_offset_i(phase_offset_i),
@@ -62,7 +62,7 @@ module mixer #(
         .SRL_STYLE ("register")
     ) i_shift_reg (
         .clk_i (clk_i),
-        .rstn_i(rstn_i),
+        .rst_i (rst_i),
         .en_i  (en_i),
         .data_i(tvalid_i),
         .data_o(mixed_tvalid)
@@ -74,7 +74,7 @@ module mixer #(
         .DATA_WIDTH_OUT(DATA_WIDTH)
     ) i_round (
         .clk_i     (clk_i),
-        .rstn_i    (rstn_i),
+        .rst_i     (rst_i),
         .odd_even_i(round_type_i),
         .tvalid_i  (mixed_tvalid & dds_tvalid),
         .tdata_i   (mixed_tdata),

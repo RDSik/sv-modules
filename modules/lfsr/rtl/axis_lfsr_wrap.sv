@@ -12,14 +12,14 @@ module axis_lfsr_wrap #(
 );
 
     logic clk_i;
-    logic rstn_i;
+    logic rst_i;
 
     assign clk_i         = m_axis.clk_i;
-    assign rstn_i        = m_axis.rstn_i;
-    assign s_axis.tready = s_axis.rstn_i;
+    assign rst_i         = m_axis.rst_i;
+    assign s_axis.tready = ~s_axis.rst_i;
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             m_axis.tvalid <= 1'b0;
         end else begin
             m_axis.tvalid <= s_axis.tvalid;
@@ -32,7 +32,7 @@ module axis_lfsr_wrap #(
             .CRC_WIDTH (CRC_WIDTH)
         ) i_crc (
             .clk_i (clk_i),
-            .rstn_i(rstn_i),
+            .rst_i (rst_i),
             .en_i  (s_axis.tvalid),
             .data_i(s_axis.tdata),
             .crc_o (m_axis.tdata)
@@ -42,7 +42,7 @@ module axis_lfsr_wrap #(
             .DATA_WIDTH(DATA_WIDTH)
         ) i_lfsr (
             .clk_i (clk_i),
-            .rstn_i(rstn_i),
+            .rst_i (rst_i),
             .en_i  (s_axis.tvalid),
             .poly_i(poly_i),
             .seed_i(seed_i),

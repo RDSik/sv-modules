@@ -5,7 +5,7 @@ module round #(
     parameter int DATA_WIDTH_OUT = 16
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic odd_even_i, // 1 - round to odd, 0 - round to even
 
     input logic                                 tvalid_i,
@@ -65,7 +65,7 @@ module round #(
     logic [DELAY-1:0] tvalid_d;
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             tvalid_d <= '0;
         end else begin
             tvalid_d <= {tvalid_d[DELAY-2:0], tvalid_i};

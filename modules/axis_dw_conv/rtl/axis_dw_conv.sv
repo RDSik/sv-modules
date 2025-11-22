@@ -8,12 +8,12 @@ module axis_dw_conv #(
 );
 
     logic clk_i;
-    logic rstn_i;
+    logic rst_i;
     logic s_handshake;
     logic m_handshake;
 
     assign clk_i       = s_axis.clk_i;
-    assign rstn_i      = s_axis.rstn_i;
+    assign rst_i       = s_axis.rst_i;
     assign s_handshake = s_axis.tvalid & s_axis.tready;
     assign m_handshake = m_axis.tvalid & m_axis.tready;
 
@@ -30,7 +30,7 @@ module axis_dw_conv #(
         /* verilator lint_on WIDTHEXPAND */
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 cnt <= '0;
             end else if (m_handshake) begin
                 if (cnt_done) begin
@@ -42,7 +42,7 @@ module axis_dw_conv #(
         end
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 busy <= 1'b0;
             end else begin
                 if (s_handshake) begin
@@ -54,7 +54,7 @@ module axis_dw_conv #(
         end
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 m_axis_tdata <= '0;
             end else if (s_handshake) begin
                 m_axis_tdata <= s_axis.tdata;
@@ -79,7 +79,7 @@ module axis_dw_conv #(
         /* verilator lint_on WIDTHEXPAND */
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 cnt <= '0;
             end else if (s_handshake) begin
                 if (cnt_done) begin
@@ -91,7 +91,7 @@ module axis_dw_conv #(
         end
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 m_axis_tvalid <= 1'b0;
             end else if (cnt_done & s_handshake) begin
                 m_axis_tvalid <= 1'b1;

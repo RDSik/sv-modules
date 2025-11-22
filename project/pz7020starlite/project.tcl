@@ -2,7 +2,7 @@ set part     "xc7z020clg400-2"
 set syn_top  "ps_pl_top"
 set sim_top  "axil_uart_tb"
 set language "Verilog"
-set gui_flag  1
+set gui_flag  [lindex $argv 0]
 
 set project_dir [file normalize "project/pz7020starlite"]
 set modules_dir [file normalize "modules"]

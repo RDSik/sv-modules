@@ -43,10 +43,10 @@ module axis_fifo_wrap #(
         .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_wrap (
         .wr_clk_i (s_axis.clk_i),
-        .wr_rstn_i(s_axis.rstn_i),
+        .wr_rst_i (s_axis.rst_i),
         .wr_data_i(wr_data),
         .rd_clk_i (m_axis.clk_i),
-        .rd_rstn_i(m_axis.rstn_i),
+        .rd_rst_i (m_axis.rst_i),
         .rd_data_o(rd_data),
         .push_i   (push),
         .pop_i    (pop),

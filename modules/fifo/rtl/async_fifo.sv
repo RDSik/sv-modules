@@ -5,11 +5,11 @@ module async_fifo #(
     parameter int CDC_REG_NUM = 2
 ) (
     input logic                  wr_clk_i,
-    input logic                  wr_rstn_i,
+    input logic                  wr_rst_i,
     input logic [FIFO_WIDTH-1:0] wr_data_i,
 
     input  logic                  rd_clk_i,
-    input  logic                  rd_rstn_i,
+    input  logic                  rd_rst_i,
     output logic [FIFO_WIDTH-1:0] rd_data_o,
 
     input logic push_i,
@@ -44,7 +44,7 @@ module async_fifo #(
         .ADDR_WIDTH(ADDR_WIDTH)
     ) i_wr_ptr_full (
         .wr_clk_i  (wr_clk_i),
-        .wr_rstn_i (wr_rstn_i),
+        .wr_rst_i  (wr_rst_i),
         .wr_en_i   (push_i),
         .wq2_rptr_i(wq2_rptr),
         .wr_addr_o (wr_addr),
@@ -57,7 +57,7 @@ module async_fifo #(
         .ADDR_WIDTH(ADDR_WIDTH)
     ) i_rd_ptr_empty (
         .rd_clk_i  (rd_clk_i),
-        .rd_rstn_i (rd_rstn_i),
+        .rd_rst_i  (rd_rst_i),
         .rd_en_i   (pop_i),
         .rq2_wptr_i(rq2_wptr),
         .rd_addr_o (rd_addr),
@@ -91,7 +91,7 @@ module async_fifo #(
         .DELAY     (CDC_REG_NUM)
     ) wr_shift_reg (
         .clk_i (wr_clk_i),
-        .rstn_i(wr_rstn_i),
+        .rst_i (wr_rst_i),
         .en_i  (1'b1),
         .data_i(rd_ptr),
         .data_o(wq2_rptr)
@@ -103,7 +103,7 @@ module async_fifo #(
         .DELAY     (CDC_REG_NUM)
     ) rd_shift_reg (
         .clk_i (rd_clk_i),
-        .rstn_i(rd_rstn_i),
+        .rst_i (rd_rst_i),
         .en_i  (1'b1),
         .data_i(wr_ptr),
         .data_o(rq2_wptr)

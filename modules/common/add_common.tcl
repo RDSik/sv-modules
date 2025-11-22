@@ -14,6 +14,7 @@ if {$xilinx == 1} {
         $path/rtl/shift_reg.sv
         $path/rtl/axil_ram.sv
         $path/rtl/axil_reg_file.sv
+        $path/rtl/axil_reg_file_wrap.sv
     "
 
     add_files -norecurse $xil_defaultlib
@@ -24,4 +25,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/shift_reg.sv
     add_file $path/rtl/axil_ram.sv
     add_file $path/rtl/axil_reg_file.sv
+    add_file $path/rtl/axil_reg_file_wrap.sv
 }

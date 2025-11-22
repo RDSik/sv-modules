@@ -1,4 +1,5 @@
-TOP := axis_uart_top
+TOP := ps_pl_top
+GUI ?= 1
 
 PROJECT_DIR := project
 
@@ -12,7 +13,7 @@ project:
 ifeq ($(BOARD), tangprimer20k)
 	gw_sh $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE)
 else ifeq ($(BOARD), pz7020starlite)
-	vivado -mode tcl -source $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE)
+	vivado -mode batch -source $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE) -tclargs $(GUI)
 endif
 
 program:
