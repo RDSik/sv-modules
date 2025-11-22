@@ -4,7 +4,7 @@ module sync_fifo #(
     parameter int FIFO_DEPTH = 64
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
 
     input  logic [FIFO_WIDTH-1:0] data_i,
     output logic [FIFO_WIDTH-1:0] data_o,
@@ -32,7 +32,7 @@ module sync_fifo #(
 
     // Write pointer
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             wr_ptr <= '0;
         end else if (push_i) begin
             if (wr_ptr == MAX_PTR) begin
@@ -45,7 +45,7 @@ module sync_fifo #(
 
     // Read pointer
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             rd_ptr <= '0;
         end else if (pop_i) begin
             if (rd_ptr == MAX_PTR) begin
@@ -69,7 +69,7 @@ module sync_fifo #(
         assign bypass_en = push_i && (empty_o || (pop_i && a_empty_o));
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 bypass_valid <= 1'b0;
             end else if (bypass_en) begin
                 bypass_valid <= 1'b1;
@@ -119,16 +119,17 @@ module sync_fifo #(
     logic               empty;
 
     always_comb begin
-        data_cnt_next = data_cnt;
-        if (push_i & ~pop_i) begin
-            data_cnt_next = data_cnt + 1'b1;
-        end else if (pop_i & ~push_i) begin
-            data_cnt_next = data_cnt - 1'b1;
-        end
+        case ({
+            push_i, pop_i
+        })
+            2'b10:   data_cnt_next = data_cnt + 1'b1;
+            2'b01:   data_cnt_next = data_cnt - 1'b1;
+            default: data_cnt_next = data_cnt;
+        endcase
     end
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             data_cnt <= '0;
         end else begin
             data_cnt <= data_cnt_next;
@@ -143,7 +144,7 @@ module sync_fifo #(
     /* verilator lint_on WIDTHEXPAND*/
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             a_full_o  <= 1'b0;
             full_o    <= 1'b0;
             a_empty_o <= 1'b0;

@@ -7,7 +7,7 @@ module dds_wrap #(
     parameter logic IP_EN       = 1
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic en_i,
 
     input logic [PHASE_WIDTH-1:0] phase_inc_i,
@@ -21,7 +21,7 @@ module dds_wrap #(
         logic dds_tvalid;
 
         always_ff @(posedge clk_i) begin
-            if (~rstn_i) begin
+            if (rst_i) begin
                 dds_tvalid <= 1'b0;
             end else if (en_i) begin
                 dds_tvalid <= 1'b1;
@@ -30,7 +30,7 @@ module dds_wrap #(
 
         dds_compiler i_dds_compiler (
             .aclk               (clk_i),
-            .aresetn            (rstn_i),
+            .aresetn            (~rst_i),
             .s_axis_phase_tvalid(dds_tvalid),
             .s_axis_phase_tdata ({phase_offset_i, phase_inc_i}),
             .m_axis_data_tvalid (tvalid_o),
@@ -44,7 +44,7 @@ module dds_wrap #(
             .DATA_PATH  (DATA_PATH)
         ) i_dds (
             .clk_i         (clk_i),
-            .rstn_i        (rstn_i),
+            .rst_i         (rst_i),
             .en_i          (en_i),
             .phase_inc_i   (phase_inc_i),
             .phase_offset_i(phase_offset_i),

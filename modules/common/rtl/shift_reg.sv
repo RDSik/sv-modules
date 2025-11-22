@@ -6,7 +6,7 @@ module shift_reg #(
     parameter       SRL_STYLE  = "srl"
 ) (
     input  logic                  clk_i,
-    input  logic                  rstn_i,
+    input  logic                  rst_i,
     input  logic                  en_i,
     input  logic [DATA_WIDTH-1:0] data_i,
     output logic [DATA_WIDTH-1:0] data_o
@@ -17,7 +17,7 @@ module shift_reg #(
     end else if (DELAY == 1) begin : g_delay_one
         if (RESET_EN) begin : g_reset
             always_ff @(posedge clk_i) begin
-                if (~rstn_i) begin
+                if (rst_i) begin
                     data_o <= '0;
                 end else if (en_i) begin
                     data_o <= data_i;
@@ -36,7 +36,7 @@ module shift_reg #(
         for (genvar i = 0; i < DATA_WIDTH; i++) begin : g_shift_reg
             if (RESET_EN) begin : g_reset
                 always_ff @(posedge clk_i) begin
-                    if (~rstn_i) begin
+                    if (rst_i) begin
                         delay[i] <= '0;
                     end else if (en_i) begin
                         delay[i] <= {delay[i][DELAY-2:0], data_i[i]};

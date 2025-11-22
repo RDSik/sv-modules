@@ -4,10 +4,10 @@ module fir_filter #(
     parameter int CH_NUM     = 2,
     parameter int DATA_WIDTH = 16,
     parameter int COEF_WIDTH = 18,
-    parameter int TAP_NUM    = 25
+    parameter int TAP_NUM    = 32
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic en_i,
 
     input logic                                     tvalid_i,
@@ -29,22 +29,28 @@ module fir_filter #(
 
     localparam int DELAY = TAP_NUM + $clog2(TAP_NUM);
 
-    logic [DELAY-1:0] tvalid_d;
+    logic tvalid_d;
+
+    shift_reg #(
+        .DATA_WIDTH($bits(tvalid_i)),
+        .DELAY     (DELAY),
+        .RESET_EN  (1),
+        .SRL_STYLE ("srl")
+    ) i_shift_reg (
+        .clk_i (clk_i),
+        .rst_i (rst_i),
+        .en_i  (en_i),
+        .data_i(tvalid_i),
+        .data_o(tvalid_d)
+    );
+
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            tvalid_d <= '0;
-        end else begin
-            tvalid_d <= {tvalid_d[DELAY-2:0], tvalid_i};
-        end
-    end
-
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             tvalid_o <= 1'b0;
         end else begin
             if (en_i) begin
-                tvalid_o <= tvalid_d[DELAY-1];
+                tvalid_o <= tvalid_d;
             end else begin
                 tvalid_o <= 1'b0;
             end

@@ -17,7 +17,7 @@ module axis_rr_arb_wrap #(
     logic [MASTER_NUM-1:0][USER_WIDTH-1:0] m_axis_tuser;
 
     assign clk_i         = m_axis.clk_i;
-    assign rstn_i        = m_axis.rstn_i;
+    assign rst_i         = m_axis.rst_i;
     assign m_handshake   = m_axis.tvalid & m_axis.tready;
     assign m_axis.tvalid = |grant;
 
@@ -50,7 +50,7 @@ module axis_rr_arb_wrap #(
         .MASTER_NUM(MASTER_NUM)
     ) i_round_robin_arbiter (
         .clk_i  (clk_i),
-        .rstn_i (rstn_i),
+        .rst_i  (rst_i),
         .ack_i  (m_handshake),
         .req_i  (s_axis_tvalid),
         .grant_o(grant)

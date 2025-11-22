@@ -69,8 +69,10 @@ module axil_uart_tb ();
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .ILA_EN         (0)
+        .ILA_EN         (0),
+        .MODE           ("sync")
     ) i_axil_uart (
+        .clk_i    (clk_i),
         .uart_rx_i(uart),
         .uart_tx_o(uart),
         .s_axil   (s_axil)

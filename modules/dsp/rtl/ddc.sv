@@ -5,10 +5,10 @@ module ddc #(
     parameter int DATA_WIDTH  = 16,
     parameter int COEF_WIDTH  = 18,
     parameter int PHASE_WIDTH = 14,
-    parameter int TAP_NUM     = 25
+    parameter int TAP_NUM     = 16
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic en_i,
 
     input logic round_type_i,
@@ -35,7 +35,7 @@ module ddc #(
         .DDS_IP_EN  (0)
     ) i_mixed_round (
         .clk_i         (clk_i),
-        .rstn_i        (rstn_i),
+        .rst_i         (rst_i),
         .en_i          (en_i),
         .round_type_i  (round_type_i),
         .phase_inc_i   (phase_inc_i),
@@ -49,8 +49,8 @@ module ddc #(
     axis_if #(
         .DATA_WIDTH(IQ_NUM * DATA_WIDTH)
     ) s_axis (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i(clk_i),
+        .rst_i(rst_i)
     );
 
     assign s_axis.tdata  = mixed_tdata;

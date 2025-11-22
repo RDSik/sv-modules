@@ -40,9 +40,6 @@ module ps_pl_top #(
     inout        FIXED_IO_0_ps_srstb
 );
 
-    localparam int AXIL_ADDR_WIDTH = 32;
-    localparam int AXIL_DATA_WIDTH = 32;
-
     logic ps_clk;
     logic ps_arstn;
 
@@ -75,6 +72,9 @@ module ps_pl_top #(
     assign spi_mosi_o = m_spi.mosi;
     assign m_spi.miso = spi_miso_i;
 
+    localparam int AXIL_ADDR_WIDTH = 32;
+    localparam int AXIL_DATA_WIDTH = 32;
+
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
@@ -91,7 +91,8 @@ module ps_pl_top #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .SPI_CS_WIDTH   (SPI_CS_WIDTH),
-        .ILA_EN         (ILA_EN)
+        .ILA_EN         (ILA_EN),
+        .MODE           ("async")
     ) i_ctrl_top (
         .clk_i       (clk_i),
         .uart_rx_i   (uart_rx_i),

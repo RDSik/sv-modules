@@ -5,7 +5,7 @@ interface axis_if #(
     parameter int ID_WIDTH   = 1
 ) (
     input logic clk_i,
-    input logic rstn_i
+    input logic rst_i
 );
 
     localparam int KEEP_WIDTH = (DATA_WIDTH / 8);
@@ -23,7 +23,7 @@ interface axis_if #(
 
     modport master(
         input clk_i,
-        input rstn_i,
+        input rst_i,
         input tready,
         output tdata,
         output tvalid,
@@ -37,7 +37,7 @@ interface axis_if #(
 
     modport slave(
         input clk_i,
-        input rstn_i,
+        input rst_i,
         output tready,
         input tdata,
         input tvalid,

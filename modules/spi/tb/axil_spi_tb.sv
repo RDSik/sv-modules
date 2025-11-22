@@ -60,7 +60,7 @@ module axil_spi_tb ();
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
         end while (rdata[3]);
         for (int i = 0; i < REG_NUM; i++) begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * RX_DATA_REG_POS, rdata);
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
         #10 $stop;
     end
@@ -75,8 +75,10 @@ module axil_spi_tb ();
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .SLAVE_NUM      (CS_WIDTH),
-        .ILA_EN         (0)
+        .ILA_EN         (0),
+        .MODE           ("sync")
     ) i_axil_spi (
+        .clk_i (clk_i),
         .s_axil(s_axil),
         .m_spi (m_spi)
     );

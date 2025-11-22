@@ -3,6 +3,7 @@
 module ddc_tb ();
 
     localparam int IQ_NUM = 2;
+    localparam int PHASE_INC = 100;
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
 
@@ -20,7 +21,7 @@ module ddc_tb ();
     localparam int SIM_TIME = 100_000;
 
     logic                                               clk_i;
-    logic                                               rstn_i;
+    logic                                               rst_i;
     logic                                               en_i;
     logic [DDS_NUM-1:0]                                 dds_tvalid;
     logic [DDS_NUM-1:0][    IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
@@ -38,11 +39,11 @@ module ddc_tb ();
     end
 
     initial begin
-        en_i   = 1'b0;
-        rstn_i = 1'b0;
+        en_i  = 1'b0;
+        rst_i = 1'b1;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rstn_i = 1'b1;
-        en_i   = 1'b1;
+        rst_i = 1'b0;
+        en_i  = 1'b1;
     end
 
     initial begin
@@ -68,11 +69,11 @@ module ddc_tb ();
         .COE_FILE   (COE_FILE)
     ) dut (
         .clk_i         (clk_i),
-        .rstn_i        (rstn_i),
+        .rst_i         (rst_i),
         .en_i          (en_i),
         .round_type_i  (ROUND_TYPE),
         .decimation_i  (DECIMATION),
-        .phase_inc_i   ('0),
+        .phase_inc_i   (PHASE_INC),
         .phase_offset_i('0),
         .tdata_i       (noise),
         .tvalid_i      (&dds_tvalid),
@@ -87,7 +88,7 @@ module ddc_tb ();
             .DATA_WIDTH (DATA_WIDTH)
         ) i_dds (
             .clk_i         (clk_i),
-            .rstn_i        (rstn_i),
+            .rst_i         (rst_i),
             .en_i          (en_i),
             .phase_inc_i   (freq_to_phase(FREQ[dds_indx])),
             .phase_offset_i('0),

@@ -82,13 +82,13 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            wr_valid <= '0;
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                 wr_reg[reg_indx] <= REG_INIT_UNPACK[reg_indx];
             end
+            wr_valid <= '0;
         end else begin
-            for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                if (slv_reg_wren) begin
+            if (slv_reg_wren) begin
+                for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                     if (awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         for (int i = 0; i < REG_DATA_WIDTH / 8; i++) begin
                             if (s_axil.wstrb[i]) begin
@@ -97,9 +97,9 @@ module axil_reg_file #(
                         end
                         wr_valid[reg_indx] <= 1'b1;
                     end
-                end else begin
-                    wr_valid[reg_indx] <= 1'b0;
                 end
+            end else begin
+                wr_valid <= '0;
             end
         end
     end
@@ -183,14 +183,14 @@ module axil_reg_file #(
         if (~rstn_i) begin
             rd_request_o <= '0;
         end else begin
-            for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
-                if (slv_reg_rden) begin
+            if (slv_reg_rden) begin
+                for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                     if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         rd_request_o[reg_indx] <= 1'b1;
                     end
-                end else begin
-                    rd_request_o[reg_indx] <= 1'b0;
                 end
+            end else begin
+                rd_request_o <= '0;
             end
         end
     end

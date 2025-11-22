@@ -8,12 +8,10 @@ module axil_spi
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SLAVE_NUM       = 1,
-    parameter logic ILA_EN          = 0
-
+    parameter logic ILA_EN          = 0,
+    parameter       MODE            = "sync"
 ) (
-    /* verilator lint_off PINMISSING */
     input logic clk_i,
-    /* verilator lint_on PINMISSING */
 
     axil_if.slave s_axil,
 
@@ -27,42 +25,36 @@ module axil_spi
     logic      [REG_NUM-1:0] rd_valid;
     logic      [REG_NUM-1:0] wr_valid;
 
-    logic                    ps_clk;
-    logic                    rstn_i;
+    logic                    reset;
 
-    assign ps_clk = s_axil.clk_i;
-    assign rstn_i = s_axil.rstn_i;
-
-    logic reset;
-
-    assign reset = ~wr_regs.control.reset;
+    assign reset = wr_regs.control.reset;
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_tx (
-        .clk_i (ps_clk),
-        .rstn_i(reset)
+        .clk_i(clk_i),
+        .rst_i(reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_rx (
-        .clk_i (ps_clk),
-        .rstn_i(reset)
+        .clk_i(clk_i),
+        .rst_i(reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_tx (
-        .clk_i (ps_clk),
-        .rstn_i(reset)
+        .clk_i(clk_i),
+        .rst_i(reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_rx (
-        .clk_i (ps_clk),
-        .rstn_i(reset)
+        .clk_i(clk_i),
+        .rst_i(reset)
     );
 
     always_comb begin
@@ -78,22 +70,25 @@ module axil_spi
         rd_regs.status.rx_fifo_full  = ~spi_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
 
+        rd_regs.rx.last              = fifo_rx.tlast;
         rd_regs.rx.data              = fifo_rx.tdata;
     end
 
     assign fifo_tx.tdata  = wr_regs.tx.data;
-    assign fifo_tx.tlast  = wr_regs.tx.last;
+    assign fifo_tx.tlast  = wr_regs.tx.last & wr_valid[TX_DATA_REG_POS];
     assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_request[RX_DATA_REG_POS];
 
-    axil_reg_file #(
+    axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .REG_NUM       (REG_NUM),
         .reg_t         (spi_regs_t),
         .REG_INIT      (REG_INIT),
-        .ILA_EN        (ILA_EN)
+        .ILA_EN        (ILA_EN),
+        .MODE          (MODE)
     ) i_axil_reg_file (
+        .clk_i       (clk_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),

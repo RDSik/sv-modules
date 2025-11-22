@@ -8,7 +8,7 @@ module crc #(
     parameter int CRC_WIDTH  = 16
 ) (
     input  logic                  clk_i,
-    input  logic                  rstn_i,
+    input  logic                  rst_i,
     input  logic                  en_i,
     input  logic [DATA_WIDTH-1:0] data_i,
     output logic [ CRC_WIDTH-1:0] crc_o
@@ -19,7 +19,7 @@ module crc #(
     end
 
     always @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             crc_o <= '1;
         end else begin
             crc_o <= en_i ? crc_byte(crc_o, data_i) : crc_o;

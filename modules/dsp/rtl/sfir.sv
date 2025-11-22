@@ -3,11 +3,11 @@ module sfir #(
     parameter int CH_NUM     = 2,
     parameter int DATA_WIDTH = 16,
     parameter int COEF_WIDTH = 18,
-    parameter int TAP_NUM    = 28,
+    parameter int TAP_NUM    = 16,
     parameter     COE_FILE   = "fir.mem"
 ) (
     input logic clk_i,
-    input logic rstn_i,
+    input logic rst_i,
     input logic en_i,
 
     input logic                                     tvalid_i,
@@ -28,14 +28,14 @@ module sfir #(
         .SRL_STYLE ("srl")
     ) i_shift_reg (
         .clk_i (clk_i),
-        .rstn_i(rstn_i),
+        .rst_i (rst_i),
         .en_i  (en_i),
         .data_i(tvalid_i),
         .data_o(tvalid_d)
     );
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             tvalid_o <= 1'b0;
         end else begin
             if (en_i) begin

@@ -2,8 +2,9 @@
 `define ENV_SVH
 
 class env_base #(
-    parameter int DATA_WIDTH_IN  = 16,
-    parameter int DATA_WIDTH_OUT = 16
+    parameter int   DATA_WIDTH_IN  = 16,
+    parameter int   DATA_WIDTH_OUT = 16,
+    parameter logic TLAST_EN       = 0
 );
 
     test_cfg_base cfg;
@@ -40,8 +41,7 @@ class env_base #(
         /* verilator lint_on CONSTRAINTIGN */
     endfunction
 
-    task do_master_gen(int pkt_amount, int size_min, int size_max, int delay_min,
-                              int delay_max);
+    task do_master_gen(int pkt_amount, int size_min, int size_max, int delay_min, int delay_max);
         repeat (pkt_amount) begin
             packet_in_t p;
             int size;
@@ -87,10 +87,10 @@ class env_base #(
                     drive_master(p);
                 end
             join_none
-            wait (~s_axis.rstn_i);
+            wait (s_axis.rst_i);
             disable fork;
             reset_master();
-            wait (s_axis.rstn_i);
+            wait (~s_axis.rst_i);
         end
     endtask
 
@@ -106,19 +106,19 @@ class env_base #(
 
     task do_master_monitor();
         forever begin
-            wait (s_axis.rstn_i);
+            wait (~s_axis.rst_i);
             fork
                 forever begin
                     monitor_master();
                 end
             join_none
-            wait (~s_axis.rstn_i);
+            wait (s_axis.rst_i);
             disable fork;
         end
     endtask
 
     task master(int gen_pkt_amount, int gen_size_min, int gen_size_max, int gen_delay_min,
-                       int gen_delay_max);
+                int gen_delay_max);
         fork
             do_master_gen(gen_pkt_amount, gen_size_min, gen_size_max, gen_delay_min, gen_delay_max);
             do_master_drive();
@@ -149,10 +149,10 @@ class env_base #(
                     drive_slave(delay_min, delay_max);
                 end
             join_none
-            wait (~m_axis.rstn_i);
+            wait (m_axis.rst_i);
             disable fork;
             reset_slave();
-            wait (m_axis.rstn_i);
+            wait (~m_axis.rst_i);
         end
     endtask
 
@@ -168,13 +168,13 @@ class env_base #(
 
     task do_slave_monitor();
         forever begin
-            wait (m_axis.rstn_i);
+            wait (~m_axis.rst_i);
             fork
                 forever begin
                     monitor_slave();
                 end
             join_none
-            wait (~m_axis.rstn_i);
+            wait (m_axis.rst_i);
             disable fork;
         end
     endtask
@@ -191,6 +191,11 @@ class env_base #(
         if (out.tdata !== in.tdata) begin
             $error("%0t Invalid TDATA: Real: %0h, Expected: %0h", $time(), out.tdata, in.tdata);
         end
+        if (TLAST_EN) begin
+            if (out.tlast !== in.tlast) begin
+                $error("%0t Invalid TLAST: Real: %0h, Expected: %0h", $time(), out.tlast, in.tlast);
+            end
+        end
         /* verilator lint_on WIDTHEXPAND */
     endtask
 
@@ -199,7 +204,7 @@ class env_base #(
         packet_in_t in_p;
         packet_out_t out_p;
         forever begin
-            wait (s_axis.rstn_i);
+            wait (~s_axis.rst_i);
             fork
                 forever begin
                     in_mbx.get(in_p);
@@ -213,7 +218,7 @@ class env_base #(
                     end
                 end
                 begin
-                    wait (~s_axis.rstn_i);
+                    wait (s_axis.rst_i);
                 end
             join_any
             disable fork;
@@ -225,10 +230,9 @@ class env_base #(
     endtask
 
     task run(int gen_pkt_amount = cfg.packet_num, int gen_size_min = cfg.min_size,
-                    int gen_size_max = cfg.max_size, int gen_delay_min = cfg.master_min_delay,
-                    int gen_delay_max = cfg.master_max_delay,
-                    int slave_delay_min = cfg.slave_min_delay,
-                    int slave_delay_max = cfg.slave_max_delay, int timeout_cycles = cfg.sim_time);
+             int gen_size_max = cfg.max_size, int gen_delay_min = cfg.master_min_delay,
+             int gen_delay_max = cfg.master_max_delay, int slave_delay_min = cfg.slave_min_delay,
+             int slave_delay_max = cfg.slave_max_delay, int timeout_cycles = cfg.sim_time);
         bit done;
         fork
             master(gen_pkt_amount, gen_size_min, gen_size_max, gen_delay_min, gen_delay_max);

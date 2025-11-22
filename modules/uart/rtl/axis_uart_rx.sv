@@ -19,7 +19,7 @@ module axis_uart_rx
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
 
     logic                      clk_i;
-    logic                      rstn_i;
+    logic                      rst_i;
     logic [DATA_CNT_WIDTH-1:0] bit_cnt;
     logic [ DIVIDER_WIDTH-1:0] baud_cnt;
     logic [    DATA_WIDTH-1:0] rx_data;
@@ -41,11 +41,11 @@ module axis_uart_rx
 
     uart_state_e state;
 
-    assign clk_i  = m_axis.clk_i;
-    assign rstn_i = m_axis.rstn_i;
+    assign clk_i = m_axis.clk_i;
+    assign rst_i = m_axis.rst_i;
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             state        <= IDLE;
             rx_data      <= '0;
             bit_cnt      <= '0;
@@ -108,7 +108,7 @@ module axis_uart_rx
     end
 
     always @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             baud_cnt <= '0;
         end else if (baud_done | start_bit_check) begin
             baud_cnt <= '0;
@@ -118,7 +118,7 @@ module axis_uart_rx
     end
 
     always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
+        if (rst_i) begin
             m_axis.tvalid <= 1'b0;
         end else if (m_handshake) begin
             m_axis.tvalid <= 1'b0;
@@ -128,7 +128,7 @@ module axis_uart_rx
     end
 
     always_ff @(posedge clk_i) begin
-        if ((state == WAIT) && (~parity_err_o)) begin
+        if (state == WAIT) begin
             m_axis.tdata <= rx_data;
         end
     end

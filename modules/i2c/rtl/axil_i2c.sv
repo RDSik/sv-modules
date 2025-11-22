@@ -7,11 +7,10 @@ module axil_i2c
     parameter int   FIFO_DEPTH      = 128,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIL_ADDR_WIDTH = 32,
-    parameter logic ILA_EN          = 0
+    parameter logic ILA_EN          = 0,
+    parameter       MODE            = "sync"
 ) (
-    /* verilator lint_off PINMISSING */
     input logic clk_i,
-    /* verilator lint_on PINMISSING */
 
     input  logic scl_pad_i,
     output logic scl_pad_o,
@@ -23,12 +22,6 @@ module axil_i2c
 
     axil_if.slave s_axil
 );
-
-    logic ps_clk;
-    logic rstn_i;
-
-    assign ps_clk = s_axil.clk_i;
-    assign rstn_i = s_axil.rstn_i;
 
     i2c_regs_t                      rd_regs;
     i2c_regs_t                      wr_regs;
@@ -68,14 +61,16 @@ module axil_i2c
         rd_regs.rx.data              = rx_data;
     end
 
-    axil_reg_file #(
+    axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .REG_NUM       (REG_NUM),
         .reg_t         (i2c_regs_t),
         .REG_INIT      (REG_INIT),
-        .ILA_EN        (ILA_EN)
+        .ILA_EN        (ILA_EN),
+        .MODE          (MODE)
     ) i_axil_reg_file (
+        .clk_i       (clk_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),
@@ -99,7 +94,7 @@ module axil_i2c
     logic   write;
     logic   read;
 
-    always @(posedge ps_clk) begin
+    always @(posedge clk_i) begin
         if (wr_regs.control.core_rst | i2c_al) begin
             state <= IDLE;
             write <= 1'b0;
@@ -144,7 +139,7 @@ module axil_i2c
     end
 
     i2c_master_byte_ctrl i_i2c_master_byte_ctrl (
-        .clk     (ps_clk),
+        .clk     (clk_i),
         .rst     (wr_regs.control.core_rst),
         .nReset  ('1),
         .ena     (wr_regs.control.core_en),
@@ -177,7 +172,7 @@ module axil_i2c
     logic rx_fifo_push;
     logic rx_fifo_pop;
 
-    assign fifo_rst = ~wr_regs.control.core_rst;
+    assign fifo_rst = wr_regs.control.core_rst;
 
     assign tx_fifo_push = wr_valid[TX_DATA_REG_POS];
     assign tx_fifo_pop = cmd_ack & write;
@@ -191,11 +186,11 @@ module axil_i2c
         .CDC_REG_NUM(CDC_REG_NUM),
         .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_tx (
-        .wr_clk_i (ps_clk),
-        .wr_rstn_i(fifo_rst),
+        .wr_clk_i (clk_i),
+        .wr_rst_i (fifo_rst),
         .wr_data_i(wr_regs.tx.data),
-        .rd_clk_i (ps_clk),
-        .rd_rstn_i(rstn_i),
+        .rd_clk_i (clk_i),
+        .rd_rst_i (fifo_rst),
         .rd_data_o(i2c_tx_data),
         .push_i   (tx_fifo_push),
         .pop_i    (tx_fifo_pop),
@@ -211,11 +206,11 @@ module axil_i2c
         .CDC_REG_NUM(CDC_REG_NUM),
         .FIFO_MODE  (FIFO_MODE)
     ) i_fifo_rx (
-        .wr_clk_i (ps_clk),
-        .wr_rstn_i(fifo_rst),
+        .wr_clk_i (clk_i),
+        .wr_rst_i (fifo_rst),
         .wr_data_i(i2c_rx_data),
-        .rd_clk_i (ps_clk),
-        .rd_rstn_i(rstn_i),
+        .rd_clk_i (clk_i),
+        .rd_rst_i (fifo_rst),
         .rd_data_o(rx_data),
         .push_i   (rx_fifo_push),
         .pop_i    (rx_fifo_pop),
