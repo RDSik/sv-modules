@@ -13,7 +13,7 @@ module ddc_tb ();
     localparam int TAP_NUM = 32 / 2;
     localparam COE_FILE = "fir.mem";
 
-    localparam int FS = 100_000_000;
+    localparam int Fs = 100_000_000;
     localparam int DDS_NUM = 2;
     localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{50e6, 500e6};
     localparam int CLK_PER = 2;
@@ -98,12 +98,12 @@ module ddc_tb ();
     end
 
     function automatic logic [31:0] freq_to_phase(logic [31:0] freq);
-        logic [31:0] Fs = 100e6;
+        logic [31:0] fs = Fs;
         logic [31:0] phase_width = PHASE_WIDTH;
-        logic [61:0] tmp;
+        logic [63:0] tmp;
         begin
             tmp = (freq * 2 ** phase_width);
-            freq_to_phase = tmp / Fs;
+            freq_to_phase = tmp / fs;
         end
     endfunction
 
