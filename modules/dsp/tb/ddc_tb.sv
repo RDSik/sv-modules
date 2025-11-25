@@ -97,7 +97,7 @@ module ddc_tb ();
         );
     end
 
-    function automatic logic [31:0] freq_to_phase(logic [31:0] freq);
+    function automatic logic [PHASE_WIDTH-1:0] freq_to_phase(logic [31:0] freq);
         logic [31:0] Fs = FS;
         logic [31:0] phase_width = PHASE_WIDTH;
         logic [63:0] tmp;
