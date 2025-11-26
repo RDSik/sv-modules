@@ -11,7 +11,7 @@ set modules_dirs [list \
     ../../modules/i2c \
     ../../modules/fifo \
     ../../modules/common \
-    ../../modules/bd \
+    ../../modules/top \
     ../../modules/dsp \
     ../../modules/lfsr \
     ../../modules/interface \

@@ -1,6 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
 module dds #(
-    parameter     DATA_PATH   = "dds_out.bin",
     parameter int IQ_NUM      = 2,
     parameter int PHASE_WIDTH = 14,
     parameter int DATA_WIDTH  = 16

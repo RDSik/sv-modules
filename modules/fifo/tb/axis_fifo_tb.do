@@ -17,7 +17,7 @@ vlog axis_fifo_tb.sv
 vsim -voptargs="+acc" axis_fifo_tb
 add log -r /*
 
-add wave -expand -group FIFO    /axis_fifo_tb/dut/i_fifo_wrap/g_fifo/i_fifo/*
+add wave -expand -group FIFO    /axis_fifo_tb/dut/i_fifo_wrap/*
 add wave -expand -group M_AXIS  /axis_fifo_tb/dut/m_axis/*
 add wave -expand -group S_AXIS  /axis_fifo_tb/dut/s_axis/*
 

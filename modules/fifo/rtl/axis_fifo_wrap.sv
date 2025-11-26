@@ -1,10 +1,12 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_fifo_wrap #(
-    parameter int   FIFO_WIDTH  = 32,
-    parameter int   FIFO_DEPTH  = 128,
-    parameter int   CDC_REG_NUM = 2,
-    parameter logic TLAST_EN    = 0,
-    parameter       FIFO_MODE   = "sync"
+    parameter int   FIFO_WIDTH   = 32,
+    parameter int   FIFO_DEPTH   = 128,
+    parameter int   CDC_REG_NUM  = 2,
+    parameter int   READ_LATENCY = 1,
+    parameter logic TLAST_EN     = 0,
+    parameter       RAM_STYLE    = "block",
+    parameter       FIFO_MODE    = "sync"
 ) (
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -37,10 +39,12 @@ module axis_fifo_wrap #(
     assign pop = m_axis.tvalid & m_axis.tready;
 
     fifo_wrap #(
-        .FIFO_WIDTH (FULL_WIDTH),
-        .FIFO_DEPTH (FIFO_DEPTH),
-        .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE)
+        .FIFO_WIDTH  (FULL_WIDTH),
+        .FIFO_DEPTH  (FIFO_DEPTH),
+        .CDC_REG_NUM (CDC_REG_NUM),
+        .READ_LATENCY(READ_LATENCY),
+        .FIFO_MODE   (FIFO_MODE),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_wrap (
         .wr_clk_i (s_axis.clk_i),
         .wr_rst_i (s_axis.rst_i),

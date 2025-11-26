@@ -7,7 +7,7 @@ module ddc_tb ();
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
 
-    localparam int PHASE_WIDTH = 14;
+    localparam int PHASE_WIDTH = 32;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 32 / 2;
@@ -15,7 +15,7 @@ module ddc_tb ();
 
     localparam int FS = 100_000_000;
     localparam int DDS_NUM = 2;
-    localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{50e6, 500e6};
+    localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{2e6, 500e3};
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
     localparam int SIM_TIME = 100_000;
@@ -82,10 +82,11 @@ module ddc_tb ();
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds #(
+        dds_wrap #(
             .IQ_NUM     (IQ_NUM),
             .PHASE_WIDTH(PHASE_WIDTH),
-            .DATA_WIDTH (DATA_WIDTH)
+            .DATA_WIDTH (DATA_WIDTH),
+            .IP_EN      (1)
         ) i_dds (
             .clk_i         (clk_i),
             .rst_i         (rst_i),
@@ -97,12 +98,12 @@ module ddc_tb ();
         );
     end
 
-    function automatic logic [31:0] freq_to_phase(logic [31:0] freq);
-        logic [31:0] Fs = 100e6;
+    function automatic logic [PHASE_WIDTH-1:0] freq_to_phase(logic [31:0] freq);
+        logic [31:0] Fs = FS;
         logic [31:0] phase_width = PHASE_WIDTH;
-        logic [61:0] tmp;
+        logic [63:0] tmp;
         begin
-            tmp = (freq * 2 ** phase_width);
+            tmp = freq * 2 ** phase_width;
             freq_to_phase = tmp / Fs;
         end
     endfunction

@@ -1,7 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
 module sync_fifo #(
-    parameter int FIFO_WIDTH = 32,
-    parameter int FIFO_DEPTH = 64
+    parameter int FIFO_WIDTH   = 32,
+    parameter int FIFO_DEPTH   = 64,
+    parameter int READ_LATENCY = 1,
+    parameter     RAM_STYLE    = "block"
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -18,7 +20,6 @@ module sync_fifo #(
     output logic empty_o
 );
 
-    localparam int READ_LATENCY = 0;
     localparam logic SHOW_AHEAD_EN = (READ_LATENCY > 0);
     localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
@@ -97,8 +98,8 @@ module sync_fifo #(
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
         .READ_LATENCY(READ_LATENCY),
-        .MEM_MODE    ("read_first"),
-        .RAM_STYLE   ("distributed")
+        .RAM_STYLE   (RAM_STYLE),
+        .MEM_MODE    ("read_first")
     ) i_ram_sdp (
         .a_clk_i  (clk_i),
         .a_en_i   (wr_en),
