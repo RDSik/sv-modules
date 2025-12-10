@@ -2,6 +2,13 @@
 
 #define UART_BASE_ADDR 0x43c00000
 
+#define UART_CTRL_OFFSET 0
+#define UART_CLK_DIV_OFFSET 4
+#define UART_TX_OFFSET 8
+#define UART_RX_OFFSET 12
+#define UART_STATUS_OFFSET 16
+#define UART_PARAM_OFFSET 20
+
 typedef struct __attribute__((packed)) {
     uint8_t fifo_depth;
     uint8_t reg_num;

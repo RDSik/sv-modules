@@ -8,7 +8,8 @@ module ctrl_top #(
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SPI_CS_WIDTH    = 1,
     parameter logic ILA_EN          = 0,
-    parameter       MODE            = "sync"
+    parameter       MODE            = "sync",
+    parameter int   MODULES_NUM     = UART_EN + SPI_EN + I2C_EN
 ) (
     input logic clk_i,
 
@@ -25,7 +26,7 @@ module ctrl_top #(
 
     spi_if.master m_spi,
 
-    axil_if.slave s_axil[UART_EN+SPI_EN+I2C_EN-1:0]
+    axil_if.slave s_axil[MODULES_NUM-1:0]
 );
 
     if (UART_EN) begin : g_uart_en

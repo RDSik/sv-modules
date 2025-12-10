@@ -29,7 +29,7 @@ add log -r /*
 
 add wave -expand -group TOP      /axil_i2c_tb/i_axil_i2c/*
 add wave -expand -group CTRL     /axil_i2c_tb/i_axil_i2c/i_i2c_master_byte_ctrl/*
-add wave -expand -group REG      /axil_i2c_tb/i_axil_i2c/i_axil_reg_file/*
+add wave -expand -group REG_FILE /axil_i2c_tb/i_axil_i2c/i_axil_reg_file/g_sync_mode/i_axil_reg_file/*
 add wave -expand -group AXIL     /axil_i2c_tb/i_axil_i2c/s_axil/*
 
 run -all

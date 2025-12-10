@@ -11,8 +11,8 @@ module ps_pl_top #(
 
     input  logic                    spi_miso_i,
     output logic                    spi_mosi_o,
-    output logic                    spi_cs_o,
-    output logic [SPI_CS_WIDTH-1:0] spi_clk_o,
+    output logic                    spi_clk_o,
+    output logic [SPI_CS_WIDTH-1:0] spi_cs_o,
 
     inout i2c_scl_io,
     inout i2c_sda_io,

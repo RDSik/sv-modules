@@ -30,7 +30,7 @@ add wave -expand -group UART_RX  /axil_uart_tb/i_axil_uart/i_axis_uart_rx/*
 add wave -expand -group UART_TX  /axil_uart_tb/i_axil_uart/i_axis_uart_tx/*
 add wave -expand -group FIFO_RX  /axil_uart_tb/i_axil_uart/fifo_rx/*
 add wave -expand -group FIFO_TX  /axil_uart_tb/i_axil_uart/fifo_tx/*
-add wave -expand -group REG_FILE /axil_uart_tb/i_axil_uart/i_axil_reg_file/*
+add wave -expand -group REG_FILE /axil_uart_tb/i_axil_uart/i_axil_reg_file/g_sync_mode/i_axil_reg_file/*
 add wave -expand -group AXIL     /axil_uart_tb/i_axil_uart/s_axil/*
 
 run -all

@@ -1,27 +1,21 @@
 `timescale 1ns / 1ps
 
-`include "../rtl/spi_pkg.svh"
-`include "../../verification/tb/axil_env.svh"
+`include "axil_spi_class.svh"
 
 module axil_spi_tb ();
-
-    import spi_pkg::*;
 
     localparam int FIFO_DEPTH = 128;
     localparam int CS_WIDTH = 8;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
 
-    localparam int ADDR_OFFSET = AXIL_DATA_WIDTH / 8;
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
-    logic                      clk_i;
-    logic                      rstn_i;
-    logic [SPI_DATA_WIDTH-1:0] rdata;
-    logic [SPI_DATA_WIDTH-1:0] wdata;
+    logic clk_i;
+    logic rstn_i;
 
     spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
 
@@ -50,19 +44,13 @@ module axil_spi_tb ();
     end
 
     initial begin
-        axil_env env;
-        env   = new(s_axil);
-        wdata = $urandom_range(0, (2 ** SPI_DATA_WIDTH) - 1);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, 10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 3'b010);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {1'b1, wdata});
-        do begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
-        end while (rdata[3]);
-        for (int i = 0; i < REG_NUM; i++) begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
-        end
-        #10 $stop;
+        axil_spi_class #(
+            .DATA_WIDTH(AXIL_DATA_WIDTH),
+            .ADDR_WIDTH(AXIL_ADDR_WIDTH),
+            .BASE_ADDR (BASE_ADDR)
+        ) spi;
+        spi = new(s_axil);
+        spi.spi_start();
     end
 
     initial begin

@@ -37,7 +37,7 @@ module round_robin_arbiter #(
     end
 
     always_comb begin
-        ptr_next = '0;
+        ptr_next = ptr;
         for (int i = 0; i < MASTER_NUM; i++) begin
             if (grant_o[i]) begin
                 /* verilator lint_off WIDTHTRUNC */
