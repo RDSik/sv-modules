@@ -8,7 +8,7 @@ BOARD ?= pz7020starlite
 VIVADO_TCL := project.tcl
 SDK_TCL    := sdk.tcl
 
-.PHONY: project program clean
+.PHONY: project program sdk clean
 
 project:
 ifeq ($(BOARD), tangprimer20k)
