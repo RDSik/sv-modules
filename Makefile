@@ -6,7 +6,7 @@ PROJECT_DIR := project
 BOARD ?= pz7020starlite
 
 VIVADO_TCL := project.tcl
-SDK_TCL    := sdk_project.tcl
+SDK_TCL    := sdk.tcl
 
 .PHONY: project program clean
 

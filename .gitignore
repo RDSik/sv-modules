@@ -10,7 +10,7 @@
 # !project/**/
 
 !project/**/project.tcl
-!project/**/zynq_ps.tcl
+!project/**/sdk.tcl
 !project/**/ps_pl_top.xdc
 !project/**/*.sdc
 !project/**/*.cst
