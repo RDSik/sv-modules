@@ -1,26 +1,30 @@
-set syn_top       "ps_pl_top"
-set hw_project    "hw_platform"
-set cpu           "ps7_cortexa9_0"
-set bsp           "standalone_bsp"
-set device_tree   [file normalize "Zynq-Linux/device-tree-xlnx-xilinx-v2019.1"]
-set workspace_dir [file normalize  "project/pz7020starlite"]
-set project_dir   [file normalize "project/pz7020starlite"]
-set sdk_dir       [file normalize "$project_dir/$syn_top.sdk"]
+set syn_top     "ps_pl_top"
+set hw_project  ${syn_top}_hw_platform_0
+set app         $syn_top
+set bsp         ${app}_bsp
+set device_tree ${app}_devtree_bsp
+set cpu         "ps7_cortexa9_0"
+set sdk_dir     [file normalize "project/pz7020starlite/$syn_top.sdk"]
 
-setws $project_dir
-createhw -name $syn_top -hwspec $sdk_dir/$syn_top.hdf
+file delete -fore $sdk_dir/SDK.log
+file delete -fore $sdk_dir/$hw_project
+file delete -fore $sdk_dir/$bsp
+file delete -fore $sdk_dir/$device_tree
 
-createbsp -name $bsp -hwproject $hw_project \
-          -proc $cpu -os standalone
+setws $sdk_dir
 
-createapp -name $syn_top -app {Empty Application} \
-          -hwproject $syn_top -bsp $bsp \
-          -proc $cpu -os standalone -lang C
+repo -set "Zynq-Linux/device-tree-xlnx-xilinx-v2019.1"
+
+createhw -name $hw_project -hwspec $sdk_dir/$syn_top.hdf
+
+createbsp -name $bsp -hwproject $hw_project -proc $cpu -os standalone
+
+createapp -name $app -app {Empty Application} -hwproject $hw_project -bsp $bsp -proc $cpu -os standalone -lang C
+
+createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os standalone
 
 set source_dir "/path/to/your/c/sources"
 
 importsources -name $syn_top -path $source_dir
-repo -set $device_tree
-repo -scan
-projects -build
 
+projects -build

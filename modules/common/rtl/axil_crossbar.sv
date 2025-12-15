@@ -9,7 +9,7 @@ module axil_crossbar #(
         32'h43c1_0000,
         32'h43c2_0000
     },
-    parameter logic [SLAVE_NUM-1:0][ADDR_WIDTH-1:0] SLAVE_HIGTH_ADDR = '{
+    parameter logic [SLAVE_NUM-1:0][ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
         32'h43c0_ffff,
         32'h43c1_ffff,
         32'h43c2_ffff
@@ -19,32 +19,60 @@ module axil_crossbar #(
     axil_if.master m_axil[ SLAVE_NUM-1:0]
 );
 
-    localparam int SEL_WIDTH = $clog2(SLAVE_NUM + 1);
+    localparam logic [1:0] RESP_OKAY = 2'b00;
+    localparam logic [1:0] RESP_DECERR = 2'b11;
 
-    function automatic logic [SEL_WIDTH-1:0] get_index(input logic [ADDR_WIDTH-1:0] addr);
-        begin
-            get_index = SEL_WIDTH'(SLAVE_NUM);
-            for (int i = 0; i < SLAVE_NUM; i++) begin
-                if (addr >= SLAVE_LOW_ADDR[i] && addr <= SLAVE_HIGTH_ADDR[i]) begin
-                    get_index = SEL_WIDTH'(i);
-                end
+    localparam int SLAVE_SEL_WIDTH = (SLAVE_NUM > 1) ? $clog2(SLAVE_NUM) : 1;
+    localparam int MASTER_SEL_WIDTH = (MASTER_NUM > 1) ? $clog2(MASTER_NUM) : 1;
+
+    typedef enum logic [1:0] {
+        WR_IDLE = 2'b00,
+        WR_ADDR = 2'b01,
+        WR_DATA = 2'b10,
+        WR_RESP = 2'b11
+    } wr_state_t;
+
+    wr_state_t wr_state, wr_next_state;
+
+    typedef enum logic [1:0] {
+        RD_IDLE = 2'b00,
+        RD_ADDR = 2'b01,
+        RD_DATA = 2'b10
+    } rd_state_t;
+
+    rd_state_t rd_state, rd_next_state;
+
+    typedef struct packed {
+        logic [SLAVE_SEL_WIDTH-1:0] indx;
+        logic                       valid;
+    } addr_decode_t;
+
+    function automatic addr_decode_t get_addr_index(input logic [ADDR_WIDTH-1:0] addr);
+        get_addr_index = '0;
+        for (int i = 0; i < SLAVE_NUM; i++) begin
+            if (addr >= SLAVE_LOW_ADDR[i] && addr <= SLAVE_HIGH_ADDR[i]) begin
+                get_addr_index.indx  = SLAVE_SEL_WIDTH'(i);
+                get_addr_index.valid = 1'b1;
+                break;
             end
         end
     endfunction
 
-    typedef enum logic [1:0] {
-        IDLE  = 2'b00,
-        WRITE = 2'b01,
-        READ  = 2'b10
-    } state_t;
+    function automatic logic [MASTER_SEL_WIDTH-1:0] get_index(input logic [MASTER_NUM-1:0] data_in);
+        get_index = '0;
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            if (data_in[i]) begin
+                get_index = MASTER_SEL_WIDTH'(i);
+                break;
+            end
+        end
+    endfunction
 
-    state_t state;
+    logic clk_i;
+    logic rstn_i;
 
-    logic   clk_i;
-    logic   rstn_i;
-
-    assign clk_i  = s_axil.clk_i;
-    assign rstn_i = s_axil.rstn_i;
+    assign clk_i  = s_axil[0].clk_i;
+    assign rstn_i = s_axil[0].rstn_i;
 
     logic [MASTER_NUM-1:0][  ADDR_WIDTH-1:0] s_awaddr;
     logic [MASTER_NUM-1:0]                   s_awvalid;
@@ -70,7 +98,7 @@ module axil_crossbar #(
         assign s_awprot[i]       = s_axil[i].awprot;
         assign s_awaddr[i]       = s_axil[i].awaddr;
         assign s_awvalid[i]      = s_axil[i].awvalid;
-        assign s_wdata[i]        = s_axil[i].arb_wdata;
+        assign s_wdata[i]        = s_axil[i].wdata;
         assign s_wstrb[i]        = s_axil[i].wstrb;
         assign s_wvalid[i]       = s_axil[i].wvalid;
         assign s_bready[i]       = s_axil[i].bready;
@@ -110,143 +138,303 @@ module axil_crossbar #(
     logic [SLAVE_NUM-1:0][             1:0] m_rresp;
 
     for (genvar i = 0; i < SLAVE_NUM; i++) begin : g_slave
-        assign m_axil[i].awprot  = m_awprot[i];
-        assign m_axil[i].awaddr  = m_awaddr[i];
+        assign m_axil[i].awprot = m_awprot[i];
+        assign m_axil[i].awaddr = m_awaddr[i];
         assign m_axil[i].awvalid = m_awvalid[i];
-        assign m_axil[i].wdata   = m_wdata[i];
-        assign m_axil[i].wstrb   = m_wstrb[i];
-        assign m_axil[i].wvalid  = m_wvalid[i];
-        assign m_axil[i].bready  = m_bready[i];
-        assign m_axil[i].araddr  = m_araddr[i];
+        assign m_axil[i].wdata = m_wdata[i];
+        assign m_axil[i].wstrb = m_wstrb[i];
+        assign m_axil[i].wvalid = m_wvalid[i];
+        assign m_axil[i].bready = m_bready[i];
+        assign m_axil[i].araddr = m_araddr[i];
         assign m_axil[i].arvalid = m_arvalid[i];
-        assign m_axil[i].rready  = m_rready[i];
-        assign m_axil[i].arprot  = m_arprot[i];
+        assign m_axil[i].rready = m_rready[i];
+        assign m_axil[i].arprot = m_arprot[i];
 
-        assign m_awready[i]      = m_axil[i].awready;
-        assign m_wready[i]       = m_axil[i].wready;
-        assign m_rresp[i]        = m_axil[i].rresp;
-        assign m_bresp[i]        = m_axil[i].bresp;
-        assign m_bvalid[i]       = m_axil[i].bvalid;
-        assign m_arready[i]      = m_axil[i].arready;
-        assign m_rdata[i]        = m_axil[i].rdata;
-        assign m_rvalid[i]       = m_axil[i].rvalid;
+        assign m_awready[i] = m_axil[i].awready;
+        assign m_wready[i] = m_axil[i].wready;
+        assign m_rresp[i] = m_axil[i].rresp;
+        assign m_bresp[i] = m_axil[i].bresp;
+        assign m_bvalid[i] = m_axil[i].bvalid;
+        assign m_arready[i] = m_axil[i].arready;
+        assign m_rdata[i] = m_axil[i].rdata;
+        assign m_rvalid[i] = m_axil[i].rvalid;
     end
 
-    logic [MASTER_NUM-1:0] req;
-    logic [MASTER_NUM-1:0] grant;
-    logic                  ack;
+    logic [MASTER_NUM-1:0] wr_req;
+    logic [MASTER_NUM-1:0] wr_grant;
+    logic                  wr_ack;
 
-    always_comb begin
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            req[i] = s_awvalid[i] | s_arvalid[i];
+    logic [MASTER_NUM-1:0] rd_req;
+    logic [MASTER_NUM-1:0] rd_grant;
+    logic                  rd_ack;
+
+    if (MASTER_NUM == 1) begin : g_arbiter_disable
+        assign wr_grant = (wr_state == WR_IDLE) && s_awvalid[0];
+        assign wr_req   = '0;
+        assign rd_grant = (rd_state == RD_IDLE) && s_arvalid[0];
+        assign rd_req   = '0;
+    end else begin : g_arbiter_enable
+        always_comb begin
+            for (int i = 0; i < MASTER_NUM; i++) begin
+                wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
+                rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
+            end
         end
+
+        round_robin_arbiter #(
+            .MASTER_NUM(MASTER_NUM)
+        ) i_wr_round_robin_arbiter (
+            .clk_i  (clk_i),
+            .rst_i  (~rstn_i),
+            .ack_i  (wr_ack),
+            .req_i  (wr_req),
+            .grant_o(wr_grant)
+        );
+
+        round_robin_arbiter #(
+            .MASTER_NUM(MASTER_NUM)
+        ) i_rd_round_robin_arbiter (
+            .clk_i  (clk_i),
+            .rst_i  (~rstn_i),
+            .ack_i  (rd_ack),
+            .req_i  (rd_req),
+            .grant_o(rd_grant)
+        );
     end
 
-    round_robin_arbiter #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_round_robin_arbiter (
-        .clk_i  (clk_i),
-        .rst_i  (~rstn_i),
-        .ack_i  (ack),
-        .req_i  (req),
-        .grant_o(grant)
-    );
+    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
+    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
+    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
+    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
 
-    logic [$clog2(MASTER_NUM)-1:0] grant_indx;
-    logic [$clog2(MASTER_NUM)-1:0] grant_indx_reg;
+    assign wr_grant_indx = get_index(wr_grant);
+    assign rd_grant_indx = get_index(rd_grant);
 
-    always_comb begin
-        grant_indx = '0;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant[i]) begin
-                grant_indx = i;
-                break;
+    addr_decode_t m_awindx;
+    addr_decode_t m_awindx_reg;
+    addr_decode_t m_arindx;
+    addr_decode_t m_arindx_reg;
+
+    assign m_awindx = get_addr_index(s_awaddr[wr_grant_indx]);
+    assign m_arindx = get_addr_index(s_araddr[rd_grant_indx]);
+
+    always_ff @(posedge clk_i or negedge rstn_i) begin
+        if (~rstn_i) begin
+            wr_state          <= WR_IDLE;
+            m_awindx_reg      <= '0;
+            wr_grant_indx_reg <= '0;
+        end else begin
+            wr_state <= wr_next_state;
+            if (wr_state == WR_IDLE && |wr_grant) begin
+                wr_grant_indx_reg <= wr_grant_indx;
+                m_awindx_reg      <= m_awindx;
             end
         end
     end
 
-    logic [  ADDR_WIDTH-1:0] arb_awaddr;
-    logic                    arb_awvalid;
-    logic [  DATA_WIDTH-1:0] arb_wdata;
-    logic [DATA_WIDTH/8-1:0] arb_wstrb;
-    logic                    arb_wvalid;
-    logic                    arb_bready;
-    logic [  ADDR_WIDTH-1:0] arb_araddr;
-    logic                    arb_arvalid;
-    logic                    arb_rready;
-    logic [             2:0] arb_arprot;
-    logic [             2:0] arb_awprot;
-
-    logic [   SEL_WIDTH-1:0] aw_m_indx;
-    logic [   SEL_WIDTH-1:0] aw_m_indx_reg;
-    logic [   SEL_WIDTH-1:0] ar_m_indx;
-    logic [   SEL_WIDTH-1:0] ar_m_indx_reg;
-
-    assign aw_m_indx = get_index(s_awaddr[grant_indx]);
-    assign ar_m_indx = get_index(s_araddr[grant_indx]);
-
-    always_comb begin
-        m_awaddr[aw_m_indx_reg]  = arb_awaddr;
-        m_awvalid[aw_m_indx_reg] = arb_awvalid;
-        m_wdata[aw_m_indx_reg]   = arb_wdata;
-        m_wstrb[aw_m_indx_reg]   = arb_wstrb;
-        m_wvalid[aw_m_indx_reg]  = arb_wvalid;
-        m_awprot[aw_m_indx_reg]  = arb_awprot;
-        m_bready[aw_m_indx_reg]  = arb_bready;
-        m_araddr[ar_m_indx_reg]  = arb_araddr;
-        m_arvalid[ar_m_indx_reg] = arb_arvalid;
-        m_rready[ar_m_indx_reg]  = arb_rready;
-        m_arprot[ar_m_indx_reg]  = arb_arprot;
+    always_ff @(posedge clk_i or negedge rstn_i) begin
+        if (~rstn_i) begin
+            rd_state          <= RD_IDLE;
+            m_arindx_reg      <= '0;
+            rd_grant_indx_reg <= '0;
+        end else begin
+            rd_state <= rd_next_state;
+            if (rd_state == RD_IDLE && |rd_grant) begin
+                rd_grant_indx_reg <= rd_grant_indx;
+                m_arindx_reg      <= m_arindx;
+            end
+        end
     end
 
-    always_ff @(posedge clk_i) begin
-        if (~rstn_i) begin
-            state <= IDLE;
-        end else begin
-            case (state)
-                IDLE: begin
-                    if (|grant) begin
-                        grant_indx_reg <= grant_indx;
-                        if (arb_awvalid) begin
-                            s_awready[grant_indx] <= 1'b1;
-                            arb_awvalid           <= 1'b1;
-                            arb_awaddr            <= s_awaddr[grant_indx];
-                            arb_awprot            <= s_awprot[grant_indx];
-                            aw_m_indx_reg         <= aw_m_indx;
-
-                            if (aw_m_indx == SLAVE_NUM) begin
-                                state <= WRTIE_ERR;
-                            end else begin
-                                state <= WRTIE_DATA;
-                            end
-                        end else if (arb_arvalid) begin
-                            s_arready[grant_indx] <= 1'b1;
-                            arb_arvalid           <= 1'b1;
-                            arb_araddr            <= s_araddr[grant_indx];
-                            arb_arprot            <= s_arprot[grant_indx];
-                            ar_m_indx_reg         <= ar_m_indx;
-
-                            if (ar_m_indx == SLAVE_NUM) begin
-                                state <= READ_ERR;
-                            end else begin
-                                state <= READ_DATA;
-                            end
-                        end
+    always_comb begin
+        wr_next_state = wr_state;
+        case (wr_state)
+            WR_IDLE: begin
+                if (|wr_grant) begin
+                    wr_next_state = WR_ADDR;
+                end
+            end
+            WR_ADDR: begin
+                if (m_awindx_reg.valid) begin
+                    if (m_awready[m_awindx_reg.indx]) begin
+                        wr_next_state = WR_DATA;
+                    end else begin
+                        wr_next_state = WR_DATA;
                     end
                 end
-                WRTIE_DATA: begin
-                    if (m_awready[aw_m_indx_reg]) begin
-                        arb_awvalid <= 1'b0;
-                        if (s_wvalid[grant_indx_reg]) begin
-
-                        end
+            end
+            WR_DATA: begin
+                if (m_awindx_reg.valid) begin
+                    if (m_wready[m_awindx_reg.indx] && s_wvalid[wr_grant_indx_reg]) begin
+                        wr_next_state = WR_RESP;
                     end
+                end else if (s_wvalid[wr_grant_indx_reg]) begin
+                    wr_next_state = WR_RESP;
                 end
-                READ_DATA: begin
+            end
+            WR_RESP: begin
+                if (m_awindx_reg.valid) begin
+                    if (m_bvalid[m_awindx_reg.indx] && s_bready[wr_grant_indx_reg]) begin
+                        wr_next_state = WR_IDLE;
+                    end
+                end else if (s_bready[wr_grant_indx_reg]) begin
+                    wr_next_state = WR_IDLE;
                 end
-                default: state <= IDLE;
+            end
+
+            default: wr_next_state = WR_IDLE;
+        endcase
+    end
+
+    assign wr_ack = (wr_state == WR_RESP) && (wr_next_state == WR_IDLE);
+
+    always_comb begin
+        rd_next_state = rd_state;
+        case (rd_state)
+            RD_IDLE: begin
+                if (|rd_grant) begin
+                    rd_next_state = RD_ADDR;
+                end
+            end
+            RD_ADDR: begin
+                if (m_arindx_reg.valid) begin
+                    if (m_arready[m_arindx_reg.indx]) begin
+                        rd_next_state = RD_DATA;
+                    end
+                end else begin
+                    rd_next_state = RD_DATA;
+                end
+            end
+            RD_DATA: begin
+                if (m_arindx_reg.valid) begin
+                    if (m_rvalid[m_arindx_reg.indx] && s_rready[rd_grant_indx_reg]) begin
+                        rd_next_state = RD_IDLE;
+                    end
+                end else if (s_rready[rd_grant_indx_reg]) begin
+                    rd_next_state = RD_IDLE;
+                end
+            end
+            default: rd_next_state = RD_IDLE;
+        endcase
+    end
+
+    assign rd_ack = (rd_state == RD_DATA) && (rd_next_state == RD_IDLE);
+
+    always_comb begin
+        for (int i = 0; i < SLAVE_NUM; i++) begin
+            m_awaddr[i]  = '0;
+            m_awprot[i]  = '0;
+            m_awvalid[i] = '0;
+            m_wdata[i]   = '0;
+            m_wstrb[i]   = '0;
+            m_wvalid[i]  = '0;
+            m_bready[i]  = '0;
+        end
+        if (m_awindx_reg.valid) begin
+            case (wr_state)
+                WR_ADDR: begin
+                    m_awaddr[m_awindx_reg.indx]  = s_awaddr[wr_grant_indx_reg];
+                    m_awprot[m_awindx_reg.indx]  = s_awprot[wr_grant_indx_reg];
+                    m_awvalid[m_awindx_reg.indx] = s_awvalid[wr_grant_indx_reg];
+                end
+                WR_DATA: begin
+                    m_wdata[m_awindx_reg.indx]  = s_wdata[wr_grant_indx_reg];
+                    m_wstrb[m_awindx_reg.indx]  = s_wstrb[wr_grant_indx_reg];
+                    m_wvalid[m_awindx_reg.indx] = s_wvalid[wr_grant_indx_reg];
+                end
+                WR_RESP: begin
+                    m_bready[m_awindx_reg.indx] = s_bready[wr_grant_indx_reg];
+                end
+                default: ;
             endcase
         end
+    end
+
+    always_comb begin
+        for (int i = 0; i < SLAVE_NUM; i++) begin
+            m_araddr[i]  = '0;
+            m_arprot[i]  = '0;
+            m_arvalid[i] = '0;
+            m_rready[i]  = '0;
+        end
+        if (m_arindx_reg.valid) begin
+            case (rd_state)
+                RD_ADDR: begin
+                    m_araddr[m_arindx_reg.indx]  = s_araddr[rd_grant_indx_reg];
+                    m_arprot[m_arindx_reg.indx]  = s_arprot[rd_grant_indx_reg];
+                    m_arvalid[m_arindx_reg.indx] = s_arvalid[rd_grant_indx_reg];
+                end
+                RD_DATA: begin
+                    m_rready[m_arindx_reg.indx] = s_rready[rd_grant_indx_reg];
+                end
+                default: ;
+            endcase
+        end
+    end
+
+    always_comb begin
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            s_awready[i] = '0;
+            s_wready[i]  = '0;
+            s_bresp[i]   = RESP_OKAY;
+            s_bvalid[i]  = '0;
+        end
+        case (wr_state)
+            WR_ADDR: begin
+                if (m_awindx_reg.valid) begin
+                    s_awready[wr_grant_indx_reg] = m_awready[m_awindx_reg.indx];
+                end else begin
+                    s_awready[wr_grant_indx_reg] = 1'b1;
+                end
+            end
+            WR_DATA: begin
+                if (m_awindx_reg.valid) begin
+                    s_wready[wr_grant_indx_reg] = m_wready[m_awindx_reg.indx];
+                end else begin
+                    s_wready[wr_grant_indx_reg] = 1'b1;
+                end
+            end
+            WR_RESP: begin
+                if (m_awindx_reg.valid) begin
+                    s_bvalid[wr_grant_indx_reg] = m_bvalid[m_awindx_reg.indx];
+                    s_bresp[wr_grant_indx_reg]  = m_bresp[m_awindx_reg.indx];
+                end else begin
+                    s_bvalid[wr_grant_indx_reg] = 1'b1;
+                    s_bresp[wr_grant_indx_reg]  = RESP_DECERR;
+                end
+            end
+            default: ;
+        endcase
+    end
+
+    always_comb begin
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            s_arready[i] = '0;
+            s_rdata[i]   = '0;
+            s_rresp[i]   = RESP_OKAY;
+            s_rvalid[i]  = '0;
+        end
+        case (rd_state)
+            RD_ADDR: begin
+                if (m_arindx_reg.valid) begin
+                    s_arready[rd_grant_indx_reg] = m_arready[m_arindx_reg.indx];
+                end else begin
+                    s_arready[rd_grant_indx_reg] = 1'b1;
+                end
+            end
+            RD_DATA: begin
+                if (m_arindx_reg.valid) begin
+                    s_rvalid[rd_grant_indx_reg] = m_rvalid[m_arindx_reg.indx];
+                    s_rresp[rd_grant_indx_reg]  = m_rresp[m_arindx_reg.indx];
+                    s_rdata[rd_grant_indx_reg]  = m_rdata[m_arindx_reg.indx];
+                end else begin
+                    s_rvalid[rd_grant_indx_reg] = 1'b1;
+                    s_rresp[rd_grant_indx_reg]  = RESP_DECERR;
+                    s_rdata[rd_grant_indx_reg]  = '0;
+                end
+            end
+            default: ;
+        endcase
     end
 
 endmodule
