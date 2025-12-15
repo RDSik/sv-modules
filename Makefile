@@ -18,7 +18,7 @@ else ifeq ($(BOARD), pz7020starlite)
 endif
 
 sdk:
-	xsct $(PROJECT_DIR)/$(BOARD)/$(SDK_TCL)
+	xsdk -batch -source $(PROJECT_DIR)/$(BOARD)/$(SDK_TCL)
 
 program:
 	openFPGALoader -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs
