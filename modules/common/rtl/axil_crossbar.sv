@@ -281,7 +281,6 @@ module axil_crossbar #(
                     wr_next_state = WR_IDLE;
                 end
             end
-
             default: wr_next_state = WR_IDLE;
         endcase
     end
