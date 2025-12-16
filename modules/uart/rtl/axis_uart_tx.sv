@@ -117,7 +117,7 @@ module axis_uart_tx
     end
 
     assign s_axis.tready = (state == IDLE) && ~rst_i;
-    assign s_handshake  = s_axis.tvalid & s_axis.tready;
+    assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
     /* verilator lint_off WIDTHEXPAND */
     assign bit_done  = (bit_cnt == DATA_WIDTH - 1);
