@@ -142,26 +142,26 @@ module axil_crossbar #(
     logic [SLAVE_NUM-1:0][             1:0] m_rresp;
 
     for (genvar i = 0; i < SLAVE_NUM; i++) begin : g_slave
-        assign m_axil[i].awprot = m_awprot[i];
-        assign m_axil[i].awaddr = m_awaddr[i];
+        assign m_axil[i].awprot  = m_awprot[i];
+        assign m_axil[i].awaddr  = m_awaddr[i];
         assign m_axil[i].awvalid = m_awvalid[i];
-        assign m_axil[i].wdata = m_wdata[i];
-        assign m_axil[i].wstrb = m_wstrb[i];
-        assign m_axil[i].wvalid = m_wvalid[i];
-        assign m_axil[i].bready = m_bready[i];
-        assign m_axil[i].araddr = m_araddr[i];
+        assign m_axil[i].wdata   = m_wdata[i];
+        assign m_axil[i].wstrb   = m_wstrb[i];
+        assign m_axil[i].wvalid  = m_wvalid[i];
+        assign m_axil[i].bready  = m_bready[i];
+        assign m_axil[i].araddr  = m_araddr[i];
         assign m_axil[i].arvalid = m_arvalid[i];
-        assign m_axil[i].rready = m_rready[i];
-        assign m_axil[i].arprot = m_arprot[i];
+        assign m_axil[i].rready  = m_rready[i];
+        assign m_axil[i].arprot  = m_arprot[i];
 
-        assign m_awready[i] = m_axil[i].awready;
-        assign m_wready[i] = m_axil[i].wready;
-        assign m_rresp[i] = m_axil[i].rresp;
-        assign m_bresp[i] = m_axil[i].bresp;
-        assign m_bvalid[i] = m_axil[i].bvalid;
-        assign m_arready[i] = m_axil[i].arready;
-        assign m_rdata[i] = m_axil[i].rdata;
-        assign m_rvalid[i] = m_axil[i].rvalid;
+        assign m_awready[i]      = m_axil[i].awready;
+        assign m_wready[i]       = m_axil[i].wready;
+        assign m_rresp[i]        = m_axil[i].rresp;
+        assign m_bresp[i]        = m_axil[i].bresp;
+        assign m_bvalid[i]       = m_axil[i].bvalid;
+        assign m_arready[i]      = m_axil[i].arready;
+        assign m_rdata[i]        = m_axil[i].rdata;
+        assign m_rvalid[i]       = m_axil[i].rvalid;
     end
 
     logic [MASTER_NUM-1:0] wr_req;
