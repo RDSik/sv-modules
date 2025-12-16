@@ -7,8 +7,10 @@ set cpu         "ps7_cortexa9_0"
 set sdk_dir     [file normalize "project/pz7020starlite/$syn_top.sdk"]
 
 file delete -force $sdk_dir/SDK.log
+file delete -force $sdk_dir/.metadata
 file delete -force $sdk_dir/$hw_project
 file delete -force $sdk_dir/$bsp
+file delete -force $sdk_dir/$app
 file delete -force $sdk_dir/$device_tree
 
 setws $sdk_dir
@@ -25,7 +27,7 @@ configapp -app $app build-config debug
 
 createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
-set source_dir "/modules/uart/sdk/uart.c"
+set source_dir "modules/uart/sdk"
 
 importsources -name $syn_top -path $source_dir
 

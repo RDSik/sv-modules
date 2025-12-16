@@ -17,7 +17,7 @@ set_property top $sim_top [get_filesets sim_1]
 proc source_scripts {current_dir} {
     foreach sub_dir [glob -nocomplain -directory $current_dir *] {
         if {[file isdirectory $sub_dir]} {
-           global gowin
+            global gowin
             global xilinx
             set gowin 0
             set xilinx 1
