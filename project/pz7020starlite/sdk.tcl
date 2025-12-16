@@ -21,7 +21,7 @@ createbsp -name $bsp -hwproject $hw_project -proc $cpu -os standalone
 
 createapp -name $app -app {Empty Application} -hwproject $hw_project -bsp $bsp -proc $cpu -os standalone -lang C
 
-createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os standalone
+createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
 set source_dir "/path/to/your/c/sources"
 
