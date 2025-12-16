@@ -48,22 +48,26 @@ module axil_crossbar #(
     } addr_decode_t;
 
     function automatic addr_decode_t get_addr_index(input logic [ADDR_WIDTH-1:0] addr);
-        get_addr_index = '0;
-        for (int i = 0; i < SLAVE_NUM; i++) begin
-            if (addr >= SLAVE_LOW_ADDR[i] && addr <= SLAVE_HIGH_ADDR[i]) begin
-                get_addr_index.indx  = SLAVE_SEL_WIDTH'(i);
-                get_addr_index.valid = 1'b1;
-                break;
+        begin
+            get_addr_index = '0;
+            for (int i = 0; i < SLAVE_NUM; i++) begin
+                if (addr >= SLAVE_LOW_ADDR[i] && addr <= SLAVE_HIGH_ADDR[i]) begin
+                    get_addr_index.indx  = SLAVE_SEL_WIDTH'(i);
+                    get_addr_index.valid = 1'b1;
+                    break;
+                end
             end
         end
     endfunction
 
     function automatic logic [MASTER_SEL_WIDTH-1:0] get_index(input logic [MASTER_NUM-1:0] data_in);
-        get_index = '0;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (data_in[i]) begin
-                get_index = MASTER_SEL_WIDTH'(i);
-                break;
+        begin
+            get_index = '0;
+            for (int i = 0; i < MASTER_NUM; i++) begin
+                if (data_in[i]) begin
+                    get_index = MASTER_SEL_WIDTH'(i);
+                    break;
+                end
             end
         end
     endfunction
@@ -256,16 +260,16 @@ module axil_crossbar #(
             end
             WR_ADDR: begin
                 if (m_awindx_reg.valid) begin
-                    if (m_awready[m_awindx_reg.indx]) begin
-                        wr_next_state = WR_DATA;
-                    end else begin
+                    if (m_awready[m_awindx_reg.indx] & m_awvalid[m_awindx_reg.indx]) begin
                         wr_next_state = WR_DATA;
                     end
+                end else begin
+                    wr_next_state = WR_DATA;
                 end
             end
             WR_DATA: begin
                 if (m_awindx_reg.valid) begin
-                    if (m_wready[m_awindx_reg.indx] && s_wvalid[wr_grant_indx_reg]) begin
+                    if (m_wready[m_awindx_reg.indx] && m_wvalid[m_awindx_reg.indx]) begin
                         wr_next_state = WR_RESP;
                     end
                 end else if (s_wvalid[wr_grant_indx_reg]) begin
@@ -274,7 +278,7 @@ module axil_crossbar #(
             end
             WR_RESP: begin
                 if (m_awindx_reg.valid) begin
-                    if (m_bvalid[m_awindx_reg.indx] && s_bready[wr_grant_indx_reg]) begin
+                    if (m_bready[m_awindx_reg.indx] && m_bvalid[m_awindx_reg.indx]) begin
                         wr_next_state = WR_IDLE;
                     end
                 end else if (s_bready[wr_grant_indx_reg]) begin
@@ -297,7 +301,7 @@ module axil_crossbar #(
             end
             RD_ADDR: begin
                 if (m_arindx_reg.valid) begin
-                    if (m_arready[m_arindx_reg.indx]) begin
+                    if (m_arready[m_arindx_reg.indx] & m_arvalid[m_arindx_reg.indx]) begin
                         rd_next_state = RD_DATA;
                     end
                 end else begin
@@ -306,7 +310,7 @@ module axil_crossbar #(
             end
             RD_DATA: begin
                 if (m_arindx_reg.valid) begin
-                    if (m_rvalid[m_arindx_reg.indx] && s_rready[rd_grant_indx_reg]) begin
+                    if (m_rvalid[m_arindx_reg.indx] && m_rready[m_arindx_reg.indx]) begin
                         rd_next_state = RD_IDLE;
                     end
                 end else if (s_rready[rd_grant_indx_reg]) begin

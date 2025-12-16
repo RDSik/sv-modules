@@ -25,7 +25,7 @@ configapp -app $app build-config debug
 
 createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
-set source_dir "/path/to/your/c/sources"
+set source_dir "/modules/uart/sdk/uart.c"
 
 importsources -name $syn_top -path $source_dir
 
