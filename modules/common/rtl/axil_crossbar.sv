@@ -260,7 +260,7 @@ module axil_crossbar #(
             end
             WR_ADDR: begin
                 if (m_awindx_reg.valid) begin
-                    if (m_awready[m_awindx_reg.indx] & m_awvalid[m_awindx_reg.indx]) begin
+                    if (m_awready[m_awindx_reg.indx] && m_awvalid[m_awindx_reg.indx]) begin
                         wr_next_state = WR_DATA;
                     end
                 end else begin
@@ -301,7 +301,7 @@ module axil_crossbar #(
             end
             RD_ADDR: begin
                 if (m_arindx_reg.valid) begin
-                    if (m_arready[m_arindx_reg.indx] & m_arvalid[m_arindx_reg.indx]) begin
+                    if (m_arready[m_arindx_reg.indx] && m_arvalid[m_arindx_reg.indx]) begin
                         rd_next_state = RD_DATA;
                     end
                 end else begin
