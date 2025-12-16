@@ -4,6 +4,7 @@ if {$xilinx == 1} {
     set xci_defaultlib "
         $path/ip/axil_ila/axil_ila.xci
         $path/ip/axi_clock_converter/axi_clock_converter.xci
+        $path/ip/axi_crossbar/axi_crossbar.xci
     "
     add_files -norecurse $xci_defaultlib
     

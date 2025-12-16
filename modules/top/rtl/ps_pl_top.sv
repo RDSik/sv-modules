@@ -74,24 +74,37 @@ module ps_pl_top #(
 
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int MODULES_NUM = 3;
+
+    localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
+        32'h43c0_0000,
+        32'h43c1_0000,
+        32'h43c2_0000
+    };
+    localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
+        32'h43c0_ffff,
+        32'h43c1_ffff,
+        32'h43c2_ffff
+    };
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
-    ) axil[2:0] (
+    ) axil[0:0] (
         .clk_i (ps_clk),
         .rstn_i(ps_arstn)
     );
 
     ctrl_top #(
-        .UART_EN        (1),
-        .SPI_EN         (1),
-        .I2C_EN         (1),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
+        .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
+        .SLAVE_NUM      (MODULES_NUM),
         .SPI_CS_WIDTH   (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN),
+        .MASTER_NUM     (1),
         .MODE           ("async")
     ) i_ctrl_top (
         .clk_i       (clk_i),
@@ -127,44 +140,6 @@ module ps_pl_top #(
         .M00_AXI_0_wready    (axil[0].wready),
         .M00_AXI_0_wstrb     (axil[0].wstrb),
         .M00_AXI_0_wvalid    (axil[0].wvalid),
-        .M01_AXI_0_araddr    (axil[1].araddr),
-        .M01_AXI_0_arprot    (axil[1].arprot),
-        .M01_AXI_0_arready   (axil[1].arready),
-        .M01_AXI_0_arvalid   (axil[1].arvalid),
-        .M01_AXI_0_awaddr    (axil[1].awaddr),
-        .M01_AXI_0_awprot    (axil[1].awprot),
-        .M01_AXI_0_awready   (axil[1].awready),
-        .M01_AXI_0_awvalid   (axil[1].awvalid),
-        .M01_AXI_0_bready    (axil[1].bready),
-        .M01_AXI_0_bresp     (axil[1].bresp),
-        .M01_AXI_0_bvalid    (axil[1].bvalid),
-        .M01_AXI_0_rdata     (axil[1].rdata),
-        .M01_AXI_0_rready    (axil[1].rready),
-        .M01_AXI_0_rresp     (axil[1].rresp),
-        .M01_AXI_0_rvalid    (axil[1].rvalid),
-        .M01_AXI_0_wdata     (axil[1].wdata),
-        .M01_AXI_0_wready    (axil[1].wready),
-        .M01_AXI_0_wstrb     (axil[1].wstrb),
-        .M01_AXI_0_wvalid    (axil[1].wvalid),
-        .M02_AXI_0_araddr    (axil[2].araddr),
-        .M02_AXI_0_arprot    (axil[2].arprot),
-        .M02_AXI_0_arready   (axil[2].arready),
-        .M02_AXI_0_arvalid   (axil[2].arvalid),
-        .M02_AXI_0_awaddr    (axil[2].awaddr),
-        .M02_AXI_0_awprot    (axil[2].awprot),
-        .M02_AXI_0_awready   (axil[2].awready),
-        .M02_AXI_0_awvalid   (axil[2].awvalid),
-        .M02_AXI_0_bready    (axil[2].bready),
-        .M02_AXI_0_bresp     (axil[2].bresp),
-        .M02_AXI_0_bvalid    (axil[2].bvalid),
-        .M02_AXI_0_rdata     (axil[2].rdata),
-        .M02_AXI_0_rready    (axil[2].rready),
-        .M02_AXI_0_rresp     (axil[2].rresp),
-        .M02_AXI_0_rvalid    (axil[2].rvalid),
-        .M02_AXI_0_wdata     (axil[2].wdata),
-        .M02_AXI_0_wready    (axil[2].wready),
-        .M02_AXI_0_wstrb     (axil[2].wstrb),
-        .M02_AXI_0_wvalid    (axil[2].wvalid),
         .DDR_0_addr          (DDR_0_addr),
         .DDR_0_ba            (DDR_0_ba),
         .DDR_0_cas_n         (DDR_0_cas_n),

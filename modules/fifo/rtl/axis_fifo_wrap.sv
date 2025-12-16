@@ -12,7 +12,9 @@ module axis_fifo_wrap #(
     axis_if.master m_axis,
 
     output logic a_full_o,
-    output logic a_empty_o
+    output logic a_empty_o,
+
+    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
 );
 
     localparam int FULL_WIDTH = FIFO_WIDTH + TLAST_EN;
@@ -46,18 +48,19 @@ module axis_fifo_wrap #(
         .FIFO_MODE   (FIFO_MODE),
         .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_wrap (
-        .wr_clk_i (s_axis.clk_i),
-        .wr_rst_i (s_axis.rst_i),
-        .wr_data_i(wr_data),
-        .rd_clk_i (m_axis.clk_i),
-        .rd_rst_i (m_axis.rst_i),
-        .rd_data_o(rd_data),
-        .push_i   (push),
-        .pop_i    (pop),
-        .empty_o  (empty),
-        .full_o   (full),
-        .a_empty_o(a_empty_o),
-        .a_full_o (a_full_o)
+        .wr_clk_i  (s_axis.clk_i),
+        .wr_rst_i  (s_axis.rst_i),
+        .wr_data_i (wr_data),
+        .rd_clk_i  (m_axis.clk_i),
+        .rd_rst_i  (m_axis.rst_i),
+        .rd_data_o (rd_data),
+        .push_i    (push),
+        .pop_i     (pop),
+        .empty_o   (empty),
+        .full_o    (full),
+        .a_empty_o (a_empty_o),
+        .a_full_o  (a_full_o),
+        .data_cnt_o(data_cnt_o)
     );
 
 endmodule

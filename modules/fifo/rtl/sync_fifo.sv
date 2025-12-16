@@ -17,7 +17,9 @@ module sync_fifo #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o
+    output logic empty_o,
+
+    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
 );
 
     localparam logic SHOW_AHEAD_EN = (READ_LATENCY > 0);
@@ -136,6 +138,8 @@ module sync_fifo #(
             data_cnt <= data_cnt_next;
         end
     end
+
+    assign data_cnt_o = data_cnt;
 
     /* verilator lint_off WIDTHEXPAND*/
     assign a_full  = (data_cnt_next == FIFO_DEPTH - 1);

@@ -21,7 +21,9 @@ module fifo_wrap #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o
+    output logic empty_o,
+
+    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
 );
 
     if (FIFO_MODE == "sync") begin : g_sync_fifo
@@ -31,16 +33,17 @@ module fifo_wrap #(
             .READ_LATENCY(READ_LATENCY),
             .RAM_STYLE   (RAM_STYLE)
         ) i_sync_fifo (
-            .clk_i    (wr_clk_i),
-            .rst_i    (wr_rst_i),
-            .data_i   (wr_data_i),
-            .data_o   (rd_data_o),
-            .push_i   (push_i),
-            .pop_i    (pop_i),
-            .empty_o  (empty_o),
-            .full_o   (full_o),
-            .a_empty_o(a_empty_o),
-            .a_full_o (a_full_o)
+            .clk_i     (wr_clk_i),
+            .rst_i     (wr_rst_i),
+            .data_i    (wr_data_i),
+            .data_o    (rd_data_o),
+            .push_i    (push_i),
+            .pop_i     (pop_i),
+            .empty_o   (empty_o),
+            .full_o    (full_o),
+            .a_empty_o (a_empty_o),
+            .a_full_o  (a_full_o),
+            .data_cnt_o(data_cnt_o)
         );
     end else if (FIFO_MODE == "async") begin : g_async_fifo
         async_fifo #(
@@ -61,6 +64,8 @@ module fifo_wrap #(
             .a_empty_o(a_empty_o),
             .a_full_o (a_full_o)
         );
+
+        assign data_cnt_o = '0;
     end else begin : g_fifo
         $error("Only sync or async FIFO_MODE is available!");
     end

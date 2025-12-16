@@ -6,10 +6,10 @@ set device_tree ${app}_devtree_bsp
 set cpu         "ps7_cortexa9_0"
 set sdk_dir     [file normalize "project/pz7020starlite/$syn_top.sdk"]
 
-file delete -fore $sdk_dir/SDK.log
-file delete -fore $sdk_dir/$hw_project
-file delete -fore $sdk_dir/$bsp
-file delete -fore $sdk_dir/$device_tree
+file delete -force $sdk_dir/SDK.log
+file delete -force $sdk_dir/$hw_project
+file delete -force $sdk_dir/$bsp
+file delete -force $sdk_dir/$device_tree
 
 setws $sdk_dir
 
