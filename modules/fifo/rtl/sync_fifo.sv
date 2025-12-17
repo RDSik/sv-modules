@@ -22,7 +22,6 @@ module sync_fifo #(
     output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
 );
 
-    localparam logic SHOW_AHEAD_EN = (READ_LATENCY > 0);
     localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
@@ -59,41 +58,8 @@ module sync_fifo #(
         end
     end
 
-    if (SHOW_AHEAD_EN) begin : g_show_ahead
-        logic [FIFO_WIDTH-1:0] bypass_data;
-        logic                  bypass_valid;
-        logic                  bypass_en;
-
-        assign wr_en = push_i & ~bypass_en;
-        assign rd_en = pop_i & ~a_empty_o;
-
-        assign prefetch_ptr = (rd_ptr == MAX_PTR) ? '0 : rd_ptr + 1'b1;
-
-        assign bypass_en = push_i && (empty_o || (pop_i && a_empty_o));
-
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
-                bypass_valid <= 1'b0;
-            end else if (bypass_en) begin
-                bypass_valid <= 1'b1;
-            end else if (pop_i) begin
-                bypass_valid <= 1'b0;
-            end
-        end
-
-        always_ff @(posedge clk_i) begin
-            if (bypass_en) begin
-                bypass_data <= data_i;
-            end
-        end
-
-        assign data_o = bypass_valid ? bypass_data : ram_data;
-    end else begin : g_others
-        assign wr_en        = push_i & ~full_o;
-        assign rd_en        = pop_i & ~empty_o;
-        assign prefetch_ptr = rd_ptr;
-        assign data_o       = ram_data;
-    end
+    assign wr_en = push_i & ~full_o;
+    assign rd_en = pop_i & ~empty_o;
 
     ram_sdp #(
         .MEM_DEPTH   (FIFO_DEPTH),
@@ -110,8 +76,8 @@ module sync_fifo #(
         .a_data_i (data_i),
         .b_clk_i  (clk_i),
         .b_en_i   (rd_en),
-        .b_addr_i (prefetch_ptr),
-        .b_data_o (ram_data)
+        .b_addr_i (rd_ptr),
+        .b_data_o (data_o)
     );
 
     logic [PTR_WIDTH:0] data_cnt_next;
