@@ -25,7 +25,7 @@ class axil_env #(
         void'(cfg.randomize());
     endfunction
 
-    task automatic master_write_wdata(int delay_min, int delay_max, logic [DATA_WIDTH-1:0] data);
+    task automatic master_write_wdata(int delay_min, int delay_max, input logic [DATA_WIDTH-1:0] data);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -39,7 +39,7 @@ class axil_env #(
         s_axil.wstrb  = '0;
     endtask
 
-    task automatic master_write_awaddr(int delay_min, int delay_max, logic [ADDR_WIDTH-1:0] addr);
+    task automatic master_write_awaddr(int delay_min, int delay_max, input logic [ADDR_WIDTH-1:0] addr);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -65,7 +65,7 @@ class axil_env #(
         end
     endtask
 
-    task automatic master_write_reg(logic [ADDR_WIDTH-1:0] addr, logic [DATA_WIDTH-1:0] data,
+    task automatic master_write_reg(input logic [ADDR_WIDTH-1:0] addr, input logic [DATA_WIDTH-1:0] data,
                                     int master_delay_min = cfg.master_min_delay,
                                     int master_delay_max = cfg.master_max_delay);
         wait (s_axil.rstn_i);
@@ -77,7 +77,7 @@ class axil_env #(
         $display("[%0t] Write addr = 0x%0h, wdata = 0x%0h", $time, addr, data);
     endtask
 
-    task automatic master_write_araddr(int delay_min, int delay_max, logic [ADDR_WIDTH-1:0] addr);
+    task automatic master_write_araddr(int delay_min, int delay_max, input logic [ADDR_WIDTH-1:0] addr);
         int delay;
         void'(std::randomize(delay) with {delay inside {[delay_min : delay_max]};});
         repeat (delay) @(posedge s_axil.clk_i);
@@ -100,9 +100,12 @@ class axil_env #(
         end while (~s_axil.rvalid);
         s_axil.rready = 0;
         data          = s_axil.rdata;
+        if (s_axil.rresp == 2'b10) begin
+            $error("[%0t] rresp = slverr!", $time);
+        end
     endtask
 
-    task automatic master_read_reg(logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
+    task automatic master_read_reg(inut logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
                                    int master_delay_min = cfg.master_min_delay,
                                    int master_delay_max = cfg.master_max_delay);
         wait (s_axil.rstn_i);
