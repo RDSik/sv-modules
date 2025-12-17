@@ -5,7 +5,6 @@ module async_fifo #(
     parameter int CDC_REG_NUM  = 2,
     parameter int READ_LATENCY = 1,
     parameter     RAM_STYLE    = "block"
-
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rst_i,
