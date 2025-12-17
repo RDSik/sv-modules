@@ -6,7 +6,8 @@ module axis_fifo_wrap #(
     parameter int   READ_LATENCY = 1,
     parameter logic TLAST_EN     = 0,
     parameter       RAM_STYLE    = "block",
-    parameter       FIFO_MODE    = "sync"
+    parameter       FIFO_MODE    = "sync",
+    parameter int   PTR_WIDTH    = $clog2(FIFO_DEPTH)
 ) (
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -14,7 +15,7 @@ module axis_fifo_wrap #(
     output logic a_full_o,
     output logic a_empty_o,
 
-    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
+    output logic [PTR_WIDTH:0] data_cnt_o
 );
 
     localparam int FULL_WIDTH = FIFO_WIDTH + TLAST_EN;
@@ -45,7 +46,8 @@ module axis_fifo_wrap #(
             .FIFO_WIDTH  (FULL_WIDTH),
             .FIFO_DEPTH  (FIFO_DEPTH),
             .READ_LATENCY(READ_LATENCY),
-            .RAM_STYLE   (RAM_STYLE)
+            .RAM_STYLE   (RAM_STYLE),
+            .PTR_WIDTH   (PTR_WIDTH)
         ) i_sync_fifo (
             .clk_i     (s_axis.clk_i),
             .rst_i     (s_axis.rst_i),

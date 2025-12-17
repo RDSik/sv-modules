@@ -5,7 +5,8 @@ module fifo_wrap #(
     parameter int CDC_REG_NUM  = 2,
     parameter int READ_LATENCY = 1,
     parameter     RAM_STYLE    = "block",
-    parameter     FIFO_MODE    = "sync"
+    parameter     FIFO_MODE    = "sync",
+    parameter int PTR_WIDTH    = $clog2(FIFO_DEPTH)
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rst_i,
@@ -23,7 +24,7 @@ module fifo_wrap #(
     output logic a_empty_o,
     output logic empty_o,
 
-    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
+    output logic [PTR_WIDTH:0] data_cnt_o
 );
 
     if (FIFO_MODE == "sync") begin : g_sync_fifo
@@ -31,7 +32,8 @@ module fifo_wrap #(
             .FIFO_WIDTH  (FIFO_WIDTH),
             .FIFO_DEPTH  (FIFO_DEPTH),
             .READ_LATENCY(READ_LATENCY),
-            .RAM_STYLE   (RAM_STYLE)
+            .RAM_STYLE   (RAM_STYLE),
+            .PTR_WIDTH   (PTR_WIDTH)
         ) i_sync_fifo (
             .clk_i     (wr_clk_i),
             .rst_i     (wr_rst_i),
