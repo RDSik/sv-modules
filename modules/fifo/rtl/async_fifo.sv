@@ -24,7 +24,7 @@ module async_fifo #(
     output logic empty_o
 );
 
-    if (CDC_REG_NUM < 2) begin : g_mem_width_err
+    if (CDC_REG_NUM < 2) begin : g_reg_num_err
         $error("CDC_REG_NUM must greater or equal 2!");
     end
 
