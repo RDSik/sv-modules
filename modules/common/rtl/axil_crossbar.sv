@@ -64,7 +64,7 @@ module axil_crossbar #(
         begin
             get_grant_index = '0;
             for (int i = 0; i < MASTER_NUM; i++) begin
-                if (data_in[i]) begin
+                if (grant[i]) begin
                     get_grant_index = MASTER_SEL_WIDTH'(i);
                     break;
                 end
