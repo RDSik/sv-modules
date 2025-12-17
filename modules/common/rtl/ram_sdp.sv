@@ -52,7 +52,7 @@ module ram_sdp #(
                 if (b_en_i) begin
                     for (int i = 0; i < BYTE_NUM; i++) begin
                         if (a_wr_en_i[i]) begin
-                            b_data <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                            b_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                         end else begin
                             b_data <= ram[b_addr_i];
                         end

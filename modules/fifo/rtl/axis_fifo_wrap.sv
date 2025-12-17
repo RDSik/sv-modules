@@ -40,27 +40,50 @@ module axis_fifo_wrap #(
     assign push = s_axis.tvalid & s_axis.tready;
     assign pop = m_axis.tvalid & m_axis.tready;
 
-    fifo_wrap #(
-        .FIFO_WIDTH  (FULL_WIDTH),
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .CDC_REG_NUM (CDC_REG_NUM),
-        .READ_LATENCY(READ_LATENCY),
-        .FIFO_MODE   (FIFO_MODE),
-        .RAM_STYLE   (RAM_STYLE)
-    ) i_fifo_wrap (
-        .wr_clk_i  (s_axis.clk_i),
-        .wr_rst_i  (s_axis.rst_i),
-        .wr_data_i (wr_data),
-        .rd_clk_i  (m_axis.clk_i),
-        .rd_rst_i  (m_axis.rst_i),
-        .rd_data_o (rd_data),
-        .push_i    (push),
-        .pop_i     (pop),
-        .empty_o   (empty),
-        .full_o    (full),
-        .a_empty_o (a_empty_o),
-        .a_full_o  (a_full_o),
-        .data_cnt_o(data_cnt_o)
-    );
+    if (FIFO_MODE == "sync") begin : g_sync_fifo
+        sync_fifo #(
+            .FIFO_WIDTH  (FULL_WIDTH),
+            .FIFO_DEPTH  (FIFO_DEPTH),
+            .READ_LATENCY(READ_LATENCY),
+            .RAM_STYLE   (RAM_STYLE)
+        ) i_sync_fifo (
+            .clk_i     (s_axis.clk_i),
+            .rst_i     (s_axis.rst_i),
+            .data_i    (wr_data),
+            .data_o    (rd_data),
+            .push_i    (push),
+            .pop_i     (pop),
+            .empty_o   (empty),
+            .full_o    (full),
+            .a_empty_o (a_empty_o),
+            .a_full_o  (a_full_o),
+            .data_cnt_o(data_cnt_o)
+        );
+    end else if (FIFO_MODE == "async") begin : g_async_fifo
+        async_fifo #(
+            .FIFO_WIDTH  (FULL_WIDTH),
+            .FIFO_DEPTH  (FIFO_DEPTH),
+            .CDC_REG_NUM (CDC_REG_NUM),
+            .READ_LATENCY(0),
+            .RAM_STYLE   ("distributed")
+        ) i_async_fifo (
+            .wr_clk_i (s_axis.clk_i),
+            .wr_rst_i (s_axis.rst_i),
+            .wr_data_i(wr_data),
+            .rd_clk_i (m_axis.clk_i),
+            .rd_rst_i (m_axis.rst_i),
+            .rd_data_o(rd_data),
+            .push_i   (push),
+            .pop_i    (pop),
+            .empty_o  (empty),
+            .full_o   (full),
+            .a_empty_o(a_empty_o),
+            .a_full_o (a_full_o)
+        );
+
+        assign data_cnt_o = '0;
+    end else begin : g_fifo
+        $error("Only sync or async FIFO_MODE is available!");
+    end
 
 endmodule

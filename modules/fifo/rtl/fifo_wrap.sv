@@ -47,9 +47,11 @@ module fifo_wrap #(
         );
     end else if (FIFO_MODE == "async") begin : g_async_fifo
         async_fifo #(
-            .FIFO_WIDTH (FIFO_WIDTH),
-            .FIFO_DEPTH (FIFO_DEPTH),
-            .CDC_REG_NUM(CDC_REG_NUM)
+            .FIFO_WIDTH  (FIFO_WIDTH),
+            .FIFO_DEPTH  (FIFO_DEPTH),
+            .CDC_REG_NUM (CDC_REG_NUM),
+            .READ_LATENCY(READ_LATENCY),
+            .RAM_STYLE   (RAM_STYLE)
         ) i_async_fifo (
             .wr_clk_i (wr_clk_i),
             .wr_rst_i (wr_rst_i),
