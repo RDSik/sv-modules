@@ -25,12 +25,14 @@ module sync_fifo #(
     localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
-    logic [ PTR_WIDTH-1:0] wr_ptr;
-    logic [ PTR_WIDTH-1:0] rd_ptr;
-    logic [ PTR_WIDTH-1:0] prefetch_ptr;
-    logic                  wr_en;
-    logic                  rd_en;
-    logic [FIFO_WIDTH-1:0] ram_data;
+    logic [PTR_WIDTH-1:0] wr_ptr;
+    logic [PTR_WIDTH-1:0] rd_ptr;
+    logic [PTR_WIDTH-1:0] prefetch_ptr;
+    logic                 wr_en;
+    logic                 rd_en;
+
+    assign wr_en = push_i & ~full_o;
+    assign rd_en = pop_i & ~empty_o;
 
     // Write pointer
     always_ff @(posedge clk_i) begin
@@ -57,9 +59,6 @@ module sync_fifo #(
             end
         end
     end
-
-    assign wr_en = push_i & ~full_o;
-    assign rd_en = pop_i & ~empty_o;
 
     ram_sdp #(
         .MEM_DEPTH   (FIFO_DEPTH),
