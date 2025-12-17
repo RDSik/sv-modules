@@ -105,7 +105,7 @@ class axil_env #(
         end
     endtask
 
-    task automatic master_read_reg(inut logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
+    task automatic master_read_reg(input logic [ADDR_WIDTH-1:0] addr, output logic [DATA_WIDTH-1:0] data,
                                    int master_delay_min = cfg.master_min_delay,
                                    int master_delay_max = cfg.master_max_delay);
         wait (s_axil.rstn_i);
