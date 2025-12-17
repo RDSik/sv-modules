@@ -60,12 +60,12 @@ module axil_crossbar #(
         end
     endfunction
 
-    function automatic logic [MASTER_SEL_WIDTH-1:0] get_index(input logic [MASTER_NUM-1:0] data_in);
+    function automatic logic [MASTER_SEL_WIDTH-1:0] get_grant_index(input logic [MASTER_NUM-1:0] grant);
         begin
-            get_index = '0;
+            get_grant_index = '0;
             for (int i = 0; i < MASTER_NUM; i++) begin
                 if (data_in[i]) begin
-                    get_index = MASTER_SEL_WIDTH'(i);
+                    get_grant_index = MASTER_SEL_WIDTH'(i);
                     break;
                 end
             end
@@ -174,8 +174,8 @@ module axil_crossbar #(
 
     if (MASTER_NUM == 1) begin : g_arbiter_disable
         assign wr_grant = (wr_state == WR_IDLE) && s_awvalid[0];
-        assign wr_req   = '0;
         assign rd_grant = (rd_state == RD_IDLE) && s_arvalid[0];
+        assign wr_req   = '0;
         assign rd_req   = '0;
     end else begin : g_arbiter_enable
         always_comb begin
@@ -211,8 +211,8 @@ module axil_crossbar #(
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
 
-    assign wr_grant_indx = get_index(wr_grant);
-    assign rd_grant_indx = get_index(rd_grant);
+    assign wr_grant_indx = get_grant_index(wr_grant);
+    assign rd_grant_indx = get_grant_index(rd_grant);
 
     addr_decode_t m_awindx;
     addr_decode_t m_awindx_reg;
