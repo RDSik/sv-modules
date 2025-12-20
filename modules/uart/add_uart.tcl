@@ -12,6 +12,7 @@ if {$xilinx == 1} {
     set xil_defaultlib "
         $path/tb/axis_uart_tb.sv
         $path/tb/axil_uart_tb.sv
+        $path/tb/axil_uart_class.svh
     "
     add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {

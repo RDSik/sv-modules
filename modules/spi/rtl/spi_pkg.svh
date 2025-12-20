@@ -6,7 +6,7 @@ package spi_pkg;
     localparam int SPI_DIVIDER_WIDTH = 32;
     localparam int SPI_WAIT_WIDTH = 32;
     localparam int SPI_DATA_WIDTH = 8;
-    localparam int MAX_SLAVE_NUM = 8;
+    localparam int SPI_MAX_SLAVE_NUM = 8;
 
     typedef struct packed {
         logic [7:0] rsrvd;
@@ -27,8 +27,8 @@ package spi_pkg;
     typedef logic [SPI_WAIT_WIDTH-1:0] spi_wait_time_reg_t;
 
     typedef struct packed {
-        logic [23:0]              rsrvd;
-        logic [MAX_SLAVE_NUM-1:0] select;
+        logic [23:0]                  rsrvd;
+        logic [SPI_MAX_SLAVE_NUM-1:0] select;
     } spi_slave_select_reg_t;
 
     typedef struct packed {

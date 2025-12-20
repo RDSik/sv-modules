@@ -42,9 +42,9 @@ module round #(
 
         always_ff @(posedge clk_i) begin
             if (tvalid_i) begin
-                multadd_reg <= multadd;
+                multadd_reg    <= multadd;
+                pattern_detect <= (multadd[SHIFT-1:0] == pattern);
             end
-            pattern_detect <= (multadd[SHIFT-1:0] == pattern);
         end
 
         always_ff @(posedge clk_i) begin

@@ -5,16 +5,20 @@ PROJECT_DIR := project
 
 BOARD ?= pz7020starlite
 
-TCL_FILE := project.tcl
+VIVADO_TCL := project.tcl
+SDK_TCL    := sdk.tcl
 
-.PHONY: project program clean
+.PHONY: project program sdk clean
 
 project:
 ifeq ($(BOARD), tangprimer20k)
-	gw_sh $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE)
+	gw_sh $(PROJECT_DIR)/$(BOARD)/$(VIVADO_TCL)
 else ifeq ($(BOARD), pz7020starlite)
-	vivado -mode batch -source $(PROJECT_DIR)/$(BOARD)/$(TCL_FILE) -tclargs $(GUI)
+	vivado -mode batch -source $(PROJECT_DIR)/$(BOARD)/$(VIVADO_TCL) -tclargs $(GUI)
 endif
+
+sdk:
+	xsdk -batch -source $(PROJECT_DIR)/$(BOARD)/$(SDK_TCL)
 
 program:
 	openFPGALoader -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs

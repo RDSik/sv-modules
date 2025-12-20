@@ -7,7 +7,7 @@ module ddc_tb ();
     localparam int DECIMATION = 4;
     localparam logic ROUND_TYPE = 1;
 
-    localparam int PHASE_WIDTH = 14;
+    localparam int PHASE_WIDTH = 32;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 32 / 2;
@@ -82,10 +82,11 @@ module ddc_tb ();
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds #(
+        dds_wrap #(
             .IQ_NUM     (IQ_NUM),
             .PHASE_WIDTH(PHASE_WIDTH),
-            .DATA_WIDTH (DATA_WIDTH)
+            .DATA_WIDTH (DATA_WIDTH),
+            .IP_EN      (1)
         ) i_dds (
             .clk_i         (clk_i),
             .rst_i         (rst_i),
@@ -102,7 +103,7 @@ module ddc_tb ();
         logic [31:0] phase_width = PHASE_WIDTH;
         logic [63:0] tmp;
         begin
-            tmp = (freq * 2 ** phase_width);
+            tmp = freq * 2 ** phase_width;
             freq_to_phase = tmp / Fs;
         end
     endfunction

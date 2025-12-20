@@ -1,8 +1,10 @@
 /* verilator lint_off TIMESCALEMOD */
 module async_fifo #(
-    parameter int FIFO_WIDTH  = 32,
-    parameter int FIFO_DEPTH  = 64,
-    parameter int CDC_REG_NUM = 2
+    parameter int FIFO_WIDTH   = 32,
+    parameter int FIFO_DEPTH   = 64,
+    parameter int CDC_REG_NUM  = 2,
+    parameter int READ_LATENCY = 1,
+    parameter     RAM_STYLE    = "block"
 ) (
     input logic                  wr_clk_i,
     input logic                  wr_rst_i,
@@ -21,7 +23,7 @@ module async_fifo #(
     output logic empty_o
 );
 
-    if (CDC_REG_NUM < 2) begin : g_mem_width_err
+    if (CDC_REG_NUM < 2) begin : g_reg_num_err
         $error("CDC_REG_NUM must greater or equal 2!");
     end
 
@@ -70,9 +72,9 @@ module async_fifo #(
         .MEM_DEPTH   (FIFO_DEPTH),
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
-        .READ_LATENCY(0),
-        .MEM_MODE    ("read_first"),
-        .RAM_STYLE   ("distributed")
+        .READ_LATENCY(READ_LATENCY),
+        .RAM_STYLE   (RAM_STYLE),
+        .MEM_MODE    ("read_first")
     ) i_ram_sdp (
         .a_clk_i  (wr_clk_i),
         .a_en_i   (wr_en),
@@ -88,7 +90,8 @@ module async_fifo #(
     shift_reg #(
         .RESET_EN  (1),
         .DATA_WIDTH(ADDR_WIDTH + 1),
-        .DELAY     (CDC_REG_NUM)
+        .DELAY     (CDC_REG_NUM),
+        .SRL_STYLE ("register")
     ) wr_shift_reg (
         .clk_i (wr_clk_i),
         .rst_i (wr_rst_i),
@@ -100,7 +103,8 @@ module async_fifo #(
     shift_reg #(
         .RESET_EN  (1),
         .DATA_WIDTH(ADDR_WIDTH + 1),
-        .DELAY     (CDC_REG_NUM)
+        .DELAY     (CDC_REG_NUM),
+        .SRL_STYLE ("register")
     ) rd_shift_reg (
         .clk_i (rd_clk_i),
         .rst_i (rd_rst_i),

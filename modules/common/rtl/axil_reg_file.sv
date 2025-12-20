@@ -35,16 +35,16 @@ module axil_reg_file #(
     logic                      rstn_i;
     logic [       REG_NUM-1:0] wr_valid;
     logic [       REG_NUM-1:0] rd_valid;
+    logic [       REG_NUM-1:0] rd_request;
 
-    assign clk_i  = s_axil.clk_i;
-    assign rstn_i = s_axil.rstn_i;
+    assign clk_i         = s_axil.clk_i;
+    assign rstn_i        = s_axil.rstn_i;
 
-    always_ff @(posedge clk_i) begin
-        wr_regs_o     <= reg_t'(wr_reg);
-        wr_valid_o    <= wr_valid;
-        rd_reg_unpack <= reg_unpack_t'(rd_regs_i);
-        rd_valid      <= rd_valid_i;
-    end
+    assign wr_regs_o     = reg_t'(wr_reg);
+    assign wr_valid_o    = wr_valid;
+    assign rd_reg_unpack = reg_unpack_t'(rd_regs_i);
+    assign rd_valid      = rd_valid_i;
+    assign rd_request_o  = rd_request;
 
     logic [REG_ADDR_WIDTH-1:0] awaddr;
     logic [REG_ADDR_WIDTH-1:0] araddr;
@@ -181,16 +181,16 @@ module axil_reg_file #(
 
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
-            rd_request_o <= '0;
+            rd_request <= '0;
         end else begin
             if (slv_reg_rden) begin
                 for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                     if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
-                        rd_request_o[reg_indx] <= 1'b1;
+                        rd_request[reg_indx] <= 1'b1;
                     end
                 end
             end else begin
-                rd_request_o <= '0;
+                rd_request <= '0;
             end
         end
     end

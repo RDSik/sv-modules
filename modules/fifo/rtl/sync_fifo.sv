@@ -1,7 +1,10 @@
 /* verilator lint_off TIMESCALEMOD */
 module sync_fifo #(
-    parameter int FIFO_WIDTH = 32,
-    parameter int FIFO_DEPTH = 64
+    parameter int FIFO_WIDTH   = 32,
+    parameter int FIFO_DEPTH   = 64,
+    parameter int READ_LATENCY = 1,
+    parameter     RAM_STYLE    = "block",
+    parameter int PTR_WIDTH    = $clog2(FIFO_DEPTH)
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -15,20 +18,25 @@ module sync_fifo #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o
+    output logic empty_o,
+
+    output logic [PTR_WIDTH:0] data_cnt_o
 );
 
-    localparam int READ_LATENCY = 0;
-    localparam logic SHOW_AHEAD_EN = (READ_LATENCY > 0);
-    localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
+    if (PTR_WIDTH != $clog2(FIFO_DEPTH)) begin : g_ptr_width_err
+        $error("PTR_WIDTH must be equal $clog2(FIFO_DEPTH)");
+    end
+
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
-    logic [ PTR_WIDTH-1:0] wr_ptr;
-    logic [ PTR_WIDTH-1:0] rd_ptr;
-    logic [ PTR_WIDTH-1:0] prefetch_ptr;
-    logic                  wr_en;
-    logic                  rd_en;
-    logic [FIFO_WIDTH-1:0] ram_data;
+    logic [PTR_WIDTH-1:0] wr_ptr;
+    logic [PTR_WIDTH-1:0] rd_ptr;
+    logic [PTR_WIDTH-1:0] prefetch_ptr;
+    logic                 wr_en;
+    logic                 rd_en;
+
+    assign wr_en = push_i & ~full_o;
+    assign rd_en = pop_i & ~empty_o;
 
     // Write pointer
     always_ff @(posedge clk_i) begin
@@ -56,49 +64,13 @@ module sync_fifo #(
         end
     end
 
-    if (SHOW_AHEAD_EN) begin : g_show_ahead
-        logic [FIFO_WIDTH-1:0] bypass_data;
-        logic                  bypass_valid;
-        logic                  bypass_en;
-
-        assign wr_en = push_i & ~bypass_en;
-        assign rd_en = pop_i & ~a_empty_o;
-
-        assign prefetch_ptr = (rd_ptr == MAX_PTR) ? '0 : rd_ptr + 1'b1;
-
-        assign bypass_en = push_i && (empty_o || (pop_i && a_empty_o));
-
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
-                bypass_valid <= 1'b0;
-            end else if (bypass_en) begin
-                bypass_valid <= 1'b1;
-            end else if (pop_i) begin
-                bypass_valid <= 1'b0;
-            end
-        end
-
-        always_ff @(posedge clk_i) begin
-            if (bypass_en) begin
-                bypass_data <= data_i;
-            end
-        end
-
-        assign data_o = bypass_valid ? bypass_data : ram_data;
-    end else begin : g_others
-        assign wr_en        = push_i & ~full_o;
-        assign rd_en        = pop_i & ~empty_o;
-        assign prefetch_ptr = rd_ptr;
-        assign data_o       = ram_data;
-    end
-
     ram_sdp #(
         .MEM_DEPTH   (FIFO_DEPTH),
         .BYTE_WIDTH  (FIFO_WIDTH),
         .BYTE_NUM    (1),
         .READ_LATENCY(READ_LATENCY),
-        .MEM_MODE    ("read_first"),
-        .RAM_STYLE   ("distributed")
+        .RAM_STYLE   (RAM_STYLE),
+        .MEM_MODE    ("read_first")
     ) i_ram_sdp (
         .a_clk_i  (clk_i),
         .a_en_i   (wr_en),
@@ -107,8 +79,8 @@ module sync_fifo #(
         .a_data_i (data_i),
         .b_clk_i  (clk_i),
         .b_en_i   (rd_en),
-        .b_addr_i (prefetch_ptr),
-        .b_data_o (ram_data)
+        .b_addr_i (rd_ptr),
+        .b_data_o (data_o)
     );
 
     logic [PTR_WIDTH:0] data_cnt_next;
@@ -135,6 +107,8 @@ module sync_fifo #(
             data_cnt <= data_cnt_next;
         end
     end
+
+    assign data_cnt_o = data_cnt;
 
     /* verilator lint_off WIDTHEXPAND*/
     assign a_full  = (data_cnt_next == FIFO_DEPTH - 1);

@@ -6,6 +6,7 @@ set gui_flag  [lindex $argv 0]
 
 set project_dir [file normalize "project/pz7020starlite"]
 set modules_dir [file normalize "modules"]
+set sdk_dir     [file normalize "$project_dir/$syn_top.sdk"]
 
 create_project -force $syn_top $project_dir -part $part
 
@@ -16,7 +17,7 @@ set_property top $sim_top [get_filesets sim_1]
 proc source_scripts {current_dir} {
     foreach sub_dir [glob -nocomplain -directory $current_dir *] {
         if {[file isdirectory $sub_dir]} {
-           global gowin
+            global gowin
             global xilinx
             set gowin 0
             set xilinx 1
@@ -52,3 +53,10 @@ wait_on_run synth_1
 open_run synth_1 -name synth_1
 launch_runs impl_1 -to_step write_bitstream
 wait_on_run impl_1
+
+file mkdir $sdk_dir
+
+write_sysdef \
+    -hwdef $project_dir/$syn_top.srcs/sources_1/bd/zynq_bd/synth/zynq_bd.hwdef \
+    -bitfile $project_dir/$syn_top.runs/impl_1/ps_pl_top.bit \
+    -file $sdk_dir/$syn_top.hdf

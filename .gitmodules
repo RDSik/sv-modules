@@ -1,0 +1,3 @@
+[submodule "Zynq-Linux"]
+	path = Zynq-Linux
+	url = https://github.com/RDSik/Zynq-Linux.git

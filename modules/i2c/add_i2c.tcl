@@ -13,6 +13,7 @@ if {$xilinx == 1} {
 
     set xil_defaultlib "
         $path/tb/axil_i2c_tb.sv
+        $path/tb/axil_i2c_class.svh
     "
     add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {

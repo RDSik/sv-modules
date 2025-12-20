@@ -163,8 +163,10 @@ module axil_i2c
         .sda_oen (sda_padoen_o)
     );
 
+    localparam int READ_LATENCY = 0;
     localparam int CDC_REG_NUM = 2;
     localparam FIFO_MODE = "sync";
+    localparam RAM_STYLE = "distributed";
 
     logic fifo_rst;
     logic tx_fifo_push;
@@ -181,10 +183,12 @@ module axil_i2c
     assign rx_fifo_push = cmd_ack & read;
 
     fifo_wrap #(
-        .FIFO_WIDTH (I2C_DATA_WIDTH),
-        .FIFO_DEPTH (FIFO_DEPTH),
-        .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE)
+        .FIFO_WIDTH  (I2C_DATA_WIDTH),
+        .FIFO_DEPTH  (FIFO_DEPTH),
+        .CDC_REG_NUM (CDC_REG_NUM),
+        .FIFO_MODE   (FIFO_MODE),
+        .READ_LATENCY(READ_LATENCY),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_tx (
         .wr_clk_i (clk_i),
         .wr_rst_i (fifo_rst),
@@ -201,10 +205,12 @@ module axil_i2c
     );
 
     fifo_wrap #(
-        .FIFO_WIDTH (I2C_DATA_WIDTH),
-        .FIFO_DEPTH (FIFO_DEPTH),
-        .CDC_REG_NUM(CDC_REG_NUM),
-        .FIFO_MODE  (FIFO_MODE)
+        .FIFO_WIDTH  (I2C_DATA_WIDTH),
+        .FIFO_DEPTH  (FIFO_DEPTH),
+        .CDC_REG_NUM (CDC_REG_NUM),
+        .FIFO_MODE   (FIFO_MODE),
+        .READ_LATENCY(READ_LATENCY),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_rx (
         .wr_clk_i (clk_i),
         .wr_rst_i (fifo_rst),

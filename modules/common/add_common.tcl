@@ -4,6 +4,7 @@ if {$xilinx == 1} {
     set xci_defaultlib "
         $path/ip/axil_ila/axil_ila.xci
         $path/ip/axi_clock_converter/axi_clock_converter.xci
+        $path/ip/axi_crossbar/axi_crossbar.xci
     "
     add_files -norecurse $xci_defaultlib
     
@@ -15,6 +16,7 @@ if {$xilinx == 1} {
         $path/rtl/axil_ram.sv
         $path/rtl/axil_reg_file.sv
         $path/rtl/axil_reg_file_wrap.sv
+        $path/rtl/axil_crossbar.sv
     "
 
     add_files -norecurse $xil_defaultlib
@@ -26,4 +28,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/axil_ram.sv
     add_file $path/rtl/axil_reg_file.sv
     add_file $path/rtl/axil_reg_file_wrap.sv
+    add_file $path/rtl/axil_crossbar.sv
 }

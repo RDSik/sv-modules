@@ -1,6 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
 module dds_wrap #(
-    parameter       DATA_PATH   = "dds_out.bin",
     parameter int   IQ_NUM      = 2,
     parameter int   PHASE_WIDTH = 14,
     parameter int   DATA_WIDTH  = 16,
@@ -40,8 +39,7 @@ module dds_wrap #(
         dds #(
             .IQ_NUM     (IQ_NUM),
             .PHASE_WIDTH(PHASE_WIDTH),
-            .DATA_WIDTH (DATA_WIDTH),
-            .DATA_PATH  (DATA_PATH)
+            .DATA_WIDTH (DATA_WIDTH)
         ) i_dds (
             .clk_i         (clk_i),
             .rst_i         (rst_i),

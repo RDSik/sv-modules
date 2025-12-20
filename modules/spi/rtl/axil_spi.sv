@@ -113,16 +113,20 @@ module axil_spi
         .m_spi        (m_spi)
     );
 
+    localparam int READ_LATENCY = 0;
     localparam logic TLAST_EN = 1;
     localparam int CDC_REG_NUM = 2;
     localparam FIFO_MODE = "sync";
+    localparam RAM_STYLE = "distributed";
 
     axis_fifo_wrap #(
-        .FIFO_DEPTH (FIFO_DEPTH),
-        .FIFO_WIDTH (SPI_DATA_WIDTH),
-        .FIFO_MODE  (FIFO_MODE),
-        .TLAST_EN   (TLAST_EN),
-        .CDC_REG_NUM(CDC_REG_NUM)
+        .FIFO_DEPTH  (FIFO_DEPTH),
+        .FIFO_WIDTH  (SPI_DATA_WIDTH),
+        .FIFO_MODE   (FIFO_MODE),
+        .TLAST_EN    (TLAST_EN),
+        .CDC_REG_NUM (CDC_REG_NUM),
+        .READ_LATENCY(READ_LATENCY),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
         .m_axis   (spi_tx),
@@ -135,7 +139,9 @@ module axil_spi
         .FIFO_WIDTH (SPI_DATA_WIDTH),
         .FIFO_MODE  (FIFO_MODE),
         .TLAST_EN   (TLAST_EN),
-        .CDC_REG_NUM(CDC_REG_NUM)
+        .CDC_REG_NUM(CDC_REG_NUM),
+        .READ_LATENCY(READ_LATENCY),
+        .RAM_STYLE   (RAM_STYLE)
     ) i_axis_fifo_rx (
         .s_axis   (spi_rx),
         .m_axis   (fifo_rx),
