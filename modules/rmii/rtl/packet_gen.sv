@@ -65,10 +65,10 @@ module packet_gen
     ethernet_header_t                                  header;
     logic             [$bits(ethernet_header_t)-1 : 0] header_buffer;
     logic             [           AXIS_DATA_WIDTH-1:0] data_buffer;
-    logic             [                       7*8-1:0] preamble_buffer;
-    logic             [                       1*8-1:0] sfd_buffer;
-    logic             [                       4*8-1:0] fcs;
-    logic             [                       4*8-1:0] fcs_buffer;
+    logic             [          PREAMBLE_BYTES*8-1:0] preamble_buffer;
+    logic             [               SFD_BYTES*8-1:0] sfd_buffer;
+    logic             [               FCS_BYTES*8-1:0] fcs;
+    logic             [               FCS_BYTES*8-1:0] fcs_buffer;
 
     logic             [                          31:0] data_length;
     assign data_length = s_axis.tuser * 8 / MII_WIDTH;
