@@ -130,7 +130,6 @@ module packet_gen
         .host_mac_i     (host_mac_i),
         .payload_bytes_i(s_axis.tuser * WORD_BYTES),
         .output_header_o(header)
-
     );
 
     fifo_wrap #(
