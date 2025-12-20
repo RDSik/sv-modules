@@ -15,7 +15,7 @@ module ddc_tb ();
 
     localparam int FS = 100_000_000;
     localparam int DDS_NUM = 2;
-    localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{2e6, 500e3};
+    localparam logic [31:0] FREQ[DDS_NUM-1:0] = '{3e6, 30e6};
     localparam int CLK_PER = 2;
     localparam int RESET_DELAY = 10;
     localparam int SIM_TIME = 100_000;
