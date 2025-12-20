@@ -32,9 +32,9 @@ class axil_i2c_class #(
     endfunction
 
     task automatic i2c_start();
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {RW, 8'ha2});
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {RW, 8'hac});
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_CONTROL_REG_POS, 2'b10);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_TX_DATA_REG_POS, {RW, 8'ha2});
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_TX_DATA_REG_POS, {RW, 8'hac});
     endtask
 
 endclass

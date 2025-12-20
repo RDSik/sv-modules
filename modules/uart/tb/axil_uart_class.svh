@@ -39,13 +39,13 @@ class axil_uart_class #(
 
     task automatic uart_start();
         wdata = $urandom_range(0, (2 ** UART_DATA_WIDTH) - 1);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CLK_DIVIDER_REG_POS, CLK_DIV);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 0);
-        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, wdata);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * UART_CLK_DIVIDER_REG_POS, CLK_DIV);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * UART_CONTROL_REG_POS, 0);
+        env.master_write_reg(BASE_ADDR + ADDR_OFFSET * UART_TX_DATA_REG_POS, wdata);
         do begin
-            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * STATUS_REG_POS, rdata);
+            env.master_read_reg(BASE_ADDR + ADDR_OFFSET * UART_STATUS_REG_POS, rdata);
         end while (rdata[4]);
-        for (int i = 0; i < REG_NUM; i++) begin
+        for (int i = 0; i < UART_REG_NUM; i++) begin
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
     endtask

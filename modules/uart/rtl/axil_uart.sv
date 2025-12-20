@@ -18,15 +18,15 @@ module axil_uart
     axil_if.slave s_axil
 );
 
-    uart_regs_t               rd_regs;
-    uart_regs_t               wr_regs;
+    uart_regs_t                    rd_regs;
+    uart_regs_t                    wr_regs;
 
-    logic       [REG_NUM-1:0] rd_request;
-    logic       [REG_NUM-1:0] rd_valid;
-    logic       [REG_NUM-1:0] wr_valid;
+    logic       [UART_REG_NUM-1:0] rd_request;
+    logic       [UART_REG_NUM-1:0] rd_valid;
+    logic       [UART_REG_NUM-1:0] wr_valid;
 
-    logic                     tx_reset;
-    logic                     rx_reset;
+    logic                          tx_reset;
+    logic                          rx_reset;
 
     assign tx_reset = wr_regs.control.tx_reset;
     assign rx_reset = wr_regs.control.rx_reset;
@@ -60,11 +60,6 @@ module axil_uart
     );
 
     logic parity_err;
-    logic tx_handshake;
-    logic rx_handshake;
-
-    assign tx_handshake = fifo_tx.tvalid & fifo_tx.tready;
-    assign rx_handshake = fifo_rx.tvalid & fifo_rx.tready;
 
     always_comb begin
         rd_valid                     = '1;
@@ -72,7 +67,7 @@ module axil_uart
 
         rd_regs.param.data_width     = UART_DATA_WIDTH;
         rd_regs.param.fifo_depth     = FIFO_DEPTH;
-        rd_regs.param.reg_num        = REG_NUM;
+        rd_regs.param.reg_num        = UART_REG_NUM;
 
         rd_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
         rd_regs.status.tx_fifo_empty = ~uart_tx.tvalid;
@@ -84,15 +79,15 @@ module axil_uart
     end
 
     assign fifo_tx.tdata  = wr_regs.tx.data;
-    assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
-    assign fifo_rx.tready = rd_request[RX_DATA_REG_POS];
+    assign fifo_tx.tvalid = wr_valid[UART_TX_DATA_REG_POS];
+    assign fifo_rx.tready = rd_request[UART_RX_DATA_REG_POS];
 
     axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .REG_NUM       (REG_NUM),
+        .REG_NUM       (UART_REG_NUM),
         .reg_t         (uart_regs_t),
-        .REG_INIT      (REG_INIT),
+        .REG_INIT      (UART_REG_INIT),
         .ILA_EN        (ILA_EN),
         .MODE          (MODE)
     ) i_axil_reg_file (

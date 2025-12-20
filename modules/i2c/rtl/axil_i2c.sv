@@ -26,9 +26,9 @@ module axil_i2c
     i2c_regs_t                      rd_regs;
     i2c_regs_t                      wr_regs;
 
-    logic      [       REG_NUM-1:0] rd_request;
-    logic      [       REG_NUM-1:0] rd_valid;
-    logic      [       REG_NUM-1:0] wr_valid;
+    logic      [   I2C_REG_NUM-1:0] rd_request;
+    logic      [   I2C_REG_NUM-1:0] rd_valid;
+    logic      [   I2C_REG_NUM-1:0] wr_valid;
 
     logic      [I2C_DATA_WIDTH-1:0] i2c_tx_data;
     logic      [I2C_DATA_WIDTH-1:0] i2c_rx_data;
@@ -49,7 +49,7 @@ module axil_i2c
 
         rd_regs.param.data_width     = I2C_DATA_WIDTH;
         rd_regs.param.fifo_depth     = FIFO_DEPTH;
-        rd_regs.param.reg_num        = REG_NUM;
+        rd_regs.param.reg_num        = I2C_REG_NUM;
 
         rd_regs.status.rx_fifo_empty = rx_fifo_empty;
         rd_regs.status.rx_fifo_full  = rx_fifo_full;
@@ -64,9 +64,9 @@ module axil_i2c
     axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .REG_NUM       (REG_NUM),
+        .REG_NUM       (I2C_REG_NUM),
         .reg_t         (i2c_regs_t),
-        .REG_INIT      (REG_INIT),
+        .REG_INIT      (I2C_REG_INIT),
         .ILA_EN        (ILA_EN),
         .MODE          (MODE)
     ) i_axil_reg_file (
@@ -94,6 +94,20 @@ module axil_i2c
     logic   write;
     logic   read;
 
+    logic   fifo_rst;
+    logic   tx_fifo_push;
+    logic   tx_fifo_pop;
+    logic   rx_fifo_push;
+    logic   rx_fifo_pop;
+
+    assign fifo_rst = wr_regs.control.core_rst;
+
+    assign tx_fifo_push = wr_valid[I2C_TX_DATA_REG_POS];
+    assign tx_fifo_pop = cmd_ack & write;
+
+    assign rx_fifo_pop = rd_request[I2C_RX_DATA_REG_POS];
+    assign rx_fifo_push = cmd_ack & read;
+
     always @(posedge clk_i) begin
         if (wr_regs.control.core_rst | i2c_al) begin
             state <= IDLE;
@@ -104,7 +118,7 @@ module axil_i2c
         end else begin
             case (state)
                 IDLE: begin
-                    if (wr_valid[TX_DATA_REG_POS]) begin
+                    if (tx_fifo_push) begin
                         state <= ADDR;
                         start <= 1'b1;
                         write <= 1'b1;
@@ -167,20 +181,6 @@ module axil_i2c
     localparam int CDC_REG_NUM = 2;
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
-
-    logic fifo_rst;
-    logic tx_fifo_push;
-    logic tx_fifo_pop;
-    logic rx_fifo_push;
-    logic rx_fifo_pop;
-
-    assign fifo_rst = wr_regs.control.core_rst;
-
-    assign tx_fifo_push = wr_valid[TX_DATA_REG_POS];
-    assign tx_fifo_pop = cmd_ack & write;
-
-    assign rx_fifo_pop = rd_request[RX_DATA_REG_POS];
-    assign rx_fifo_push = cmd_ack & read;
 
     fifo_wrap #(
         .FIFO_WIDTH  (I2C_DATA_WIDTH),
