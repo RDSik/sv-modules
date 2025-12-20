@@ -30,6 +30,7 @@ module ctrl_top_tb ();
 
     logic clk_i;
     logic rstn_i;
+    logic uart;
 
     spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
 
@@ -100,9 +101,11 @@ module ctrl_top_tb ();
         .ILA_EN         (0),
         .MODE           ("sync")
     ) i_ctrl_top (
-        .clk_i (clk_i),
-        .s_axil(s_axil),
-        .m_spi (m_spi)
+        .clk_i    (clk_i),
+        .uart_rx_i(uart),
+        .uart_tx_o(uart),
+        .s_axil   (s_axil),
+        .m_spi    (m_spi)
     );
 
 endmodule
