@@ -60,7 +60,8 @@ module axil_crossbar #(
         end
     endfunction
 
-    function automatic logic [MASTER_SEL_WIDTH-1:0] get_grant_index(input logic [MASTER_NUM-1:0] grant);
+    function automatic logic [MASTER_SEL_WIDTH-1:0] get_grant_index(
+        input logic [MASTER_NUM-1:0] grant);
         begin
             get_grant_index = '0;
             for (int i = 0; i < MASTER_NUM; i++) begin
@@ -177,6 +178,8 @@ module axil_crossbar #(
         assign rd_grant = (rd_state == RD_IDLE) && s_arvalid[0];
         assign wr_req   = '0;
         assign rd_req   = '0;
+        assign wr_ack   = '0;
+        assign rd_ack   = '0;
     end else begin : g_arbiter_enable
         always_comb begin
             for (int i = 0; i < MASTER_NUM; i++) begin
@@ -184,6 +187,9 @@ module axil_crossbar #(
                 rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
             end
         end
+
+        assign wr_ack = (wr_state == WR_RESP) && (wr_next_state == WR_IDLE);
+        assign rd_ack = (rd_state == RD_DATA) && (rd_next_state == RD_IDLE);
 
         round_robin_arbiter #(
             .MASTER_NUM(MASTER_NUM)
@@ -261,7 +267,11 @@ module axil_crossbar #(
             WR_ADDR: begin
                 if (m_awindx_reg.valid) begin
                     if (m_awready[m_awindx_reg.indx] && m_awvalid[m_awindx_reg.indx]) begin
-                        wr_next_state = WR_DATA;
+                        if (m_wready[m_awindx_reg.indx] && m_wvalid[m_awindx_reg.indx]) begin
+                            wr_next_state = WR_RESP;
+                        end else begin
+                            wr_next_state = WR_DATA;
+                        end
                     end
                 end else begin
                     wr_next_state = WR_DATA;
@@ -288,8 +298,6 @@ module axil_crossbar #(
             default: wr_next_state = WR_IDLE;
         endcase
     end
-
-    assign wr_ack = (wr_state == WR_RESP) && (wr_next_state == WR_IDLE);
 
     always_comb begin
         rd_next_state = rd_state;
@@ -321,8 +329,6 @@ module axil_crossbar #(
         endcase
     end
 
-    assign rd_ack = (rd_state == RD_DATA) && (rd_next_state == RD_IDLE);
-
     always_comb begin
         for (int i = 0; i < SLAVE_NUM; i++) begin
             m_awaddr[i]  = '0;
@@ -339,6 +345,10 @@ module axil_crossbar #(
                     m_awaddr[m_awindx_reg.indx]  = s_awaddr[wr_grant_indx_reg];
                     m_awprot[m_awindx_reg.indx]  = s_awprot[wr_grant_indx_reg];
                     m_awvalid[m_awindx_reg.indx] = s_awvalid[wr_grant_indx_reg];
+
+                    m_wdata[m_awindx_reg.indx]   = s_wdata[wr_grant_indx_reg];
+                    m_wstrb[m_awindx_reg.indx]   = s_wstrb[wr_grant_indx_reg];
+                    m_wvalid[m_awindx_reg.indx]  = s_wvalid[wr_grant_indx_reg];
                 end
                 WR_DATA: begin
                     m_wdata[m_awindx_reg.indx]  = s_wdata[wr_grant_indx_reg];
@@ -386,6 +396,7 @@ module axil_crossbar #(
             WR_ADDR: begin
                 if (m_awindx_reg.valid) begin
                     s_awready[wr_grant_indx_reg] = m_awready[m_awindx_reg.indx];
+                    s_wready[wr_grant_indx_reg]  = m_wready[m_awindx_reg.indx];
                 end else begin
                     s_awready[wr_grant_indx_reg] = 1'b1;
                 end

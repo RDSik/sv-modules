@@ -133,8 +133,6 @@ module axil_uart
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
-    logic bypass;
-
     axis_fifo_wrap #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (UART_DATA_WIDTH),

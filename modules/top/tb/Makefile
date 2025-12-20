@@ -1,4 +1,4 @@
-TOP ?= axis_spi
+TOP ?= ctrl_top
 
 SIM ?= questa
 

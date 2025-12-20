@@ -51,6 +51,7 @@ module axil_spi_tb ();
         ) spi;
         spi = new(s_axil);
         spi.spi_start();
+        #10 $stop;
     end
 
     initial begin

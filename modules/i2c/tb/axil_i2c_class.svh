@@ -13,7 +13,6 @@ class axil_i2c_class #(
 );
 
     localparam int ADDR_OFFSET = DATA_WIDTH / 8;
-    localparam int WAT_CYCLES = 250;
     localparam logic RW = 1;
 
     logic                                                               [DATA_WIDTH-1:0] wdata;
@@ -36,8 +35,6 @@ class axil_i2c_class #(
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * CONTROL_REG_POS, 2'b10);
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {RW, 8'ha2});
         env.master_write_reg(BASE_ADDR + ADDR_OFFSET * TX_DATA_REG_POS, {RW, 8'hac});
-        #WAT_CYCLES;
-        $stop;
     endtask
 
 endclass

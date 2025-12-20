@@ -10,6 +10,7 @@ module axil_i2c_tb ();
 
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
+    localparam int WAT_CYCLES = 250;
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
 
@@ -46,6 +47,8 @@ module axil_i2c_tb ();
         ) i2c;
         i2c = new(s_axil);
         i2c.i2c_start();
+        #WAT_CYCLES;
+        $stop;
     end
 
     initial begin

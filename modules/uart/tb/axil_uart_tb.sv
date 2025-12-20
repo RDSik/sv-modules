@@ -47,6 +47,7 @@ module axil_uart_tb ();
         ) uart;
         uart = new(s_axil);
         uart.uart_start();
+        #10 $stop;
     end
 
     initial begin

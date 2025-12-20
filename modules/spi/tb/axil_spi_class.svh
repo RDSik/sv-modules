@@ -47,7 +47,6 @@ class axil_spi_class #(
         for (int i = 0; i < REG_NUM; i++) begin
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * i, rdata);
         end
-        #10 $stop;
     endtask
 
 endclass
