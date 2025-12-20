@@ -46,16 +46,18 @@ package uart_pkg;
         uart_control_reg_t     control;
     } uart_regs_t;
 
-    localparam int CONTROL_REG_POS = 0;
-    localparam int CLK_DIVIDER_REG_POS = CONTROL_REG_POS + $bits(uart_control_reg_t) / 32;
-    localparam int TX_DATA_REG_POS = CLK_DIVIDER_REG_POS + $bits(uart_clk_divider_reg_t) / 32;
-    localparam int RX_DATA_REG_POS = TX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
-    localparam int STATUS_REG_POS = RX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
-    localparam int PARAM_REG_POS = STATUS_REG_POS + $bits(uart_status_reg_t) / 32;
+    localparam int UART_CONTROL_REG_POS = 0;
+    localparam int UART_CLK_DIVIDER_REG_POS = UART_CONTROL_REG_POS + $bits(uart_control_reg_t) / 32;
+    localparam int UART_TX_DATA_REG_POS = UART_CLK_DIVIDER_REG_POS + $bits(
+        uart_clk_divider_reg_t
+    ) / 32;
+    localparam int UART_RX_DATA_REG_POS = UART_TX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
+    localparam int UART_STATUS_REG_POS = UART_RX_DATA_REG_POS + $bits(uart_data_reg_t) / 32;
+    localparam int UART_PARAM_REG_POS = UART_STATUS_REG_POS + $bits(uart_status_reg_t) / 32;
 
-    localparam int REG_NUM = $bits(uart_regs_t) / 32;
+    localparam int UART_REG_NUM = $bits(uart_regs_t) / 32;
 
-    localparam uart_regs_t REG_INIT = '{
+    localparam uart_regs_t UART_REG_INIT = '{
         control : '{tx_reset: 1'b1, rx_reset: 1'b1, default: '0},
         default: '0
     };

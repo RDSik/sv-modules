@@ -18,14 +18,14 @@ module axil_spi
     spi_if.master m_spi
 );
 
-    spi_regs_t               rd_regs;
-    spi_regs_t               wr_regs;
+    spi_regs_t                   rd_regs;
+    spi_regs_t                   wr_regs;
 
-    logic      [REG_NUM-1:0] rd_request;
-    logic      [REG_NUM-1:0] rd_valid;
-    logic      [REG_NUM-1:0] wr_valid;
+    logic      [SPI_REG_NUM-1:0] rd_request;
+    logic      [SPI_REG_NUM-1:0] rd_valid;
+    logic      [SPI_REG_NUM-1:0] wr_valid;
 
-    logic                    reset;
+    logic                        reset;
 
     assign reset = wr_regs.control.reset;
 
@@ -63,7 +63,7 @@ module axil_spi
 
         rd_regs.param.data_width     = SPI_DATA_WIDTH;
         rd_regs.param.fifo_depth     = FIFO_DEPTH;
-        rd_regs.param.reg_num        = REG_NUM;
+        rd_regs.param.reg_num        = SPI_REG_NUM;
 
         rd_regs.status.rx_fifo_empty = ~fifo_rx.tvalid;
         rd_regs.status.tx_fifo_empty = ~spi_tx.tvalid;
@@ -75,16 +75,16 @@ module axil_spi
     end
 
     assign fifo_tx.tdata  = wr_regs.tx.data;
-    assign fifo_tx.tlast  = wr_regs.tx.last & wr_valid[TX_DATA_REG_POS];
-    assign fifo_tx.tvalid = wr_valid[TX_DATA_REG_POS];
-    assign fifo_rx.tready = rd_request[RX_DATA_REG_POS];
+    assign fifo_tx.tlast  = wr_regs.tx.last & wr_valid[SPI_TX_DATA_REG_POS];
+    assign fifo_tx.tvalid = wr_valid[SPI_TX_DATA_REG_POS];
+    assign fifo_rx.tready = rd_request[SPI_RX_DATA_REG_POS];
 
     axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
         .REG_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .REG_NUM       (REG_NUM),
+        .REG_NUM       (SPI_REG_NUM),
         .reg_t         (spi_regs_t),
-        .REG_INIT      (REG_INIT),
+        .REG_INIT      (SPI_REG_INIT),
         .ILA_EN        (ILA_EN),
         .MODE          (MODE)
     ) i_axil_reg_file (
