@@ -84,7 +84,6 @@ module crc #(
                     crc_bit[22] = feedback ^ crc[21];
                     crc_bit[23] = feedback ^ crc[22];
                     crc_bit[26] = feedback ^ crc[25];
-
                 end else if (CRC_WIDTH == 64) begin
                     // x^64 + x^4 + x^3 + x + 1
                     crc_bit[0] = feedback;
@@ -121,7 +120,6 @@ module crc #(
                     crc_bit[9]  = feedback ^ crc[10];
                     crc_bit[8]  = feedback ^ crc[9];
                     crc_bit[5]  = feedback ^ crc[6];
-
                 end else if (CRC_WIDTH == 64) begin
                     // x^64 + x^4 + x^3 + x + 1
                     crc_bit[63] = feedback;
