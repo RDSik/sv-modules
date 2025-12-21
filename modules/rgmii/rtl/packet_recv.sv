@@ -43,10 +43,8 @@ module packet_recv
             rxdv_z               <= 0;
             first_i_packet_count <= 0;
         end else begin
-            rxd_z[0]    <= rx_d_i;
-            rxd_z[2:1]  <= rxd_z[1:0];
-            rxdv_z[0]   <= rx_dv_i;
-            rxdv_z[2:1] <= rxdv_z[1:0];
+            rxd_z  <= {rxd_z[1:0], rx_d_i};
+            rxdv_z <= {rxdv_z[1:0], rx_dv_i};
             if (packet_done & first_i_packet_count < FIRST_PACKET_IGNORE) begin
                 first_i_packet_count <= first_i_packet_count + 1;
             end
