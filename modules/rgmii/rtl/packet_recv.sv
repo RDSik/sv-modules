@@ -1,7 +1,7 @@
-`include "../rtl/rmii_pkg.svh"
+`include "../rtl/rgmii_pkg.svh"
 
 module packet_recv
-    import rmii_pkg::*;
+    import rgmii_pkg::*;
 #(
     parameter logic CHECK_DESTINATION = 1,
     parameter int   GMII_WIDTH        = 8,

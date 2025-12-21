@@ -1,7 +1,7 @@
-`include "../rtl/rmii_pkg.svh"
+`include "../rtl/rgmii_pkg.svh"
 
 module packet_gen
-    import rmii_pkg::*;
+    import rgmii_pkg::*;
 #(
     parameter logic [15:0] HEADER_CHECKSUM = 16'h65ba,
     parameter int          FIFO_DEPTH      = 2048,
