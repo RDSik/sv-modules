@@ -6,6 +6,8 @@ if {$xilinx == 1} {
         $path/rtl/eth_header_gen.sv
         $path/rtl/packet_gen.sv
         $path/rtl/packet_recv.sv
+        $path/rtl/rgmii_rx.sv
+        $path/rtl/rgmii_tx.sv
         $path/rtl/rmii_pkg.svh
     "
     add_files -norecurse $xil_defaultlib
