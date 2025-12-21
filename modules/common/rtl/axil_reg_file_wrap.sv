@@ -28,7 +28,7 @@ module axil_reg_file_wrap #(
             .DEST_SYNC_FF   (3),
             .INIT_SYNC_FF   (0),
             .RST_ACTIVE_HIGH(0)
-        ) i_rst_sync (
+        ) i_xpm_cdc_async_rst (
             .src_arst (s_axil.rstn_i),
             .dest_clk (clk_i),
             .dest_arst(rstn_i)
