@@ -17,6 +17,9 @@ if {$xilinx == 1} {
         $path/rtl/axil_reg_file.sv
         $path/rtl/axil_reg_file_wrap.sv
         $path/rtl/axil_crossbar.sv
+        $path/rtl/axis_lfsr_wrap.sv
+        $path/rtl/lfsr.sv
+        $path/rtl/crc.sv
     "
 
     add_files -norecurse $xil_defaultlib

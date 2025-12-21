@@ -124,7 +124,6 @@ module axil_uart
     );
 
     localparam int READ_LATENCY = 0;
-    localparam int CDC_REG_NUM = 2;
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
@@ -132,7 +131,6 @@ module axil_uart
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (UART_DATA_WIDTH),
         .FIFO_MODE   (FIFO_MODE),
-        .CDC_REG_NUM (CDC_REG_NUM),
         .READ_LATENCY(READ_LATENCY),
         .RAM_STYLE   (RAM_STYLE)
     ) i_axis_fifo_tx (
@@ -146,7 +144,6 @@ module axil_uart
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (UART_DATA_WIDTH),
         .FIFO_MODE   (FIFO_MODE),
-        .CDC_REG_NUM (CDC_REG_NUM),
         .READ_LATENCY(READ_LATENCY),
         .RAM_STYLE   (RAM_STYLE)
     ) i_axis_fifo_rx (

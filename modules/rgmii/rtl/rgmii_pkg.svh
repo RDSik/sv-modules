@@ -1,7 +1,7 @@
-`ifndef RMII_PKG_SVH
-`define RMII_PKG_SVH
+`ifndef RGMII_PKG_SVH
+`define RGMII_PKG_SVH
 
-package rmii_pkg;
+package rgmii_pkg;
 
     typedef struct packed {
         logic [1:0][7:0] udp_checksum;
@@ -33,4 +33,4 @@ package rmii_pkg;
 
 endpackage
 
-`endif  // RMII_PKG_SVH
+`endif  // RGMII_PKG_SVH

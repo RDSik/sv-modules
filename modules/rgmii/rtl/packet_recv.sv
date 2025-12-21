@@ -1,15 +1,15 @@
-`include "../rtl/rmii_pkg.svh"
+`include "rgmii_pkg.svh"
 
 module packet_recv
-    import rmii_pkg::*;
+    import rgmii_pkg::*;
 #(
     parameter logic CHECK_DESTINATION = 1,
-    parameter int   MII_WIDTH         = 2,
+    parameter int   GMII_WIDTH        = 8,
     parameter int   AXIS_DATA_WIDTH   = 8
 
 ) (
-    input logic [MII_WIDTH-1:0] rx_d_i,
-    input logic                 rx_dv_i,
+    input logic [GMII_WIDTH-1:0] rx_d_i,
+    input logic                  rx_dv_i,
 
     input logic [15:0] fpga_port_i,
     input logic [31:0] fpga_ip_i,
@@ -30,10 +30,10 @@ module packet_recv
     assign clk_i = m_axis.clk_i;
     assign rst_i = m_axis.rst_i;
 
-    logic [2:0][MII_WIDTH-1:0] rxd_z;
-    logic [2:0]                rxdv_z;
+    logic [2:0][GMII_WIDTH-1:0] rxd_z;
+    logic [2:0]                 rxdv_z;
 
-    logic [7:0]                first_i_packet_count;
+    logic [7:0]                 first_i_packet_count;
 
     localparam int FIRST_PACKET_IGNORE = 0;
 
@@ -43,10 +43,8 @@ module packet_recv
             rxdv_z               <= 0;
             first_i_packet_count <= 0;
         end else begin
-            rxd_z[0]    <= rx_d_i;
-            rxd_z[2:1]  <= rxd_z[1:0];
-            rxdv_z[0]   <= rx_dv_i;
-            rxdv_z[2:1] <= rxdv_z[1:0];
+            rxd_z  <= {rxd_z[1:0], rx_d_i};
+            rxdv_z <= {rxdv_z[1:0], rx_dv_i};
             if (packet_done & first_i_packet_count < FIRST_PACKET_IGNORE) begin
                 first_i_packet_count <= first_i_packet_count + 1;
             end
@@ -56,12 +54,12 @@ module packet_recv
     logic packet_done;
     logic packet_start;
 
-    assign packet_start = (~rxdv_z[2] & rxdv_z[1]);
-    assign packet_done  = (rxdv_z[2] & ~rxdv_z[1]);
+    assign packet_start = (rxdv_z[2] == 0 && rxdv_z[1] == 1);
+    assign packet_done  = (rxdv_z[2] == 1 && rxdv_z[1] == 0);
 
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) / 2;
-    localparam int PREAMBLE_SFD_BYTES = 8 * 8 / 2;
-    localparam int FCS_BYTES = 4 * 8 / 2;
+    localparam int HEADER_BYTES = $bits(ethernet_header_t) * 8 / GMII_WIDTH;
+    localparam int PREAMBLE_SFD_BYTES = 8 * 8 / GMII_WIDTH;
+    localparam int FCS_BYTES = 4 * 8 / GMII_WIDTH;
 
     logic             [AXIS_DATA_WIDTH-1:0] data_buffer;
     logic             [               63:0] preamble_sfd_buffer;
@@ -98,7 +96,6 @@ module packet_recv
             IDLE: begin
                 if (packet_start) begin
                     next_state = PREAMBLE_SFD;
-
                 end
             end
             PREAMBLE_SFD: begin
@@ -112,13 +109,11 @@ module packet_recv
                 end
                 if (packet_done) begin
                     next_state = IDLE;
-
                 end
             end
             DATA: begin
                 if (packet_done) begin
                     next_state = IDLE;
-
                 end
             end
             default: next_state = current_state;
@@ -131,7 +126,6 @@ module packet_recv
         end else begin
             current_state <= next_state;
         end
-
     end
 
     logic data_valid;
@@ -140,8 +134,8 @@ module packet_recv
     logic [47:0] packet_destination;
     assign packet_destination              = {<<8{header_buffer.mac_destination}};
 
-    assign preamble_sfd_buffer_next[63:62] = rst_i ? 0 : rxd_z[2];
-    assign preamble_sfd_buffer_next[61:0]  = rst_i ? 64'b0 : preamble_sfd_buffer[63:2];
+    assign preamble_sfd_buffer_next[63:56] = rst_i ? 0 : rxd_z[2];
+    assign preamble_sfd_buffer_next[55:0]  = rst_i ? 0 : preamble_sfd_buffer[63:8];
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
@@ -157,13 +151,15 @@ module packet_recv
                 preamble_sfd_buffer <= preamble_sfd_buffer_next;
             end
             if (current_state == HEADER) begin
-                header_buffer[(HEADER_BYTES*2)-1-:2] <= rxd_z[2];
-                header_buffer[(HEADER_BYTES*2)-3:0]  <= header_buffer[(HEADER_BYTES*2)-1:2];
+                header_buffer[HEADER_BITS-1-:GMII_WIDTH] <= rxd_z[2];
+                header_buffer[HEADER_BITS-GMII_WIDTH-1:0] <= header_buffer[HEADER_BITS-1:GMII_WIDTH];
             end
             if (current_state == DATA) begin
-                data_buffer[7:6] <= rxd_z[2];
-                data_buffer[5:0] <= data_buffer[7:2];
-                if ((state_counter[1:0]==3) && (~CHECK_DESTINATION || (packet_destination == fpga_mac_i))) begin
+                // data_buffer[7:6] <= rxd_z[2];
+                // data_buffer[5:0] <= data_buffer[7:2];
+                // if ((state_counter[1:0]==3) && (~CHECK_DESTINATION || (packet_destination == fpga_mac_i))) begin
+                data_buffer <= rxd_z[2];
+                if (~CHECK_DESTINATION || (packet_destination == fpga_mac_i)) begin
                     data_valid <= 1;
                 end
                 if (packet_done) begin

@@ -1,17 +1,17 @@
-`include "../rtl/rmii_pkg.svh"
+`include "rgmii_pkg.svh"
 
 module packet_gen
-    import rmii_pkg::*;
+    import rgmii_pkg::*;
 #(
     parameter logic [15:0] HEADER_CHECKSUM = 16'h65ba,
     parameter int          FIFO_DEPTH      = 2048,
     parameter              RAM_STYLE       = "block",
-    parameter int          MII_WIDTH       = 2,
+    parameter int          GMII_WIDTH      = 8,
     parameter int          AXIS_DATA_WIDTH = 8,
     parameter int          AXIS_USER_WIDTH = 11
 ) (
-    output logic                 tx_en_o,
-    output logic [MII_WIDTH-1:0] tx_d_o,
+    output logic                  tx_en_o,
+    output logic [GMII_WIDTH-1:0] tx_d_o,
 
     input logic [15:0] fpga_port_i,
     input logic [31:0] fpga_ip_i,
@@ -30,13 +30,13 @@ module packet_gen
     localparam int PREAMBLE_BYTES = 7;
     localparam int FCS_BYTES = 4;
 
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) / 8;
-    localparam int HEADER_LENGTH = HEADER_BYTES * 8 / MII_WIDTH;
-    localparam int WAIT_LENGTH = WAIT_BYTES * 8 / MII_WIDTH;
-    localparam int SFD_LENGTH = SFD_BYTES * 8 / MII_WIDTH;
-    localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / MII_WIDTH;
-    localparam int FCS_LENGTH = FCS_BYTES * 8 / MII_WIDTH;
-    localparam int DATA_COUNTER_BITS = $clog2(WORD_BYTES * 8 / MII_WIDTH);
+    localparam int HEADER_BYTES = $bits(ethernet_header_t) / GMII_WIDTH;
+    localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
+    localparam int WAIT_LENGTH = WAIT_BYTES * 8 / GMII_WIDTH;
+    localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;
+    localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
+    localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
+    // localparam int DATA_COUNTER_BITS = $clog2(WORD_BYTES * 8 / GMII_WIDTH);
 
     logic clk_i;
     logic rst_i;
@@ -71,7 +71,7 @@ module packet_gen
     logic             [               FCS_BYTES*8-1:0] fcs_buffer;
 
     logic             [                          31:0] data_length;
-    assign data_length = s_axis.tuser * 8 / MII_WIDTH;
+    assign data_length = s_axis.tuser * 8 / GMII_WIDTH;
 
     typedef enum {
         IDLE,
@@ -97,7 +97,7 @@ module packet_gen
     logic                               packet_valid;
     logic                               fifo_has_space;
 
-    assign fifo_has_space = (fifo_count < FIFO_DEPTH - (s_axis.tuser * WORD_BYTES)) ? 1 : 0;
+    assign fifo_has_space = (fifo_count < FIFO_DEPTH - (s_axis.tuser * WORD_BYTES));
 
     assign packet_start_valid = s_handshake && s_axis_tfirst_i && fifo_has_space;
 
@@ -173,10 +173,8 @@ module packet_gen
             IDLE: begin
                 if (fifo_count >= s_axis.tuser * WORD_BYTES) begin
                     next_state = PREAMBLE;
-
                 end else begin
                     next_state = current_state;
-
                 end
             end
             PREAMBLE: begin
@@ -184,7 +182,6 @@ module packet_gen
                     next_state = SFD;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             SFD: begin
@@ -192,7 +189,6 @@ module packet_gen
                     next_state = HEADER;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             HEADER: begin
@@ -200,7 +196,6 @@ module packet_gen
                     next_state = DATA;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             DATA: begin
@@ -208,7 +203,6 @@ module packet_gen
                     next_state = FCS;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             FCS: begin
@@ -216,7 +210,6 @@ module packet_gen
                     next_state = WAIT;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             WAIT: begin
@@ -237,14 +230,12 @@ module packet_gen
         end else begin
             current_state <= next_state;
         end
-
     end
 
-
-    logic [MII_WIDTH-1:0] tx_data;
-    logic                 tx_valid;
-    logic                 fcs_en;
-    logic                 fcs_rst_i;
+    logic [GMII_WIDTH-1:0] tx_data;
+    logic                  tx_valid;
+    logic                  fcs_en;
+    logic                  fcs_rst_i;
 
     always_comb begin
         case (current_state)
@@ -253,48 +244,42 @@ module packet_gen
                 tx_data   = 0;
                 fcs_en    = 0;
                 fcs_rst_i = 1;
-
             end
             PREAMBLE: begin
                 tx_valid  = 1;
-                tx_data   = preamble_buffer[MII_WIDTH-1:0];
+                tx_data   = preamble_buffer[GMII_WIDTH-1:0];
                 fcs_en    = 0;
                 fcs_rst_i = 0;
-
             end
             SFD: begin
                 tx_valid  = 1;
-                tx_data   = sfd_buffer[MII_WIDTH-1:0];
+                tx_data   = sfd_buffer[GMII_WIDTH-1:0];
                 fcs_en    = 0;
                 fcs_rst_i = 0;
             end
             HEADER: begin
                 tx_valid  = 1;
-                tx_data   = header_buffer[MII_WIDTH-1:0];
+                tx_data   = header_buffer[GMII_WIDTH-1:0];
                 fcs_en    = 1;
                 fcs_rst_i = 0;
-
             end
             DATA: begin
                 tx_valid  = 1;
-                tx_data   = data_buffer[MII_WIDTH-1:0];
+                tx_data   = data_buffer[GMII_WIDTH-1:0];
                 fcs_en    = 1;
                 fcs_rst_i = 0;
-
             end
             FCS: begin
                 tx_valid  = 1;
-                tx_data   = fcs_buffer[MII_WIDTH-1:0];
+                tx_data   = fcs_buffer[GMII_WIDTH-1:0];
                 fcs_en    = 0;
                 fcs_rst_i = 0;
-
             end
             WAIT: begin
                 tx_valid  = 0;
                 tx_data   = 0;
                 fcs_en    = 0;
                 fcs_rst_i = 0;
-
             end
             default: begin
                 tx_valid  = 0;
@@ -305,8 +290,8 @@ module packet_gen
         endcase
     end
 
-    logic [DATA_COUNTER_BITS-1:0] data_ones;
-    assign data_ones = '1;
+    // logic [DATA_COUNTER_BITS-1:0] data_ones;
+    // assign data_ones = '1;
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
@@ -326,42 +311,42 @@ module packet_gen
             if (next_state == DATA && current_state != DATA) begin
                 data_buffer <= fifo_out;
                 fifo_rd_en  <= 1;
-
             end
             if (current_state == HEADER) begin
-                header_buffer <= header_buffer >> MII_WIDTH;
+                header_buffer <= header_buffer >> GMII_WIDTH;
             end
             if (current_state == PREAMBLE) begin
-                preamble_buffer <= preamble_buffer >> MII_WIDTH;
+                preamble_buffer <= preamble_buffer >> GMII_WIDTH;
             end
             if (current_state == SFD) begin
-                sfd_buffer <= sfd_buffer >> MII_WIDTH;
+                sfd_buffer <= sfd_buffer >> GMII_WIDTH;
             end
             if (current_state == DATA && next_state == DATA) begin
-                if (state_counter[DATA_COUNTER_BITS-1:0] == data_ones) begin
-                    data_buffer <= fifo_out;
-                    fifo_rd_en  <= 1;
-
-                end else begin
-                    data_buffer <= data_buffer >> MII_WIDTH;
-                end
+                // if (state_counter[DATA_COUNTER_BITS-1:0] == data_ones) begin
+                data_buffer <= fifo_out;
+                fifo_rd_en  <= 1;
+                // end else begin
+                // data_buffer <= data_buffer >> GMII_WIDTH;
+                // end
             end
             if (current_state == FCS) begin
-                fcs_buffer <= fcs_buffer >> MII_WIDTH;
+                fcs_buffer <= fcs_buffer >> GMII_WIDTH;
             end
         end
     end
 
     crc #(
-        .DATA_WIDTH(MII_WIDTH),
-        .CRC_WIDTH (32)
+        .DATA_WIDTH(GMII_WIDTH),
+        .CRC_WIDTH (32),
+        .LSB_FIRST (1),
+        .INVERT_OUT(1),
+        .LEFT_SHIFT(0)
     ) i_crc (
         .clk_i (clk_i),
         .rst_i (rst_i || fcs_rst_i),
         .data_i(tx_data),
         .en_i  (fcs_en),
         .crc_o (fcs)
-
     );
 
     always @(posedge clk_i) begin

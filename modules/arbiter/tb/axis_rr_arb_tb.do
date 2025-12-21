@@ -2,9 +2,9 @@ vlib work
 vmap work
 
 vlog  ../../interface/rtl/axis_if.sv
-vlog  ../../lfsr/rtl/axis_lfsr_wrap.sv
-vlog  ../../lfsr/rtl/lfsr.sv
-vlog  ../../lfsr/rtl/crc.sv
+vlog  ../../common/rtl/axis_lfsr_wrap.sv
+vlog  ../../common/rtl/lfsr.sv
+vlog  ../../common/rtl/crc.sv
 
 vlog  ../rtl/axis_rr_arb_wrap.sv
 vlog  ../rtl/round_robin_arbiter.sv
