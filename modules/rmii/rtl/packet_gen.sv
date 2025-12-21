@@ -130,7 +130,6 @@ module packet_gen
         .host_mac_i     (host_mac_i),
         .payload_bytes_i(s_axis.tuser * WORD_BYTES),
         .output_header_o(header)
-
     );
 
     fifo_wrap #(
@@ -174,10 +173,8 @@ module packet_gen
             IDLE: begin
                 if (fifo_count >= s_axis.tuser * WORD_BYTES) begin
                     next_state = PREAMBLE;
-
                 end else begin
                     next_state = current_state;
-
                 end
             end
             PREAMBLE: begin
@@ -185,7 +182,6 @@ module packet_gen
                     next_state = SFD;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             SFD: begin
@@ -193,7 +189,6 @@ module packet_gen
                     next_state = HEADER;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             HEADER: begin
@@ -201,7 +196,6 @@ module packet_gen
                     next_state = DATA;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             DATA: begin
@@ -209,7 +203,6 @@ module packet_gen
                     next_state = FCS;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             FCS: begin
@@ -217,7 +210,6 @@ module packet_gen
                     next_state = WAIT;
                 end else begin
                     next_state = current_state;
-
                 end
             end
             WAIT: begin
@@ -238,7 +230,6 @@ module packet_gen
         end else begin
             current_state <= next_state;
         end
-
     end
 
 
@@ -254,14 +245,12 @@ module packet_gen
                 tx_data   = 0;
                 fcs_en    = 0;
                 fcs_rst_i = 1;
-
             end
             PREAMBLE: begin
                 tx_valid  = 1;
                 tx_data   = preamble_buffer[MII_WIDTH-1:0];
                 fcs_en    = 0;
                 fcs_rst_i = 0;
-
             end
             SFD: begin
                 tx_valid  = 1;
@@ -274,28 +263,24 @@ module packet_gen
                 tx_data   = header_buffer[MII_WIDTH-1:0];
                 fcs_en    = 1;
                 fcs_rst_i = 0;
-
             end
             DATA: begin
                 tx_valid  = 1;
                 tx_data   = data_buffer[MII_WIDTH-1:0];
                 fcs_en    = 1;
                 fcs_rst_i = 0;
-
             end
             FCS: begin
                 tx_valid  = 1;
                 tx_data   = fcs_buffer[MII_WIDTH-1:0];
                 fcs_en    = 0;
                 fcs_rst_i = 0;
-
             end
             WAIT: begin
                 tx_valid  = 0;
                 tx_data   = 0;
                 fcs_en    = 0;
                 fcs_rst_i = 0;
-
             end
             default: begin
                 tx_valid  = 0;
@@ -327,7 +312,6 @@ module packet_gen
             if (next_state == DATA && current_state != DATA) begin
                 data_buffer <= fifo_out;
                 fifo_rd_en  <= 1;
-
             end
             if (current_state == HEADER) begin
                 header_buffer <= header_buffer >> MII_WIDTH;
@@ -342,7 +326,6 @@ module packet_gen
                 if (state_counter[DATA_COUNTER_BITS-1:0] == data_ones) begin
                     data_buffer <= fifo_out;
                     fifo_rd_en  <= 1;
-
                 end else begin
                     data_buffer <= data_buffer >> MII_WIDTH;
                 end
@@ -362,7 +345,6 @@ module packet_gen
         .data_i(tx_data),
         .en_i  (fcs_en),
         .crc_o (fcs)
-
     );
 
     always @(posedge clk_i) begin

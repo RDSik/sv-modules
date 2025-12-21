@@ -98,7 +98,6 @@ module packet_recv
             IDLE: begin
                 if (packet_start) begin
                     next_state = PREAMBLE_SFD;
-
                 end
             end
             PREAMBLE_SFD: begin
@@ -112,13 +111,11 @@ module packet_recv
                 end
                 if (packet_done) begin
                     next_state = IDLE;
-
                 end
             end
             DATA: begin
                 if (packet_done) begin
                     next_state = IDLE;
-
                 end
             end
             default: next_state = current_state;
@@ -131,7 +128,6 @@ module packet_recv
         end else begin
             current_state <= next_state;
         end
-
     end
 
     logic data_valid;
