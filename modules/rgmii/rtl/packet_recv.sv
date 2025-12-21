@@ -56,8 +56,8 @@ module packet_recv
     logic packet_done;
     logic packet_start;
 
-    assign packet_start = (~rxdv_z[2] & rxdv_z[1]);
-    assign packet_done  = (rxdv_z[2] & ~rxdv_z[1]);
+    assign packet_start = (rxdv_z[2] == 0 && rxdv_z[1] == 1);
+    assign packet_done  = (rxdv_z[2] == 1 && rxdv_z[1] == 0);
 
     localparam int HEADER_BYTES = $bits(ethernet_header_t) / 2;
     localparam int PREAMBLE_SFD_BYTES = 8 * 8 / GMII_WIDTH;
