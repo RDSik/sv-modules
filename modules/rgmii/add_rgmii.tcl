@@ -12,9 +12,9 @@ if {$xilinx == 1} {
     "
     add_files -norecurse $xil_defaultlib
 } elseif {$gowin == 1} {
-    add_file $path/rtl/axis_rmii.sv
+    add_file $path/rtl/axis_rgmii.sv
     add_file $path/rtl/eth_header_gen.sv
     add_file $path/rtl/packet_gen.sv
     add_file $path/rtl/packet_recv.sv
-    add_file $path/rtl/rmii_pkg.svh
+    add_file $path/rtl/rgmii_pkg.svh
 }

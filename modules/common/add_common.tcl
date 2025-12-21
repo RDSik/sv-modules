@@ -32,4 +32,7 @@ if {$xilinx == 1} {
     add_file $path/rtl/axil_reg_file.sv
     add_file $path/rtl/axil_reg_file_wrap.sv
     add_file $path/rtl/axil_crossbar.sv
+    add_file $path/rtl/axis_lfsr_wrap.sv
+    add_file $path/rtl/lfsr.sv
+    add_file $path/rtl/crc.sv
 }
