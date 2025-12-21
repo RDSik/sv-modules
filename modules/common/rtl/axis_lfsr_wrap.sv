@@ -2,7 +2,9 @@
 module axis_lfsr_wrap #(
     parameter logic CRC_MODE_EN = 0,
     parameter int   DATA_WIDTH  = 16,
-    parameter int   CRC_WIDTH   = 16
+    parameter int   CRC_WIDTH   = 16,
+    parameter logic LSB_FIRST   = 0,
+    parameter logic INVERT_OUT  = 0
 ) (
     input logic [DATA_WIDTH-1:0] seed_i,
     input logic [DATA_WIDTH-1:0] poly_i,
@@ -29,7 +31,9 @@ module axis_lfsr_wrap #(
     if (CRC_MODE_EN) begin : g_crc
         crc #(
             .DATA_WIDTH(DATA_WIDTH),
-            .CRC_WIDTH (CRC_WIDTH)
+            .CRC_WIDTH (CRC_WIDTH),
+            .LSB_FIRST (LSB_FIRST),
+            .INVERT_OUT(INVERT_OUT)
         ) i_crc (
             .clk_i (clk_i),
             .rst_i (rst_i),
