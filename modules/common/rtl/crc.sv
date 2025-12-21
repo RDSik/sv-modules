@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------
-// CRC_MODE only with CRC-8-CCIT, CRC-16-CCIT, CRC-32-MPEG-2 and CRC-64-ISO algorithms
+// CRC_MODE only with 8, 16, 32 and 64 width.
 // --------------------------------------------------------------------------------------
 
 /* verilator lint_off TIMESCALEMOD */
