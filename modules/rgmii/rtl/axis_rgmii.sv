@@ -50,7 +50,7 @@ module axis_rgmii #(
         .s_axis     (s_axis)
     );
 
-    lgoic [GMII_WIDTH-1:0] rx_d;
+    logic [GMII_WIDTH-1:0] rx_d;
     logic                  rx_dv;
 
     packet_recv #(
