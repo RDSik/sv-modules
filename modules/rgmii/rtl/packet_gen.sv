@@ -1,4 +1,4 @@
-`include "../rtl/rgmii_pkg.svh"
+`include "rgmii_pkg.svh"
 
 module packet_gen
     import rgmii_pkg::*;

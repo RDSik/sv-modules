@@ -22,12 +22,24 @@ module axil_reg_file_wrap #(
 );
 
     if (MODE == "async") begin : g_async_mode
+        logic rstn_i;
+
+        xpm_cdc_async_rst #(
+            .DEST_SYNC_FF   (3),
+            .INIT_SYNC_FF   (0),
+            .RST_ACTIVE_HIGH(0)
+        ) i_rst_sync (
+            .src_arst (s_axil.rstn_i),
+            .dest_clk (clk_i),
+            .dest_arst(rstn_i)
+        );
+
         axil_if #(
             .ADDR_WIDTH(REG_ADDR_WIDTH),
             .DATA_WIDTH(REG_DATA_WIDTH)
         ) reg_axil (
             .clk_i (clk_i),
-            .rstn_i(s_axil.rstn_i)
+            .rstn_i(rstn_i)
         );
 
         axi_clock_converter i_axi_clock_converter (
