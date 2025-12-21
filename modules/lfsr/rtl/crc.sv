@@ -4,8 +4,10 @@
 
 /* verilator lint_off TIMESCALEMOD */
 module crc #(
-    parameter int DATA_WIDTH = 16,
-    parameter int CRC_WIDTH  = 16
+    parameter int   DATA_WIDTH = 16,
+    parameter int   CRC_WIDTH  = 16,
+    parameter logic LSB_FIRST  = 0,
+    parameter logic INVERT_OUT = 0
 ) (
     input  logic                  clk_i,
     input  logic                  rst_i,
@@ -18,21 +20,31 @@ module crc #(
         $error("Only 8, 16, 32, 64 CRC_WIDTH is available!");
     end
 
+    logic [CRC_WIDTH-1:0] crc_reg;
+
     always @(posedge clk_i) begin
         if (rst_i) begin
-            crc_o <= '1;
+            crc_reg <= '1;
         end else begin
-            crc_o <= en_i ? crc_byte(crc_o, data_i) : crc_o;
+            crc_reg <= en_i ? crc_byte(crc_reg, data_i) : crc_reg;
         end
     end
+
+    assign crc_o = (INVERT_OUT) ? ~crc_reg : crc_reg;
 
     function automatic logic [CRC_WIDTH-1:0] crc_byte;
         input [CRC_WIDTH-1:0] crc;
         input [DATA_WIDTH-1:0] data;
         begin
             crc_byte = crc;
-            for (int i = DATA_WIDTH - 1; i >= 0; i = i - 1) begin
-                crc_byte = crc_bit(crc_byte, data[i]);
+            if (LSB_FIRST) begin
+                for (int i = 0; i < DATA_WIDTH; i = i + 1) begin
+                    crc_byte = crc_bit(crc_byte, data[i]);
+                end
+            end else begin
+                for (int i = DATA_WIDTH - 1; i >= 0; i = i - 1) begin
+                    crc_byte = crc_bit(crc_byte, data[i]);
+                end
             end
         end
     endfunction

@@ -337,7 +337,9 @@ module packet_gen
 
     crc #(
         .DATA_WIDTH(GMII_WIDTH),
-        .CRC_WIDTH (32)
+        .CRC_WIDTH (32),
+        .LSB_FIRST (1),
+        .INVERT_OUT(1)
     ) i_crc (
         .clk_i (clk_i),
         .rst_i (rst_i || fcs_rst_i),
