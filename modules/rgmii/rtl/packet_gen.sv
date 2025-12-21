@@ -30,7 +30,7 @@ module packet_gen
     localparam int PREAMBLE_BYTES = 7;
     localparam int FCS_BYTES = 4;
 
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) / 8;
+    localparam int HEADER_BYTES = $bits(ethernet_header_t) / GMII_WIDTH;
     localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
     localparam int WAIT_LENGTH = WAIT_BYTES * 8 / GMII_WIDTH;
     localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;

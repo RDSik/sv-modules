@@ -2,6 +2,7 @@ module axis_rgmii #(
     parameter logic [15:0] HEADER_CHECKSUM   = 16'h65b3,
     parameter logic        CHECK_DESTINATION = 1,
     parameter int          GMII_WIDTH        = 8,
+    parameter int          RGMII_WIDTH       = 4,
     parameter int          FIFO_DEPTH        = 2048,
     parameter int          AXIS_DATA_WIDTH   = 8,
     parameter int          AXIS_USER_WIDTH   = 11

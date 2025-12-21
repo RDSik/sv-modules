@@ -1,4 +1,4 @@
-`include "../rtl/rmgii_pkg.svh"
+`include "../rtl/rgmii_pkg.svh"
 
 module eth_header_gen
     import rgmii_pkg::*;

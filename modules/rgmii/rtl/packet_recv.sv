@@ -57,7 +57,7 @@ module packet_recv
     assign packet_start = (rxdv_z[2] == 0 && rxdv_z[1] == 1);
     assign packet_done  = (rxdv_z[2] == 1 && rxdv_z[1] == 0);
 
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) / 2;
+    localparam int HEADER_BYTES = $bits(ethernet_header_t) * 8 / GMII_WIDTH;
     localparam int PREAMBLE_SFD_BYTES = 8 * 8 / GMII_WIDTH;
     localparam int FCS_BYTES = 4 * 8 / GMII_WIDTH;
 
@@ -151,8 +151,8 @@ module packet_recv
                 preamble_sfd_buffer <= preamble_sfd_buffer_next;
             end
             if (current_state == HEADER) begin
-                header_buffer[(HEADER_BYTES*GMII_WIDTH)-1-:GMII_WIDTH] <= rxd_z[2];
-                header_buffer[(HEADER_BYTES*GMII_WIDTH)-9:0] <= header_buffer[(HEADER_BYTES*GMII_WIDTH)-1:GMII_WIDTH];
+                header_buffer[HEADER_BITS-1-:GMII_WIDTH] <= rxd_z[2];
+                header_buffer[HEADER_BITS-GMII_WIDTH-1:0] <= header_buffer[HEADER_BITS-1:GMII_WIDTH];
             end
             if (current_state == DATA) begin
                 // data_buffer[7:6] <= rxd_z[2];
