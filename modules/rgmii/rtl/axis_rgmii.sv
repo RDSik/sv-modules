@@ -70,11 +70,13 @@ module axis_rgmii #(
         .m_axis     (m_axis)
     );
 
+    assign eth_tx_clk_o = eth_rx_clk_i;
+
     rgmii_tx #(
         .GMII_WIDTH (GMII_WIDTH),
         .RGMII_WIDTH(RGMII_WIDTH)
     ) i_rgmii_tx (
-        .clk_i         (),
+        .clk_i         (eth_rx_clk_i),
         .gmii_tx_en_i  (tx_en),
         .gmii_txd_i    (tx_d),
         .rgmii_txd_o   (eth_txd_o),
