@@ -103,7 +103,7 @@ module axil_spi
         .DIVIDER_WIDTH(SPI_DIVIDER_WIDTH),
         .WAIT_WIDTH   (SPI_WAIT_WIDTH)
     ) i_axis_spi_master (
-        .addr_i       (wr_regs.slave.select),
+        .select_i     (wr_regs.slave.select),
         .cpol_i       (wr_regs.control.cpol),
         .cpha_i       (wr_regs.control.cpha),
         .clk_divider_i(wr_regs.clk_divider),

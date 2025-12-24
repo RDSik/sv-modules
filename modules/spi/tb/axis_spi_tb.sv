@@ -82,7 +82,7 @@ module axis_spi_tb ();
         .clk_divider_i(DIVIDER),
         .cpol_i       (CPHA),
         .cpha_i       (CPOL),
-        .addr_i       ('0),
+        .select_i     (SLAVE_NUM),
         .m_spi        (m_spi),
         .s_axis       (m_axis),
         .m_axis       (s_axis)

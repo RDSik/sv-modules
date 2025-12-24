@@ -77,7 +77,7 @@ class axil_env #(
             master_write_wdata(data, master_delay_min, master_delay_max);
             master_read_bresp(master_delay_min, master_delay_max);
         join
-        $display("[%0t] Write addr = 0x%0h, wdata = 0x%0h", $time, addr, data);
+        $display("[%0t][WRITE]: addr = 0x%0h, data = 0x%0h", $time, addr, data);
     endtask
 
     task automatic master_write_araddr(input logic [ADDR_WIDTH-1:0] addr, int delay_min,
@@ -118,7 +118,7 @@ class axil_env #(
             master_write_araddr(addr, master_delay_min, master_delay_max);
             master_read_rdata(data, master_delay_min, master_delay_max);
         join
-        $display("[%0t] Read addr = 0x%0h, rdata = 0x%0h", $time, addr, data);
+        $display("[%0t][READ]: addr = 0x%0h, data = 0x%0h", $time, addr, data);
     endtask
 
 endclass
