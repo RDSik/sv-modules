@@ -152,7 +152,7 @@ module packet_recv
             end
             if (current_state == HEADER) begin
                 header_buffer[HEADER_BITS-1-:GMII_WIDTH] <= rxd_z[2];
-                header_buffer[HEADER_BITS-GMII_WIDTH-1:0] <= header_buffer[HEADER_BITS-1:GMII_WIDTH];
+                header_buffer[HEADER_BYTES-GMII_WIDTH-1:0] <= header_buffer[HEADER_BYTES-1:GMII_WIDTH];
             end
             if (current_state == DATA) begin
                 // data_buffer[7:6] <= rxd_z[2];
