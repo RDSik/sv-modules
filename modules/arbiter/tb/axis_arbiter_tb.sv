@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module axis_rr_arb_tb ();
+module axis_arbiter_tb ();
 
     localparam int MASTER_NUM = 4;
     localparam int DATA_WIDTH = 16;
@@ -102,11 +102,11 @@ module axis_rr_arb_tb ();
     endtask
 
     initial begin
-        $dumpfile("axis_rr_arb_tb.vcd");
-        $dumpvars(0, axis_rr_arb_tb);
+        $dumpfile("axis_arbiter_tb.vcd");
+        $dumpvars(0, axis_arbiter_tb);
     end
 
-    axis_rr_arb_wrap #(
+    axis_arbiter #(
         .MASTER_NUM(MASTER_NUM),
         .DATA_WIDTH(DATA_WIDTH),
         .USER_WIDTH(USER_WIDTH)

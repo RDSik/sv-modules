@@ -1,5 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
-module ctrl_top #(
+module axil_top #(
     parameter int FIFO_DEPTH = 128,
     parameter int AXIL_ADDR_WIDTH = 32,
     parameter int AXIL_DATA_WIDTH = 32,

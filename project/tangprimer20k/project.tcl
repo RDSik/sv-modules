@@ -1,4 +1,4 @@
-set top      "ctrl_top"
+set top      "axil_top"
 set part     "GW2A-LV18PG256C8/I7"
 set dev_ver  "C"
 set language "sysv2017"
@@ -13,7 +13,6 @@ set modules_dirs [list \
     ../../modules/common \
     ../../modules/top \
     ../../modules/dsp \
-    ../../modules/lfsr \
     ../../modules/interface \
 ]
 

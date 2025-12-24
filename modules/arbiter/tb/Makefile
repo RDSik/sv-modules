@@ -1,4 +1,4 @@
-TOP ?= axis_rr_arb
+TOP ?= axis_arbiter
 
 SIM ?= questa
 

@@ -4,7 +4,7 @@
 `include "../../uart/tb/axil_uart_class.svh"
 `include "../../i2c/tb/axil_i2c_class.svh"
 
-module ctrl_top_tb ();
+module axil_top_tb ();
 
     localparam int FIFO_DEPTH = 128;
     localparam int CS_WIDTH = 8;
@@ -85,11 +85,11 @@ module ctrl_top_tb ();
     end
 
     initial begin
-        $dumpfile("ctrl_top_tb.vcd");
-        $dumpvars(0, ctrl_top_tb);
+        $dumpfile("axil_top_tb.vcd");
+        $dumpvars(0, axil_top_tb);
     end
 
-    ctrl_top #(
+    axil_top #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH),
@@ -100,7 +100,7 @@ module ctrl_top_tb ();
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .ILA_EN         (0),
         .MODE           ("sync")
-    ) i_ctrl_top (
+    ) i_axil_top (
         .clk_i    (clk_i),
         .uart_rx_i(uart),
         .uart_tx_o(uart),
