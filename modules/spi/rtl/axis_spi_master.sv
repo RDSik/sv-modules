@@ -15,13 +15,11 @@ module axis_spi_master #(
     parameter int WAIT_WIDTH    = 32,
     parameter int SLAVE_NUM     = 1
 ) (
-    /* verilator lint_off ASCRANGE */
-    input logic [$clog2(SLAVE_NUM)-1:0] addr_i,
-    /* verilator lint_on ASCRANGE */
-    input logic [       WAIT_WIDTH-1:0] wait_time_i,
-    input logic [    DIVIDER_WIDTH-1:0] clk_divider_i,
-    input logic                         cpha_i,
-    input logic                         cpol_i,
+    input logic [    SLAVE_NUM-1:0] select_i,
+    input logic [   WAIT_WIDTH-1:0] wait_time_i,
+    input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
+    input logic                     cpha_i,
+    input logic                     cpol_i,
 
     spi_if.master m_spi,
 
@@ -80,7 +78,7 @@ module axis_spi_master #(
     end else begin : g_many_slaves
         always_comb begin
             for (int i = 0; i < SLAVE_NUM; i++) begin
-                if (i == addr_i) begin
+                if (select_i[i]) begin
                     m_spi.cs[i] = spi_cs_reg;
                 end else begin
                     m_spi.cs[i] = 1'b1;
