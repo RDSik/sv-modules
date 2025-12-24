@@ -1,4 +1,4 @@
-TOP ?= ctrl_top
+TOP ?= axil_top
 
 SIM ?= questa
 

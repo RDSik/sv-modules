@@ -1,5 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
-module axis_rr_arb_wrap #(
+module axis_arbiter #(
     parameter int MASTER_NUM = 4,
     parameter int DATA_WIDTH = 16,
     parameter int USER_WIDTH = 2
@@ -9,7 +9,7 @@ module axis_rr_arb_wrap #(
 );
 
     logic                                  clk_i;
-    logic                                  rstn_i;
+    logic                                  rst_i;
     logic                                  m_handshake;
     logic [MASTER_NUM-1:0]                 grant;
     logic [MASTER_NUM-1:0]                 s_axis_tvalid;

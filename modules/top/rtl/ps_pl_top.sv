@@ -95,7 +95,7 @@ module ps_pl_top #(
         .rstn_i(ps_arstn)
     );
 
-    ctrl_top #(
+    axil_top #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
@@ -106,7 +106,7 @@ module ps_pl_top #(
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (1),
         .MODE           ("async")
-    ) i_ctrl_top (
+    ) i_axil_top (
         .clk_i       (clk_i),
         .uart_rx_i   (uart_rx_i),
         .uart_tx_o   (uart_tx_o),

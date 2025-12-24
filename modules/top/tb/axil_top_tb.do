@@ -37,16 +37,16 @@ vlog ../../opencores/rtl/timescale.v
 vlog  ../../i2c/rtl/axil_i2c.sv
 vlog  ../../i2c/rtl/i2c_pkg.svh
 
-vlog ../rtl/ctrl_top.sv
-vlog ctrl_top_tb.sv
+vlog ../rtl/axil_top.sv
+vlog axil_top_tb.sv
 
-vsim -voptargs="+acc" ctrl_top_tb
+vsim -voptargs="+acc" axil_top_tb
 add log -r /*
 
-add wave -expand -group CROSSBAR  /ctrl_top_tb/i_ctrl_top/i_axil_crossbar/*
-add wave -expand -group UART      /ctrl_top_tb/i_ctrl_top/i_axil_uart/*
-add wave -expand -group SPI       /ctrl_top_tb/i_ctrl_top/i_axil_spi/*
-add wave -expand -group I2C       /ctrl_top_tb/i_ctrl_top/i_axil_i2c/*
+add wave -expand -group CROSSBAR  /axil_top_tb/i_axil_top/i_axil_crossbar/*
+add wave -expand -group UART      /axil_top_tb/i_axil_top/i_axil_uart/*
+add wave -expand -group SPI       /axil_top_tb/i_axil_top/i_axil_spi/*
+add wave -expand -group I2C       /axil_top_tb/i_axil_top/i_axil_i2c/*
 
 run -all
 wave zoom full
