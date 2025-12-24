@@ -72,9 +72,9 @@ module ps_pl_top #(
     assign m_spi.miso = spi_miso_i;
 
     localparam int FIFO_DEPTH = 128;
+    localparam int MODULES_NUM = 3;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
-    localparam int MODULES_NUM = 3;
 
     localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
         32'h43c0_0000,
