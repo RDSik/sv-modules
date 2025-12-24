@@ -1,6 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
 module ps_pl_top #(
-    parameter int   FIFO_DEPTH   = 128,
     parameter int   SPI_CS_WIDTH = 1,
     parameter logic ILA_EN       = 1
 ) (
@@ -72,6 +71,7 @@ module ps_pl_top #(
     assign spi_mosi_o = m_spi.mosi;
     assign m_spi.miso = spi_miso_i;
 
+    localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
     localparam int MODULES_NUM = 3;
