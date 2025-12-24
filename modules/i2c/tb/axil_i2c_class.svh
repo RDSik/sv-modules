@@ -13,8 +13,8 @@ class axil_i2c_class #(
 );
 
     localparam int ADDR_OFFSET = DATA_WIDTH / 8;
-    localparam logic RW = 1;
     localparam int PRESCALE = 0;
+    localparam logic RW = 1;
 
     logic                                                               [DATA_WIDTH-1:0] wdata;
     logic                                                               [DATA_WIDTH-1:0] rdata;
