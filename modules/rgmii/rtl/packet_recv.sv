@@ -151,7 +151,7 @@ module packet_recv
                 preamble_sfd_buffer <= preamble_sfd_buffer_next;
             end
             if (current_state == HEADER) begin
-                header_buffer[HEADER_BYTES-1-:GMII_WIDTH] <= rxd_z[2];
+                header_buffer[HEADER_BYTES-1-:GMII_WIDTH]  <= rxd_z[2];
                 header_buffer[HEADER_BYTES-GMII_WIDTH-1:0] <= header_buffer[HEADER_BYTES-1:GMII_WIDTH];
             end
             if (current_state == DATA) begin
