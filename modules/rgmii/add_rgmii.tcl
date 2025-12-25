@@ -11,6 +11,11 @@ if {$xilinx == 1} {
         $path/rtl/rgmii_pkg.svh
     "
     add_files -norecurse $xil_defaultlib
+
+    set xil_defaultlib "
+        $path/tb/axis_rgmii_tb.sv
+    "
+    add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {
     add_file $path/rtl/axis_rgmii.sv
     add_file $path/rtl/eth_header_gen.sv
