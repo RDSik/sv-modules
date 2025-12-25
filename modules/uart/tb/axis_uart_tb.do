@@ -1,11 +1,11 @@
 vlib work
 vmap work
 
-vlog  modules/interface/rtl/axis_if.sv
+vlog modules/interface/rtl/axis_if.sv
 
-vlog  modules/uart/rtl/uart_pkg.svh
-vlog  modules/uart/rtl/axis_uart_tx.sv
-vlog  modules/uart/rtl/axis_uart_rx.sv
+vlog modules/uart/rtl/uart_pkg.svh
+vlog modules/uart/rtl/axis_uart_tx.sv
+vlog modules/uart/rtl/axis_uart_rx.sv
 
 vlog modules/uart/tb/axis_uart_tb.sv
 
