@@ -1,14 +1,46 @@
 TOP := ps_pl_top
 GUI ?= 1
 
-PROJECT_DIR := project
+DUT ?= top
+IF  ?= axil
+SIM ?= questa
+
+MACRO_FILE := $(IF)_$(DUT)_tb.do
+
+SRC_FILES := $(wildcard \
+	../../verification/tb/*.svh \
+	../../interface/rtl/*.sv \
+	../../common/rtl/*.sv \
+	../../fifo/rtl/*.sv \
+	../../$(DUT)/rtl/*.sv \
+	../../$(DUT)/rtl/*.svh \
+	../../$(DUT)/tb/*.sv \
+)
 
 BOARD ?= pz7020starlite
 
-VIVADO_TCL := project.tcl
-SDK_TCL    := sdk.tcl
+PROJECT_DIR := project
+VIVADO_TCL  := project.tcl
+SDK_TCL     := sdk.tcl
 
-.PHONY: project program sdk clean
+.PHONY: project program sdk sim clean
+
+sim: build run
+
+build:
+ifeq ($(SIM), verilator)
+	$(SIM) --binary $(SRC_FILES) --trace --top $(IF)_$(DUT)_tb
+else ifeq ($(SIM), questa)
+	vsim -do modules/$(DUT)/tb/$(MACRO_FILE)
+endif
+
+run:
+ifeq ($(SIM), verilator)
+	./obj_dir/V$(IF)_$(DUT)_tb
+endif
+
+wave:
+	gtkwave $(IF)_$(DUT)_tb.vcd
 
 project:
 ifeq ($(BOARD), tangprimer20k)
@@ -25,14 +57,14 @@ program:
 
 clean:
 	rm -rf $(PROJECT_DIR)/$(TOP)
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).cache
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).hw
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).runs
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).sim
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).src
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).ip_user_files
-	rm -rf $(PROJECT_DIR)/pz7020starlite/$(TOP).sdk
-	rm -rf $(PROJECT_DIR)/pz7020starlite/.Xil
-	rm $(PROJECT_DIR)/pz7020starlite/$(TOP).xpr
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).cache
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).hw
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).runs
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).sim
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).src
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).ip_user_files
+	rm -rf $(PROJECT_DIR)/$(BOARD)/$(TOP).sdk
+	rm -rf $(PROJECT_DIR)/$(BOARD)/.Xil
+	rm $(PROJECT_DIR)/$(BOARD)/$(TOP).xpr
 	rm *.log
 	rm *.jou

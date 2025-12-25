@@ -1,11 +1,11 @@
 vlib work
 vmap work
 
-vlog  ../../interface/rtl/axis_if.sv
+vlog modules/interface/rtl/axis_if.sv
 
-vlog  ../rtl/axis_dw_conv.sv
+vlog modules/dw_conv/rtl/axis_dw_conv.sv
 
-vlog axis_dw_conv_tb.sv
+vlog modules/dw_conv/tb/axis_dw_conv_tb.sv
 
 vsim -voptargs="+acc" axis_dw_conv_tb
 add log -r /*

@@ -1,15 +1,15 @@
 vlib work
 vmap work
 
-vlog  ../../interface/rtl/axis_if.sv
-vlog  ../../common/rtl/axis_lfsr_wrap.sv
-vlog  ../../common/rtl/lfsr.sv
-vlog  ../../common/rtl/crc.sv
+vlog modules/interface/rtl/axis_if.sv
+vlog modules/common/rtl/axis_lfsr_wrap.sv
+vlog modules/common/rtl/lfsr.sv
+vlog modules/common/rtl/crc.sv
 
-vlog  ../rtl/axis_arbiter.sv
-vlog  ../rtl/round_robin_arbiter.sv
+vlog modules/arbiter/rtl/axis_arbiter.sv
+vlog modules/arbiter/rtl/round_robin_arbiter.sv
 
-vlog axis_arbiter_tb.sv
+vlog modules/arbiter/tb/axis_arbiter_tb.sv
 
 vsim -voptargs="+acc" axis_arbiter_tb
 add log -r /*

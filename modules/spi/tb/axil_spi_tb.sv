@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-`include "axil_spi_class.svh"
+`include "modules/spi/tb/axil_spi_class.svh"
 
 module axil_spi_tb ();
 

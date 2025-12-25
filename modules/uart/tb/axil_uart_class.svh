@@ -1,8 +1,8 @@
 `ifndef AXIL_UART_SVH
 `define AXIL_UART_SVH
 
-`include "../rtl/uart_pkg.svh"
-`include "../../verification/tb/axil_env.svh"
+`include "modules/uart/rtl/uart_pkg.svh"
+`include "modules/verification/tb/axil_env.svh"
 
 import uart_pkg::*;
 

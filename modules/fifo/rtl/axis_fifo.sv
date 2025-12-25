@@ -1,5 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
-module axis_fifo_wrap #(
+module axis_fifo #(
     parameter int   FIFO_WIDTH   = 32,
     parameter int   FIFO_DEPTH   = 128,
     parameter int   CDC_REG_NUM  = 2,

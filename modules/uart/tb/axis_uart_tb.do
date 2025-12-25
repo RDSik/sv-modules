@@ -1,13 +1,13 @@
 vlib work
 vmap work
 
-vlog  ../../interface/rtl/axis_if.sv
+vlog  modules/interface/rtl/axis_if.sv
 
-vlog  ../rtl/uart_pkg.svh
-vlog  ../rtl/axis_uart_tx.sv
-vlog  ../rtl/axis_uart_rx.sv
+vlog  modules/uart/rtl/uart_pkg.svh
+vlog  modules/uart/rtl/axis_uart_tx.sv
+vlog  modules/uart/rtl/axis_uart_rx.sv
 
-vlog axis_uart_tb.sv
+vlog modules/uart/tb/axis_uart_tb.sv
 
 vsim -voptargs="+acc" axis_uart_tb
 add log -r /*

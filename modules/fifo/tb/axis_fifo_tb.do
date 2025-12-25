@@ -1,18 +1,18 @@
 vlib work
 vmap work
 
-vlog ../../interface/rtl/axis_if.sv
+vlog modules/interface/rtl/axis_if.sv
 
-vlog ../rtl/async_fifo.sv
-vlog ../rtl/axis_fifo_wrap.sv
-vlog ../rtl/fifo_wrap.sv
-vlog ../rtl/rd_ptr_empty.sv
-vlog ../rtl/sync_fifo.sv
-vlog ../rtl/wr_ptr_full.sv
-vlog ../../common/rtl/ram_sdp.sv
-vlog ../../common/rtl/shift_reg.sv
+vlog modules/fifo/rtl/async_fifo.sv
+vlog modules/fifo/rtl/axis_fifo.sv
+vlog modules/fifo/rtl/fifo_wrap.sv
+vlog modules/fifo/rtl/rd_ptr_empty.sv
+vlog modules/fifo/rtl/sync_fifo.sv
+vlog modules/fifo/rtl/wr_ptr_full.sv
+vlog modules/common/rtl/ram_sdp.sv
+vlog modules/common/rtl/shift_reg.sv
 
-vlog axis_fifo_tb.sv
+vlog modules/fifo/tb/axis_fifo_tb.sv
 
 vsim -voptargs="+acc" axis_fifo_tb
 add log -r /*

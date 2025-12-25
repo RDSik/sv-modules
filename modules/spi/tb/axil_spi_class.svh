@@ -1,8 +1,8 @@
 `ifndef AXIL_SPI_SVH
 `define AXIL_SPI_SVH
 
-`include "../rtl/spi_pkg.svh"
-`include "../../verification/tb/axil_env.svh"
+`include "modules/spi/rtl/spi_pkg.svh"
+`include "modules/verification/tb/axil_env.svh"
 
 import spi_pkg::*;
 
