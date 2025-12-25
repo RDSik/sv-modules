@@ -127,7 +127,7 @@ module axil_uart
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
-    axis_fifo_wrap #(
+    axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (UART_DATA_WIDTH),
         .FIFO_MODE   (FIFO_MODE),
@@ -140,7 +140,7 @@ module axil_uart
         .a_empty_o()
     );
 
-    axis_fifo_wrap #(
+    axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (UART_DATA_WIDTH),
         .FIFO_MODE   (FIFO_MODE),

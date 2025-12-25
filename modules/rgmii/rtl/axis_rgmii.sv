@@ -39,7 +39,7 @@ module axis_rgmii #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .AXIS_USER_WIDTH(AXIS_USER_WIDTH)
-    ) packet_gen_i (
+    ) i_packet_gen (
         .tx_en_o    (tx_en),
         .tx_d_o     (tx_d),
         .fpga_port_i(fpga_port_i),
@@ -58,7 +58,7 @@ module axis_rgmii #(
         .CHECK_DESTINATION(CHECK_DESTINATION),
         .GMII_WIDTH       (GMII_WIDTH),
         .AXIS_DATA_WIDTH  (AXIS_DATA_WIDTH)
-    ) packet_recv_i (
+    ) i_packet_recv (
         .rx_dv_i    (rx_dv),
         .rx_d_i     (rx_d),
         .fpga_port_i(fpga_port_i),

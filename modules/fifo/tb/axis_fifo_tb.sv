@@ -77,7 +77,7 @@ module axis_fifo_tb ();
         env.run();
     end
 
-    axis_fifo_wrap #(
+    axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (FIFO_WIDTH),
         .FIFO_MODE   (FIFO_MODE),

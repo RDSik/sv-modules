@@ -1,8 +1,8 @@
 `ifndef AXIL_I2C_SVH
 `define AXIL_I2C_SVH
 
-`include "../rtl/i2c_pkg.svh"
-`include "../../verification/tb/axil_env.svh"
+`include "modules/i2c/rtl/i2c_pkg.svh"
+`include "modules/verification/tb/axil_env.svh"
 
 import i2c_pkg::*;
 

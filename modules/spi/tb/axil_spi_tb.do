@@ -1,27 +1,27 @@
 vlib work
 vmap work
 
-vlog  ../../interface/rtl/axis_if.sv
-vlog  ../../interface/rtl/axil_if.sv
-vlog  ../../interface/rtl/spi_if.sv
+vlog modules/interface/rtl/axis_if.sv
+vlog modules/interface/rtl/axil_if.sv
+vlog modules/interface/rtl/spi_if.sv
 
-vlog ../../fifo/rtl/async_fifo.sv
-vlog ../../fifo/rtl/axis_fifo_wrap.sv
-vlog ../../fifo/rtl/fifo_wrap.sv
-vlog ../../fifo/rtl/rd_ptr_empty.sv
-vlog ../../fifo/rtl/sync_fifo.sv
-vlog ../../fifo/rtl/wr_ptr_full.sv
+vlog modules/fifo/rtl/async_fifo.sv
+vlog modules/fifo/rtl/axis_fifo.sv
+vlog modules/fifo/rtl/fifo_wrap.sv
+vlog modules/fifo/rtl/rd_ptr_empty.sv
+vlog modules/fifo/rtl/sync_fifo.sv
+vlog modules/fifo/rtl/wr_ptr_full.sv
 
-vlog ../../common/rtl/ram_sdp.sv
-vlog ../../common/rtl/shift_reg.sv
-vlog ../../common/rtl/axil_reg_file.sv
-vlog ../../common/rtl/axil_reg_file_wrap.sv
+vlog modules/common/rtl/ram_sdp.sv
+vlog modules/common/rtl/shift_reg.sv
+vlog modules/common/rtl/axil_reg_file.sv
+vlog modules/common/rtl/axil_reg_file_wrap.sv
 
-vlog  ../rtl/axil_spi.sv
-vlog  ../rtl/axis_spi_master.sv
-vlog  ../rtl/spi_pkg.svh
+vlog modules/spi/rtl/axil_spi.sv
+vlog modules/spi/rtl/axis_spi_master.sv
+vlog modules/spi/rtl/spi_pkg.svh
 
-vlog axil_spi_tb.sv
+vlog modules/spi/tb/axil_spi_tb.sv
 
 vsim -voptargs="+acc" axil_spi_tb
 add log -r /*

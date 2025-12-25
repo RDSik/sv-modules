@@ -27,16 +27,15 @@ module sync_fifo #(
         $error("PTR_WIDTH must be equal $clog2(FIFO_DEPTH)");
     end
 
+    localparam logic BYPASS_REG_EN = (READ_LATENCY > 0);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
-    logic [PTR_WIDTH-1:0] wr_ptr;
-    logic [PTR_WIDTH-1:0] rd_ptr;
-    logic [PTR_WIDTH-1:0] prefetch_ptr;
-    logic                 wr_en;
-    logic                 rd_en;
-
-    assign wr_en = push_i & ~full_o;
-    assign rd_en = pop_i & ~empty_o;
+    logic [ PTR_WIDTH-1:0] wr_ptr;
+    logic [ PTR_WIDTH-1:0] rd_ptr;
+    logic [ PTR_WIDTH-1:0] prefetch_ptr;
+    logic [FIFO_WIDTH-1:0] ram_data;
+    logic                  wr_en;
+    logic                  rd_en;
 
     // Write pointer
     always_ff @(posedge clk_i) begin
@@ -64,6 +63,41 @@ module sync_fifo #(
         end
     end
 
+    if (BYPASS_REG_EN) begin : g_bypass_reg_en
+        logic                  enable_bypass;
+        logic                  bypass_valid;
+        logic [FIFO_WIDTH-1:0] bypass_data;
+
+        assign prefetch_ptr  = (rd_ptr == MAX_PTR) ? '0 : rd_ptr + 1'b1;
+        assign wr_en         = push_i & ~enable_bypass;
+        assign rd_en         = pop_i & ~a_empty_o;
+
+        assign enable_bypass = push_i && (empty_o || (a_empty_o && pop_i));
+
+        always_ff @(posedge clk_i) begin
+            if (rst_i) begin
+                bypass_valid <= 1'b0;
+            end else if (enable_bypass) begin
+                bypass_valid <= 1'b1;
+            end else if (pop_i) begin
+                bypass_valid <= 1'b0;
+            end
+        end
+
+        always_ff @(posedge clk_i) begin
+            if (enable_bypass) begin
+                bypass_data <= data_i;
+            end
+        end
+
+        assign data_o = bypass_valid ? bypass_data : ram_data;
+    end else begin : g_bypass_reg_disable
+        assign prefetch_ptr = rd_ptr;
+        assign wr_en        = push_i & ~full_o;
+        assign rd_en        = pop_i & ~empty_o;
+        assign data_o       = ram_data;
+    end
+
     ram_sdp #(
         .MEM_DEPTH   (FIFO_DEPTH),
         .BYTE_WIDTH  (FIFO_WIDTH),
@@ -79,8 +113,8 @@ module sync_fifo #(
         .a_data_i (data_i),
         .b_clk_i  (clk_i),
         .b_en_i   (rd_en),
-        .b_addr_i (rd_ptr),
-        .b_data_o (data_o)
+        .b_addr_i (prefetch_ptr),
+        .b_data_o (ram_data)
     );
 
     logic [PTR_WIDTH:0] data_cnt_next;

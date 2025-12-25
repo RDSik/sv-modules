@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-`include "axil_uart_class.svh"
+`include "modules/uart/tb/axil_uart_class.svh"
 
 module axil_uart_tb ();
 

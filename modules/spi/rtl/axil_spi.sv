@@ -118,7 +118,7 @@ module axil_spi
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
-    axis_fifo_wrap #(
+    axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (SPI_DATA_WIDTH),
         .FIFO_MODE   (FIFO_MODE),
@@ -132,7 +132,7 @@ module axil_spi
         .a_empty_o()
     );
 
-    axis_fifo_wrap #(
+    axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (SPI_DATA_WIDTH),
         .FIFO_MODE   (FIFO_MODE),

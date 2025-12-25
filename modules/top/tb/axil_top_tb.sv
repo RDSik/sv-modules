@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
-`include "../../spi/tb/axil_spi_class.svh"
-`include "../../uart/tb/axil_uart_class.svh"
-`include "../../i2c/tb/axil_i2c_class.svh"
+`include "modules/spi/tb/axil_spi_class.svh"
+`include "modules/uart/tb/axil_uart_class.svh"
+`include "modules/i2c/tb/axil_i2c_class.svh"
 
 module axil_top_tb ();
 
