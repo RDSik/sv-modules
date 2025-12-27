@@ -4,32 +4,23 @@
 class env_base #(
     parameter int   DATA_WIDTH_IN  = 16,
     parameter int   DATA_WIDTH_OUT = 16,
-    parameter int   USER_WIDTH     = 11,
     parameter logic TLAST_EN       = 0
 );
 
     test_cfg_base cfg;
 
-    virtual axis_if #(
-        .DATA_WIDTH(DATA_WIDTH_IN),
-        .USER_WIDTH(USER_WIDTH)
-    ) s_axis;
+    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_IN)) s_axis;
 
-    virtual axis_if #(
-        .DATA_WIDTH(DATA_WIDTH_OUT),
-        .USER_WIDTH(USER_WIDTH)
-    ) m_axis;
+    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_OUT)) m_axis;
 
     typedef struct {
         rand int                       delay;
-        rand logic [USER_WIDTH-1:0]    tuser;
         rand logic [DATA_WIDTH_IN-1:0] tdata;
         rand logic                     tlast;
     } packet_in_t;
 
     typedef struct {
         rand int                        delay;
-        rand logic [USER_WIDTH-1:0]     tuser;
         rand logic [DATA_WIDTH_OUT-1:0] tdata;
         rand logic                      tlast;
     } packet_out_t;
@@ -38,15 +29,8 @@ class env_base #(
     mailbox #(packet_in_t)  in_mbx;
     mailbox #(packet_out_t) out_mbx;
 
-    function new(
-    virtual axis_if #(
-        .DATA_WIDTH(DATA_WIDTH_OUT),
-        .USER_WIDTH(USER_WIDTH)
-    ) m_axis,
-                 virtual axis_if #(
-                     .DATA_WIDTH(DATA_WIDTH_IN),
-                     .USER_WIDTH(USER_WIDTH)
-                 ) s_axis);
+    function new(virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_OUT)) m_axis,
+                 virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_IN)) s_axis);
         this.s_axis = s_axis;
         this.m_axis = m_axis;
         cfg         = new();
@@ -80,13 +64,11 @@ class env_base #(
     task reset_master();
         s_axis.tvalid <= 0;
         s_axis.tdata  <= 0;
-        s_axis.tuser  <= 0;
     endtask
 
     task drive_master(packet_in_t p);
         repeat (p.delay) @(posedge s_axis.clk_i);
         s_axis.tvalid <= 1;
-        s_axis.tuser  <= p.tuser;
         s_axis.tdata  <= p.tdata;
         s_axis.tlast  <= p.tlast;
         do begin
@@ -117,7 +99,6 @@ class env_base #(
         packet_in_t p;
         @(posedge s_axis.clk_i);
         if (s_axis.tvalid & s_axis.tready) begin
-            p.tuser = s_axis.tuser;
             p.tdata = s_axis.tdata;
             p.tlast = s_axis.tlast;
             in_mbx.put(p);
@@ -180,7 +161,6 @@ class env_base #(
         packet_out_t p;
         @(posedge m_axis.clk_i);
         if (m_axis.tvalid & m_axis.tready) begin
-            p.tuser = m_axis.tuser;
             p.tdata = m_axis.tdata;
             p.tlast = m_axis.tlast;
             out_mbx.put(p);

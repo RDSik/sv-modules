@@ -7,11 +7,13 @@ module packet_gen
     parameter int          FIFO_DEPTH      = 2048,
     parameter              RAM_STYLE       = "block",
     parameter int          GMII_WIDTH      = 8,
-    parameter int          AXIS_DATA_WIDTH = 8,
-    parameter int          AXIS_USER_WIDTH = 11
+    parameter int          PAYLOAD_WIDTH   = 11,
+    parameter int          AXIS_DATA_WIDTH = 8
 ) (
     output logic                  tx_en_o,
     output logic [GMII_WIDTH-1:0] tx_d_o,
+
+    input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
 
     input logic [15:0] fpga_port_i,
     input logic [31:0] fpga_ip_i,
@@ -71,7 +73,7 @@ module packet_gen
     logic             [               FCS_BYTES*8-1:0] fcs_buffer;
 
     logic             [                          31:0] data_length;
-    assign data_length = s_axis.tuser * 8 / GMII_WIDTH;
+    assign data_length = payload_bytes_i * 8 / GMII_WIDTH;
 
     typedef enum {
         IDLE,
@@ -97,7 +99,7 @@ module packet_gen
     logic                               packet_valid;
     logic                               fifo_has_space;
 
-    assign fifo_has_space = (fifo_count < FIFO_DEPTH - (s_axis.tuser * WORD_BYTES));
+    assign fifo_has_space = (fifo_count < FIFO_DEPTH - payload_bytes_i);
 
     assign packet_start_valid = s_handshake && s_axis_tfirst_i && fifo_has_space;
 
@@ -120,7 +122,7 @@ module packet_gen
 
     eth_header_gen #(
         .HEADER_CHECKSUM(HEADER_CHECKSUM),
-        .PAYLOAD_WIDTH  (AXIS_USER_WIDTH * WORD_BYTES)
+        .PAYLOAD_WIDTH  (PAYLOAD_WIDTH)
     ) eth_header_gen (
         .fpga_port_i    (fpga_port_i),
         .fpga_ip_i      (fpga_ip_i),
@@ -128,7 +130,7 @@ module packet_gen
         .host_port_i    (host_port_i),
         .host_ip_i      (host_ip_i),
         .host_mac_i     (host_mac_i),
-        .payload_bytes_i(s_axis.tuser * WORD_BYTES),
+        .payload_bytes_i(payload_bytes_i),
         .output_header_o(header)
     );
 
@@ -171,7 +173,7 @@ module packet_gen
     always_comb begin
         case (current_state)
             IDLE: begin
-                if (fifo_count >= s_axis.tuser * WORD_BYTES) begin
+                if (fifo_count >= payload_bytes_i) begin
                     next_state = PREAMBLE;
                 end else begin
                     next_state = current_state;

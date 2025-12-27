@@ -3,13 +3,14 @@
 module packet_recv
     import rgmii_pkg::*;
 #(
-    parameter logic CHECK_DESTINATION = 1,
-    parameter int   GMII_WIDTH        = 8,
-    parameter int   AXIS_DATA_WIDTH   = 8
+    parameter int GMII_WIDTH      = 8,
+    parameter int AXIS_DATA_WIDTH = 8
 
 ) (
     input logic [GMII_WIDTH-1:0] rx_d_i,
     input logic                  rx_dv_i,
+
+    input logic check_destination_i,
 
     input logic [15:0] fpga_port_i,
     input logic [31:0] fpga_ip_i,
@@ -157,9 +158,9 @@ module packet_recv
             if (current_state == DATA) begin
                 // data_buffer[7:6] <= rxd_z[2];
                 // data_buffer[5:0] <= data_buffer[7:2];
-                // if ((state_counter[1:0]==3) && (~CHECK_DESTINATION || (packet_destination == fpga_mac_i))) begin
+                // if ((state_counter[1:0]==3) && (~check_destination_i || (packet_destination == fpga_mac_i))) begin
                 data_buffer <= rxd_z[2];
-                if (~CHECK_DESTINATION || (packet_destination == fpga_mac_i)) begin
+                if (~check_destination_i || (packet_destination == fpga_mac_i)) begin
                     data_valid <= 1;
                 end
                 if (packet_done) begin
