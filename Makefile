@@ -15,6 +15,7 @@ SRC_FILES := $(wildcard \
 	../../$(DUT)/rtl/*.sv \
 	../../$(DUT)/rtl/*.svh \
 	../../$(DUT)/tb/*.sv \
+ ../../$(DUT)/tb/*.svh \
 )
 
 BOARD ?= pz7020starlite
