@@ -6,7 +6,6 @@ module axis_rgmii_tb ();
 
     import test_pkg::*;
 
-    localparam logic CHECK_DESTINATION = 1;
     localparam int GMII_WIDTH = 8;
     localparam int FIFO_DEPTH = 2048;
     localparam int PAYLOAD_WIDTH = 11;
@@ -98,9 +97,8 @@ module axis_rgmii_tb ();
     );
 
     packet_recv #(
-        .CHECK_DESTINATION(CHECK_DESTINATION),
-        .GMII_WIDTH       (GMII_WIDTH),
-        .AXIS_DATA_WIDTH  (AXIS_DATA_WIDTH)
+        .GMII_WIDTH     (GMII_WIDTH),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
         .rx_dv_i    (en),
         .rx_d_i     (data),

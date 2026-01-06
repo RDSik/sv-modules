@@ -3,9 +3,8 @@
 module packet_recv
     import rgmii_pkg::*;
 #(
-    parameter logic CHECK_DESTINATION = 1,
-    parameter int   GMII_WIDTH        = 8,
-    parameter int   AXIS_DATA_WIDTH   = 8
+    parameter int GMII_WIDTH      = 8,
+    parameter int AXIS_DATA_WIDTH = 8
 ) (
     input logic [GMII_WIDTH-1:0] rx_d_i,
     input logic                  rx_dv_i,
@@ -32,6 +31,7 @@ module packet_recv
 
     logic [7:0]                 first_i_packet_count;
 
+    localparam logic CHECK_DESTINATION = 1;
     localparam int FIRST_PACKET_IGNORE = 0;
 
     logic packet_done;
