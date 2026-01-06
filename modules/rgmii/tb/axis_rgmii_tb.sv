@@ -6,7 +6,6 @@ module axis_rgmii_tb ();
 
     import test_pkg::*;
 
-    localparam logic [15:0] HEADER_CHECKSUM = 16'h65b3;
     localparam logic CHECK_DESTINATION = 1;
     localparam int GMII_WIDTH = 8;
     localparam int FIFO_DEPTH = 2048;
@@ -81,7 +80,6 @@ module axis_rgmii_tb ();
     end
 
     packet_gen #(
-        .HEADER_CHECKSUM(HEADER_CHECKSUM),
         .GMII_WIDTH     (GMII_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
@@ -100,19 +98,19 @@ module axis_rgmii_tb ();
     );
 
     packet_recv #(
-        .GMII_WIDTH     (GMII_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
+        .CHECK_DESTINATION(CHECK_DESTINATION),
+        .GMII_WIDTH       (GMII_WIDTH),
+        .AXIS_DATA_WIDTH  (AXIS_DATA_WIDTH)
     ) i_packet_recv (
-        .rx_dv_i            (en),
-        .rx_d_i             (data),
-        .check_destination_i(CHECK_DESTINATION),
-        .fpga_port_i        (FPGA_PORT),
-        .fpga_ip_i          (FPGA_IP),
-        .fpga_mac_i         (FPGA_MAC),
-        .host_port_i        (HOST_PORT),
-        .host_ip_i          (HOST_IP),
-        .host_mac_i         (HOST_MAC),
-        .m_axis             (s_axis)
+        .rx_dv_i    (en),
+        .rx_d_i     (data),
+        .fpga_port_i(FPGA_PORT),
+        .fpga_ip_i  (FPGA_IP),
+        .fpga_mac_i (FPGA_MAC),
+        .host_port_i(HOST_PORT),
+        .host_ip_i  (HOST_IP),
+        .host_mac_i (HOST_MAC),
+        .m_axis     (s_axis)
     );
 
 endmodule

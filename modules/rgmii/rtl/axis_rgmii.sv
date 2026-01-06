@@ -1,10 +1,10 @@
 module axis_rgmii #(
-    parameter logic [15:0] HEADER_CHECKSUM = 16'h65b3,
-    parameter int          GMII_WIDTH      = 8,
-    parameter int          RGMII_WIDTH     = 4,
-    parameter int          FIFO_DEPTH      = 2048,
-    parameter int          PAYLOAD_WIDTH   = 11,
-    parameter int          AXIS_DATA_WIDTH = 8
+    parameter int GMII_WIDTH      = 8,
+    parameter int RGMII_WIDTH     = 4,
+    parameter int PAYLOAD_WIDTH   = 11,
+    parameter int AXIS_DATA_WIDTH = 8,
+    parameter int FIFO_DEPTH      = 2048,
+    parameter     RAM_STYLE       = "block"
 ) (
     inout        eth_mdio_io,
     output logic eth_mdc_o,
@@ -16,8 +16,6 @@ module axis_rgmii #(
     input logic                   eth_rx_clk_i,
     input logic [RGMII_WIDTH-1:0] eth_rxd_i,
     input logic                   eth_rx_ctl_i,
-
-    input logic check_destination_i,
 
     input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
 
@@ -38,9 +36,10 @@ module axis_rgmii #(
 
     packet_gen #(
         .GMII_WIDTH     (GMII_WIDTH),
-        .FIFO_DEPTH     (FIFO_DEPTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
+        .FIFO_DEPTH     (FIFO_DEPTH),
+        .RAM_STYLE      (RAM_STYLE)
     ) i_packet_gen (
         .tx_en_o        (tx_en),
         .tx_d_o         (tx_d),
@@ -58,19 +57,19 @@ module axis_rgmii #(
     logic                  rx_dv;
 
     packet_recv #(
-        .GMII_WIDTH     (GMII_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
+        .CHECK_DESTINATION(1),
+        .GMII_WIDTH       (GMII_WIDTH),
+        .AXIS_DATA_WIDTH  (AXIS_DATA_WIDTH)
     ) i_packet_recv (
-        .rx_dv_i            (rx_dv),
-        .rx_d_i             (rx_d),
-        .check_destination_i(check_destination_i),
-        .fpga_port_i        (fpga_port_i),
-        .fpga_ip_i          (fpga_ip_i),
-        .fpga_mac_i         (fpga_mac_i),
-        .host_port_i        (host_port_i),
-        .host_ip_i          (host_ip_i),
-        .host_mac_i         (host_mac_i),
-        .m_axis             (m_axis)
+        .rx_dv_i    (rx_dv),
+        .rx_d_i     (rx_d),
+        .fpga_port_i(fpga_port_i),
+        .fpga_ip_i  (fpga_ip_i),
+        .fpga_mac_i (fpga_mac_i),
+        .host_port_i(host_port_i),
+        .host_ip_i  (host_ip_i),
+        .host_mac_i (host_mac_i),
+        .m_axis     (m_axis)
     );
 
     assign eth_tx_clk_o = eth_rx_clk_i;

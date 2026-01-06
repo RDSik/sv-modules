@@ -3,12 +3,11 @@
 module packet_gen
     import rgmii_pkg::*;
 #(
-    parameter logic [15:0] HEADER_CHECKSUM = 16'h65ba,
-    parameter int          FIFO_DEPTH      = 2048,
-    parameter              RAM_STYLE       = "block",
-    parameter int          GMII_WIDTH      = 8,
-    parameter int          PAYLOAD_WIDTH   = 11,
-    parameter int          AXIS_DATA_WIDTH = 8
+    parameter int FIFO_DEPTH      = 2048,
+    parameter     RAM_STYLE       = "block",
+    parameter int GMII_WIDTH      = 8,
+    parameter int PAYLOAD_WIDTH   = 11,
+    parameter int AXIS_DATA_WIDTH = 8
 ) (
     output logic                  tx_en_o,
     output logic [GMII_WIDTH-1:0] tx_d_o,
@@ -26,7 +25,6 @@ module packet_gen
     axis_if.slave s_axis
 );
 
-    localparam int WORD_BYTES = 1;
     localparam int WAIT_BYTES = 12;
     localparam int SFD_BYTES = 1;
     localparam int PREAMBLE_BYTES = 7;
@@ -38,6 +36,7 @@ module packet_gen
     localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;
     localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
     localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
+    // localparam int WORD_BYTES = 1;
     // localparam int DATA_COUNTER_BITS = $clog2(WORD_BYTES * 8 / GMII_WIDTH);
 
     logic clk_i;
@@ -88,7 +87,6 @@ module packet_gen
     state_type_t                        current_state = IDLE;
     state_type_t                        next_state = IDLE;
 
-    // Data fifo
     logic                               fifo_full;
     logic                               fifo_empty;
     logic        [$clog2(FIFO_DEPTH):0] fifo_count;
@@ -121,8 +119,7 @@ module packet_gen
     assign s_axis.tready = (fifo_has_space & s_axis_tfirst_i) | packet_valid;
 
     eth_header_gen #(
-        .HEADER_CHECKSUM(HEADER_CHECKSUM),
-        .PAYLOAD_WIDTH  (PAYLOAD_WIDTH)
+        .PAYLOAD_WIDTH(PAYLOAD_WIDTH)
     ) eth_header_gen (
         .fpga_port_i    (fpga_port_i),
         .fpga_ip_i      (fpga_ip_i),
@@ -356,8 +353,8 @@ module packet_gen
             tx_en_o <= 0;
         end else begin
             tx_en_o <= tx_valid;
-            tx_d_o  <= tx_data;
         end
+        tx_d_o <= tx_data;
     end
 
 endmodule
