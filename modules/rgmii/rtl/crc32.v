@@ -6,9 +6,8 @@ module crc32 #(
     input  logic                  clk_i,
     input  logic                  rst_i,
     input  logic [DATA_WIDTH-1:0] data_i,
-    input  logic                  crc_en,
-    output logic [ CRC_WIDTH-1:0] crc_data,
-    output logic [ CRC_WIDTH-1:0] crc_next
+    input  logic                  crc_en_i,
+    output logic [ CRC_WIDTH-1:0] crc_data_o
 );
 
     logic [DATA_WIDTH-1:0] data_t;
@@ -18,6 +17,8 @@ module crc32 #(
             data_t[DATA_WIDTH-1-i] = data_i[i];
         end
     end
+
+    logic [CRC_WIDTH-1:0] crc_data, crc_next;
 
     assign crc_next[0] = crc_data[24] ^ crc_data[30] ^ data_t[0] ^ data_t[6];
     assign crc_next[1] = crc_data[24] ^ crc_data[25] ^ crc_data[30] ^ crc_data[31] 
@@ -88,9 +89,11 @@ module crc32 #(
     always @(posedge clk_i) begin
         if (rst_i) begin
             crc_data <= '1;
-        end else if (crc_en) begin
+        end else if (crc_en_i) begin
             crc_data <= crc_next;
         end
     end
+
+    assign crc_data_o = crc_data;
 
 endmodule
