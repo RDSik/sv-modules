@@ -57,9 +57,8 @@ module axis_rgmii #(
     logic                  rx_dv;
 
     packet_recv #(
-        .CHECK_DESTINATION(1),
-        .GMII_WIDTH       (GMII_WIDTH),
-        .AXIS_DATA_WIDTH  (AXIS_DATA_WIDTH)
+        .GMII_WIDTH     (GMII_WIDTH),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
         .rx_dv_i    (rx_dv),
         .rx_d_i     (rx_d),
