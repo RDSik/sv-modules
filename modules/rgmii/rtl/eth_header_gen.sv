@@ -3,7 +3,6 @@
 module eth_header_gen
     import rgmii_pkg::*;
 #(
-    parameter logic [15:0] HEADER_CHECKSUM = 16'h65ba,
     parameter int PAYLOAD_WIDTH = 11
 ) (
     input logic [15:0] fpga_port_i,
@@ -19,6 +18,7 @@ module eth_header_gen
     output ethernet_header_t output_header_o
 );
 
+    localparam logic [15:0] HEADER_CHECKSUM = 16'h65ba;
     localparam logic [15:0] ETHERTYPE = 16'h0800;
     localparam logic [7:0] VERSION_IHL = 8'h45;
     localparam logic [7:0] DCSP_ECN = 8'h00;

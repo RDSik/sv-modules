@@ -295,7 +295,7 @@ module axil_crossbar #(
                     wr_next_state = WR_IDLE;
                 end
             end
-            default: wr_next_state = WR_IDLE;
+            default: wr_next_state = wr_state;
         endcase
     end
 
@@ -325,7 +325,7 @@ module axil_crossbar #(
                     rd_next_state = RD_IDLE;
                 end
             end
-            default: rd_next_state = RD_IDLE;
+            default: rd_next_state = rd_state;
         endcase
     end
 

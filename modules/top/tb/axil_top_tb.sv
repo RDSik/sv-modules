@@ -62,7 +62,7 @@ module axil_top_tb ();
         axil_uart_class #(
             .DATA_WIDTH(AXIL_DATA_WIDTH),
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .BASE_ADDR (SLAVE_LOW_ADDR[2])
+            .BASE_ADDR (SLAVE_LOW_ADDR[0])
         ) uart;
         axil_spi_class #(
             .DATA_WIDTH(AXIL_DATA_WIDTH),
@@ -72,7 +72,7 @@ module axil_top_tb ();
         axil_i2c_class #(
             .DATA_WIDTH(AXIL_DATA_WIDTH),
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .BASE_ADDR (SLAVE_LOW_ADDR[0])
+            .BASE_ADDR (SLAVE_LOW_ADDR[2])
         ) i2c;
         uart = new(s_axil[0]);
         spi  = new(s_axil[0]);
