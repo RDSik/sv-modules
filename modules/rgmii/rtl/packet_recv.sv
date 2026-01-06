@@ -21,8 +21,6 @@ module packet_recv
     axis_if.master m_axis
 );
 
-    localparam int WORD_BYTES = 4;
-
     logic clk_i;
     logic rst_i;
 
@@ -56,9 +54,9 @@ module packet_recv
         end
     end
 
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) * 8 / GMII_WIDTH;
-    localparam int PREAMBLE_SFD_BYTES = 8 * 8 / GMII_WIDTH;
-    localparam int FCS_BYTES = 4 * 8 / GMII_WIDTH;
+    localparam int HEADER_BITS = $bits(ethernet_header_t);
+    localparam int HEADER_BYTES = HEADER_BITS / 8;
+    localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
 
     logic             [AXIS_DATA_WIDTH-1:0] data_buffer;
     logic             [               63:0] preamble_sfd_buffer;
@@ -103,7 +101,7 @@ module packet_recv
                 end
             end
             HEADER: begin
-                if (state_counter == HEADER_BYTES - 1) begin
+                if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
                 end
                 if (packet_done) begin
@@ -150,15 +148,15 @@ module packet_recv
                 preamble_sfd_buffer <= preamble_sfd_buffer_next;
             end
             if (current_state == HEADER) begin
-                header_buffer[HEADER_BYTES-1-:GMII_WIDTH] <= rxd_z[2];
-                header_buffer[HEADER_BYTES-GMII_WIDTH-1:0] <= header_buffer[HEADER_BYTES-1:GMII_WIDTH];
+                header_buffer[HEADER_BITS-1-:GMII_WIDTH] <= rxd_z[2];
+                header_buffer[HEADER_BITS-GMII_WIDTH-1:0] <= header_buffer[HEADER_BITS-1:GMII_WIDTH];
             end
             if (current_state == DATA) begin
                 // data_buffer[7:6] <= rxd_z[2];
                 // data_buffer[5:0] <= data_buffer[7:2];
                 // if ((state_counter[1:0]==3) && (~CHECK_DESTINATION || (packet_destination == fpga_mac_i))) begin
                 data_buffer <= rxd_z[2];
-                if (~CHECK_DESTINATION || (packet_destination == fpga_mac_i)) begin
+                if (~CHECK_DESTINATION || (packet_destination == host_mac_i)) begin
                     data_valid <= 1;
                 end
                 if (packet_done) begin

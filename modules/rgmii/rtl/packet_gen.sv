@@ -30,7 +30,7 @@ module packet_gen
     localparam int PREAMBLE_BYTES = 7;
     localparam int FCS_BYTES = 4;
 
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) / GMII_WIDTH;
+    localparam int HEADER_BYTES = $bits(ethernet_header_t) / 8;
     localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
     localparam int WAIT_LENGTH = WAIT_BYTES * 8 / GMII_WIDTH;
     localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;
@@ -292,13 +292,13 @@ module packet_gen
     // logic [DATA_COUNTER_BITS-1:0] data_ones;
     // assign data_ones = '1;
 
+    assign fifo_rd_en = (next_state == DATA);
+
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             header_buffer   <= 0;
             preamble_buffer <= 0;
-            fifo_rd_en      <= 0;
         end else begin
-            fifo_rd_en <= 0;
             if (current_state == IDLE) begin
                 header_buffer   <= header;
                 preamble_buffer <= 56'h55555555555555;
@@ -309,7 +309,6 @@ module packet_gen
             end
             if (next_state == DATA && current_state != DATA) begin
                 data_buffer <= fifo_out;
-                fifo_rd_en  <= 1;
             end
             if (current_state == HEADER) begin
                 header_buffer <= header_buffer >> GMII_WIDTH;
@@ -323,7 +322,6 @@ module packet_gen
             if (current_state == DATA && next_state == DATA) begin
                 // if (state_counter[DATA_COUNTER_BITS-1:0] == data_ones) begin
                 data_buffer <= fifo_out;
-                fifo_rd_en  <= 1;
                 // end else begin
                 // data_buffer <= data_buffer >> GMII_WIDTH;
                 // end
