@@ -4,7 +4,8 @@ set dev_ver  "C"
 set language "sysv2017"
 
 set modules_dirs [list \
-    ../../modules/axis_dw_conv \
+    ../../modules/rgmii \
+    ../../modules/dw_conv \
     ../../modules/arbiter \
     ../../modules/spi \
     ../../modules/uart \
