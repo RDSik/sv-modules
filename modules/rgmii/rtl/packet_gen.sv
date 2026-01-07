@@ -3,7 +3,6 @@
 module packet_gen
     import rgmii_pkg::*;
 #(
-    parameter int FIFO_DEPTH      = 2048,
     parameter     RAM_STYLE       = "block",
     parameter int GMII_WIDTH      = 8,
     parameter int PAYLOAD_WIDTH   = 11,
@@ -133,7 +132,7 @@ module packet_gen
 
     fifo_wrap #(
         .FIFO_WIDTH  (AXIS_DATA_WIDTH),
-        .FIFO_DEPTH  (FIFO_DEPTH),
+        .FIFO_DEPTH  (2**PAYLOAD_WIDTH),
         .FIFO_MODE   ("sync"),
         .READ_LATENCY(1),
         .RAM_STYLE   (RAM_STYLE)
