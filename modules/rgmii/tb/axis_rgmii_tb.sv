@@ -79,7 +79,6 @@ module axis_rgmii_tb ();
 
     packet_gen #(
         .GMII_WIDTH     (GMII_WIDTH),
-        .FIFO_DEPTH     (FIFO_DEPTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_gen (
