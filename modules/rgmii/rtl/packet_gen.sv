@@ -309,6 +309,7 @@ module packet_gen
             end
             if (next_state == DATA && current_state != DATA) begin
                 data_buffer <= fifo_out;
+                fifo_rd_en  <= 1;
             end
             if (current_state == HEADER) begin
                 header_buffer <= header_buffer >> GMII_WIDTH;
