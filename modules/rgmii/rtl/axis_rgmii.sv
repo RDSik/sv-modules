@@ -1,8 +1,7 @@
 module axis_rgmii #(
     parameter int RGMII_WIDTH     = 4,
     parameter int PAYLOAD_WIDTH   = 11,
-    parameter int AXIS_DATA_WIDTH = 8,
-    parameter     RAM_STYLE       = "block"
+    parameter int AXIS_DATA_WIDTH = 8
 ) (
     inout        eth_mdio_io,
     output logic eth_mdc_o,
@@ -37,8 +36,7 @@ module axis_rgmii #(
     packet_gen #(
         .GMII_WIDTH     (GMII_WIDTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .RAM_STYLE      (RAM_STYLE)
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_gen (
         .tx_en_o        (tx_en),
         .tx_d_o         (tx_d),
