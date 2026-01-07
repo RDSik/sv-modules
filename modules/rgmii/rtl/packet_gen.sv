@@ -3,7 +3,6 @@
 module packet_gen
     import rgmii_pkg::*;
 #(
-    parameter     RAM_STYLE       = "block",
     parameter int GMII_WIDTH      = 8,
     parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8
@@ -136,8 +135,8 @@ module packet_gen
         .FIFO_WIDTH  (AXIS_DATA_WIDTH),
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_MODE   ("sync"),
-        .READ_LATENCY(1),
-        .RAM_STYLE   (RAM_STYLE)
+        .READ_LATENCY(0),
+        .RAM_STYLE   ("distributed")
     ) i_fifo_wrap (
         .wr_clk_i  (clk_i),
         .wr_rst_i  (rst_i),
@@ -293,13 +292,13 @@ module packet_gen
     // logic [DATA_COUNTER_BITS-1:0] data_ones;
     // assign data_ones = '1;
 
-    assign fifo_rd_en = (next_state == DATA);
-
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             header_buffer   <= 0;
             preamble_buffer <= 0;
+            fifo_rd_en      <= 0;
         end else begin
+            fifo_rd_en <= 0;
             if (current_state == IDLE) begin
                 header_buffer   <= header;
                 preamble_buffer <= 56'h55555555555555;
@@ -323,6 +322,7 @@ module packet_gen
             if (current_state == DATA && next_state == DATA) begin
                 // if (state_counter[DATA_COUNTER_BITS-1:0] == data_ones) begin
                 data_buffer <= fifo_out;
+                fifo_rd_en  <= 1;
                 // end else begin
                 // data_buffer <= data_buffer >> GMII_WIDTH;
                 // end
