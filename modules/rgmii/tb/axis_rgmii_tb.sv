@@ -7,7 +7,6 @@ module axis_rgmii_tb ();
     import test_pkg::*;
 
     localparam int GMII_WIDTH = 8;
-    localparam int FIFO_DEPTH = 2048;
     localparam int PAYLOAD_WIDTH = 11;
     localparam int AXIS_DATA_WIDTH = 8;
 
