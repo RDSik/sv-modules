@@ -3,7 +3,6 @@ module axis_rgmii #(
     parameter int RGMII_WIDTH     = 4,
     parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8,
-    parameter int FIFO_DEPTH      = 2048,
     parameter     RAM_STYLE       = "block"
 ) (
     inout        eth_mdio_io,
@@ -38,7 +37,6 @@ module axis_rgmii #(
         .GMII_WIDTH     (GMII_WIDTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .FIFO_DEPTH     (FIFO_DEPTH),
         .RAM_STYLE      (RAM_STYLE)
     ) i_packet_gen (
         .tx_en_o        (tx_en),
