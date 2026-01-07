@@ -86,6 +86,8 @@ module packet_gen
     state_type_t                        current_state = IDLE;
     state_type_t                        next_state = IDLE;
 
+    localparam int FIFO_DEPTH = 2**PAYLOAD_WIDTH;
+
     logic                               fifo_full;
     logic                               fifo_empty;
     logic        [$clog2(FIFO_DEPTH):0] fifo_count;
@@ -132,7 +134,7 @@ module packet_gen
 
     fifo_wrap #(
         .FIFO_WIDTH  (AXIS_DATA_WIDTH),
-        .FIFO_DEPTH  (2**PAYLOAD_WIDTH),
+        .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_MODE   ("sync"),
         .READ_LATENCY(1),
         .RAM_STYLE   (RAM_STYLE)
