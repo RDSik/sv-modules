@@ -1,5 +1,4 @@
 module axis_rgmii #(
-    parameter int GMII_WIDTH      = 8,
     parameter int RGMII_WIDTH     = 4,
     parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8,
@@ -29,6 +28,8 @@ module axis_rgmii #(
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );
+
+    localparam int GMII_WIDTH = 8;
 
     logic [GMII_WIDTH-1:0] tx_d;
     logic                  tx_en;
