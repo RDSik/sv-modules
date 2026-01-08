@@ -4,6 +4,7 @@ module packet_recv
     import rgmii_pkg::*;
 #(
     parameter int GMII_WIDTH      = 8,
+    parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8
 ) (
     input logic [GMII_WIDTH-1:0] rx_d_i,
@@ -31,7 +32,6 @@ module packet_recv
 
     logic [7:0]                 first_i_packet_count;
 
-    localparam logic CHECK_DESTINATION = 1;
     localparam int FIRST_PACKET_IGNORE = 0;
 
     logic packet_done;
@@ -54,9 +54,12 @@ module packet_recv
         end
     end
 
-    localparam int HEADER_BITS = $bits(ethernet_header_t);
-    localparam int HEADER_BYTES = HEADER_BITS / 8;
+    localparam int HEADER_BITS = HEADER_BYTES * 8;
     localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
+    localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
+
+    logic [15:0] data_length;
+    assign data_length = {<<8{header_buffer.ipv4.total_length}} - IPV4_HEADER_BYTES;
 
     logic             [AXIS_DATA_WIDTH-1:0] data_buffer;
     logic             [               63:0] preamble_sfd_buffer;
@@ -67,13 +70,13 @@ module packet_recv
         IDLE,
         PREAMBLE_SFD,
         HEADER,
-        DATA
+        DATA,
+        FCS
     } state_type_t;
 
-    state_type_t        current_state = IDLE;
-    state_type_t        next_state = IDLE;
+    state_type_t current_state, next_state;
 
-    logic        [31:0] state_counter;
+    logic [31:0] state_counter;
 
     always @(posedge clk_i) begin
         if (rst_i) begin
@@ -109,7 +112,12 @@ module packet_recv
                 end
             end
             DATA: begin
-                if (packet_done) begin
+                if (state_counter == data_length - 1) begin
+                    next_state = FCS;
+                end
+            end
+            FCS: begin
+                if (state_counter == FCS_LENGTH - 1) begin
                     next_state = IDLE;
                 end
             end
@@ -152,22 +160,41 @@ module packet_recv
                 header_buffer[HEADER_BITS-GMII_WIDTH-1:0] <= header_buffer[HEADER_BITS-1:GMII_WIDTH];
             end
             if (current_state == DATA) begin
-                // data_buffer[7:6] <= rxd_z[2];
-                // data_buffer[5:0] <= data_buffer[7:2];
-                // if ((state_counter[1:0]==3) && (~CHECK_DESTINATION || (packet_destination == fpga_mac_i))) begin
                 data_buffer <= rxd_z[2];
-                if (~CHECK_DESTINATION || (packet_destination == host_mac_i)) begin
-                    data_valid <= 1;
-                end
-                if (packet_done) begin
+                data_valid  <= (packet_destination == host_mac_i);
+                if (next_state == FCS) begin
                     data_last <= 1;
                 end
             end
         end
     end
 
-    assign m_axis.tvalid = data_valid;
-    assign m_axis.tdata  = data_buffer;
-    assign m_axis.tlast  = data_last;
+    localparam int FIFO_DEPTH = 2 ** PAYLOAD_WIDTH;
+
+    axis_if #(
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
+    ) s_axis (
+        .clk_i(clk_i),
+        .rst_i(rst_i)
+    );
+
+    assign s_axis.tvalid = data_valid;
+    assign s_axis.tdata  = data_buffer;
+    assign s_axis.tlast  = data_last;
+
+    axis_fifo #(
+        .FIFO_DEPTH  (FIFO_DEPTH),
+        .FIFO_WIDTH  (AXIS_DATA_WIDTH),
+        .TLAST_EN    (1),
+        .FIFO_MODE   ("sync"),
+        .READ_LATENCY(1),
+        .RAM_STYLE   ("distributed")
+    ) i_axis_fifo_rx (
+        .s_axis    (s_axis),
+        .m_axis    (m_axis),
+        .data_cnt_o(fifo_count),
+        .a_full_o  (),
+        .a_empty_o ()
+    );
 
 endmodule

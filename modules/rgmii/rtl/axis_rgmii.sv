@@ -55,6 +55,7 @@ module axis_rgmii #(
 
     packet_recv #(
         .GMII_WIDTH     (GMII_WIDTH),
+        .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
         .rx_dv_i    (rx_dv),
