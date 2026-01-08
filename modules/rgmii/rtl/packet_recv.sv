@@ -30,27 +30,19 @@ module packet_recv
     logic [2:0][GMII_WIDTH-1:0] rxd_z;
     logic [2:0]                 rxdv_z;
 
-    logic [7:0]                 first_i_packet_count;
-
-    localparam int FIRST_PACKET_IGNORE = 0;
-
-    logic packet_done;
-    logic packet_start;
+    logic                       packet_done;
+    logic                       packet_start;
 
     assign packet_start = (rxdv_z[2] == 0 && rxdv_z[1] == 1);
     assign packet_done  = (rxdv_z[2] == 1 && rxdv_z[1] == 0);
 
     always @(posedge clk_i) begin
         if (rst_i) begin
-            rxd_z                <= 0;
-            rxdv_z               <= 0;
-            first_i_packet_count <= 0;
+            rxd_z  <= 0;
+            rxdv_z <= 0;
         end else begin
             rxd_z  <= {rxd_z[1:0], rx_d_i};
             rxdv_z <= {rxdv_z[1:0], rx_dv_i};
-            if (packet_done & first_i_packet_count < FIRST_PACKET_IGNORE) begin
-                first_i_packet_count <= first_i_packet_count + 1;
-            end
         end
     end
 
