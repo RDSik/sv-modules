@@ -59,7 +59,7 @@ module packet_recv
     localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
 
     logic [15:0] data_length;
-    assign data_length = {<<8{header_buffer.ipv4.total_length}} - IPV4_HEADER_BYTES;
+    assign data_length = {<<8{header_buffer.ipv4.total_length}};
 
     logic             [AXIS_DATA_WIDTH-1:0] data_buffer;
     logic             [               63:0] preamble_sfd_buffer;
@@ -99,7 +99,7 @@ module packet_recv
                 end
             end
             PREAMBLE_SFD: begin
-                if (preamble_sfd_buffer_next == 64'hd555555555555555) begin
+                if (preamble_sfd_buffer_next == {SFD_VAL, PREAMBULE_VAL}) begin
                     next_state = HEADER;
                 end
             end
@@ -112,7 +112,7 @@ module packet_recv
                 end
             end
             DATA: begin
-                if (state_counter == data_length - 1) begin
+                if (state_counter == data_length - IPV4_HEADER_BYTES - 1) begin
                     next_state = FCS;
                 end
             end
@@ -162,9 +162,7 @@ module packet_recv
             if (current_state == DATA) begin
                 data_buffer <= rxd_z[2];
                 data_valid  <= (packet_destination == host_mac_i);
-                if (next_state == FCS) begin
-                    data_last <= 1;
-                end
+                data_last   <= (next_state == FCS);
             end
         end
     end
