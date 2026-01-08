@@ -28,8 +28,8 @@ module eth_header_gen
     localparam logic [7:0] PROTOCOL = 8'h11;
     localparam logic [15:0] UDP_CHECKSUM = 16'h0000;
 
-    logic [15:0] upd_length;
-    assign upd_length = UDP_HEADER_BYTES + payload_bytes_i;
+    logic [15:0] udp_length;
+    assign udp_length = UDP_HEADER_BYTES + payload_bytes_i;
 
     logic [15:0] ipv4_length;
     assign ipv4_length = IPV4_HEADER_BYTES + payload_bytes_i;
@@ -53,7 +53,7 @@ module eth_header_gen
 
     assign header.ipv4.udp.port_source       = {<<8{fpga_port_i}};
     assign header.ipv4.udp.port_destination  = {<<8{host_port_i}};
-    assign header.ipv4.udp.length            = {<<8{upd_length}};
+    assign header.ipv4.udp.length            = {<<8{udp_length}};
     assign header.ipv4.udp.udp_checksum      = {<<8{UDP_CHECKSUM}};
 
     assign output_header_o                   = header;
