@@ -190,7 +190,7 @@ module packet_recv
     ) i_axis_fifo_rx (
         .s_axis    (s_axis),
         .m_axis    (m_axis),
-        .data_cnt_o(fifo_count),
+        .data_cnt_o(),
         .a_full_o  (),
         .a_empty_o ()
     );
