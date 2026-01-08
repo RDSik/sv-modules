@@ -23,55 +23,6 @@ module packet_gen
     axis_if.slave s_axis
 );
 
-    localparam int WAIT_BYTES = 12;
-    localparam int SFD_BYTES = 1;
-    localparam int PREAMBLE_BYTES = 7;
-    localparam int FCS_BYTES = 4;
-
-    localparam int HEADER_BYTES = $bits(ethernet_header_t) / 8;
-    localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
-    localparam int WAIT_LENGTH = WAIT_BYTES * 8 / GMII_WIDTH;
-    localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;
-    localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
-    localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
-    // localparam int WORD_BYTES = 1;
-    // localparam int DATA_COUNTER_BITS = $clog2(WORD_BYTES * 8 / GMII_WIDTH);
-
-    logic clk_i;
-    logic rst_i;
-    logic s_handshake;
-
-    assign clk_i       = s_axis.clk_i;
-    assign rst_i       = s_axis.rst_i;
-    assign s_handshake = s_axis.tvalid && s_axis.tready;
-
-    logic s_axis_tfirst_i;
-
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
-            s_axis_tfirst_i <= 1;
-        end else begin
-            if (s_handshake) begin
-                if (s_axis.tlast) begin
-                    s_axis_tfirst_i <= 1;
-                end else begin
-                    s_axis_tfirst_i <= 0;
-                end
-            end
-        end
-    end
-
-    ethernet_header_t                                  header;
-    logic             [$bits(ethernet_header_t)-1 : 0] header_buffer;
-    logic             [           AXIS_DATA_WIDTH-1:0] data_buffer;
-    logic             [          PREAMBLE_BYTES*8-1:0] preamble_buffer;
-    logic             [               SFD_BYTES*8-1:0] sfd_buffer;
-    logic             [               FCS_BYTES*8-1:0] fcs;
-    logic             [               FCS_BYTES*8-1:0] fcs_buffer;
-
-    logic             [                          31:0] data_length;
-    assign data_length = payload_bytes_i * 8 / GMII_WIDTH;
-
     typedef enum {
         IDLE,
         PREAMBLE,
@@ -82,41 +33,34 @@ module packet_gen
         WAIT
     } state_type_t;
 
-    state_type_t                        current_state = IDLE;
-    state_type_t                        next_state = IDLE;
+    state_type_t current_state, next_state;
 
-    localparam int FIFO_DEPTH = 2**PAYLOAD_WIDTH;
+    localparam int WAIT_BYTES = 12;
 
-    logic                               fifo_full;
-    logic                               fifo_empty;
-    logic        [$clog2(FIFO_DEPTH):0] fifo_count;
-    logic        [ AXIS_DATA_WIDTH-1:0] fifo_out;
-    logic                               fifo_rd_en;
-    logic                               fifo_wr_en;
-    logic                               packet_start_valid;
-    logic                               packet_valid;
-    logic                               fifo_has_space;
+    localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
+    localparam int WAIT_LENGTH = WAIT_BYTES * 8 / GMII_WIDTH;
+    localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;
+    localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
+    localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
 
-    assign fifo_has_space = (fifo_count < FIFO_DEPTH - payload_bytes_i);
+    logic clk_i;
+    logic rst_i;
 
-    assign packet_start_valid = s_handshake && s_axis_tfirst_i && fifo_has_space;
+    assign clk_i = s_axis.clk_i;
+    assign rst_i = s_axis.rst_i;
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
-            packet_valid <= 0;
-        end else begin
-            if (packet_start_valid) begin
-                packet_valid <= 1;
-            end
-            if (packet_valid && s_handshake && s_axis.tlast) begin
-                packet_valid <= 0;
-            end
-        end
-    end
+    ethernet_header_t                                  header;
+    logic             [$bits(ethernet_header_t)-1 : 0] header_buffer;
+    logic             [           AXIS_DATA_WIDTH-1:0] data_buffer;
+    logic                                              data_valid;
+    logic             [          PREAMBLE_BYTES*8-1:0] preamble_buffer;
+    logic             [               SFD_BYTES*8-1:0] sfd_buffer;
+    logic             [               FCS_BYTES*8-1:0] fcs;
+    logic             [               FCS_BYTES*8-1:0] fcs_buffer;
 
-    assign fifo_wr_en = s_handshake & (packet_start_valid || packet_valid);
+    logic             [                          31:0] data_length;
 
-    assign s_axis.tready = (fifo_has_space & s_axis_tfirst_i) | packet_valid;
+    assign data_length = payload_bytes_i * 8 / GMII_WIDTH;
 
     eth_header_gen #(
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH)
@@ -131,26 +75,32 @@ module packet_gen
         .output_header_o(header)
     );
 
-    fifo_wrap #(
-        .FIFO_WIDTH  (AXIS_DATA_WIDTH),
+    localparam int FIFO_DEPTH = 2 ** PAYLOAD_WIDTH;
+
+    logic [$clog2(FIFO_DEPTH):0] fifo_count;
+
+    axis_if #(
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
+    ) m_axis (
+        .clk_i(clk_i),
+        .rst_i(rst_i)
+    );
+
+    assign m_axis.tready = (next_state == DATA);
+
+    axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
+        .FIFO_WIDTH  (AXIS_DATA_WIDTH),
+        .TLAST_EN    (1),
         .FIFO_MODE   ("sync"),
-        .READ_LATENCY(0),
+        .READ_LATENCY(1),
         .RAM_STYLE   ("distributed")
-    ) i_fifo_wrap (
-        .wr_clk_i  (clk_i),
-        .wr_rst_i  (rst_i),
-        .wr_data_i (s_axis.tdata),
-        .rd_clk_i  (clk_i),
-        .rd_rst_i  (rst_i),
-        .push_i    (fifo_wr_en),
-        .pop_i     (fifo_rd_en),
-        .rd_data_o (fifo_out),
-        .full_o    (fifo_full),
-        .empty_o   (fifo_empty),
+    ) i_axis_fifo_rx (
+        .s_axis    (s_axis),
+        .m_axis    (m_axis),
         .data_cnt_o(fifo_count),
-        .a_empty_o (),
-        .a_full_o  ()
+        .a_full_o  (),
+        .a_empty_o ()
     );
 
     logic [31:0] state_counter;
@@ -263,7 +213,7 @@ module packet_gen
                 fcs_rst_i = 0;
             end
             DATA: begin
-                tx_valid  = 1;
+                tx_valid  = data_valid;
                 tx_data   = data_buffer[GMII_WIDTH-1:0];
                 fcs_en    = 1;
                 fcs_rst_i = 0;
@@ -289,27 +239,25 @@ module packet_gen
         endcase
     end
 
-    // logic [DATA_COUNTER_BITS-1:0] data_ones;
-    // assign data_ones = '1;
-
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            header_buffer   <= 0;
             preamble_buffer <= 0;
-            fifo_rd_en      <= 0;
+            sfd_buffer      <= 0;
+            header_buffer   <= 0;
+            data_buffer     <= 0;
+            data_valid      <= 0;
         end else begin
-            fifo_rd_en <= 0;
             if (current_state == IDLE) begin
                 header_buffer   <= header;
-                preamble_buffer <= 56'h55555555555555;
-                sfd_buffer      <= 8'hd5;
+                preamble_buffer <= PREAMBULE_VAL;
+                sfd_buffer      <= SFD_VAL;
             end
             if (next_state == FCS && current_state != FCS) begin
                 fcs_buffer <= fcs;
             end
             if (next_state == DATA && current_state != DATA) begin
-                data_buffer <= fifo_out;
-                fifo_rd_en  <= 1;
+                data_buffer <= m_axis.tdata;
+                data_valid  <= m_axis.tvalid;
             end
             if (current_state == HEADER) begin
                 header_buffer <= header_buffer >> GMII_WIDTH;
@@ -321,12 +269,8 @@ module packet_gen
                 sfd_buffer <= sfd_buffer >> GMII_WIDTH;
             end
             if (current_state == DATA && next_state == DATA) begin
-                // if (state_counter[DATA_COUNTER_BITS-1:0] == data_ones) begin
-                data_buffer <= fifo_out;
-                fifo_rd_en  <= 1;
-                // end else begin
-                // data_buffer <= data_buffer >> GMII_WIDTH;
-                // end
+                data_buffer <= m_axis.tdata;
+                data_valid  <= m_axis.tvalid;
             end
             if (current_state == FCS) begin
                 fcs_buffer <= fcs_buffer >> GMII_WIDTH;

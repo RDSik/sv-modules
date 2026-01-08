@@ -66,7 +66,8 @@ module axis_rgmii_tb ();
     initial begin
         env_base #(
             .DATA_WIDTH_IN (AXIS_DATA_WIDTH),
-            .DATA_WIDTH_OUT(AXIS_DATA_WIDTH)
+            .DATA_WIDTH_OUT(AXIS_DATA_WIDTH),
+            .TLAST_EN      (0)
         ) env;
         env = new(s_axis, m_axis);
         env.run();

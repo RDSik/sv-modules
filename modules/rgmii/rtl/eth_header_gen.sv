@@ -28,9 +28,6 @@ module eth_header_gen
     localparam logic [7:0] PROTOCOL = 8'h11;
     localparam logic [15:0] UDP_CHECKSUM = 16'h0000;
 
-    localparam logic [15:0] UDP_HEADER_BYTES = $bits(udp_header_t) / 8;
-    localparam logic [15:0] IPV4_HEADER_BYTES = $bits(ipv4_header_t) / 8;
-
     logic [15:0] upd_length;
     assign upd_length = UDP_HEADER_BYTES + payload_bytes_i;
 
