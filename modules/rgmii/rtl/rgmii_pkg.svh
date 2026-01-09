@@ -20,7 +20,7 @@ package rgmii_pkg;
         logic [1:0][7:0] flags_fragment_offset;
         logic [1:0][7:0] identification;
         logic [1:0][7:0] total_length;
-        logic [7:0]      dcsp_ecn;
+        logic [7:0]      tos;
         logic [7:0]      version_ihl;
     } ipv4_header_t;
 
