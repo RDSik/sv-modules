@@ -21,7 +21,7 @@ module eth_header_gen
     localparam logic [15:0] HEADER_CHECKSUM = 16'h65b3;
     localparam logic [15:0] ETHERTYPE = 16'h0800;
     localparam logic [7:0] VERSION_IHL = 8'h45;
-    localparam logic [7:0] DCSP_ECN = 8'h00;
+    localparam logic [7:0] TOS = 8'h00;
     localparam logic [15:0] IDENTIFICATION = 16'h0000;
     localparam logic [15:0] FLAGS_FRAGMENT_OFFSET = 16'h0000;
     localparam logic [7:0] TIME_TO_LIVE = 8'h40;
@@ -41,7 +41,7 @@ module eth_header_gen
     assign header.eth_type_length            = {<<8{ETHERTYPE}};
 
     assign header.ipv4.version_ihl           = {<<8{VERSION_IHL}};
-    assign header.ipv4.dcsp_ecn              = {<<8{DCSP_ECN}};
+    assign header.ipv4.tos               = {<<8{TOS}};
     assign header.ipv4.total_length          = {<<8{ipv4_length}};
     assign header.ipv4.identification        = {<<8{IDENTIFICATION}};
     assign header.ipv4.flags_fragment_offset = {<<8{FLAGS_FRAGMENT_OFFSET}};
