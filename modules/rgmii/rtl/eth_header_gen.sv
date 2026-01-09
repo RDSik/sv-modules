@@ -41,7 +41,7 @@ module eth_header_gen
     assign header.eth_type_length            = {<<8{ETHERTYPE}};
 
     assign header.ipv4.version_ihl           = {<<8{VERSION_IHL}};
-    assign header.ipv4.tos               = {<<8{TOS}};
+    assign header.ipv4.tos                  = {<<8{TOS}};
     assign header.ipv4.total_length          = {<<8{ipv4_length}};
     assign header.ipv4.identification        = {<<8{IDENTIFICATION}};
     assign header.ipv4.flags_fragment_offset = {<<8{FLAGS_FRAGMENT_OFFSET}};
