@@ -18,7 +18,7 @@ module eth_header_gen
     output ethernet_header_t output_header_o
 );
 
-    localparam logic [15:0] HEADER_CHECKSUM = 16'h65b3;
+    localparam logic [15:0] HEADER_CHECKSUM = 16'h0000;
     localparam logic [15:0] ETHERTYPE = 16'h0800;
     localparam logic [7:0] VERSION_IHL = 8'h45;
     localparam logic [7:0] DCSP_ECN = 8'h00;
