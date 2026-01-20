@@ -26,6 +26,8 @@ module axis_rgmii #(
     input logic [31:0] host_ip_i,
     input logic [47:0] host_mac_i,
 
+    output logic crc_err_o,
+
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );
@@ -70,6 +72,7 @@ module axis_rgmii #(
         .host_port_i        (host_port_i),
         .host_ip_i          (host_ip_i),
         .host_mac_i         (host_mac_i),
+        .crc_err_o          (crc_err_o),
         .m_axis             (m_axis)
     );
 
