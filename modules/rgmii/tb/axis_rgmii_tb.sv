@@ -99,15 +99,17 @@ module axis_rgmii_tb ();
         .GMII_WIDTH     (GMII_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
-        .rx_dv_i    (en),
-        .rx_d_i     (data),
-        .fpga_port_i(FPGA_PORT),
-        .fpga_ip_i  (FPGA_IP),
-        .fpga_mac_i (FPGA_MAC),
-        .host_port_i(HOST_PORT),
-        .host_ip_i  (HOST_IP),
-        .host_mac_i (HOST_MAC),
-        .m_axis     (s_axis)
+        .rx_dv_i            (en),
+        .rx_d_i             (data),
+        .check_destination_i(1'b1),
+        .payload_bytes_i    (PAYLOAD),
+        .fpga_port_i        (FPGA_PORT),
+        .fpga_ip_i          (FPGA_IP),
+        .fpga_mac_i         (FPGA_MAC),
+        .host_port_i        (HOST_PORT),
+        .host_ip_i          (HOST_IP),
+        .host_mac_i         (HOST_MAC),
+        .m_axis             (s_axis)
     );
 
 endmodule
