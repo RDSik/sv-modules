@@ -63,6 +63,7 @@ module packet_recv
 
     ethernet_header_t                         header_buffer;
     logic             [  AXIS_DATA_WIDTH-1:0] data_buffer;
+    logic             [PREAMBLE_SFD_BITS-1:0] preamble_sfd;
     logic             [PREAMBLE_SFD_BITS-1:0] preamble_sfd_buffer;
     logic             [         FCS_BITS-1:0] fcs;
     logic             [         FCS_BITS-1:0] fcs_buffer;
@@ -93,8 +94,7 @@ module packet_recv
         end
     end
 
-    logic preamble_sfd_ok;
-    assign preamble_sfd_ok = ({<<8{preamble_sfd_buffer}} == {PREAMBULE_VAL, SFD_VAL});
+    assign preamble_sfd = {<<8{preamble_sfd_buffer}};
 
     always_comb begin
         next_state = current_state;
@@ -113,7 +113,7 @@ module packet_recv
                 if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
                 end
-                if (packet_done | ~preamble_sfd_ok) begin
+                if (packet_done | (preamble_sfd != {PREAMBULE_VAL, SFD_VAL})) begin
                     next_state = IDLE;
                 end
             end
@@ -164,8 +164,8 @@ module packet_recv
         .crc_o (fcs)
     );
 
-    logic destinaion_ok;
-    assign destinaion_ok = ({<<8{header_buffer.mac_destination}} == host_mac_i);
+    logic [47:0] packet_destination;
+    assign packet_destination = {<<8{header_buffer.mac_destination}};
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
@@ -189,7 +189,7 @@ module packet_recv
             end
             if (current_state == DATA) begin
                 data_buffer <= rxd_z[2];
-                data_valid  <= ~check_destination_i | destinaion_ok;
+                data_valid  <= ~check_destination_i || (packet_destination == host_mac_i);
                 data_last   <= (next_state == FCS);
             end
             if (current_state == FCS) begin
