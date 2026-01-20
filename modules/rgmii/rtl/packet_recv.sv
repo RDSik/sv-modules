@@ -10,6 +10,8 @@ module packet_recv
     input logic [GMII_WIDTH-1:0] rx_d_i,
     input logic                  rx_dv_i,
 
+    input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
+
     input logic [15:0] fpga_port_i,
     input logic [31:0] fpga_ip_i,
     input logic [47:0] fpga_mac_i,
@@ -17,8 +19,6 @@ module packet_recv
     input logic [15:0] host_port_i,
     input logic [31:0] host_ip_i,
     input logic [47:0] host_mac_i,
-
-    input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
 
     axis_if.master m_axis
 );
