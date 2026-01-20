@@ -5,6 +5,8 @@ module eth_header_gen
 #(
     parameter int PAYLOAD_WIDTH = 11
 ) (
+    input logic clk_i,
+
     input logic [15:0] fpga_port_i,
     input logic [31:0] fpga_ip_i,
     input logic [47:0] fpga_mac_i,
@@ -32,7 +34,7 @@ module eth_header_gen
     assign udp_length = UDP_HEADER_BYTES + payload_bytes_i;
 
     logic [15:0] ipv4_length;
-    assign ipv4_length = IPV4_HEADER_BYTES + payload_bytes_i;
+    assign ipv4_length = IPV4_HEADER_BYTES + udp_length;
 
     ethernet_header_t header;
 
@@ -56,6 +58,8 @@ module eth_header_gen
     assign header.ipv4.udp.length            = {<<8{udp_length}};
     assign header.ipv4.udp.udp_checksum      = {<<8{UDP_CHECKSUM}};
 
-    assign output_header_o                   = header;
+    always_ff @(posedge clk_i) begin
+        output_header_o <= header;
+    end
 
 endmodule
