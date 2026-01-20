@@ -184,57 +184,57 @@ module packet_gen
     logic [GMII_WIDTH-1:0] tx_data;
     logic                  tx_valid;
     logic                  fcs_en;
-    logic                  fcs_rst_i;
+    logic                  fcs_rst;
 
     always_comb begin
         case (current_state)
             IDLE: begin
-                tx_valid  = 0;
-                tx_data   = 0;
-                fcs_en    = 0;
-                fcs_rst_i = 1;
+                tx_valid = 0;
+                tx_data  = 0;
+                fcs_en   = 0;
+                fcs_rst  = 1;
             end
             PREAMBLE: begin
-                tx_valid  = 1;
-                tx_data   = preamble_buffer[GMII_WIDTH-1:0];
-                fcs_en    = 0;
-                fcs_rst_i = 0;
+                tx_valid = 1;
+                tx_data  = preamble_buffer[GMII_WIDTH-1:0];
+                fcs_en   = 0;
+                fcs_rst  = 0;
             end
             SFD: begin
-                tx_valid  = 1;
-                tx_data   = sfd_buffer[GMII_WIDTH-1:0];
-                fcs_en    = 0;
-                fcs_rst_i = 0;
+                tx_valid = 1;
+                tx_data  = sfd_buffer[GMII_WIDTH-1:0];
+                fcs_en   = 0;
+                fcs_rst  = 0;
             end
             HEADER: begin
-                tx_valid  = 1;
-                tx_data   = header_buffer[GMII_WIDTH-1:0];
-                fcs_en    = 1;
-                fcs_rst_i = 0;
+                tx_valid = 1;
+                tx_data  = header_buffer[GMII_WIDTH-1:0];
+                fcs_en   = 1;
+                fcs_rst  = 0;
             end
             DATA: begin
-                tx_valid  = data_valid;
-                tx_data   = data_buffer[GMII_WIDTH-1:0];
-                fcs_en    = 1;
-                fcs_rst_i = 0;
+                tx_valid = data_valid;
+                tx_data  = data_buffer[GMII_WIDTH-1:0];
+                fcs_en   = 1;
+                fcs_rst  = 0;
             end
             FCS: begin
-                tx_valid  = 1;
-                tx_data   = fcs_buffer[GMII_WIDTH-1:0];
-                fcs_en    = 0;
-                fcs_rst_i = 0;
+                tx_valid = 1;
+                tx_data  = fcs_buffer[GMII_WIDTH-1:0];
+                fcs_en   = 0;
+                fcs_rst  = 0;
             end
             WAIT: begin
-                tx_valid  = 0;
-                tx_data   = 0;
-                fcs_en    = 0;
-                fcs_rst_i = 0;
+                tx_valid = 0;
+                tx_data  = 0;
+                fcs_en   = 0;
+                fcs_rst  = 0;
             end
             default: begin
-                tx_valid  = 0;
-                tx_data   = 0;
-                fcs_en    = 0;
-                fcs_rst_i = 0;
+                tx_valid = 0;
+                tx_data  = 0;
+                fcs_en   = 0;
+                fcs_rst  = 0;
             end
         endcase
     end
@@ -280,13 +280,13 @@ module packet_gen
 
     crc #(
         .DATA_WIDTH(GMII_WIDTH),
-        .CRC_WIDTH (32),
+        .CRC_WIDTH (FCS_BYTES * 8),
         .LSB_FIRST (1),
         .INVERT_OUT(1),
         .LEFT_SHIFT(0)
     ) i_crc (
         .clk_i (clk_i),
-        .rst_i (rst_i || fcs_rst_i),
+        .rst_i (rst_i || fcs_rst),
         .data_i(tx_data),
         .en_i  (fcs_en),
         .crc_o (fcs)

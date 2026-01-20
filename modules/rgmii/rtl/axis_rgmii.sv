@@ -14,6 +14,8 @@ module axis_rgmii #(
     input logic [RGMII_WIDTH-1:0] eth_rxd_i,
     input logic                   eth_rx_ctl_i,
 
+    input logic check_destination_i,
+
     input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
 
     input logic [15:0] fpga_port_i,
@@ -23,6 +25,8 @@ module axis_rgmii #(
     input logic [15:0] host_port_i,
     input logic [31:0] host_ip_i,
     input logic [47:0] host_mac_i,
+
+    output logic crc_err_o,
 
     axis_if.slave  s_axis,
     axis_if.master m_axis
@@ -58,19 +62,24 @@ module axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
-        .rx_dv_i         (rx_dv),
-        .rx_d_i          (rx_d),
-        .payload_bytes_i (payload_bytes_i),
-        .fpga_port_i     (fpga_port_i),
-        .fpga_ip_i       (fpga_ip_i),
-        .fpga_mac_i      (fpga_mac_i),
-        .host_port_i     (host_port_i),
-        .host_ip_i       (host_ip_i),
-        .host_mac_i      (host_mac_i),
-        .m_axis          (m_axis)
+        .rx_dv_i            (rx_dv),
+        .rx_d_i             (rx_d),
+        .check_destination_i(check_destination_i),
+        .payload_bytes_i    (payload_bytes_i),
+        .fpga_port_i        (fpga_port_i),
+        .fpga_ip_i          (fpga_ip_i),
+        .fpga_mac_i         (fpga_mac_i),
+        .host_port_i        (host_port_i),
+        .host_ip_i          (host_ip_i),
+        .host_mac_i         (host_mac_i),
+        .crc_err_o          (crc_err_o),
+        .m_axis             (m_axis)
     );
 
-    assign eth_tx_clk_o = eth_rx_clk_i;
+    BUFG BUFG_inst (
+        .I(eth_rx_clk_i),  // 1-bit input: Clock input
+        .O(eth_tx_clk_o)   // 1-bit output: Clock output
+    );
 
     rgmii_tx #(
         .GMII_WIDTH (GMII_WIDTH),

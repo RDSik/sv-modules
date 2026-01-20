@@ -10,6 +10,8 @@ module packet_recv
     input logic [GMII_WIDTH-1:0] rx_d_i,
     input logic                  rx_dv_i,
 
+    input logic check_destination_i,
+
     input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
 
     input logic [15:0] fpga_port_i,
@@ -19,6 +21,8 @@ module packet_recv
     input logic [15:0] host_port_i,
     input logic [31:0] host_ip_i,
     input logic [47:0] host_mac_i,
+
+    output logic crc_err_o,
 
     axis_if.master m_axis
 );
@@ -49,20 +53,28 @@ module packet_recv
     end
 
     localparam int HEADER_BITS = HEADER_BYTES * 8;
+    localparam int PREAMBLE_SFD_BITS = (PREAMBLE_BYTES + SFD_BYTES) * 8;
+    localparam int FCS_BITS = FCS_BYTES * 8;
+
     localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
+    localparam int SFD_LENGTH = SFD_BYTES * 8 / GMII_WIDTH;
+    localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
     localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
 
-    logic             [AXIS_DATA_WIDTH-1:0] data_buffer;
-    logic             [               63:0] preamble_sfd_buffer;
-    logic             [               63:0] preamble_sfd_buffer_next;
-    ethernet_header_t                       header_buffer;
+    ethernet_header_t                         header_buffer;
+    logic             [  AXIS_DATA_WIDTH-1:0] data_buffer;
+    logic             [PREAMBLE_SFD_BITS-1:0] preamble_sfd_buffer;
+    logic             [         FCS_BITS-1:0] fcs;
+    logic             [         FCS_BITS-1:0] fcs_buffer;
+    logic             [         FCS_BITS-1:0] calculated_fcs;
 
     typedef enum {
         IDLE,
         PREAMBLE_SFD,
         HEADER,
         DATA,
-        FCS
+        FCS,
+        CRC_CHECK
     } state_type_t;
 
     state_type_t current_state, next_state;
@@ -81,6 +93,9 @@ module packet_recv
         end
     end
 
+    logic preamble_sfd_ok;
+    assign preamble_sfd_ok = ({<<8{preamble_sfd_buffer}} == {PREAMBULE_VAL, SFD_VAL});
+
     always_comb begin
         next_state = current_state;
         case (current_state)
@@ -90,7 +105,7 @@ module packet_recv
                 end
             end
             PREAMBLE_SFD: begin
-                if (preamble_sfd_buffer_next == {SFD_VAL, PREAMBULE_VAL}) begin
+                if (state_counter == PREAMBLE_LENGTH + SFD_LENGTH - 1) begin
                     next_state = HEADER;
                 end
             end
@@ -98,7 +113,7 @@ module packet_recv
                 if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
                 end
-                if (packet_done) begin
+                if (packet_done | ~preamble_sfd_ok) begin
                     next_state = IDLE;
                 end
             end
@@ -109,8 +124,11 @@ module packet_recv
             end
             FCS: begin
                 if (state_counter == FCS_LENGTH - 1) begin
-                    next_state = IDLE;
+                    next_state = CRC_CHECK;
                 end
+            end
+            CRC_CHECK: begin
+                next_state = IDLE;
             end
             default: next_state = current_state;
         endcase
@@ -126,25 +144,44 @@ module packet_recv
 
     logic data_valid;
     logic data_last;
+    logic fcs_en;
+    logic fcs_rst;
 
-    logic [47:0] packet_destination;
-    assign packet_destination              = {<<8{header_buffer.mac_destination}};
+    assign fcs_en  = (current_state == HEADER) || (current_state == DATA);
+    assign fcs_rst = (current_state == IDLE);
 
-    assign preamble_sfd_buffer_next[63:56] = rst_i ? 0 : rxd_z[2];
-    assign preamble_sfd_buffer_next[55:0]  = rst_i ? 0 : preamble_sfd_buffer[63:8];
+    crc #(
+        .DATA_WIDTH(GMII_WIDTH),
+        .CRC_WIDTH (FCS_BYTES * 8),
+        .LSB_FIRST (1),
+        .INVERT_OUT(1),
+        .LEFT_SHIFT(0)
+    ) i_crc (
+        .clk_i (clk_i),
+        .rst_i (rst_i || fcs_rst),
+        .data_i(rxd_z[2]),
+        .en_i  (fcs_en),
+        .crc_o (fcs)
+    );
+
+    logic destinaion_ok;
+    assign destinaion_ok = ({<<8{header_buffer.mac_destination}} == host_mac_i);
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             preamble_sfd_buffer <= 0;
             header_buffer       <= 0;
+            fcs_buffer          <= 0;
             data_buffer         <= 0;
             data_valid          <= 0;
             data_last           <= 0;
+            crc_err_o           <= 0;
         end else begin
             data_valid <= 0;
             data_last  <= 0;
             if (current_state == PREAMBLE_SFD) begin
-                preamble_sfd_buffer <= preamble_sfd_buffer_next;
+                preamble_sfd_buffer[PREAMBLE_SFD_BITS-1-:GMII_WIDTH] <= rxd_z[2];
+                preamble_sfd_buffer[PREAMBLE_SFD_BITS-GMII_WIDTH-1:0] <= preamble_sfd_buffer[PREAMBLE_SFD_BITS-1:GMII_WIDTH];
             end
             if (current_state == HEADER) begin
                 header_buffer[HEADER_BITS-1-:GMII_WIDTH] <= rxd_z[2];
@@ -152,8 +189,18 @@ module packet_recv
             end
             if (current_state == DATA) begin
                 data_buffer <= rxd_z[2];
-                data_valid  <= (packet_destination == host_mac_i);
+                data_valid  <= ~check_destination_i | destinaion_ok;
                 data_last   <= (next_state == FCS);
+            end
+            if (current_state == FCS) begin
+                fcs_buffer[FCS_BITS-1-:GMII_WIDTH]  <= rxd_z[2];
+                fcs_buffer[FCS_BITS-GMII_WIDTH-1:0] <= fcs_buffer[FCS_BITS-1:GMII_WIDTH];
+            end
+            if ((current_state == DATA) && (next_state == FCS)) begin
+                calculated_fcs <= fcs;
+            end
+            if (current_state == CRC_CHECK) begin
+                crc_err_o <= (calculated_fcs != fcs_buffer);
             end
         end
     end
