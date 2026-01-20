@@ -58,15 +58,16 @@ module axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
-        .rx_dv_i    (rx_dv),
-        .rx_d_i     (rx_d),
-        .fpga_port_i(fpga_port_i),
-        .fpga_ip_i  (fpga_ip_i),
-        .fpga_mac_i (fpga_mac_i),
-        .host_port_i(host_port_i),
-        .host_ip_i  (host_ip_i),
-        .host_mac_i (host_mac_i),
-        .m_axis     (m_axis)
+        .rx_dv_i         (rx_dv),
+        .rx_d_i          (rx_d),
+        .payload_bytes_i (payload_bytes_i),
+        .fpga_port_i     (fpga_port_i),
+        .fpga_ip_i       (fpga_ip_i),
+        .fpga_mac_i      (fpga_mac_i),
+        .host_port_i     (host_port_i),
+        .host_ip_i       (host_ip_i),
+        .host_mac_i      (host_mac_i),
+        .m_axis          (m_axis)
     );
 
     assign eth_tx_clk_o = eth_rx_clk_i;
