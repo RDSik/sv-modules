@@ -65,7 +65,7 @@ module packet_gen
     eth_header_gen #(
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH)
     ) eth_header_gen (
-        .clk_i(clk_i),
+        .clk_i          (clk_i),
         .fpga_port_i    (fpga_port_i),
         .fpga_ip_i      (fpga_ip_i),
         .fpga_mac_i     (fpga_mac_i),
