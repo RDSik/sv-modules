@@ -103,7 +103,7 @@ module packet_recv
                 end
             end
             DATA: begin
-                if (state_counter == payload_bytes_i) begin
+                if (state_counter == payload_bytes_i - 1) begin
                     next_state = FCS;
                 end
             end
