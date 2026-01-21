@@ -9,8 +9,11 @@
 #include "xil_io.h"
 #include "xparameters.h"
 #include "sleep.h"
+#include "xil_cache.h"
 
 int main() {
+    Xil_DCacheDisable();
+
     init_platform();
 
     while(1) {
