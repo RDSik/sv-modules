@@ -118,55 +118,41 @@ module packet_gen
     end
 
     always_comb begin
+        next_state = current_state;
         case (current_state)
             IDLE: begin
                 if (fifo_count >= payload_bytes_i) begin
                     next_state = PREAMBLE;
-                end else begin
-                    next_state = current_state;
                 end
             end
             PREAMBLE: begin
                 if (state_counter == PREAMBLE_LENGTH - 1) begin
                     next_state = SFD;
-                end else begin
-                    next_state = current_state;
                 end
             end
             SFD: begin
                 if (state_counter == SFD_LENGTH - 1) begin
                     next_state = HEADER;
-                end else begin
-                    next_state = current_state;
                 end
             end
             HEADER: begin
                 if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
-                end else begin
-                    next_state = current_state;
                 end
             end
             DATA: begin
                 if (state_counter == data_length - 1) begin
                     next_state = FCS;
-                end else begin
-                    next_state = current_state;
                 end
             end
             FCS: begin
                 if (state_counter == FCS_LENGTH - 1) begin
                     next_state = WAIT;
-                end else begin
-                    next_state = current_state;
                 end
             end
             WAIT: begin
                 if (state_counter == WAIT_LENGTH - 1) begin
                     next_state = IDLE;
-                end else begin
-                    next_state = current_state;
-
                 end
             end
             default: next_state = current_state;
@@ -243,6 +229,7 @@ module packet_gen
         if (rst_i) begin
             preamble_buffer <= 0;
             sfd_buffer      <= 0;
+            fcs_buffer      <= 0;
             header_buffer   <= 0;
             data_buffer     <= 0;
             data_valid      <= 0;

@@ -52,6 +52,7 @@ endif
 
 sdk:
 	xsdk -batch -source $(PROJECT_DIR)/$(BOARD)/$(SDK_TCL)
+	xsdk -workspace $(PROJECT_DIR)/$(BOARD)/$(TOP)_bsp
 
 program:
 	openFPGALoader -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs

@@ -53,7 +53,7 @@ module packet_recv
     end
 
     localparam int HEADER_BITS = HEADER_BYTES * 8;
-    localparam int PREAMBLE_SFD_BITS = (PREAMBLE_BYTES + SFD_BYTES) * 8;
+    localparam int PREAMBLE_BITS = PREAMBLE_BYTES * 8;
     localparam int FCS_BITS = FCS_BYTES * 8;
 
     localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
@@ -61,17 +61,18 @@ module packet_recv
     localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
     localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
 
-    ethernet_header_t                         header_buffer;
-    logic             [  AXIS_DATA_WIDTH-1:0] data_buffer;
-    logic             [PREAMBLE_SFD_BITS-1:0] preamble_sfd;
-    logic             [PREAMBLE_SFD_BITS-1:0] preamble_sfd_buffer;
-    logic             [         FCS_BITS-1:0] fcs;
-    logic             [         FCS_BITS-1:0] fcs_buffer;
-    logic             [         FCS_BITS-1:0] calculated_fcs;
+    ethernet_header_t                       header_buffer;
+    logic             [AXIS_DATA_WIDTH-1:0] data_buffer;
+    logic             [  PREAMBLE_BITS-1:0] preamble_buffer;
+    logic             [    SFD_BYTES*8-1:0] sfd_buffer;
+    logic             [       FCS_BITS-1:0] fcs;
+    logic             [       FCS_BITS-1:0] fcs_buffer;
+    logic             [       FCS_BITS-1:0] calculated_fcs;
 
     typedef enum {
         IDLE,
-        PREAMBLE_SFD,
+        SFD,
+        PREAMBLE,
         HEADER,
         DATA,
         FCS,
@@ -94,18 +95,21 @@ module packet_recv
         end
     end
 
-    assign preamble_sfd = {<<8{preamble_sfd_buffer}};
-
     always_comb begin
         next_state = current_state;
         case (current_state)
             IDLE: begin
                 if (packet_start) begin
-                    next_state = PREAMBLE_SFD;
+                    next_state = PREAMBLE;
                 end
             end
-            PREAMBLE_SFD: begin
-                if (state_counter == PREAMBLE_LENGTH + SFD_LENGTH - 1) begin
+            PREAMBLE: begin
+                if (state_counter == PREAMBLE_LENGTH - 1) begin
+                    next_state = SFD;
+                end
+            end
+            SFD: begin
+                if (state_counter == SFD_LENGTH - 1) begin
                     next_state = HEADER;
                 end
             end
@@ -113,7 +117,7 @@ module packet_recv
                 if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
                 end
-                if (packet_done | (preamble_sfd != {PREAMBULE_VAL, SFD_VAL})) begin
+                if (packet_done || ({PREAMBULE_VAL, SFD_VAL} != {preamble_buffer, sfd_buffer})) begin
                     next_state = IDLE;
                 end
             end
@@ -169,19 +173,23 @@ module packet_recv
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            preamble_sfd_buffer <= 0;
-            header_buffer       <= 0;
-            fcs_buffer          <= 0;
-            data_buffer         <= 0;
-            data_valid          <= 0;
-            data_last           <= 0;
-            crc_err_o           <= 0;
+            sfd_buffer      <= 0;
+            preamble_buffer <= 0;
+            header_buffer   <= 0;
+            fcs_buffer      <= 0;
+            data_buffer     <= 0;
+            data_valid      <= 0;
+            data_last       <= 0;
+            crc_err_o       <= 0;
         end else begin
             data_valid <= 0;
             data_last  <= 0;
-            if (current_state == PREAMBLE_SFD) begin
-                preamble_sfd_buffer[PREAMBLE_SFD_BITS-1-:GMII_WIDTH] <= rxd_z[2];
-                preamble_sfd_buffer[PREAMBLE_SFD_BITS-GMII_WIDTH-1:0] <= preamble_sfd_buffer[PREAMBLE_SFD_BITS-1:GMII_WIDTH];
+            if (current_state == PREAMBLE) begin
+                preamble_buffer[PREAMBLE_BITS-1-:GMII_WIDTH] <= rxd_z[2];
+                preamble_buffer[PREAMBLE_BITS-GMII_WIDTH-1:0] <= preamble_buffer[PREAMBLE_BITS-1:GMII_WIDTH];
+            end
+            if (current_state == SFD) begin
+                sfd_buffer <= rxd_z[2];
             end
             if (current_state == HEADER) begin
                 header_buffer[HEADER_BITS-1-:GMII_WIDTH] <= rxd_z[2];
@@ -222,7 +230,7 @@ module packet_recv
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (AXIS_DATA_WIDTH),
         .TLAST_EN    (1),
-        .FIFO_MODE   ("sync"),
+        .FIFO_MODE   ("async"),
         .READ_LATENCY(1),
         .RAM_STYLE   ("distributed")
     ) i_axis_fifo_rx (
