@@ -19,10 +19,10 @@ module rgmii_rx #(
     assign gmii_rx_en_o = gmii_rxdv_w[1] & gmii_rxdv_w[0];
 
     IDELAYE2 #(
-        .DELAY_SRC       ("IDATAIN"),     // Delay input (IDATAIN, DATAIN) 
+        .DELAY_SRC       ("IDATAIN"),     // Delay input (IDATAIN, DATAIN)
         .IDELAY_TYPE     ("FIXED"),       // FIXED, VARIABLE, VAR_LOAD, VAR_LOAD_PIPE
         .IDELAY_VALUE    (IDELAY_VALUE),  // Input delay tap setting (0-31)
-        .REFCLK_FREQUENCY(200.0)          // IDELAYCTRL clock input frequency in MHz 
+        .REFCLK_FREQUENCY(200.0)          // IDELAYCTRL clock input frequency in MHz
     ) u_delay_rx_ctrl (
         .CNTVALUEOUT(),                    // 5-bit output: Counter value output
         .DATAOUT    (rgmii_rx_ctl_delay),  // 1-bit output: Delayed data output
