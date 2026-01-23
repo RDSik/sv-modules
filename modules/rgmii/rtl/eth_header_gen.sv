@@ -18,7 +18,7 @@ module eth_header_gen
     output ethernet_header_t output_header_o
 );
 
-    localparam logic [15:0] HEADER_CHECKSUM = 16'h0000;
+    // localparam logic [15:0] HEADER_CHECKSUM = 16'h0000;
     localparam logic [15:0] ETHERTYPE = 16'h0800;
     localparam logic [7:0] VERSION_IHL = 8'h45;
     localparam logic [7:0] TOS = 8'h00;
@@ -34,6 +34,14 @@ module eth_header_gen
     logic [15:0] ipv4_length;
     assign ipv4_length = IPV4_HEADER_BYTES + udp_length;
 
+    logic [31:0] checksum_all_sum;
+    logic [31:0] checksum_half_sum;
+    logic [15:0] header_checksum;
+
+    assign checksum_all_sum = {VERSION_IHL, TOS} + ipv4_length + IDENTIFICATION + FLAGS_FRAGMENT_OFFSET + {TIME_TO_LIVE, PROTOCOL} + fpga_ip_i[31:16] + fpga_ip_i[15:0] + host_ip_i[31:16] + host_ip_i[15:0];
+    assign checksum_half_sum = checksum_all_sum[15:0] + checksum_all_sum[31:16];
+    assign header_checksum = ~(checksum_half_sum[15:0] + checksum_half_sum[31:16]);
+
     ethernet_header_t header;
 
     assign header.mac_source                 = {<<8{fpga_mac_i}};
@@ -47,7 +55,7 @@ module eth_header_gen
     assign header.ipv4.flags_fragment_offset = {<<8{FLAGS_FRAGMENT_OFFSET}};
     assign header.ipv4.time_to_live          = {<<8{TIME_TO_LIVE}};
     assign header.ipv4.protocol              = {<<8{PROTOCOL}};
-    assign header.ipv4.header_checksum       = {<<8{HEADER_CHECKSUM}};
+    assign header.ipv4.header_checksum       = {<<8{header_checksum}};
     assign header.ipv4.ip_source             = {<<8{fpga_ip_i}};
     assign header.ipv4.ip_destination        = {<<8{host_ip_i}};
 
@@ -56,6 +64,6 @@ module eth_header_gen
     assign header.ipv4.udp.length            = {<<8{udp_length}};
     assign header.ipv4.udp.udp_checksum      = {<<8{UDP_CHECKSUM}};
 
-    assign output_header_o = header;
+    assign output_header_o                   = header;
 
 endmodule
