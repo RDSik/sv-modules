@@ -121,7 +121,8 @@ module ps_pl_top #(
         .SPI_CS_WIDTH   (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (1),
-        .MODE           ("async")
+        .MODE           ("async"),
+        .SIM_EN         (0)
     ) i_axil_top (
         .clk_i       (clk_i),
         .uart_rx_i   (uart_rx_i),
