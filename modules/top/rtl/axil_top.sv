@@ -1,23 +1,17 @@
 /* verilator lint_off TIMESCALEMOD */
 module axil_top #(
-    parameter int FIFO_DEPTH = 128,
-    parameter int AXIL_ADDR_WIDTH = 32,
-    parameter int AXIL_DATA_WIDTH = 32,
-    parameter int SPI_CS_WIDTH = 1,
-    parameter logic ILA_EN = 0,
-    parameter int MASTER_NUM = 1,
-    parameter int SLAVE_NUM = 3,
-    parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
-        32'h43c0_0000,
-        32'h43c1_0000,
-        32'h43c2_0000
-    },
-    parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
-        32'h43c0_ffff,
-        32'h43c1_ffff,
-        32'h43c2_ffff
-    },
-    parameter MODE = "sync"
+    parameter int                                        FIFO_DEPTH      = 128,
+    parameter int                                        AXIL_ADDR_WIDTH = 32,
+    parameter int                                        AXIL_DATA_WIDTH = 32,
+    parameter int                                        RGMII_WIDTH     = 4,
+    parameter int                                        SPI_CS_WIDTH    = 1,
+    parameter logic                                      ILA_EN          = 0,
+    parameter int                                        MASTER_NUM      = 1,
+    parameter int                                        SLAVE_NUM       = 3,
+    parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR  = '{default: '0},
+    parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{default: '0},
+    parameter                                            MODE            = "sync",
+    parameter logic                                      SIM_EN          = 0
 ) (
     input logic clk_i,
 
@@ -32,7 +26,20 @@ module axil_top #(
     output logic sda_pad_o,
     output logic sda_padoen_o,
 
+    inout        eth_mdio_io,
+    output logic eth_mdc_o,
+
+    output logic                   eth_txc_o,
+    output logic [RGMII_WIDTH-1:0] eth_txd_o,
+    output logic                   eth_tx_ctl_o,
+
+    input logic [RGMII_WIDTH-1:0] eth_rxd_i,
+    input logic                   eth_rx_ctl_i,
+
     spi_if.master m_spi,
+
+    axis_if.slave  s_axis,
+    axis_if.master m_axis,
 
     axil_if.slave s_axil[MASTER_NUM-1:0]
 );
@@ -99,5 +106,27 @@ module axil_top #(
         .sda_padoen_o(sda_padoen_o),
         .s_axil      (m_axil[2])
     );
+
+    if (~SIM_EN) begin : g_sim_disable
+        axil_rgmii #(
+            .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+            .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+            .RGMII_WIDTH    (RGMII_WIDTH),
+            .ILA_EN         (ILA_EN),
+            .MODE           (MODE)
+        ) i_axil_rgmii (
+            .clk_i       (clk_i),
+            .eth_mdio_io (eth_mdio_io),
+            .eth_mdc_o   (eth_mdc_o),
+            .eth_txd_o   (eth_txd_o),
+            .eth_tx_ctl_o(eth_tx_ctl_o),
+            .eth_txc_o   (eth_txc_o),
+            .eth_rxd_i   (eth_rxd_i),
+            .eth_rx_ctl_i(eth_rx_ctl_i),
+            .s_axis      (s_axis),
+            .m_axis      (m_axis),
+            .s_axil      (m_axil[3])
+        );
+    end
 
 endmodule

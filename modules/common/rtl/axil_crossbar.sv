@@ -4,16 +4,8 @@ module axil_crossbar #(
     parameter int DATA_WIDTH = 32,
     parameter int MASTER_NUM = 1,
     parameter int SLAVE_NUM = 3,
-    parameter logic [SLAVE_NUM-1:0][ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
-        32'h43c0_0000,
-        32'h43c1_0000,
-        32'h43c2_0000
-    },
-    parameter logic [SLAVE_NUM-1:0][ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
-        32'h43c0_ffff,
-        32'h43c1_ffff,
-        32'h43c2_ffff
-    }
+    parameter logic [SLAVE_NUM-1:0][ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{default: '0},
+    parameter logic [SLAVE_NUM-1:0][ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{default: '0}
 ) (
     axil_if.slave  s_axil[MASTER_NUM-1:0],
     axil_if.master m_axil[ SLAVE_NUM-1:0]

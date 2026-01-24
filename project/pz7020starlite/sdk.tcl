@@ -29,8 +29,6 @@ createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
 set source_dir "modules/uart/sdk"
 
-configapp -app $app -add include $source_dir
-
 importsources -name $syn_top -path $source_dir
 
 projects -build

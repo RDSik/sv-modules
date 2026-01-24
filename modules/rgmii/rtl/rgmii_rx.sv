@@ -1,6 +1,7 @@
 module rgmii_rx #(
-    parameter int GMII_WIDTH  = 8,
-    parameter int RGMII_WIDTH = 4
+    parameter int GMII_WIDTH   = 8,
+    parameter int RGMII_WIDTH  = 4,
+    parameter int IDELAY_VALUE = 0
 ) (
     input logic clk_i,
 

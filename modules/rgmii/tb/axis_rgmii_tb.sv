@@ -13,6 +13,7 @@ module axis_rgmii_tb ();
     localparam int RESET_DELAY = 10;
     localparam int CLK_PER_NS = 2;
 
+    localparam logic CHECK_DESTINATION = 1;
     localparam logic [7:0] FPGA_IP_1 = 10;
     localparam logic [7:0] FPGA_IP_2 = 0;
     localparam logic [7:0] FPGA_IP_3 = 0;
@@ -83,6 +84,8 @@ module axis_rgmii_tb ();
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_gen (
+        .clk_i          (clk_i),
+        .rst_i          (rst_i),
         .tx_en_o        (en),
         .tx_d_o         (data),
         .payload_bytes_i(PAYLOAD),
@@ -99,9 +102,11 @@ module axis_rgmii_tb ();
         .GMII_WIDTH     (GMII_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
+        .clk_i              (clk_i),
+        .rst_i              (rst_i),
         .rx_dv_i            (en),
         .rx_d_i             (data),
-        .check_destination_i(1'b1),
+        .check_destination_i(CHECK_DESTINATION),
         .payload_bytes_i    (PAYLOAD),
         .fpga_port_i        (FPGA_PORT),
         .fpga_ip_i          (FPGA_IP),

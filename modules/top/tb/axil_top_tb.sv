@@ -36,6 +36,20 @@ module axil_top_tb ();
 
     assign m_spi.miso = m_spi.mosi;
 
+    axis_if #(
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
+    ) m_axis (
+        .clk_i(clk_i),
+        .rst_i(rstn_i)
+    );
+
+    axis_if #(
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
+    ) s_axis (
+        .clk_i(clk_i),
+        .rst_i(rstn_i)
+    );
+
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
@@ -99,12 +113,15 @@ module axil_top_tb ();
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .ILA_EN         (0),
-        .MODE           ("sync")
+        .MODE           ("sync"),
+        .SIM_EN         (1)
     ) i_axil_top (
         .clk_i    (clk_i),
         .uart_rx_i(uart),
         .uart_tx_o(uart),
         .s_axil   (s_axil),
+        .s_axis   (s_axis),
+        .m_axis   (m_axis),
         .m_spi    (m_spi)
     );
 

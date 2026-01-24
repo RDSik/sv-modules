@@ -41,6 +41,61 @@ package rgmii_pkg;
     localparam logic [55:0] PREAMBULE_VAL = 56'h55555555555555;
     localparam logic [7:0] SFD_VAL = 8'hd5;
 
+    typedef struct packed {
+        logic [7:0]  rsrvd;
+        logic [7:0]  reg_num;
+        logic [15:0] fifo_depth;
+    } rgmii_param_t;
+
+    typedef struct packed {
+        logic [30:0] rsrvd;
+        logic        crc_err;
+    } rgmii_status_t;
+
+    typedef struct packed {
+        logic [13:0] rsrvd;
+        logic [15:0] payload_bytes;
+        logic        check_destination;
+        logic        reset;
+    } rgmii_control_t;
+
+    typedef struct packed {
+        logic [15:0] fpga;
+        logic [15:0] host;
+    } rgmii_port_t;
+
+    typedef struct packed {
+        logic [31:0] fpga;
+        logic [31:0] host;
+    } rgmii_ip_t;
+
+    typedef struct packed {
+        logic [5:0][7:0] fpga;
+        logic [5:0][7:0] host;
+    } rgmii_mac_t;
+
+    typedef struct packed {
+        rgmii_param_t   param;
+        rgmii_status_t  status;
+        rgmii_mac_t     mac;
+        rgmii_ip_t      ip;
+        rgmii_port_t    port;
+        rgmii_control_t control;
+    } rgmii_reg_t;
+
+    localparam int RGMII_REG_NUM = $bits(rgmii_reg_t) / 32;
+
+    localparam int RGMII_CONTROL_REG_POS = 0;
+    localparam int RGMII_PORT_REG_POS = RGMII_CONTROL_REG_POS + $bits(rgmii_control_t) / 32;
+    localparam int RGMII_HOST_IP_REG_POS = RGMII_PORT_REG_POS + $bits(rgmii_port_t) / 32;
+    localparam int RGMII_FPGA_IP_REG_POS = RGMII_HOST_IP_REG_POS + 1;
+    localparam int RGMII_HOST_MAC_REG_POS = RGMII_HOST_IP_REG_POS + $bits(rgmii_ip_t) / 32;
+    localparam int RGMII_FPGA_MAC_REG_POS = RGMII_HOST_MAC_REG_POS + 6;
+    localparam int RGMII_STATUS_REG_POS = RGMII_HOST_MAC_REG_POS + $bits(rgmii_mac_t) / 32;
+    localparam int RGMII_PARAM_REG_POS = RGMII_STATUS_REG_POS + $bits(rgmii_status_t) / 32;
+
+    localparam rgmii_reg_t RGMII_REG_INIT = '{control : '{reset: 1'b1, default: '0}, default: '0};
+
 endpackage
 
 `endif  // RGMII_PKG_SVH

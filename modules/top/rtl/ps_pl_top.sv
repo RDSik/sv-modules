@@ -72,20 +72,36 @@ module ps_pl_top #(
     assign m_spi.miso = spi_miso_i;
 
     localparam int FIFO_DEPTH = 128;
-    localparam int MODULES_NUM = 3;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int MODULES_NUM = 4;
 
     localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
         32'h43c0_0000,
         32'h43c1_0000,
-        32'h43c2_0000
+        32'h43c2_0000,
+        32'h43c3_0000
     };
     localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
         32'h43c0_ffff,
         32'h43c1_ffff,
-        32'h43c2_ffff
+        32'h43c2_ffff,
+        32'h43c3_ffff
     };
+
+    axis_if #(
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
+    ) m_axis_mm2s (
+        .clk_i(ps_clk),
+        .rst_i(ps_arstn)
+    );
+
+    axis_if #(
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
+    ) s_axis_s2mm (
+        .clk_i(ps_clk),
+        .rst_i(ps_arstn)
+    );
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -105,7 +121,8 @@ module ps_pl_top #(
         .SPI_CS_WIDTH   (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (1),
-        .MODE           ("async")
+        .MODE           ("async"),
+        .SIM_EN         (0)
     ) i_axil_top (
         .clk_i       (clk_i),
         .uart_rx_i   (uart_rx_i),
@@ -117,29 +134,41 @@ module ps_pl_top #(
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
         .m_spi       (m_spi),
+        .m_axis      (m_axis_mm2s),
+        .s_axis      (s_axis_s2mm),
         .s_axil      (axil)
     );
 
     zynq_bd zynq_bd_i (
-        .M00_AXI_0_araddr    (axil[0].araddr),
-        .M00_AXI_0_arprot    (axil[0].arprot),
-        .M00_AXI_0_arready   (axil[0].arready),
-        .M00_AXI_0_arvalid   (axil[0].arvalid),
-        .M00_AXI_0_awaddr    (axil[0].awaddr),
-        .M00_AXI_0_awprot    (axil[0].awprot),
-        .M00_AXI_0_awready   (axil[0].awready),
-        .M00_AXI_0_awvalid   (axil[0].awvalid),
-        .M00_AXI_0_bready    (axil[0].bready),
-        .M00_AXI_0_bresp     (axil[0].bresp),
-        .M00_AXI_0_bvalid    (axil[0].bvalid),
-        .M00_AXI_0_rdata     (axil[0].rdata),
-        .M00_AXI_0_rready    (axil[0].rready),
-        .M00_AXI_0_rresp     (axil[0].rresp),
-        .M00_AXI_0_rvalid    (axil[0].rvalid),
-        .M00_AXI_0_wdata     (axil[0].wdata),
-        .M00_AXI_0_wready    (axil[0].wready),
-        .M00_AXI_0_wstrb     (axil[0].wstrb),
-        .M00_AXI_0_wvalid    (axil[0].wvalid),
+        .M01_AXI_0_araddr    (axil[0].araddr),
+        .M01_AXI_0_arprot    (axil[0].arprot),
+        .M01_AXI_0_arready   (axil[0].arready),
+        .M01_AXI_0_arvalid   (axil[0].arvalid),
+        .M01_AXI_0_awaddr    (axil[0].awaddr),
+        .M01_AXI_0_awprot    (axil[0].awprot),
+        .M01_AXI_0_awready   (axil[0].awready),
+        .M01_AXI_0_awvalid   (axil[0].awvalid),
+        .M01_AXI_0_bready    (axil[0].bready),
+        .M01_AXI_0_bresp     (axil[0].bresp),
+        .M01_AXI_0_bvalid    (axil[0].bvalid),
+        .M01_AXI_0_rdata     (axil[0].rdata),
+        .M01_AXI_0_rready    (axil[0].rready),
+        .M01_AXI_0_rresp     (axil[0].rresp),
+        .M01_AXI_0_rvalid    (axil[0].rvalid),
+        .M01_AXI_0_wdata     (axil[0].wdata),
+        .M01_AXI_0_wready    (axil[0].wready),
+        .M01_AXI_0_wstrb     (axil[0].wstrb),
+        .M01_AXI_0_wvalid    (axil[0].wvalid),
+        .M_AXIS_MM2S_0_tdata (m_axis_mm2s.tdata),
+        .M_AXIS_MM2S_0_tkeep ('1),
+        .M_AXIS_MM2S_0_tlast (m_axis_mm2s.tlast),
+        .M_AXIS_MM2S_0_tready(m_axis_mm2s.tready),
+        .M_AXIS_MM2S_0_tvalid(m_axis_mm2s.tvalid),
+        .S_AXIS_S2MM_0_tdata (s_axis_s2mm.tdata),
+        .S_AXIS_S2MM_0_tkeep ('1),
+        .S_AXIS_S2MM_0_tlast (s_axis_s2mm.tlast),
+        .S_AXIS_S2MM_0_tready(s_axis_s2mm.tready),
+        .S_AXIS_S2MM_0_tvalid(s_axis_s2mm.tvalid),
         .DDR_0_addr          (DDR_0_addr),
         .DDR_0_ba            (DDR_0_ba),
         .DDR_0_cas_n         (DDR_0_cas_n),

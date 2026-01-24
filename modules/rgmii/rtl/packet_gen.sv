@@ -7,6 +7,9 @@ module packet_gen
     parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8
 ) (
+    input logic clk_i,
+    input logic rst_i,
+
     output logic                  tx_en_o,
     output logic [GMII_WIDTH-1:0] tx_d_o,
 
@@ -43,12 +46,6 @@ module packet_gen
     localparam int PREAMBLE_LENGTH = PREAMBLE_BYTES * 8 / GMII_WIDTH;
     localparam int FCS_LENGTH = FCS_BYTES * 8 / GMII_WIDTH;
 
-    logic clk_i;
-    logic rst_i;
-
-    assign clk_i = s_axis.clk_i;
-    assign rst_i = s_axis.rst_i;
-
     ethernet_header_t                                  header;
     logic             [$bits(ethernet_header_t)-1 : 0] header_buffer;
     logic             [           AXIS_DATA_WIDTH-1:0] data_buffer;
@@ -65,6 +62,7 @@ module packet_gen
     eth_header_gen #(
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH)
     ) eth_header_gen (
+        .clk_i          (clk_i),
         .fpga_port_i    (fpga_port_i),
         .fpga_ip_i      (fpga_ip_i),
         .fpga_mac_i     (fpga_mac_i),
@@ -118,55 +116,41 @@ module packet_gen
     end
 
     always_comb begin
+        next_state = current_state;
         case (current_state)
             IDLE: begin
                 if (fifo_count >= payload_bytes_i) begin
                     next_state = PREAMBLE;
-                end else begin
-                    next_state = current_state;
                 end
             end
             PREAMBLE: begin
                 if (state_counter == PREAMBLE_LENGTH - 1) begin
                     next_state = SFD;
-                end else begin
-                    next_state = current_state;
                 end
             end
             SFD: begin
                 if (state_counter == SFD_LENGTH - 1) begin
                     next_state = HEADER;
-                end else begin
-                    next_state = current_state;
                 end
             end
             HEADER: begin
                 if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
-                end else begin
-                    next_state = current_state;
                 end
             end
             DATA: begin
                 if (state_counter == data_length - 1) begin
                     next_state = FCS;
-                end else begin
-                    next_state = current_state;
                 end
             end
             FCS: begin
                 if (state_counter == FCS_LENGTH - 1) begin
                     next_state = WAIT;
-                end else begin
-                    next_state = current_state;
                 end
             end
             WAIT: begin
                 if (state_counter == WAIT_LENGTH - 1) begin
                     next_state = IDLE;
-                end else begin
-                    next_state = current_state;
-
                 end
             end
             default: next_state = current_state;
@@ -243,6 +227,7 @@ module packet_gen
         if (rst_i) begin
             preamble_buffer <= 0;
             sfd_buffer      <= 0;
+            fcs_buffer      <= 0;
             header_buffer   <= 0;
             data_buffer     <= 0;
             data_valid      <= 0;
