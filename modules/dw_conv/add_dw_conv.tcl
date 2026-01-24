@@ -3,7 +3,7 @@ set path [file dirname [info script]]
 if {$xilinx == 1} {
     set xil_defaultlib "
         $path/rtl/axis_dw_conv.sv
-        $path/rtl/axis_async_dw_conv.sv
+        $path/rtl/axis_dw_conv_wrap.sv
     "
     add_files -norecurse $xil_defaultlib
     
@@ -13,5 +13,5 @@ if {$xilinx == 1} {
     add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {
     add_file $path/rtl/axis_dw_conv.sv
-    add_file $path/rtl/axis_async_dw_conv.sv
+    add_file $path/rtl/axis_dw_conv_wrap.sv
 }
