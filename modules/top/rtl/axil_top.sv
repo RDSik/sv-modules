@@ -1,16 +1,17 @@
 /* verilator lint_off TIMESCALEMOD */
 module axil_top #(
-    parameter int FIFO_DEPTH = 128,
-    parameter int AXIL_ADDR_WIDTH = 32,
-    parameter int AXIL_DATA_WIDTH = 32,
-    parameter int RGMII_WIDTH = 4,
-    parameter int SPI_CS_WIDTH = 1,
-    parameter logic ILA_EN = 0,
-    parameter int MASTER_NUM = 1,
-    parameter int SLAVE_NUM = 3,
-    parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{default: '0},
+    parameter int                                        FIFO_DEPTH      = 128,
+    parameter int                                        AXIL_ADDR_WIDTH = 32,
+    parameter int                                        AXIL_DATA_WIDTH = 32,
+    parameter int                                        RGMII_WIDTH     = 4,
+    parameter int                                        SPI_CS_WIDTH    = 1,
+    parameter logic                                      ILA_EN          = 0,
+    parameter int                                        MASTER_NUM      = 1,
+    parameter int                                        SLAVE_NUM       = 3,
+    parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR  = '{default: '0},
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{default: '0},
-    parameter MODE = "sync"
+    parameter                                            MODE            = "sync"
+
 ) (
     input logic clk_i,
 

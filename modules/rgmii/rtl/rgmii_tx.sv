@@ -12,9 +12,10 @@ module rgmii_tx #(
 );
 
     ODDR #(
-        .DDR_CLK_EDGE("SAME_EDGE"),  // "OPPOSITE_EDGE" or "SAME_EDGE"
-        .INIT        (1'b0),         // Initial value of Q: 1'b0 or 1'b1
-        .SRTYPE      ("SYNC")        // Set/Reset type: "SYNC" or "ASYNC"
+        .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),  // "OPPOSITE_EDGE" or "SAME_EDGE"
+                                               //    or "SAME_EDGE_PIPELINED"
+        .INIT        (1'b0),                   // Initial value of Q: 1'b0 or 1'b1
+        .SRTYPE      ("SYNC")                  // Set/Reset type: "SYNC" or "ASYNC"
     ) i_ODDR (
         .Q (rgmii_tx_ctl_o),  // 1-bit DDR output
         .C (clk_i),           // 1-bit clock input
@@ -27,9 +28,10 @@ module rgmii_tx #(
 
     for (genvar i = 0; i < RGMII_WIDTH; i++) begin : g_txdata
         ODDR #(
-            .DDR_CLK_EDGE("SAME_EDGE"),  // "OPPOSITE_EDGE" or "SAME_EDGE"
-            .INIT        (1'b0),         // Initial value of Q: 1'b0 or 1'b1
-            .SRTYPE      ("SYNC")        // Set/Reset type: "SYNC" or "ASYNC"
+            .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),  // "OPPOSITE_EDGE" or "SAME_EDGE"
+                                                   //    or "SAME_EDGE_PIPELINED"
+            .INIT        (1'b0),                   // Initial value of Q: 1'b0 or 1'b1
+            .SRTYPE      ("SYNC")                  // Set/Reset type: "SYNC" or "ASYNC"
         ) i_ODDR (
             .Q (rgmii_txd_o[i]),             // 1-bit DDR output
             .C (clk_i),                      // 1-bit clock input

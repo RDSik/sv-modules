@@ -3,6 +3,8 @@ module axis_rgmii #(
     parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8
 ) (
+    input logic rst_i,
+
     inout        eth_mdio_io,
     output logic eth_mdc_o,
 
@@ -47,6 +49,8 @@ module axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_gen (
+        .clk_i          (eth_rxc_i),
+        .rst_i          (rst_i),
         .tx_en_o        (tx_en),
         .tx_d_o         (tx_d),
         .payload_bytes_i(payload_bytes_i),
@@ -67,6 +71,8 @@ module axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
     ) i_packet_recv (
+        .clk_i              (eth_rxc_i),
+        .rst_i              (rst_i),
         .rx_dv_i            (rx_dv),
         .rx_d_i             (rx_d),
         .check_destination_i(check_destination_i),
@@ -93,9 +99,8 @@ module axis_rgmii #(
     );
 
     rgmii_rx #(
-        .GMII_WIDTH  (GMII_WIDTH),
-        .RGMII_WIDTH (RGMII_WIDTH),
-        .IDELAY_VALUE(0)
+        .GMII_WIDTH (GMII_WIDTH),
+        .RGMII_WIDTH(RGMII_WIDTH)
     ) i_rgmii_rx (
         .clk_i         (eth_rxc_i),
         .rgmii_rx_ctl_i(eth_rx_ctl_i),

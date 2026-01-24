@@ -7,6 +7,9 @@ module packet_recv
     parameter int PAYLOAD_WIDTH   = 11,
     parameter int AXIS_DATA_WIDTH = 8
 ) (
+    input logic clk_i,
+    input logic rst_i,
+
     input logic [GMII_WIDTH-1:0] rx_d_i,
     input logic                  rx_dv_i,
 
@@ -26,12 +29,6 @@ module packet_recv
 
     axis_if.master m_axis
 );
-
-    logic clk_i;
-    logic rst_i;
-
-    assign clk_i = m_axis.clk_i;
-    assign rst_i = m_axis.rst_i;
 
     logic [2:0][GMII_WIDTH-1:0] rxd_z;
     logic [2:0]                 rxdv_z;

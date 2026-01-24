@@ -90,6 +90,7 @@ module axil_rgmii
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .RGMII_WIDTH    (RGMII_WIDTH)
     ) i_axis_rgmii (
+        .rst_i              (rst),
         .eth_mdio_io        (eth_mdio_io),
         .eth_mdc_o          (eth_mdc_o),
         .eth_txd_o          (eth_txd_o),

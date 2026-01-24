@@ -90,7 +90,6 @@ package rgmii_pkg;
     localparam int RGMII_HOST_IP_REG_POS = RGMII_PORT_REG_POS + $bits(rgmii_port_t) / 32;
     localparam int RGMII_FPGA_IP_REG_POS = RGMII_HOST_IP_REG_POS + 1;
     localparam int RGMII_HOST_MAC_REG_POS = RGMII_HOST_IP_REG_POS + $bits(rgmii_ip_t) / 32;
-    ;
     localparam int RGMII_FPGA_MAC_REG_POS = RGMII_HOST_MAC_REG_POS + 6;
     localparam int RGMII_STATUS_REG_POS = RGMII_HOST_MAC_REG_POS + $bits(rgmii_mac_t) / 32;
     localparam int RGMII_PARAM_REG_POS = RGMII_STATUS_REG_POS + $bits(rgmii_status_t) / 32;
