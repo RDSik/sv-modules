@@ -12,6 +12,7 @@ module wr_ptr_full #(
     input  logic [  ADDR_WIDTH:0] wq2_rptr_i,
     output logic [ADDR_WIDTH-1:0] wr_addr_o,
     output logic [  ADDR_WIDTH:0] wr_ptr_o,
+    output logic [  ADDR_WIDTH:0] wr_bin_o,
     output logic                  full_o,
     output logic                  a_full_o
 );
@@ -31,6 +32,7 @@ module wr_ptr_full #(
         end
     end
 
+    assign wr_bin_o = wbin;
     assign wr_addr_o = wbin[ADDR_WIDTH-1:0];
     assign wbinnext = wbin + (wr_en_i & ~full_o);
     assign wgraynext = (wbinnext >> 1) ^ wbinnext;

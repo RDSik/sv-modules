@@ -12,6 +12,7 @@ module rd_ptr_empty #(
     input  logic [  ADDR_WIDTH:0] rq2_wptr_i,
     output logic [ADDR_WIDTH-1:0] rd_addr_o,
     output logic [  ADDR_WIDTH:0] rd_ptr_o,
+    output logic [  ADDR_WIDTH:0] rd_bin_o,
     output logic                  empty_o,
     output logic                  a_empty_o
 );
@@ -31,6 +32,7 @@ module rd_ptr_empty #(
         end
     end
 
+    assign rd_bin_o    = rbin;
     assign rd_addr_o   = rbin[ADDR_WIDTH-1:0];
     assign rbinnext    = rbin + (rd_en_i & ~empty_o);
     assign rgraynext   = (rbinnext >> 1) ^ rbinnext;

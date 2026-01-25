@@ -3,7 +3,6 @@ module axil_top #(
     parameter int                                        FIFO_DEPTH      = 128,
     parameter int                                        AXIL_ADDR_WIDTH = 32,
     parameter int                                        AXIL_DATA_WIDTH = 32,
-    parameter int                                        RGMII_WIDTH     = 4,
     parameter int                                        SPI_CS_WIDTH    = 1,
     parameter logic                                      ILA_EN          = 0,
     parameter int                                        MASTER_NUM      = 1,
@@ -105,7 +104,6 @@ module axil_top #(
     axil_rgmii #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-        .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (ILA_EN),
         .MODE           (MODE),
         .VENDOR         (VENDOR)

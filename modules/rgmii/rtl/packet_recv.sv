@@ -5,7 +5,9 @@ module packet_recv
 #(
     parameter int GMII_WIDTH      = 8,
     parameter int PAYLOAD_WIDTH   = 11,
-    parameter int AXIS_DATA_WIDTH = 8
+    parameter int AXIS_DATA_WIDTH = 8,
+    parameter int CDC_REG_NUM     = 2,
+    parameter     FIFO_MODE       = "sync"
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -226,9 +228,10 @@ module packet_recv
     axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (AXIS_DATA_WIDTH),
+        .CDC_REG_NUM (CDC_REG_NUM),
         .TLAST_EN    (1),
-        .FIFO_MODE   ("async"),
-        .READ_LATENCY(1),
+        .FIFO_MODE   (FIFO_MODE),
+        .READ_LATENCY(0),
         .RAM_STYLE   ("distributed")
     ) i_axis_fifo_rx (
         .s_axis    (s_axis),

@@ -102,6 +102,7 @@ module ps_pl_top #(
     localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int AXIS_DATA_WIDTH = 8;
     localparam int MODULES_NUM = 4;
 
     localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
@@ -118,14 +119,14 @@ module ps_pl_top #(
     };
 
     axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis_mm2s (
         .clk_i(ps_clk),
         .rst_i(~ps_arstn)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis_s2mm (
         .clk_i(ps_clk),
         .rst_i(~ps_arstn)
@@ -147,7 +148,6 @@ module ps_pl_top #(
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .SLAVE_NUM      (MODULES_NUM),
         .SPI_CS_WIDTH   ($bits(spi_cs_o)),
-        .RGMII_WIDTH    (rgmii.DATA_WIDTH),
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (1),
         .MODE           ("async"),
@@ -191,16 +191,16 @@ module ps_pl_top #(
         .M01_AXI_0_wready    (axil[0].wready),
         .M01_AXI_0_wstrb     (axil[0].wstrb),
         .M01_AXI_0_wvalid    (axil[0].wvalid),
-        .M_AXIS_MM2S_0_tdata (m_axis_mm2s.tdata),
-        .M_AXIS_MM2S_0_tkeep ('1),
-        .M_AXIS_MM2S_0_tlast (m_axis_mm2s.tlast),
-        .M_AXIS_MM2S_0_tready(m_axis_mm2s.tready),
-        .M_AXIS_MM2S_0_tvalid(m_axis_mm2s.tvalid),
-        .S_AXIS_S2MM_0_tdata (s_axis_s2mm.tdata),
-        .S_AXIS_S2MM_0_tkeep ('1),
-        .S_AXIS_S2MM_0_tlast (s_axis_s2mm.tlast),
-        .S_AXIS_S2MM_0_tready(s_axis_s2mm.tready),
-        .S_AXIS_S2MM_0_tvalid(s_axis_s2mm.tvalid),
+        .M_AXIS_0_tdata      (m_axis_mm2s.tdata),
+        .M_AXIS_0_tkeep      ('1),
+        .M_AXIS_0_tlast      (m_axis_mm2s.tlast),
+        .M_AXIS_0_tready     (m_axis_mm2s.tready),
+        .M_AXIS_0_tvalid     (m_axis_mm2s.tvalid),
+        .S_AXIS_0_tdata      (s_axis_s2mm.tdata),
+        .S_AXIS_0_tkeep      ('1),
+        .S_AXIS_0_tlast      (s_axis_s2mm.tlast),
+        .S_AXIS_0_tready     (s_axis_s2mm.tready),
+        .S_AXIS_0_tvalid     (s_axis_s2mm.tvalid),
         .DDR_0_addr          (DDR_0_addr),
         .DDR_0_ba            (DDR_0_ba),
         .DDR_0_cas_n         (DDR_0_cas_n),
