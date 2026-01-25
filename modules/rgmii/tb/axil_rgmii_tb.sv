@@ -4,8 +4,6 @@
 
 module axil_rgmii_tb ();
 
-    localparam int FIFO_DEPTH = 128;
-    localparam int CS_WIDTH = 8;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
 
@@ -79,7 +77,6 @@ module axil_rgmii_tb ();
     axil_rgmii #(
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-        .RGMII_WIDTH    (rgmii_if.DATA_WIDTH),
         .ILA_EN         (0),
         .MODE           ("sync"),
         .VENDOR         ("")

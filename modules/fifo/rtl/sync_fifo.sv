@@ -3,8 +3,7 @@ module sync_fifo #(
     parameter int FIFO_WIDTH   = 32,
     parameter int FIFO_DEPTH   = 64,
     parameter int READ_LATENCY = 1,
-    parameter     RAM_STYLE    = "block",
-    parameter int PTR_WIDTH    = $clog2(FIFO_DEPTH)
+    parameter     RAM_STYLE    = "block"
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -20,13 +19,10 @@ module sync_fifo #(
     output logic a_empty_o,
     output logic empty_o,
 
-    output logic [PTR_WIDTH:0] data_cnt_o
+    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
 );
 
-    if (PTR_WIDTH != $clog2(FIFO_DEPTH)) begin : g_ptr_width_err
-        $error("PTR_WIDTH must be equal $clog2(FIFO_DEPTH)");
-    end
-
+    localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam logic BYPASS_REG_EN = (READ_LATENCY > 0);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 

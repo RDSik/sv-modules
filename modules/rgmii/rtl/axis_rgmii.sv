@@ -1,8 +1,7 @@
 module axis_rgmii #(
-    parameter int RGMII_WIDTH     = 4,
-    parameter int PAYLOAD_WIDTH   = 11,
-    parameter int AXIS_DATA_WIDTH = 8,
-    parameter     VENDOR          = "xilinx"
+    parameter int PAYLOAD_WIDTH = 11,
+    parameter     FIFO_MODE     = "sync",
+    parameter     VENDOR        = "xilinx"
 ) (
     input logic rst_i,
 
@@ -29,6 +28,8 @@ module axis_rgmii #(
     axis_if.master m_axis
 );
 
+    localparam int RGMII_WIDTH = rgmii.DATA_WIDTH;
+    localparam int CDC_REG_NUM = 3;
     localparam int GMII_WIDTH = 8;
 
     logic [GMII_WIDTH-1:0] tx_d;
@@ -37,7 +38,9 @@ module axis_rgmii #(
     packet_gen #(
         .GMII_WIDTH     (GMII_WIDTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
+        .AXIS_DATA_WIDTH(GMII_WIDTH),
+        .CDC_REG_NUM    (CDC_REG_NUM),
+        .FIFO_MODE      (FIFO_MODE)
     ) i_packet_gen (
         .clk_i          (rgmii.rxc),
         .rst_i          (rst_i),
@@ -59,7 +62,9 @@ module axis_rgmii #(
     packet_recv #(
         .GMII_WIDTH     (GMII_WIDTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
+        .AXIS_DATA_WIDTH(GMII_WIDTH),
+        .CDC_REG_NUM    (CDC_REG_NUM),
+        .FIFO_MODE      (FIFO_MODE)
     ) i_packet_recv (
         .clk_i              (rgmii.rxc),
         .rst_i              (rst_i),

@@ -67,7 +67,7 @@ module ram_tdp #(
                         if (a_wr_en_i[i]) begin
                             a_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                         end else begin
-                            a_data <= ram[a_addr_i];
+                            a_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= ram[a_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH];
                         end
                     end
                 end
@@ -79,7 +79,7 @@ module ram_tdp #(
                         if (b_wr_en_i[i]) begin
                             b_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
                         end else begin
-                            b_data <= ram[b_addr_i];
+                            b_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= ram[b_addr_i][i*BYTE_WIDTH+:BYTE_WIDTH];
                         end
                     end
                 end

@@ -6,8 +6,7 @@ module axis_fifo #(
     parameter int   READ_LATENCY = 1,
     parameter logic TLAST_EN     = 0,
     parameter       RAM_STYLE    = "block",
-    parameter       FIFO_MODE    = "sync",
-    parameter int   PTR_WIDTH    = $clog2(FIFO_DEPTH)
+    parameter       FIFO_MODE    = "sync"
 ) (
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -15,7 +14,10 @@ module axis_fifo #(
     output logic a_full_o,
     output logic a_empty_o,
 
-    output logic [PTR_WIDTH:0] data_cnt_o
+    output logic [$clog2(FIFO_DEPTH):0] data_cnt_o,
+
+    output logic [$clog2(FIFO_DEPTH):0] wr_data_cnt_o,
+    output logic [$clog2(FIFO_DEPTH):0] rd_data_cnt_o
 );
 
     localparam int FULL_WIDTH = FIFO_WIDTH + TLAST_EN;
@@ -46,8 +48,7 @@ module axis_fifo #(
             .FIFO_WIDTH  (FULL_WIDTH),
             .FIFO_DEPTH  (FIFO_DEPTH),
             .READ_LATENCY(READ_LATENCY),
-            .RAM_STYLE   (RAM_STYLE),
-            .PTR_WIDTH   (PTR_WIDTH)
+            .RAM_STYLE   (RAM_STYLE)
         ) i_sync_fifo (
             .clk_i     (s_axis.clk_i),
             .rst_i     (s_axis.rst_i),
@@ -61,6 +62,9 @@ module axis_fifo #(
             .a_full_o  (a_full_o),
             .data_cnt_o(data_cnt_o)
         );
+
+        assign wr_data_cnt_o = data_cnt_o;
+        assign rd_data_cnt_o = data_cnt_o;
     end else if (FIFO_MODE == "async") begin : g_async_fifo
         async_fifo #(
             .FIFO_WIDTH  (FULL_WIDTH),
@@ -69,18 +73,20 @@ module axis_fifo #(
             .READ_LATENCY(0),
             .RAM_STYLE   ("distributed")
         ) i_async_fifo (
-            .wr_clk_i (s_axis.clk_i),
-            .wr_rst_i (s_axis.rst_i),
-            .wr_data_i(wr_data),
-            .rd_clk_i (m_axis.clk_i),
-            .rd_rst_i (m_axis.rst_i),
-            .rd_data_o(rd_data),
-            .push_i   (push),
-            .pop_i    (pop),
-            .empty_o  (empty),
-            .full_o   (full),
-            .a_empty_o(a_empty_o),
-            .a_full_o (a_full_o)
+            .wr_clk_i     (s_axis.clk_i),
+            .wr_rst_i     (s_axis.rst_i),
+            .wr_data_i    (wr_data),
+            .rd_clk_i     (m_axis.clk_i),
+            .rd_rst_i     (m_axis.rst_i),
+            .rd_data_o    (rd_data),
+            .push_i       (push),
+            .pop_i        (pop),
+            .empty_o      (empty),
+            .full_o       (full),
+            .a_empty_o    (a_empty_o),
+            .a_full_o     (a_full_o),
+            .wr_data_cnt_o(wr_data_cnt_o),
+            .rd_data_cnt_o(rd_data_cnt_o)
         );
 
         assign data_cnt_o = '0;

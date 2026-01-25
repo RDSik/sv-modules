@@ -6,13 +6,14 @@ module axis_rgmii_tb ();
 
     import test_pkg::*;
 
-    localparam int GMII_WIDTH = 8;
-    localparam int RGMII_WIDTH = 4;
     localparam int PAYLOAD_WIDTH = 11;
     localparam int AXIS_DATA_WIDTH = 8;
+    parameter FIFO_MODE = "sync";
 
+    localparam int ETH_CLK_PER = 2;
+    localparam int CLK_PER = 2;
+    localparam int ETH_RESET_DELAY = 10;
     localparam int RESET_DELAY = 10;
-    localparam int CLK_PER_NS = 2;
 
     localparam logic CHECK_DESTINATION = 1;
     localparam logic [7:0] FPGA_IP_1 = 10;
@@ -32,10 +33,17 @@ module axis_rgmii_tb ();
     localparam logic [31:0] HOST_IP = {HOST_IP_1, HOST_IP_2, HOST_IP_3, HOST_IP_4};
     localparam logic [31:0] FPGA_IP = {FPGA_IP_1, FPGA_IP_2, FPGA_IP_3, FPGA_IP_4};
 
-    logic                   clk_i;
-    logic                   rst_i;
-    logic [RGMII_WIDTH-1:0] data;
-    logic                   en;
+    logic eth_clk_i;
+    logic eth_rst_i;
+
+    logic clk_i;
+    logic rst_i;
+
+    rgmii_if rgmii_if ();
+
+    assign rgmii_if.rxd    = rgmii_if.txd;
+    assign rgmii_if.rx_ctl = rgmii_if.tx_ctl;
+    assign rgmii_if.rxc    = eth_clk_i;
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
@@ -52,16 +60,30 @@ module axis_rgmii_tb ();
     );
 
     initial begin
+        eth_rst_i = 1'b1;
+        repeat (ETH_RESET_DELAY) @(posedge eth_clk_i);
+        eth_rst_i = 1'b0;
+        $display("Eth done in: %0t ns\n.", $time());
+    end
+
+    initial begin
+        eth_clk_i = 1'b0;
+        forever begin
+            #(ETH_CLK_PER / 2) eth_clk_i = ~eth_clk_i;
+        end
+    end
+
+    initial begin
         rst_i = 1'b1;
         repeat (RESET_DELAY) @(posedge clk_i);
         rst_i = 1'b0;
-        $display("Reset done in: %0t ns\n.", $time());
+        $display("Axis reset done in: %0t ns\n.", $time());
     end
 
     initial begin
         clk_i = 1'b0;
         forever begin
-            #(CLK_PER_NS / 2) clk_i = ~clk_i;
+            #(CLK_PER / 2) clk_i = ~clk_i;
         end
     end
 
@@ -81,20 +103,13 @@ module axis_rgmii_tb ();
     end
 
     axis_rgmii #(
-        .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .RGMII_WIDTH    (RGMII_WIDTH),
-        .VENDOR         ("")
+        .PAYLOAD_WIDTH(PAYLOAD_WIDTH),
+        .FIFO_MODE    (FIFO_MODE),
+        .VENDOR       ("")
     ) i_axis_rgmii (
-        .rst_i              (rst_i),
+        .rst_i              (eth_rst_i),
         .eth_mdio_io        (),
         .eth_mdc_o          (),
-        .eth_txd_o          (data),
-        .eth_tx_ctl_o       (en),
-        .eth_txc_o          (),
-        .eth_rxc_i          (clk_i),
-        .eth_rxd_i          (data),
-        .eth_rx_ctl_i       (en),
         .check_destination_i(CHECK_DESTINATION),
         .payload_bytes_i    (PAYLOAD),
         .fpga_port_i        (FPGA_PORT),
@@ -104,6 +119,7 @@ module axis_rgmii_tb ();
         .host_ip_i          (HOST_IP),
         .host_mac_i         (HOST_MAC),
         .crc_err_o          (),
+        .rgmii              (rgmii_if),
         .s_axis             (m_axis),
         .m_axis             (s_axis)
     );

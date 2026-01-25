@@ -20,7 +20,10 @@ module async_fifo #(
     output logic a_full_o,
     output logic full_o,
     output logic a_empty_o,
-    output logic empty_o
+    output logic empty_o,
+
+    output logic [$clog2(FIFO_DEPTH):0] wr_data_cnt_o,
+    output logic [$clog2(FIFO_DEPTH):0] rd_data_cnt_o
 );
 
     if (CDC_REG_NUM < 2) begin : g_reg_num_err
@@ -29,13 +32,24 @@ module async_fifo #(
 
     localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
+    function automatic logic [ADDR_WIDTH:0] gray_to_bin;
+        input logic [ADDR_WIDTH:0] gray;
+        begin
+            for (int i = 0; i < ADDR_WIDTH + 1; i++) begin
+                gray_to_bin[i] = ^(gray >> i);
+            end
+        end
+    endfunction
+
     logic [ADDR_WIDTH-1:0] wr_addr;
     logic [  ADDR_WIDTH:0] wr_ptr;
+    logic [  ADDR_WIDTH:0] wr_bin;
     logic [  ADDR_WIDTH:0] rq2_wptr;
     logic                  wr_en;
 
     logic [ADDR_WIDTH-1:0] rd_addr;
     logic [  ADDR_WIDTH:0] rd_ptr;
+    logic [  ADDR_WIDTH:0] rd_bin;
     logic [  ADDR_WIDTH:0] wq2_rptr;
     logic                  rd_en;
 
@@ -52,7 +66,8 @@ module async_fifo #(
         .wr_addr_o (wr_addr),
         .wr_ptr_o  (wr_ptr),
         .a_full_o  (a_full_o),
-        .full_o    (full_o)
+        .full_o    (full_o),
+        .wr_bin_o  (wr_bin)
     );
 
     rd_ptr_empty #(
@@ -65,7 +80,8 @@ module async_fifo #(
         .rd_addr_o (rd_addr),
         .rd_ptr_o  (rd_ptr),
         .a_empty_o (a_empty_o),
-        .empty_o   (empty_o)
+        .empty_o   (empty_o),
+        .rd_bin_o  (rd_bin)
     );
 
     ram_sdp #(
@@ -112,5 +128,27 @@ module async_fifo #(
         .data_i(wr_ptr),
         .data_o(rq2_wptr)
     );
+
+    logic [ADDR_WIDTH:0] wq2_rptr_bin;
+    logic [ADDR_WIDTH:0] rq2_wptr_bin;
+
+    assign wq2_rptr_bin = gray_to_bin(wq2_rptr);
+    assign rq2_wptr_bin = gray_to_bin(rq2_wptr);
+
+    always_ff @(posedge wr_clk_i) begin
+        if (wr_rst_i) begin
+            wr_data_cnt_o <= '0;
+        end else begin
+            wr_data_cnt_o <= wr_bin - wq2_rptr_bin;
+        end
+    end
+
+    always_ff @(posedge rd_clk_i) begin
+        if (rd_rst_i) begin
+            rd_data_cnt_o <= '0;
+        end else begin
+            rd_data_cnt_o <= rq2_wptr_bin - rd_bin;
+        end
+    end
 
 endmodule

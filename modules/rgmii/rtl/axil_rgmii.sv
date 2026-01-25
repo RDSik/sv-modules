@@ -5,7 +5,6 @@ module axil_rgmii
 #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
-    parameter int   RGMII_WIDTH     = 4,
     parameter logic ILA_EN          = 0,
     parameter       MODE            = "sync",
     parameter       VENDOR          = "xilinx"
@@ -22,7 +21,6 @@ module axil_rgmii
 );
 
     localparam int PAYLOAD_WIDTH = 11;
-    localparam int AXIS_DATA_WIDTH = 8;
 
     rgmii_reg_t                     rd_regs;
     rgmii_reg_t                     wr_regs;
@@ -65,25 +63,10 @@ module axil_rgmii
         rd_regs.status.crc_err   = crc_err;
     end
 
-    axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
-    ) s_axis_dw_conv (
-        .clk_i(rgmii.rxc),
-        .rst_i(reset)
-    );
-
-    axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) m_axis_dw_conv (
-        .clk_i(rgmii.rxc),
-        .rst_i(reset)
-    );
-
     axis_rgmii #(
-        .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .RGMII_WIDTH    (RGMII_WIDTH),
-        .VENDOR         (VENDOR)
+        .PAYLOAD_WIDTH(PAYLOAD_WIDTH),
+        .FIFO_MODE    (MODE),
+        .VENDOR       (VENDOR)
     ) i_axis_rgmii (
         .rst_i              (reset),
         .eth_mdio_io        (eth_mdio_io),
@@ -98,37 +81,8 @@ module axil_rgmii
         .host_mac_i         (wr_regs.mac.host),
         .crc_err_o          (crc_err),
         .rgmii              (rgmii),
-        .s_axis             (m_axis_dw_conv),
-        .m_axis             (s_axis_dw_conv)
-    );
-
-    localparam int CDC_REG_NUM = 3;
-    localparam logic TLAST_EN = 1;
-
-    axis_dw_conv_wrap #(
-        .DATA_WIDTH_IN (AXIL_DATA_WIDTH),
-        .DATA_WIDTH_OUT(AXIS_DATA_WIDTH),
-        .FIFO_DEPTH    (2 ** PAYLOAD_WIDTH),
-        .CDC_REG_NUM   (CDC_REG_NUM),
-        .TLAST_EN      (TLAST_EN),
-        .FIFO_FIRST    (0),
-        .MODE          (MODE)
-    ) i_s_dw_conv (
-        .m_axis(m_axis_dw_conv),
-        .s_axis(s_axis)
-    );
-
-    axis_dw_conv_wrap #(
-        .DATA_WIDTH_IN (AXIS_DATA_WIDTH),
-        .DATA_WIDTH_OUT(AXIL_DATA_WIDTH),
-        .FIFO_DEPTH    (2 ** PAYLOAD_WIDTH),
-        .CDC_REG_NUM   (CDC_REG_NUM),
-        .TLAST_EN      (TLAST_EN),
-        .FIFO_FIRST    (1),
-        .MODE          (MODE)
-    ) i_m_dw_conv (
-        .m_axis(m_axis),
-        .s_axis(s_axis_dw_conv)
+        .s_axis             (s_axis),
+        .m_axis             (m_axis)
     );
 
 endmodule
