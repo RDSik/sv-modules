@@ -1,6 +1,6 @@
 interface rgmii_if;
 
-    localparam DATA_WIDTH = 4;
+    localparam int DATA_WIDTH = 4;
 
     logic [DATA_WIDTH-1:0] txd;
     logic                  tx_ctl;
