@@ -3,6 +3,7 @@
 `include "modules/spi/tb/axil_spi_class.svh"
 `include "modules/uart/tb/axil_uart_class.svh"
 `include "modules/i2c/tb/axil_i2c_class.svh"
+`include "modules/rgmii/tb/axil_rgmii_class.svh"
 
 module axil_top_tb ();
 
@@ -11,17 +12,19 @@ module axil_top_tb ();
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
     localparam int MASTER_NUM = 1;
-    localparam int SLAVE_NUM = 3;
+    localparam int SLAVE_NUM = 4;
 
     localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
         32'h43c0_0000,
         32'h43c1_0000,
-        32'h43c2_0000
+        32'h43c2_0000,
+        32'h43c3_0000
     };
     localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
         32'h43c0_ffff,
         32'h43c1_ffff,
-        32'h43c2_ffff
+        32'h43c2_ffff,
+        32'h43c3_ffff
     };
 
     localparam int WAT_CYCLES = 250;
@@ -35,6 +38,12 @@ module axil_top_tb ();
     spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
 
     assign m_spi.miso = m_spi.mosi;
+
+    rgmii_if rgmii_if ();
+
+    assign rgmii_if.rxd    = rgmii_if.txd;
+    assign rgmii_if.rx_ctl = rgmii_if.tx_ctl;
+    assign rgmii_if.rxc    = clk_i;
 
     axis_if #(
         .DATA_WIDTH(AXIL_DATA_WIDTH)
@@ -88,13 +97,20 @@ module axil_top_tb ();
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
             .BASE_ADDR (SLAVE_LOW_ADDR[2])
         ) i2c;
-        uart = new(s_axil[0]);
-        spi  = new(s_axil[0]);
-        i2c  = new(s_axil[0]);
+        axil_rgmii_class #(
+            .DATA_WIDTH(AXIL_DATA_WIDTH),
+            .ADDR_WIDTH(AXIL_ADDR_WIDTH),
+            .TLAST_EN  (1),
+            .BASE_ADDR (SLAVE_LOW_ADDR[3])
+        ) rgmii;
+        uart  = new(s_axil[0]);
+        spi   = new(s_axil[0]);
+        rgmii = new(s_axil[0], m_axis, s_axis);
+        i2c   = new(s_axil[0]);
         uart.uart_start();
         spi.spi_start();
         i2c.i2c_start();
-        #WAT_CYCLES;
+        rgmii.rgmii_start();
         $stop;
     end
 
@@ -108,21 +124,23 @@ module axil_top_tb ();
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .SPI_CS_WIDTH   (CS_WIDTH),
+        .RGMII_WIDTH    (rgmii_if.DATA_WIDTH),
         .SLAVE_NUM      (SLAVE_NUM),
         .MASTER_NUM     (MASTER_NUM),
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .ILA_EN         (0),
         .MODE           ("sync"),
-        .SIM_EN         (1)
+        .VENDOR         ("")
     ) i_axil_top (
         .clk_i    (clk_i),
         .uart_rx_i(uart),
         .uart_tx_o(uart),
         .s_axil   (s_axil),
-        .s_axis   (s_axis),
-        .m_axis   (m_axis),
-        .m_spi    (m_spi)
+        .s_axis   (m_axis),
+        .m_axis   (s_axis),
+        .m_spi    (m_spi),
+        .rgmii    (rgmii_if)
     );
 
 endmodule

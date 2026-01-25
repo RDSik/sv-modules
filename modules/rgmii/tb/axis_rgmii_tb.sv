@@ -7,6 +7,7 @@ module axis_rgmii_tb ();
     import test_pkg::*;
 
     localparam int GMII_WIDTH = 8;
+    localparam int RGMII_WIDTH = 4;
     localparam int PAYLOAD_WIDTH = 11;
     localparam int AXIS_DATA_WIDTH = 8;
 
@@ -31,10 +32,10 @@ module axis_rgmii_tb ();
     localparam logic [31:0] HOST_IP = {HOST_IP_1, HOST_IP_2, HOST_IP_3, HOST_IP_4};
     localparam logic [31:0] FPGA_IP = {FPGA_IP_1, FPGA_IP_2, FPGA_IP_3, FPGA_IP_4};
 
-    logic                  clk_i;
-    logic                  rst_i;
-    logic [GMII_WIDTH-1:0] data;
-    logic                  en;
+    logic                   clk_i;
+    logic                   rst_i;
+    logic [RGMII_WIDTH-1:0] data;
+    logic                   en;
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
@@ -79,33 +80,21 @@ module axis_rgmii_tb ();
         $dumpvars(0, axis_rgmii_tb);
     end
 
-    packet_gen #(
-        .GMII_WIDTH     (GMII_WIDTH),
+    axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) i_packet_gen (
-        .clk_i          (clk_i),
-        .rst_i          (rst_i),
-        .tx_en_o        (en),
-        .tx_d_o         (data),
-        .payload_bytes_i(PAYLOAD),
-        .fpga_port_i    (FPGA_PORT),
-        .fpga_ip_i      (FPGA_IP),
-        .fpga_mac_i     (FPGA_MAC),
-        .host_port_i    (HOST_PORT),
-        .host_ip_i      (HOST_IP),
-        .host_mac_i     (HOST_MAC),
-        .s_axis         (m_axis)
-    );
-
-    packet_recv #(
-        .GMII_WIDTH     (GMII_WIDTH),
-        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) i_packet_recv (
-        .clk_i              (clk_i),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
+        .RGMII_WIDTH    (RGMII_WIDTH),
+        .VENDOR         ("")
+    ) i_axis_rgmii (
         .rst_i              (rst_i),
-        .rx_dv_i            (en),
-        .rx_d_i             (data),
+        .eth_mdio_io        (),
+        .eth_mdc_o          (),
+        .eth_txd_o          (data),
+        .eth_tx_ctl_o       (en),
+        .eth_txc_o          (),
+        .eth_rxc_i          (clk_i),
+        .eth_rxd_i          (data),
+        .eth_rx_ctl_i       (en),
         .check_destination_i(CHECK_DESTINATION),
         .payload_bytes_i    (PAYLOAD),
         .fpga_port_i        (FPGA_PORT),
@@ -114,6 +103,8 @@ module axis_rgmii_tb ();
         .host_port_i        (HOST_PORT),
         .host_ip_i          (HOST_IP),
         .host_mac_i         (HOST_MAC),
+        .crc_err_o          (),
+        .s_axis             (m_axis),
         .m_axis             (s_axis)
     );
 

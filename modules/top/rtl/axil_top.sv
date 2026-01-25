@@ -7,11 +7,11 @@ module axil_top #(
     parameter int                                        SPI_CS_WIDTH    = 1,
     parameter logic                                      ILA_EN          = 0,
     parameter int                                        MASTER_NUM      = 1,
-    parameter int                                        SLAVE_NUM       = 3,
+    parameter int                                        SLAVE_NUM       = 4,
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR  = '{default: '0},
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{default: '0},
     parameter                                            MODE            = "sync",
-    parameter logic                                      SIM_EN          = 0
+    parameter                                            VENDOR          = "gowin"
 ) (
     input logic clk_i,
 
@@ -29,12 +29,7 @@ module axil_top #(
     inout        eth_mdio_io,
     output logic eth_mdc_o,
 
-    output logic                   eth_txc_o,
-    output logic [RGMII_WIDTH-1:0] eth_txd_o,
-    output logic                   eth_tx_ctl_o,
-
-    input logic [RGMII_WIDTH-1:0] eth_rxd_i,
-    input logic                   eth_rx_ctl_i,
+    rgmii_if rgmii,
 
     spi_if.master m_spi,
 
@@ -107,26 +102,20 @@ module axil_top #(
         .s_axil      (m_axil[2])
     );
 
-    if (~SIM_EN) begin : g_sim_disable
-        axil_rgmii #(
-            .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
-            .RGMII_WIDTH    (RGMII_WIDTH),
-            .ILA_EN         (ILA_EN),
-            .MODE           (MODE)
-        ) i_axil_rgmii (
-            .clk_i       (clk_i),
-            .eth_mdio_io (eth_mdio_io),
-            .eth_mdc_o   (eth_mdc_o),
-            .eth_txd_o   (eth_txd_o),
-            .eth_tx_ctl_o(eth_tx_ctl_o),
-            .eth_txc_o   (eth_txc_o),
-            .eth_rxd_i   (eth_rxd_i),
-            .eth_rx_ctl_i(eth_rx_ctl_i),
-            .s_axis      (s_axis),
-            .m_axis      (m_axis),
-            .s_axil      (m_axil[3])
-        );
-    end
+    axil_rgmii #(
+        .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .RGMII_WIDTH    (RGMII_WIDTH),
+        .ILA_EN         (ILA_EN),
+        .MODE           (MODE),
+        .VENDOR         (VENDOR)
+    ) i_axil_rgmii (
+        .eth_mdio_io(eth_mdio_io),
+        .eth_mdc_o  (eth_mdc_o),
+        .rgmii      (rgmii),
+        .s_axis     (s_axis),
+        .m_axis     (m_axis),
+        .s_axil     (m_axil[3])
+    );
 
 endmodule
