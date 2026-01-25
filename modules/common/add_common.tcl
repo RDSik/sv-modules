@@ -20,6 +20,8 @@ if {$xilinx == 1} {
         $path/rtl/axis_lfsr_wrap.sv
         $path/rtl/lfsr.sv
         $path/rtl/crc.sv
+        $path/rtl/iddr.sv
+        $path/rtl/oddr.sv
     "
 
     add_files -norecurse $xil_defaultlib
@@ -35,4 +37,6 @@ if {$xilinx == 1} {
     add_file $path/rtl/axis_lfsr_wrap.sv
     add_file $path/rtl/lfsr.sv
     add_file $path/rtl/crc.sv
+    add_file $path/rtl/iddr.sv
+    add_file $path/rtl/oddr.sv
 }

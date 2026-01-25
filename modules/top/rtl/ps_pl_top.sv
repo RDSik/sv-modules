@@ -1,17 +1,24 @@
 /* verilator lint_off TIMESCALEMOD */
 module ps_pl_top #(
-    parameter int   SPI_CS_WIDTH = 1,
-    parameter logic ILA_EN       = 1
+    parameter logic ILA_EN = 1
 ) (
     input logic clk_i,
 
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
-    input  logic                    spi_miso_i,
-    output logic                    spi_mosi_o,
-    output logic                    spi_clk_o,
-    output logic [SPI_CS_WIDTH-1:0] spi_cs_o,
+    inout              eth_mdio_io,
+    output logic       eth_mdc_o,
+    output logic       eth_txc_o,
+    output logic [3:0] eth_txd_o,
+    output logic       eth_tx_ctl_o,
+    input  logic [3:0] eth_rxd_i,
+    input  logic       eth_rx_ctl_i,
+
+    input  logic spi_miso_i,
+    output logic spi_mosi_o,
+    output logic spi_clk_o,
+    output logic spi_cs_o,
 
     inout i2c_scl_io,
     inout i2c_sda_io,
@@ -64,12 +71,33 @@ module ps_pl_top #(
         .T (sda_padoen_o)
     );
 
-    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
+    spi_if #(.CS_WIDTH($bits(spi_cs_o))) m_spi ();
 
     assign spi_cs_o   = m_spi.cs;
     assign spi_clk_o  = m_spi.clk;
     assign spi_mosi_o = m_spi.mosi;
     assign m_spi.miso = spi_miso_i;
+
+    rgmii_if rgmii ();
+
+    logic clk_125m;
+
+    clk_wiz_eth i_clk_wiz_eth (
+        .clk_in1 (clk_i),
+        .clk_out1(clk_125m)
+    );
+
+    BUFG BUFG_inst (
+        .I(rgmii.rxc),  // 1-bit input: Clock input
+        .O(rgmii.txc)   // 1-bit output: Clock output
+    );
+
+    assign rgmii.rxc    = clk_125m;
+    assign rgmii.rxd    = eth_rxd_i;
+    assign rgmii.rx_ctl = eth_rx_ctl_i;
+    assign eth_txd_o    = rgmii.txd;
+    assign eth_tx_ctl_o = rgmii.tx_ctl;
+    assign eth_txc_o    = rgmii.txc;
 
     localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
@@ -93,14 +121,14 @@ module ps_pl_top #(
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) m_axis_mm2s (
         .clk_i(ps_clk),
-        .rst_i(ps_arstn)
+        .rst_i(~ps_arstn)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) s_axis_s2mm (
         .clk_i(ps_clk),
-        .rst_i(ps_arstn)
+        .rst_i(~ps_arstn)
     );
 
     axil_if #(
@@ -118,11 +146,12 @@ module ps_pl_top #(
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .SLAVE_NUM      (MODULES_NUM),
-        .SPI_CS_WIDTH   (SPI_CS_WIDTH),
+        .SPI_CS_WIDTH   ($bits(spi_cs_o)),
+        .RGMII_WIDTH    (rgmii.DATA_WIDTH),
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (1),
         .MODE           ("async"),
-        .SIM_EN         (0)
+        .VENDOR         ("xilinx")
     ) i_axil_top (
         .clk_i       (clk_i),
         .uart_rx_i   (uart_rx_i),
@@ -133,9 +162,12 @@ module ps_pl_top #(
         .sda_pad_i   (sda_pad_i),
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
+        .eth_mdc_o   (eth_mdc_o),
+        .eth_mdio_io (eth_mdio_io),
+        .rgmii       (rgmii),
         .m_spi       (m_spi),
-        .m_axis      (m_axis_mm2s),
-        .s_axis      (s_axis_s2mm),
+        .m_axis      (s_axis_s2mm),
+        .s_axis      (m_axis_mm2s),
         .s_axil      (axil)
     );
 

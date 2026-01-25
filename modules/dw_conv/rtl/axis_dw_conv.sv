@@ -138,9 +138,9 @@ module axis_dw_conv #(
         end
 
         assign m_axis.tdata  = m_axis_tdata;
-        assign m_axis.tlast  = m_axis_tlast;
+        assign m_axis.tlast  = TLAST_EN ? m_axis_tlast & m_axis_tvalid : 1'b0;
         assign m_axis.tvalid = m_axis_tvalid;
-        assign s_axis.tready = m_axis.tready;
+        assign s_axis.tready = ~m_axis_tvalid & m_axis.tready;
 
     end else begin : g_bypass
         assign m_axis.tlast  = s_axis.tlast;

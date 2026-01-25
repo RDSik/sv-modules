@@ -3,24 +3,17 @@
 module axil_rgmii
     import rgmii_pkg::*;
 #(
-
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   RGMII_WIDTH     = 4,
     parameter logic ILA_EN          = 0,
-    parameter       MODE            = "sync"
+    parameter       MODE            = "sync",
+    parameter       VENDOR          = "xilinx"
 ) (
-    input logic clk_i,
-
     inout        eth_mdio_io,
     output logic eth_mdc_o,
 
-    output logic                   eth_txc_o,
-    output logic [RGMII_WIDTH-1:0] eth_txd_o,
-    output logic                   eth_tx_ctl_o,
-
-    input logic [RGMII_WIDTH-1:0] eth_rxd_i,
-    input logic                   eth_rx_ctl_i,
+    rgmii_if rgmii,
 
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -30,23 +23,6 @@ module axil_rgmii
 
     localparam int PAYLOAD_WIDTH = 11;
     localparam int AXIS_DATA_WIDTH = 8;
-
-    logic eth_rxc;
-    logic rst;
-
-    clk_wiz_eth(
-        .reset(rst), .clk_in1(clk_i), .clk_out1(eth_rxc)
-    );
-
-    xpm_cdc_async_rst #(
-        .DEST_SYNC_FF   (3),
-        .INIT_SYNC_FF   (0),
-        .RST_ACTIVE_HIGH(0)
-    ) i_xpm_cdc_async_rst (
-        .src_arst (~s_axil.rstn_i),
-        .dest_clk (eth_rxc),
-        .dest_arst(rst)
-    );
 
     rgmii_reg_t                     rd_regs;
     rgmii_reg_t                     wr_regs;
@@ -64,7 +40,7 @@ module axil_rgmii
         .ILA_EN        (ILA_EN),
         .MODE          (MODE)
     ) i_axil_reg_file (
-        .clk_i       (eth_rxc),
+        .clk_i       (rgmii.rxc),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),
@@ -72,6 +48,10 @@ module axil_rgmii
         .wr_regs_o   (wr_regs),
         .wr_valid_o  (wr_valid)
     );
+
+    logic reset;
+
+    assign reset = wr_regs.control.reset;
 
     logic crc_err;
 
@@ -85,20 +65,29 @@ module axil_rgmii
         rd_regs.status.crc_err   = crc_err;
     end
 
+    axis_if #(
+        .DATA_WIDTH(AXIL_DATA_WIDTH)
+    ) s_axis_dw_conv (
+        .clk_i(rgmii.rxc),
+        .rst_i(reset)
+    );
+
+    axis_if #(
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
+    ) m_axis_dw_conv (
+        .clk_i(rgmii.rxc),
+        .rst_i(reset)
+    );
+
     axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
-        .RGMII_WIDTH    (RGMII_WIDTH)
+        .RGMII_WIDTH    (RGMII_WIDTH),
+        .VENDOR         (VENDOR)
     ) i_axis_rgmii (
-        .rst_i              (rst),
+        .rst_i              (reset),
         .eth_mdio_io        (eth_mdio_io),
         .eth_mdc_o          (eth_mdc_o),
-        .eth_txd_o          (eth_txd_o),
-        .eth_tx_ctl_o       (eth_tx_ctl_o),
-        .eth_txc_o          (eth_txc_o),
-        .eth_rxc_i          (eth_rxc),
-        .eth_rxd_i          (eth_rxd_i),
-        .eth_rx_ctl_i       (eth_rx_ctl_i),
         .check_destination_i(wr_regs.control.check_destination),
         .payload_bytes_i    (wr_regs.control.payload_bytes),
         .fpga_port_i        (wr_regs.port.fpga),
@@ -108,8 +97,38 @@ module axil_rgmii
         .host_ip_i          (wr_regs.ip.host),
         .host_mac_i         (wr_regs.mac.host),
         .crc_err_o          (crc_err),
-        .s_axis             (s_axis),
-        .m_axis             (m_axis)
+        .rgmii              (rgmii),
+        .s_axis             (m_axis_dw_conv),
+        .m_axis             (s_axis_dw_conv)
+    );
+
+    localparam int CDC_REG_NUM = 3;
+    localparam logic TLAST_EN = 1;
+
+    axis_dw_conv_wrap #(
+        .DATA_WIDTH_IN (AXIL_DATA_WIDTH),
+        .DATA_WIDTH_OUT(AXIS_DATA_WIDTH),
+        .FIFO_DEPTH    (2 ** PAYLOAD_WIDTH),
+        .CDC_REG_NUM   (CDC_REG_NUM),
+        .TLAST_EN      (TLAST_EN),
+        .FIFO_FIRST    (0),
+        .MODE          (MODE)
+    ) i_s_dw_conv (
+        .m_axis(m_axis_dw_conv),
+        .s_axis(s_axis)
+    );
+
+    axis_dw_conv_wrap #(
+        .DATA_WIDTH_IN (AXIS_DATA_WIDTH),
+        .DATA_WIDTH_OUT(AXIL_DATA_WIDTH),
+        .FIFO_DEPTH    (2 ** PAYLOAD_WIDTH),
+        .CDC_REG_NUM   (CDC_REG_NUM),
+        .TLAST_EN      (TLAST_EN),
+        .FIFO_FIRST    (1),
+        .MODE          (MODE)
+    ) i_m_dw_conv (
+        .m_axis(m_axis),
+        .s_axis(s_axis_dw_conv)
     );
 
 endmodule

@@ -1,7 +1,7 @@
 module rgmii_rx #(
-    parameter int GMII_WIDTH   = 8,
-    parameter int RGMII_WIDTH  = 4,
-    parameter int IDELAY_VALUE = 0
+    parameter int GMII_WIDTH  = 8,
+    parameter int RGMII_WIDTH = 4,
+    parameter     VENDOR      = "xilinx"
 ) (
     input logic clk_i,
 
@@ -16,37 +16,23 @@ module rgmii_rx #(
 
     assign gmii_rx_en_o = gmii_rxdv_w[1] & gmii_rxdv_w[0];
 
-    IDDR #(
-        .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),  // "OPPOSITE_EDGE", "SAME_EDGE"
-                                               //    or "SAME_EDGE_PIPELINED"
-        .INIT_Q1     (1'b0),                   // Initial value of Q1: 1'b0 or 1'b1
-        .INIT_Q2     (1'b0),                   // Initial value of Q2: 1'b0 or 1'b1
-        .SRTYPE      ("SYNC")                  // Set/Reset type: "SYNC" or "ASYNC"
-    ) u_iddr_rx_ctl (
-        .Q1(gmii_rxdv_w[0]),  // 1-bit output for positive edge of clock
-        .Q2(gmii_rxdv_w[1]),  // 1-bit output for negative edge of clock
-        .C (clk_i),           // 1-bit clock input
-        .CE(1'b1),            // 1-bit clock enable input
-        .D (rgmii_rx_ctl_i),  // 1-bit DDR data input
-        .R (1'b0),            // 1-bit reset
-        .S (1'b0)             // 1-bit set
+    iddr #(
+        .VENDOR(VENDOR)
+    ) i_iddr (
+        .q1_o (gmii_rxdv_w[0]),
+        .q2_o (gmii_rxdv_w[1]),
+        .clk_i(clk_i),
+        .d_i  (rgmii_rx_ctl_i)
     );
 
     for (genvar i = 0; i < RGMII_WIDTH; i++) begin : g_rxdata
-        IDDR #(
-            .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),  // "OPPOSITE_EDGE", "SAME_EDGE"
-                                                   //    or "SAME_EDGE_PIPELINED"
-            .INIT_Q1     (1'b0),                   // Initial value of Q1: 1'b0 or 1'b1
-            .INIT_Q2     (1'b0),                   // Initial value of Q2: 1'b0 or 1'b1
-            .SRTYPE      ("SYNC")                  // Set/Reset type: "SYNC" or "ASYNC"
-        ) u_iddr_rxd (
-            .Q1(gmii_rxd_o[i]),              // 1-bit output for positive edge of clock
-            .Q2(gmii_rxd_o[RGMII_WIDTH+i]),  // 1-bit output for negative edge of clock
-            .C (clk_i),                      // 1-bit clock input clk_i_bufio
-            .CE(1'b1),                       // 1-bit clock enable input
-            .D (rgmii_rxd_i[i]),             // 1-bit DDR data input
-            .R (1'b0),                       // 1-bit reset
-            .S (1'b0)                        // 1-bit set
+        iddr #(
+            .VENDOR(VENDOR)
+        ) u_iddr (
+            .q1_o (gmii_rxd_o[i]),
+            .q2_o (gmii_rxd_o[RGMII_WIDTH+i]),
+            .clk_i(clk_i),
+            .d_i  (rgmii_rxd_i[i])
         );
     end
 
