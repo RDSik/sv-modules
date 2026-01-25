@@ -234,11 +234,11 @@ module packet_recv
         .READ_LATENCY(0),
         .RAM_STYLE   ("distributed")
     ) i_axis_fifo_rx (
-        .s_axis    (s_axis),
-        .m_axis    (m_axis),
-        .data_cnt_o(),
-        .a_full_o  (),
-        .a_empty_o ()
+        .s_axis       (s_axis),
+        .m_axis       (m_axis),
+        .wr_data_cnt_o(),
+        .a_full_o     (),
+        .a_empty_o    ()
     );
 
 endmodule
