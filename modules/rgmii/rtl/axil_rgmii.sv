@@ -5,14 +5,14 @@ module axil_rgmii
 #(
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter int   AXIL_DATA_WIDTH = 32,
+    parameter int   RGMII_WIDTH     = 4,
     parameter logic ILA_EN          = 0,
     parameter       MODE            = "sync",
     parameter       VENDOR          = "xilinx"
 ) (
-    inout        eth_mdio_io,
-    output logic eth_mdc_o,
+    inout eth_mdio_io,
 
-    rgmii_if rgmii,
+    eth_if.master m_eth,
 
     axis_if.slave  s_axis,
     axis_if.master m_axis,
@@ -38,7 +38,7 @@ module axil_rgmii
         .ILA_EN        (ILA_EN),
         .MODE          (MODE)
     ) i_axil_reg_file (
-        .clk_i       (rgmii.rxc),
+        .clk_i       (m_eth.rx_clk),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),
@@ -64,13 +64,13 @@ module axil_rgmii
     end
 
     axis_rgmii #(
+        .RGMII_WIDTH  (RGMII_WIDTH),
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH),
         .FIFO_MODE    (MODE),
         .VENDOR       (VENDOR)
     ) i_axis_rgmii (
         .rst_i              (reset),
         .eth_mdio_io        (eth_mdio_io),
-        .eth_mdc_o          (eth_mdc_o),
         .check_destination_i(wr_regs.control.check_destination),
         .payload_bytes_i    (wr_regs.control.payload_bytes),
         .fpga_port_i        (wr_regs.port.fpga),
@@ -80,7 +80,7 @@ module axil_rgmii
         .host_ip_i          (wr_regs.ip.host),
         .host_mac_i         (wr_regs.mac.host),
         .crc_err_o          (crc_err),
-        .rgmii              (rgmii),
+        .m_eth              (m_eth),
         .s_axis             (s_axis),
         .m_axis             (m_axis)
     );

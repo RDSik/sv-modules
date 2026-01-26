@@ -7,6 +7,7 @@ module axil_top #(
     parameter logic                                      ILA_EN          = 0,
     parameter int                                        MASTER_NUM      = 1,
     parameter int                                        SLAVE_NUM       = 4,
+    parameter int                                        RGMII_WIDTH     = 4,
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR  = '{default: '0},
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{default: '0},
     parameter                                            MODE            = "sync",
@@ -25,10 +26,9 @@ module axil_top #(
     output logic sda_pad_o,
     output logic sda_padoen_o,
 
-    inout        eth_mdio_io,
-    output logic eth_mdc_o,
+    inout eth_mdio_io,
 
-    rgmii_if rgmii,
+    eth_if.master m_eth,
 
     spi_if.master m_spi,
 
@@ -104,13 +104,13 @@ module axil_top #(
     axil_rgmii #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (ILA_EN),
         .MODE           (MODE),
         .VENDOR         (VENDOR)
     ) i_axil_rgmii (
         .eth_mdio_io(eth_mdio_io),
-        .eth_mdc_o  (eth_mdc_o),
-        .rgmii      (rgmii),
+        .m_eth      (m_eth),
         .s_axis     (s_axis),
         .m_axis     (m_axis),
         .s_axil     (m_axil[3])
