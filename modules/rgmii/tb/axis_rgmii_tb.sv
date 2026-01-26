@@ -6,8 +6,9 @@ module axis_rgmii_tb ();
 
     import test_pkg::*;
 
-    localparam int PAYLOAD_WIDTH = 11;
     localparam int AXIS_DATA_WIDTH = 8;
+    localparam int PAYLOAD_WIDTH = 11;
+    localparam int RGMII_WIDTH = 4;
     parameter FIFO_MODE = "sync";
 
     localparam int ETH_CLK_PER = 2;
@@ -39,11 +40,11 @@ module axis_rgmii_tb ();
     logic clk_i;
     logic rst_i;
 
-    rgmii_if rgmii_if ();
+    eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
-    assign rgmii_if.rxd    = rgmii_if.txd;
-    assign rgmii_if.rx_ctl = rgmii_if.tx_ctl;
-    assign rgmii_if.rxc    = eth_clk_i;
+    assign m_eth.rxd    = m_eth.txd;
+    assign m_eth.rx_ctl = m_eth.tx_ctl;
+    assign m_eth.rx_clk = eth_clk_i;
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
@@ -103,13 +104,13 @@ module axis_rgmii_tb ();
     end
 
     axis_rgmii #(
+        .RGMII_WIDTH  (RGMII_WIDTH),
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH),
         .FIFO_MODE    (FIFO_MODE),
         .VENDOR       ("")
     ) i_axis_rgmii (
         .rst_i              (eth_rst_i),
         .eth_mdio_io        (),
-        .eth_mdc_o          (),
         .check_destination_i(CHECK_DESTINATION),
         .payload_bytes_i    (PAYLOAD),
         .fpga_port_i        (FPGA_PORT),
@@ -119,7 +120,7 @@ module axis_rgmii_tb ();
         .host_ip_i          (HOST_IP),
         .host_mac_i         (HOST_MAC),
         .crc_err_o          (),
-        .rgmii              (rgmii_if),
+        .m_eth              (m_eth),
         .s_axis             (m_axis),
         .m_axis             (s_axis)
     );

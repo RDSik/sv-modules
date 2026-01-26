@@ -96,6 +96,15 @@ package rgmii_pkg;
 
     localparam rgmii_reg_t RGMII_REG_INIT = '{control : '{reset: 1'b1, default: '0}, default: '0};
 
+    typedef struct packed {
+        rgmii_mac_t     mac;
+        rgmii_ip_t      ip;
+        rgmii_port_t    port;
+        rgmii_control_t control;
+    } rgmii_config_t;
+
+    localparam int CONFIG_REG_NUM = $bits(rgmii_config_t) / 32;
+
 endpackage
 
 `endif  // RGMII_PKG_SVH
