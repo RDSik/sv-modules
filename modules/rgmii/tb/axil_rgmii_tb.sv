@@ -62,7 +62,7 @@ module axil_rgmii_tb ();
         axil_rgmii_class #(
             .DATA_WIDTH(AXIL_DATA_WIDTH),
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .TLAST_EN  (1),
+            .TLAST_EN  (0),
             .BASE_ADDR (BASE_ADDR)
         ) rgmii;
         rgmii = new(s_axil, m_axis, s_axis);
