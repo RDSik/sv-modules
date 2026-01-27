@@ -29,7 +29,7 @@ set_property -dict {PACKAGE_PIN Y19 IOSTANDARD LVCMOS33} [get_ports eth_rxd_i[1]
 set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports eth_rxd_i[2]]
 set_property -dict {PACKAGE_PIN W16 IOSTANDARD LVCMOS33} [get_ports eth_rxd_i[3]]
 
-set_property -dict {PACKAGE_PIN V20 IOSTANDARD LVCMOS33} [get_ports eth_txc_o]
+set_property -dict {PACKAGE_PIN V20 IOSTANDARD LVCMOS33} [get_ports eth_tx_clk_o]
 set_property -dict {PACKAGE_PIN W20 IOSTANDARD LVCMOS33} [get_ports eth_tx_ctl_o]
 set_property -dict {PACKAGE_PIN N20 IOSTANDARD LVCMOS33} [get_ports eth_txd_o[0]]
 set_property -dict {PACKAGE_PIN P20 IOSTANDARD LVCMOS33} [get_ports eth_txd_o[1]]

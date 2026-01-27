@@ -9,7 +9,7 @@ module ps_pl_top #(
 
     inout              eth_mdio_io,
     output logic       eth_mdc_o,
-    output logic       eth_txc_o,
+    output logic       eth_tx_clk_o,
     output logic [3:0] eth_txd_o,
     output logic       eth_tx_ctl_o,
     input  logic [3:0] eth_rxd_i,
@@ -71,33 +71,39 @@ module ps_pl_top #(
         .T (sda_padoen_o)
     );
 
-    spi_if #(.CS_WIDTH($bits(spi_cs_o))) m_spi ();
+    localparam int SPI_CS_WIDTH = $bits(spi_cs_o);
+
+    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
 
     assign spi_cs_o   = m_spi.cs;
     assign spi_clk_o  = m_spi.clk;
     assign spi_mosi_o = m_spi.mosi;
     assign m_spi.miso = spi_miso_i;
 
-    rgmii_if rgmii ();
+    localparam int RGMII_WIDTH = 4;
 
+    eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
+
+    logic clk_bufg_125m;
     logic clk_125m;
 
     clk_wiz_eth i_clk_wiz_eth (
         .clk_in1 (clk_i),
-        .clk_out1(clk_125m)
+        .clk_out1(clk_bufg_125m)
     );
 
     BUFG BUFG_inst (
-        .I(rgmii.rxc),  // 1-bit input: Clock input
-        .O(rgmii.txc)   // 1-bit output: Clock output
+        .I(clk_bufg_125m),  // 1-bit input: Clock input
+        .O(clk_125m)        // 1-bit output: Clock output
     );
 
-    assign rgmii.rxc    = clk_125m;
-    assign rgmii.rxd    = eth_rxd_i;
-    assign rgmii.rx_ctl = eth_rx_ctl_i;
-    assign eth_txd_o    = rgmii.txd;
-    assign eth_tx_ctl_o = rgmii.tx_ctl;
-    assign eth_txc_o    = rgmii.txc;
+    assign m_eth.rx_clk = clk_125m;
+    assign m_eth.rxd    = eth_rxd_i;
+    assign m_eth.rx_ctl = eth_rx_ctl_i;
+    assign eth_txd_o    = m_eth.txd;
+    assign eth_tx_ctl_o = m_eth.tx_ctl;
+    assign eth_tx_clk_o = m_eth.tx_clk;
+    assign eth_mdc_o    = m_eth.mdc;
 
     localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
@@ -147,7 +153,8 @@ module ps_pl_top #(
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .SLAVE_NUM      (MODULES_NUM),
-        .SPI_CS_WIDTH   ($bits(spi_cs_o)),
+        .SPI_CS_WIDTH   (SPI_CS_WIDTH),
+        .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (1),
         .MODE           ("async"),
@@ -162,9 +169,8 @@ module ps_pl_top #(
         .sda_pad_i   (sda_pad_i),
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
-        .eth_mdc_o   (eth_mdc_o),
         .eth_mdio_io (eth_mdio_io),
-        .rgmii       (rgmii),
+        .m_eth       (m_eth),
         .m_spi       (m_spi),
         .m_axis      (s_axis_s2mm),
         .s_axis      (m_axis_mm2s),
@@ -192,7 +198,7 @@ module ps_pl_top #(
         .M01_AXI_0_wstrb     (axil[0].wstrb),
         .M01_AXI_0_wvalid    (axil[0].wvalid),
         .M_AXIS_0_tdata      (m_axis_mm2s.tdata),
-        .M_AXIS_0_tkeep      ('1),
+        .M_AXIS_0_tkeep      (),
         .M_AXIS_0_tlast      (m_axis_mm2s.tlast),
         .M_AXIS_0_tready     (m_axis_mm2s.tready),
         .M_AXIS_0_tvalid     (m_axis_mm2s.tvalid),

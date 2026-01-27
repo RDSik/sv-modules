@@ -35,14 +35,14 @@ class axil_rgmii_class #(
     localparam logic [31:0] FPGA_IP = {FPGA_IP_1, FPGA_IP_2, FPGA_IP_3, FPGA_IP_4};
 
     env_base #(
-        .DATA_WIDTH_IN (DATA_WIDTH),
-        .DATA_WIDTH_OUT(DATA_WIDTH),
+        .DATA_WIDTH_IN (DATA_WIDTH / ADDR_OFFSET),
+        .DATA_WIDTH_OUT(DATA_WIDTH / ADDR_OFFSET),
         .TLAST_EN      (TLAST_EN)
     ) env;
 
-    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH)) s_axis;
+    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET)) s_axis;
 
-    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH)) m_axis;
+    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET)) m_axis;
 
     axil_env #(
         .ADDR_WIDTH(ADDR_WIDTH),
@@ -59,8 +59,8 @@ class axil_rgmii_class #(
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) s_axil,
-                 virtual axis_if #(.DATA_WIDTH(DATA_WIDTH)) m_axis,
-                 virtual axis_if #(.DATA_WIDTH(DATA_WIDTH)) s_axis);
+                 virtual axis_if #(.DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET)) m_axis,
+                 virtual axis_if #(.DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET)) s_axis);
         this.s_axil = s_axil;
         this.s_axis = s_axis;
         this.m_axis = m_axis;
@@ -104,30 +104,27 @@ class axil_rgmii_class #(
         end
     endtask
 
+    task automatic rgmii_regs_init(logic [CONFIG_REG_NUM-1:0][DATA_WIDTH-1:0] config_regs);
+        begin
+            for (int i = 0; i < CONFIG_REG_NUM; i++) begin
+                axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * i, config_regs[i]);
+            end
+        end
+    endtask
+
     task automatic rgmii_start();
-        rgmii_reg_t rgmii_regs;
+        rgmii_config_t rgmii_regs;
         rgmii_regs                           = '0;
         rgmii_regs.control.payload_bytes     = PAYLOAD;
         rgmii_regs.control.check_destination = CHECK_DESTINATION;
         rgmii_regs.mac.fpga                  = FPGA_MAC;
         rgmii_regs.mac.host                  = HOST_MAC;
         rgmii_regs.ip.fpga                   = FPGA_IP;
-        rgmii_regs.ip.host                   = HOST_MAC;
+        rgmii_regs.ip.host                   = HOST_IP;
         rgmii_regs.port.fpga                 = FPGA_PORT;
         rgmii_regs.port.host                 = HOST_PORT;
         begin
-            axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * RGMII_CONTROL_REG_POS,
-                                      rgmii_regs.control);
-            axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * RGMII_FPGA_IP_REG_POS,
-                                      rgmii_regs.ip.fpga);
-            axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * RGMII_HOST_IP_REG_POS,
-                                      rgmii_regs.ip.host);
-            axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * RGMII_PORT_REG_POS,
-                                      rgmii_regs.port);
-            axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * RGMII_FPGA_MAC_REG_POS,
-                                      rgmii_regs.mac.fpga);
-            axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * RGMII_HOST_MAC_REG_POS,
-                                      rgmii_regs.mac.host);
+            rgmii_regs_init(rgmii_regs);
             rgmii_read_regs();
             env.run();
         end

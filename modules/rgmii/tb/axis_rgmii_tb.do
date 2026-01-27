@@ -2,6 +2,7 @@ vlib work
 vmap work
 
 vlog modules/interface/rtl/axis_if.sv
+vlog modules/interface/rtl/eth_if.sv
 
 vlog modules/fifo/rtl/async_fifo.sv
 vlog modules/fifo/rtl/axis_fifo.sv

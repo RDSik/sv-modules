@@ -6,6 +6,8 @@ module axil_rgmii_tb ();
 
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int AXIS_DATA_WIDTH = 8;
+    localparam int RGMII_WIDTH = 4;
 
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
@@ -15,21 +17,21 @@ module axil_rgmii_tb ();
     logic clk_i;
     logic rstn_i;
 
-    rgmii_if rgmii_if ();
+    eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
-    assign rgmii_if.rxd    = rgmii_if.txd;
-    assign rgmii_if.rx_ctl = rgmii_if.tx_ctl;
-    assign rgmii_if.rxc    = clk_i;
+    assign m_eth.rxd    = m_eth.txd;
+    assign m_eth.rx_ctl = m_eth.tx_ctl;
+    assign m_eth.rx_clk = clk_i;
 
     axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
         .clk_i(clk_i),
         .rst_i(rstn_i)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
         .rst_i(rstn_i)
@@ -61,7 +63,7 @@ module axil_rgmii_tb ();
         axil_rgmii_class #(
             .DATA_WIDTH(AXIL_DATA_WIDTH),
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .TLAST_EN  (1),
+            .TLAST_EN  (0),
             .BASE_ADDR (BASE_ADDR)
         ) rgmii;
         rgmii = new(s_axil, m_axis, s_axis);
@@ -84,7 +86,7 @@ module axil_rgmii_tb ();
         .s_axil(s_axil),
         .s_axis(m_axis),
         .m_axis(s_axis),
-        .rgmii (rgmii_if)
+        .m_eth (m_eth)
     );
 
 endmodule
