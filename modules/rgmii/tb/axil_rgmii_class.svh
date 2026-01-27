@@ -104,7 +104,7 @@ class axil_rgmii_class #(
         end
     endtask
 
-    task automatic rgmii_regs_init(logic [CONFIG_REG_NUM-1:0][31:0] config_regs);
+    task automatic rgmii_regs_init(logic [CONFIG_REG_NUM-1:0][DATA_WIDTH-1:0] config_regs);
         begin
             for (int i = 0; i < CONFIG_REG_NUM; i++) begin
                 axil_env.master_write_reg(BASE_ADDR + ADDR_OFFSET * i, config_regs[i]);
