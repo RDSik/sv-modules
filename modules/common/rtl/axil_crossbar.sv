@@ -335,19 +335,19 @@ module axil_crossbar #(
             WR_ADDR: begin
                 m_awaddr[m_awindx_reg.indx]  = s_awaddr[wr_grant_indx_reg];
                 m_awprot[m_awindx_reg.indx]  = s_awprot[wr_grant_indx_reg];
-                m_awvalid[m_awindx_reg.indx] = s_awvalid[wr_grant_indx_reg] & m_awindx_reg.valid;
+                m_awvalid[m_awindx_reg.indx] = s_awvalid[wr_grant_indx_reg] && m_awindx_reg.valid;
 
                 m_wdata[m_awindx_reg.indx]   = s_wdata[wr_grant_indx_reg];
                 m_wstrb[m_awindx_reg.indx]   = s_wstrb[wr_grant_indx_reg];
-                m_wvalid[m_awindx_reg.indx]  = s_wvalid[wr_grant_indx_reg] & m_awindx_reg.valid;
+                m_wvalid[m_awindx_reg.indx]  = s_wvalid[wr_grant_indx_reg] && m_awindx_reg.valid;
             end
             WR_DATA: begin
                 m_wdata[m_awindx_reg.indx]  = s_wdata[wr_grant_indx_reg];
                 m_wstrb[m_awindx_reg.indx]  = s_wstrb[wr_grant_indx_reg];
-                m_wvalid[m_awindx_reg.indx] = s_wvalid[wr_grant_indx_reg] & m_awindx_reg.valid;
+                m_wvalid[m_awindx_reg.indx] = s_wvalid[wr_grant_indx_reg] && m_awindx_reg.valid;
             end
             WR_RESP: begin
-                m_bready[m_awindx_reg.indx] = s_bready[wr_grant_indx_reg] & m_awindx_reg.valid;
+                m_bready[m_awindx_reg.indx] = s_bready[wr_grant_indx_reg] && m_awindx_reg.valid;
             end
             default: ;
         endcase
@@ -364,10 +364,10 @@ module axil_crossbar #(
             RD_ADDR: begin
                 m_araddr[m_arindx_reg.indx]  = s_araddr[rd_grant_indx_reg];
                 m_arprot[m_arindx_reg.indx]  = s_arprot[rd_grant_indx_reg];
-                m_arvalid[m_arindx_reg.indx] = s_arvalid[rd_grant_indx_reg] & m_arindx_reg.valid;
+                m_arvalid[m_arindx_reg.indx] = s_arvalid[rd_grant_indx_reg] && m_arindx_reg.valid;
             end
             RD_DATA: begin
-                m_rready[m_arindx_reg.indx] = s_rready[rd_grant_indx_reg] & m_arindx_reg.valid;
+                m_rready[m_arindx_reg.indx] = s_rready[rd_grant_indx_reg] && m_arindx_reg.valid;
             end
             default: ;
         endcase
