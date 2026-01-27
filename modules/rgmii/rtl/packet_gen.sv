@@ -119,6 +119,7 @@ module packet_gen
     end
 
     always_comb begin
+        next_state = current_state;
         case (current_state)
             IDLE: begin
                 if (fifo_count >= payload_bytes_i) begin

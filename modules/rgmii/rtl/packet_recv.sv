@@ -95,6 +95,7 @@ module packet_recv
     end
 
     always_comb begin
+        next_state = current_state;
         case (current_state)
             IDLE: begin
                 if (packet_start) begin

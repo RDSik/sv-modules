@@ -9,8 +9,10 @@ module axil_top_tb ();
 
     localparam int FIFO_DEPTH = 128;
     localparam int CS_WIDTH = 8;
+    localparam int RGMII_WIDTH = 4;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int AXIS_DATA_WIDTH = 8;
     localparam int MASTER_NUM = 1;
     localparam int SLAVE_NUM = 4;
 
@@ -39,21 +41,21 @@ module axil_top_tb ();
 
     assign m_spi.miso = m_spi.mosi;
 
-    rgmii_if rgmii_if ();
+    eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
-    assign rgmii_if.rxd    = rgmii_if.txd;
-    assign rgmii_if.rx_ctl = rgmii_if.tx_ctl;
-    assign rgmii_if.rxc    = clk_i;
+    assign m_eth.rxd    = m_eth.txd;
+    assign m_eth.rx_ctl = m_eth.tx_ctl;
+    assign m_eth.rx_clk = clk_i;
 
     axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
         .clk_i(clk_i),
         .rst_i(rstn_i)
     );
 
     axis_if #(
-        .DATA_WIDTH(AXIL_DATA_WIDTH)
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
         .rst_i(rstn_i)
@@ -124,7 +126,7 @@ module axil_top_tb ();
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .SPI_CS_WIDTH   (CS_WIDTH),
-        .RGMII_WIDTH    (rgmii_if.DATA_WIDTH),
+        .RGMII_WIDTH    (RGMII_WIDTH),
         .SLAVE_NUM      (SLAVE_NUM),
         .MASTER_NUM     (MASTER_NUM),
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
@@ -140,7 +142,7 @@ module axil_top_tb ();
         .s_axis   (m_axis),
         .m_axis   (s_axis),
         .m_spi    (m_spi),
-        .rgmii    (rgmii_if)
+        .m_eth    (m_eth)
     );
 
 endmodule

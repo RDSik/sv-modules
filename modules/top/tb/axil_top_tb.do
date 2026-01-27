@@ -4,7 +4,7 @@ vmap work
 vlog  modules/interface/rtl/axis_if.sv
 vlog  modules/interface/rtl/axil_if.sv
 vlog  modules/interface/rtl/spi_if.sv
-vlog  modules/interface/rtl/rgmii_if.sv
+vlog  modules/interface/rtl/eth_if.sv
 
 vlog modules/fifo/rtl/async_fifo.sv
 vlog modules/fifo/rtl/axis_fifo.sv
