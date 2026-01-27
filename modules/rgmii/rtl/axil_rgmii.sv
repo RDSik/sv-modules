@@ -47,10 +47,6 @@ module axil_rgmii
         .wr_valid_o  (wr_valid)
     );
 
-    logic reset;
-
-    assign reset = wr_regs.control.reset;
-
     logic crc_err;
 
     always_comb begin
@@ -69,7 +65,7 @@ module axil_rgmii
         .FIFO_MODE    (MODE),
         .VENDOR       (VENDOR)
     ) i_axis_rgmii (
-        .rst_i              (reset),
+        .rst_i              (wr_regs.control.reset),
         .eth_mdio_io        (eth_mdio_io),
         .check_destination_i(wr_regs.control.check_destination),
         .payload_bytes_i    (wr_regs.control.payload_bytes),
