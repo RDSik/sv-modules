@@ -123,7 +123,7 @@ module axil_uart
         .m_axis       (uart_rx)
     );
 
-    localparam int READ_LATENCY = 0;
+    localparam int READ_LATENCY = 1;
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 

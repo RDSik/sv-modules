@@ -113,7 +113,7 @@ module axil_spi
         .m_spi        (m_spi)
     );
 
-    localparam int READ_LATENCY = 0;
+    localparam int READ_LATENCY = 1;
     localparam logic TLAST_EN = 1;
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";

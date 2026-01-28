@@ -80,10 +80,10 @@ module axil_i2c
     );
 
     typedef enum logic [1:0] {
-        IDLE = 2'b00,
-        ADDR = 2'b01,
-        DATA = 2'b10,
-        STOP = 2'b11
+        IDLE  = 2'b00,
+        DATA  = 2'b01,
+        CHECK = 2'b10,
+        STOP  = 2'b11
     } state_t;
 
     state_t state;
@@ -119,26 +119,30 @@ module axil_i2c
             case (state)
                 IDLE: begin
                     if (tx_fifo_push) begin
-                        state <= ADDR;
-                        start <= 1'b1;
-                        write <= 1'b1;
-                        read  <= 1'b0;
-                    end
-                end
-                ADDR: begin
-                    if (cmd_ack) begin
                         state <= DATA;
-                        start <= 1'b0;
+                        start <= 1'b1;
                         write <= wr_regs.tx.rw;
                         read  <= ~wr_regs.tx.rw;
                     end
                 end
                 DATA: begin
                     if (cmd_ack) begin
+                        write <= 1'b0;
+                        read  <= 1'b0;
+                        start <= 1'b0;
+                        state <= CHECK;
+                    end
+                end
+                CHECK: begin
+                    if (tx_fifo_empty | rx_fifo_full) begin
                         state <= STOP;
                         stop  <= 1'b1;
                         write <= 1'b0;
                         read  <= 1'b0;
+                    end else begin
+                        state <= DATA;
+                        write <= wr_regs.tx.rw;
+                        read  <= ~wr_regs.tx.rw;
                     end
                 end
                 STOP: begin
@@ -177,7 +181,7 @@ module axil_i2c
         .sda_oen (sda_padoen_o)
     );
 
-    localparam int READ_LATENCY = 0;
+    localparam int READ_LATENCY = 1;
     localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
@@ -188,18 +192,21 @@ module axil_i2c
         .READ_LATENCY(READ_LATENCY),
         .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_tx (
-        .wr_clk_i (clk_i),
-        .wr_rst_i (fifo_rst),
-        .wr_data_i(wr_regs.tx.data),
-        .rd_clk_i (clk_i),
-        .rd_rst_i (fifo_rst),
-        .rd_data_o(i2c_tx_data),
-        .push_i   (tx_fifo_push),
-        .pop_i    (tx_fifo_pop),
-        .empty_o  (tx_fifo_empty),
-        .full_o   (tx_fifo_full),
-        .a_empty_o(),
-        .a_full_o ()
+        .wr_clk_i     (clk_i),
+        .wr_rst_i     (fifo_rst),
+        .wr_data_i    (wr_regs.tx.data),
+        .rd_clk_i     (clk_i),
+        .rd_rst_i     (fifo_rst),
+        .rd_data_o    (i2c_tx_data),
+        .push_i       (tx_fifo_push),
+        .pop_i        (tx_fifo_pop),
+        .empty_o      (tx_fifo_empty),
+        .full_o       (tx_fifo_full),
+        .a_empty_o    (),
+        .a_full_o     (),
+        .data_cnt_o   (),
+        .wr_data_cnt_o(),
+        .rd_data_cnt_o()
     );
 
     fifo_wrap #(
@@ -209,18 +216,21 @@ module axil_i2c
         .READ_LATENCY(READ_LATENCY),
         .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_rx (
-        .wr_clk_i (clk_i),
-        .wr_rst_i (fifo_rst),
-        .wr_data_i(i2c_rx_data),
-        .rd_clk_i (clk_i),
-        .rd_rst_i (fifo_rst),
-        .rd_data_o(rx_data),
-        .push_i   (rx_fifo_push),
-        .pop_i    (rx_fifo_pop),
-        .empty_o  (rx_fifo_empty),
-        .full_o   (rx_fifo_full),
-        .a_empty_o(),
-        .a_full_o ()
+        .wr_clk_i     (clk_i),
+        .wr_rst_i     (fifo_rst),
+        .wr_data_i    (i2c_rx_data),
+        .rd_clk_i     (clk_i),
+        .rd_rst_i     (fifo_rst),
+        .rd_data_o    (rx_data),
+        .push_i       (rx_fifo_push),
+        .pop_i        (rx_fifo_pop),
+        .empty_o      (rx_fifo_empty),
+        .full_o       (rx_fifo_full),
+        .a_empty_o    (),
+        .a_full_o     (),
+        .data_cnt_o   (),
+        .wr_data_cnt_o(),
+        .rd_data_cnt_o()
     );
 
 endmodule

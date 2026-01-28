@@ -22,8 +22,8 @@ module sync_fifo #(
     output logic [$clog2(FIFO_DEPTH):0] data_cnt_o
 );
 
-    localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam logic BYPASS_REG_EN = (READ_LATENCY > 0);
+    localparam int PTR_WIDTH = $clog2(FIFO_DEPTH);
     localparam MAX_PTR = PTR_WIDTH'(FIFO_DEPTH - 1);
 
     logic [ PTR_WIDTH-1:0] wr_ptr;
