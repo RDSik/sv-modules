@@ -37,13 +37,15 @@ module eth_header_gen
 
     ethernet_header_t header;
 
-    always_comb begin
-        udp_length = UDP_HEADER_BYTES + payload_bytes_i;
-        ipv4_length = IPV4_HEADER_BYTES + udp_length;
-        temp_sum  = {VERSION_IHL, TOS} + ipv4_length + IDENTIFICATION + FLAGS_FRAGMENT_OFFSET + {TIME_TO_LIVE, PROTOCOL} + fpga_ip_i[31:16] + fpga_ip_i[15:0] + host_ip_i[31:16] + host_ip_i[15:0];
-        sum = temp_sum[15:0] + temp_sum[31:16];
-        header_checksum = ~(sum[15:0] + sum[31:16]);
+    always_ff @(posedge clk_i) begin
+        udp_length <= UDP_HEADER_BYTES + payload_bytes_i;
+        ipv4_length <= IPV4_HEADER_BYTES + udp_length;
+        temp_sum  <= {VERSION_IHL, TOS} + ipv4_length + IDENTIFICATION + FLAGS_FRAGMENT_OFFSET + {TIME_TO_LIVE, PROTOCOL} + fpga_ip_i[31:16] + fpga_ip_i[15:0] + host_ip_i[31:16] + host_ip_i[15:0];
+        sum <= temp_sum[15:0] + temp_sum[31:16];
+        header_checksum <= ~(sum[15:0] + sum[31:16]);
+    end
 
+    always_comb begin
         header.mac_source = {<<8{fpga_mac_i}};
         header.mac_destination = {<<8{host_mac_i}};
         header.eth_type_length = {<<8{ETHERTYPE}};
@@ -65,8 +67,6 @@ module eth_header_gen
         header.ipv4.udp.udp_checksum = {<<8{UDP_CHECKSUM}};
     end
 
-    always_ff @(posedge clk_i) begin
-        output_header_o <= header;
-    end
+    assign output_header_o = header;
 
 endmodule
