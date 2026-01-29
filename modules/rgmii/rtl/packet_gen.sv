@@ -40,6 +40,8 @@ module packet_gen
 
     state_type_t current_state, next_state;
 
+    logic [31:0] state_counter;
+
     localparam int WAIT_BYTES = 12;
 
     localparam int HEADER_LENGTH = HEADER_BYTES * 8 / GMII_WIDTH;
@@ -86,7 +88,21 @@ module packet_gen
         .rst_i(rst_i)
     );
 
-    assign m_axis.tready = (next_state == DATA);
+    logic m_axis_tready;
+
+    assign m_axis.tready = m_axis_tready;
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            m_axis_tready <= 1'b0;
+        end else begin
+            if ((current_state == HEADER) && (state_counter == HEADER_LENGTH - 2)) begin
+                m_axis_tready <= 1'b1;
+            end else if ((current_state == DATA) && (state_counter == data_length - 2)) begin
+                m_axis_tready <= 1'b0;
+            end
+        end
+    end
 
     axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
@@ -104,7 +120,6 @@ module packet_gen
         .a_empty_o    ()
     );
 
-    logic [31:0] state_counter;
 
     always @(posedge clk_i) begin
         if (rst_i) begin

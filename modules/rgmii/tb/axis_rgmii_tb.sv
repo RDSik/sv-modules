@@ -9,10 +9,10 @@ module axis_rgmii_tb ();
     localparam int AXIS_DATA_WIDTH = 8;
     localparam int PAYLOAD_WIDTH = 11;
     localparam int RGMII_WIDTH = 4;
-    parameter FIFO_MODE = "sync";
+    parameter FIFO_MODE = "async";
 
     localparam int ETH_CLK_PER = 2;
-    localparam int CLK_PER = 2;
+    localparam int CLK_PER = 4;
     localparam int ETH_RESET_DELAY = 10;
     localparam int RESET_DELAY = 10;
 

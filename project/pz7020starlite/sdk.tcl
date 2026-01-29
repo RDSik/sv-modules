@@ -5,6 +5,7 @@ set bsp         ${app}_bsp
 set device_tree ${app}_devtree_bsp
 set cpu         "ps7_cortexa9_0"
 set sdk_dir     [file normalize "project/pz7020starlite/$syn_top.sdk"]
+set modules_dir [file normalize "modules"]
 
 file delete -force $sdk_dir/SDK.log
 file delete -force $sdk_dir/.metadata
@@ -28,7 +29,18 @@ configapp -app $app build-config debug
 createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
 set source_dir "modules/uart/sdk"
+set source_dir "modules/top/sdk"
 
-importsources -name $syn_top -path $source_dir
+proc source_sdk {current_dir name} {
+	set sdk_dirs [glob -nocomplain -type d [file join $current_dir */sdk]]
+    foreach sdk_path $sdk_dirs  {
+        if {[file isdirectory $sdk_path]} {
+            puts "Current dir: $sdk_path"
+            importsources -name $name -path $sdk_path
+        }
+    }
+}
+
+source_sdk $modules_dir $syn_top
 
 projects -build

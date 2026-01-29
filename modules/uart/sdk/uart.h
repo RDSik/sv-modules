@@ -39,3 +39,5 @@ typedef volatile struct {
     uart_status_reg_t  status;
     uart_param_reg_t   param;
 } uart_regs_t;
+
+int uart_test();
