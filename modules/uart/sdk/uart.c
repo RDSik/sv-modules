@@ -13,7 +13,7 @@
 int uart_test() {
     xil_printf("[UART]: start test\n");
 
-    char words[] = "Hello world";
+    char words[]       = "Hello world";
     uint32_t clk_freq  = 100e6;
     uint32_t baud_rate = 115200;
 
