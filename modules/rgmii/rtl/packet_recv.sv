@@ -225,6 +225,13 @@ module packet_recv
     assign s_axis.tdata  = data_buffer;
     assign s_axis.tlast  = data_last;
 
+    axis_if #(
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
+    ) axis (
+        .clk_i(m_axis.clk_i),
+        .rst_i(m_axis.rst_i)
+    );
+
     axis_fifo #(
         .FIFO_DEPTH  (FIFO_DEPTH),
         .FIFO_WIDTH  (AXIS_DATA_WIDTH),
@@ -235,10 +242,24 @@ module packet_recv
         .RAM_STYLE   ("distributed")
     ) i_axis_fifo_rx (
         .s_axis       (s_axis),
-        .m_axis       (m_axis),
+        .m_axis       (axis),
         .wr_data_cnt_o(),
         .a_full_o     (),
         .a_empty_o    ()
     );
+
+    always_ff @(posedge m_axis.clk_i) begin
+        if (m_axis.rst_i) begin
+            m_axis.tvalid <= '0;
+            m_axis.tlast  <= '0;
+            m_axis.tdata  <= '0;
+        end else if (m_axis.tready) begin
+            m_axis.tvalid <= axis.tvalid;
+            m_axis.tlast  <= axis.tlast;
+            m_axis.tdata  <= axis.tdata;
+        end
+    end
+
+    assign axis.tready = m_axis.tready;
 
 endmodule
