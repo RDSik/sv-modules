@@ -28,9 +28,6 @@ configapp -app $app build-config debug
 
 createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
-set source_dir "modules/uart/sdk"
-set source_dir "modules/top/sdk"
-
 proc import_sdk {current_dir name} {
 	set sdk_dirs [glob -nocomplain -type d [file join $current_dir */sdk]]
     foreach sdk_path $sdk_dirs  {
