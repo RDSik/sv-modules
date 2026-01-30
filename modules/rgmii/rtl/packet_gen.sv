@@ -120,7 +120,6 @@ module packet_gen
         .a_empty_o    ()
     );
 
-
     always @(posedge clk_i) begin
         if (rst_i) begin
             state_counter <= '0;
