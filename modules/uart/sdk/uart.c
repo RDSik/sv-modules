@@ -8,7 +8,6 @@
 #include "xil_io.h"
 #include "xparameters.h"
 #include "sleep.h"
-#include "xil_cache.h"
 
 int uart_test() {
     xil_printf("[UART]: start test\n");
@@ -17,7 +16,7 @@ int uart_test() {
     uint32_t clk_freq  = 50e6;
     uint32_t baud_rate = 115200;
 
-    uart_regs_t *uart_regs = (uart_regs_t *)UART_BASE_ADDR;
+    uart_regs_t *uart_regs = (uart_regs_t *)XPAR_M01_AXI_0_BASEADDR + UART_BASE_OFFSET;
 
     uart_regs->control.rx_reset    = 0;
     uart_regs->control.tx_reset    = 0;

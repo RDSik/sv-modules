@@ -10,7 +10,6 @@
 # !project/**/
 
 !project/**/project.tcl
-!project/**/sdk.tcl
 !project/**/ps_pl_top.xdc
 !project/**/*.sdc
 !project/**/*.cst
@@ -50,6 +49,8 @@
 
 !modules/**/*.tcl
 
+!project.tcl
+!sdk.tcl
 !.gitignore
 !LICENSE.txt
 !*.md

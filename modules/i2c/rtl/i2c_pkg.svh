@@ -35,21 +35,15 @@ package i2c_pkg;
     } i2c_control_reg_t;
 
     typedef struct packed {
-        logic [22:0]               rsrvd;
-        logic                      rw;
-        logic [I2C_DATA_WIDTH-1:0] data;
-    } i2c_tx_data_reg_t;
-
-    typedef struct packed {
         logic [23:0]               rsrvd;
         logic [I2C_DATA_WIDTH-1:0] data;
-    } i2c_rx_data_reg_t;
+    } i2c_data_reg_t;
 
     typedef struct packed {
         i2c_param_reg_t        param;
         i2c_status_reg_t       status;
-        i2c_rx_data_reg_t      rx;
-        i2c_tx_data_reg_t      tx;
+        i2c_data_reg_t         rx;
+        i2c_data_reg_t         tx;
         i2c_clk_prescale_reg_t clk;
         i2c_control_reg_t      control;
     } i2c_regs_t;
@@ -59,8 +53,8 @@ package i2c_pkg;
     localparam int I2C_TX_DATA_REG_POS = I2C_CLK_PRESCALE_REG_POS + $bits(
         i2c_clk_prescale_reg_t
     ) / 32;
-    localparam int I2C_RX_DATA_REG_POS = I2C_TX_DATA_REG_POS + $bits(i2c_tx_data_reg_t) / 32;
-    localparam int I2C_STATUS_REG_POS = I2C_RX_DATA_REG_POS + $bits(i2c_rx_data_reg_t) / 32;
+    localparam int I2C_RX_DATA_REG_POS = I2C_TX_DATA_REG_POS + $bits(i2c_data_reg_t) / 32;
+    localparam int I2C_STATUS_REG_POS = I2C_RX_DATA_REG_POS + $bits(i2c_data_reg_t) / 32;
     localparam int I2C_PARAM_REG_POS = I2C_STATUS_REG_POS + $bits(i2c_status_reg_t) / 32;
 
     localparam int I2C_REG_NUM = $bits(i2c_regs_t) / 32;

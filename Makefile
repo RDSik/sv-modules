@@ -21,7 +21,7 @@ SRC_FILES := $(wildcard \
 BOARD ?= pz7020starlite
 
 PROJECT_DIR := project
-VIVADO_TCL  := project.tcl
+EDA_TCL     := project.tcl
 SDK_TCL     := sdk.tcl
 
 .PHONY: project program sdk sim clean
@@ -45,14 +45,16 @@ wave:
 
 project:
 ifeq ($(BOARD), tangprimer20k)
-	gw_sh $(PROJECT_DIR)/$(BOARD)/$(VIVADO_TCL)
+	gw_sh $(PROJECT_DIR)/$(BOARD)/$(EDA_TCL)
 else ifeq ($(BOARD), pz7020starlite)
-	vivado -mode batch -source $(PROJECT_DIR)/$(BOARD)/$(VIVADO_TCL) -tclargs $(GUI)
+	vivado -mode batch -source $(EDA_TCL) -tclargs $(PROJECT_DIR)/$(BOARD) $(GUI)
 endif
 
 sdk:
-	xsdk -batch -source $(PROJECT_DIR)/$(BOARD)/$(SDK_TCL)
+	xsdk -batch -source $(SDK_TCL) -tclargs $(PROJECT_DIR)/$(BOARD)
+ifeq ($(GUI), 1)
 	xsdk -workspace $(PROJECT_DIR)/$(BOARD)/$(TOP).sdk
+endif
 
 program:
 	openFPGALoader -b $(BOARD) -m $(PROJECT_DIR)/$(TOP)/impl/pnr/$(TOP).fs

@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#define UART_BASE_ADDR 0x43c00000
+#define UART_BASE_OFFSET 0x0
 
 typedef struct __attribute__((packed)) {
     uint32_t data_width : 8;

@@ -2,9 +2,10 @@ set part     "xc7z020clg400-2"
 set syn_top  "ps_pl_top"
 set sim_top  "axil_top_tb"
 set language "Verilog"
-set gui_flag  [lindex $argv 0]
+set dir       [lindex $argv 0]
+set gui_flag  [lindex $argv 1]
 
-set project_dir [file normalize "project/pz7020starlite"]
+set project_dir [file normalize "$dir"]
 set modules_dir [file normalize "modules"]
 set sdk_dir     [file normalize "$project_dir/$syn_top.sdk"]
 

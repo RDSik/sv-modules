@@ -94,13 +94,17 @@ module axil_i2c
     logic   write;
     logic   read;
 
-    logic   fifo_rst;
+    logic   reset;
     logic   tx_fifo_push;
     logic   tx_fifo_pop;
     logic   rx_fifo_push;
     logic   rx_fifo_pop;
+    logic   rw_reg;
+    logic   rw;
 
-    assign fifo_rst = wr_regs.control.core_rst;
+    assign rw = wr_regs.tx.data[0];
+
+    assign reset = wr_regs.control.core_rst;
 
     assign tx_fifo_push = wr_valid[I2C_TX_DATA_REG_POS];
     assign tx_fifo_pop = cmd_ack & write;
@@ -109,20 +113,22 @@ module axil_i2c
     assign rx_fifo_push = cmd_ack & read;
 
     always @(posedge clk_i) begin
-        if (wr_regs.control.core_rst | i2c_al) begin
-            state <= IDLE;
-            write <= 1'b0;
-            read  <= 1'b0;
-            start <= 1'b0;
-            stop  <= 1'b0;
+        if (reset | i2c_al) begin
+            state  <= IDLE;
+            write  <= 1'b0;
+            read   <= 1'b0;
+            start  <= 1'b0;
+            stop   <= 1'b0;
+            rw_reg <= 1'b0;
         end else begin
             case (state)
                 IDLE: begin
                     if (tx_fifo_push) begin
-                        state <= DATA;
-                        start <= 1'b1;
-                        write <= wr_regs.tx.rw;
-                        read  <= ~wr_regs.tx.rw;
+                        state  <= DATA;
+                        start  <= 1'b1;
+                        rw_reg <= rw;
+                        write  <= ~rw;
+                        read   <= rw;
                     end
                 end
                 DATA: begin
@@ -141,8 +147,8 @@ module axil_i2c
                         read  <= 1'b0;
                     end else begin
                         state <= DATA;
-                        write <= wr_regs.tx.rw;
-                        read  <= ~wr_regs.tx.rw;
+                        write <= ~rw_reg;
+                        read  <= rw_reg;
                     end
                 end
                 STOP: begin
@@ -158,7 +164,7 @@ module axil_i2c
 
     i2c_master_byte_ctrl i_i2c_master_byte_ctrl (
         .clk     (clk_i),
-        .rst     (wr_regs.control.core_rst),
+        .rst     (reset),
         .nReset  ('1),
         .ena     (wr_regs.control.core_en),
         .clk_cnt (wr_regs.clk.prescale),
@@ -193,10 +199,10 @@ module axil_i2c
         .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_tx (
         .wr_clk_i     (clk_i),
-        .wr_rst_i     (fifo_rst),
+        .wr_rst_i     (reset),
         .wr_data_i    (wr_regs.tx.data),
         .rd_clk_i     (clk_i),
-        .rd_rst_i     (fifo_rst),
+        .rd_rst_i     (reset),
         .rd_data_o    (i2c_tx_data),
         .push_i       (tx_fifo_push),
         .pop_i        (tx_fifo_pop),
@@ -217,10 +223,10 @@ module axil_i2c
         .RAM_STYLE   (RAM_STYLE)
     ) i_fifo_rx (
         .wr_clk_i     (clk_i),
-        .wr_rst_i     (fifo_rst),
+        .wr_rst_i     (reset),
         .wr_data_i    (i2c_rx_data),
         .rd_clk_i     (clk_i),
-        .rd_rst_i     (fifo_rst),
+        .rd_rst_i     (reset),
         .rd_data_o    (rx_data),
         .push_i       (rx_fifo_push),
         .pop_i        (rx_fifo_pop),
