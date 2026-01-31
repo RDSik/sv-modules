@@ -14,7 +14,7 @@ class axil_i2c_class #(
 
     localparam int ADDR_OFFSET = DATA_WIDTH / 8;
     localparam int PRESCALE = 0;
-    localparam logic RW = 1;
+    localparam logic RW = 0;
 
     logic                                                               [DATA_WIDTH-1:0] wdata;
     logic                                                               [DATA_WIDTH-1:0] rdata;
@@ -65,12 +65,11 @@ class axil_i2c_class #(
         i2c_regs.control.core_en  = 1'b1;
         i2c_regs.control.core_rst = 1'b0;
         i2c_regs.clk.prescale     = PRESCALE;
-        i2c_regs.tx.rw            = RW;
         begin
             env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_CLK_PRESCALE_REG_POS,
                                  i2c_regs.clk.prescale);
             env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_CONTROL_REG_POS, i2c_regs.control);
-            i2c_regs.tx.data = 8'ha2;
+            i2c_regs.tx.data = {7'ha, RW};
             env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_TX_DATA_REG_POS, i2c_regs.tx);
             i2c_regs.tx.data = 8'hac;
             env.master_write_reg(BASE_ADDR + ADDR_OFFSET * I2C_TX_DATA_REG_POS, i2c_regs.tx);
