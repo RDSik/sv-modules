@@ -16,7 +16,7 @@ int uart_test() {
     uint32_t clk_freq  = 50e6;
     uint32_t baud_rate = 115200;
 
-    uart_regs_t *uart_regs = (uart_regs_t *)XPAR_M01_AXI_0_BASEADDR + UART_BASE_OFFSET;
+    uart_regs_t *uart_regs = (uart_regs_t *)XPAR_M01_AXI_0_BASEADDR + UART_ADDR_OFFSET;
 
     uart_regs->control.rx_reset    = 0;
     uart_regs->control.tx_reset    = 0;

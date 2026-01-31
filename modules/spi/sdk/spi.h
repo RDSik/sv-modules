@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#define SPI_BASE_OFFSET 0x10000
+#define SPI_ADDR_OFFSET 0x10000
 
 typedef struct __attribute__((packed)) {
     uint32_t data_width : 8;
