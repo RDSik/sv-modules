@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#define I2C_BASE_OFFSET 0x20000
+#define I2C_ADDR_OFFSET 0x20000
 #define I2C_READ_ADDR   0xA1
 #define I2C_WRITE_ADDR  0xA0
 

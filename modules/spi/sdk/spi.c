@@ -16,7 +16,7 @@ int spi_test() {
     uint32_t clk_div  = 4;
     uint32_t data_num = 10;
 
-    spi_regs_t *spi_regs = (spi_regs_t *)XPAR_M01_AXI_0_BASEADDR + SPI_BASE_OFFSET;
+    spi_regs_t *spi_regs = (spi_regs_t *)XPAR_M01_AXI_0_BASEADDR + SPI_ADDR_OFFSET;
 
     spi_regs->control.reset = 0;
     spi_regs->control.cpol  = 0;
