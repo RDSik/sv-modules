@@ -9,7 +9,7 @@ int main() {
     Xil_DCacheDisable();
     Xil_ICacheDisable();
 
-    while(1) {
+    while (1) {
         uart_test();
         spi_test();
         i2c_test();
