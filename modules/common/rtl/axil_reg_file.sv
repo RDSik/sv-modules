@@ -38,7 +38,7 @@ module axil_reg_file #(
     logic [       REG_NUM-1:0] rd_request;
 
     assign clk_i         = s_axil.clk_i;
-    assign rstn_i        = s_axil.rstn_i;
+    assign rstn_i        = s_axil.arstn_i;
 
     assign wr_regs_o     = reg_t'(wr_reg);
     assign wr_valid_o    = wr_valid;

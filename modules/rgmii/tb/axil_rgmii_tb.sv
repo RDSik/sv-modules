@@ -15,7 +15,7 @@ module axil_rgmii_tb ();
     localparam int RESET_DELAY = 10;
 
     logic clk_i;
-    logic rstn_i;
+    logic arstn_i;
 
     eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
@@ -27,28 +27,28 @@ module axil_rgmii_tb ();
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
         .clk_i(clk_i),
-        .rst_i(rstn_i)
+        .rst_i(~arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
-        .rst_i(rstn_i)
+        .rst_i(~arstn_i)
     );
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) s_axil (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i)
     );
 
     initial begin
-        rstn_i = 1'b0;
+        arstn_i = 1'b0;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rstn_i = 1'b1;
+        arstn_i = 1'b1;
         $display("Reset done in: %0t ns\n.", $time());
     end
 

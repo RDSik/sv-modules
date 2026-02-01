@@ -66,10 +66,10 @@ module axil_crossbar #(
     endfunction
 
     logic clk_i;
-    logic rstn_i;
+    logic arstn_i;
 
-    assign clk_i  = s_axil[0].clk_i;
-    assign rstn_i = s_axil[0].rstn_i;
+    assign clk_i   = s_axil[0].clk_i;
+    assign arstn_i = s_axil[0].arstn_i;
 
     logic [MASTER_NUM-1:0][  ADDR_WIDTH-1:0] s_awaddr;
     logic [MASTER_NUM-1:0]                   s_awvalid;
@@ -187,7 +187,7 @@ module axil_crossbar #(
             .MASTER_NUM(MASTER_NUM)
         ) i_wr_round_robin_arbiter (
             .clk_i  (clk_i),
-            .rst_i  (~rstn_i),
+            .rst_i  (~arstn_i),
             .ack_i  (wr_ack),
             .req_i  (wr_req),
             .grant_o(wr_grant)
@@ -197,7 +197,7 @@ module axil_crossbar #(
             .MASTER_NUM(MASTER_NUM)
         ) i_rd_round_robin_arbiter (
             .clk_i  (clk_i),
-            .rst_i  (~rstn_i),
+            .rst_i  (~arstn_i),
             .ack_i  (rd_ack),
             .req_i  (rd_req),
             .grant_o(rd_grant)
@@ -220,8 +220,8 @@ module axil_crossbar #(
     assign m_awindx = get_addr_index(s_awaddr[wr_grant_indx]);
     assign m_arindx = get_addr_index(s_araddr[rd_grant_indx]);
 
-    always_ff @(posedge clk_i or negedge rstn_i) begin
-        if (~rstn_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             wr_state          <= WR_IDLE;
             m_awindx_reg      <= '0;
             wr_grant_indx_reg <= '0;
@@ -234,8 +234,8 @@ module axil_crossbar #(
         end
     end
 
-    always_ff @(posedge clk_i or negedge rstn_i) begin
-        if (~rstn_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             rd_state          <= RD_IDLE;
             m_arindx_reg      <= '0;
             rd_grant_indx_reg <= '0;

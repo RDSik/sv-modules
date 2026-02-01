@@ -142,8 +142,8 @@ module ps_pl_top #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) axil[0:0] (
-        .clk_i (ps_clk),
-        .rstn_i(ps_arstn)
+        .clk_i  (ps_clk),
+        .arstn_i(ps_arstn)
     );
 
     axil_top #(
