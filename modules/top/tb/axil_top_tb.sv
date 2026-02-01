@@ -34,7 +34,7 @@ module axil_top_tb ();
     localparam int RESET_DELAY = 10;
 
     logic clk_i;
-    logic rstn_i;
+    logic arstn_i;
     logic uart;
 
     spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
@@ -51,28 +51,28 @@ module axil_top_tb ();
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
         .clk_i(clk_i),
-        .rst_i(rstn_i)
+        .rst_i(~arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
-        .rst_i(rstn_i)
+        .rst_i(~arstn_i)
     );
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) s_axil[MASTER_NUM-1:0] (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i)
     );
 
     initial begin
-        rstn_i = 1'b0;
+        arstn_i = 1'b0;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rstn_i = 1'b1;
+        arstn_i = 1'b1;
         $display("Reset done in: %0t ns\n.", $time());
     end
 
@@ -102,7 +102,7 @@ module axil_top_tb ();
         axil_rgmii_class #(
             .DATA_WIDTH(AXIL_DATA_WIDTH),
             .ADDR_WIDTH(AXIL_ADDR_WIDTH),
-            .TLAST_EN  (1),
+            .TLAST_EN  (0),
             .BASE_ADDR (SLAVE_LOW_ADDR[3])
         ) rgmii;
         uart  = new(s_axil[0]);

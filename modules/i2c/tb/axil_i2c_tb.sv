@@ -15,20 +15,20 @@ module axil_i2c_tb ();
     localparam int RESET_DELAY = 10;
 
     logic clk_i;
-    logic rstn_i;
+    logic arstn_i;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) s_axil (
-        .clk_i (clk_i),
-        .rstn_i(rstn_i)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i)
     );
 
     initial begin
-        rstn_i = 1'b0;
+        arstn_i = 1'b0;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rstn_i = 1'b1;
+        arstn_i = 1'b1;
         $display("Reset done in: %0t ns\n.", $time());
     end
 

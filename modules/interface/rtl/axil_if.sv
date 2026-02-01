@@ -3,7 +3,7 @@ interface axil_if #(
     parameter int ADDR_WIDTH = 32
 ) (
     input logic clk_i,
-    input logic rstn_i
+    input logic arstn_i
 );
 
     localparam int STRB_WIDTH = (DATA_WIDTH / 8);
@@ -34,7 +34,7 @@ interface axil_if #(
 
     modport master(
         input clk_i,
-        input rstn_i,
+        input arstn_i,
         output awaddr,
         output awprot,
         output awvalid,
@@ -58,7 +58,7 @@ interface axil_if #(
 
     modport slave(
         input clk_i,
-        input rstn_i,
+        input arstn_i,
         input awaddr,
         input awprot,
         input awvalid,

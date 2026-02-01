@@ -18,7 +18,7 @@ module axil_ram #(
     logic rstn_i;
 
     assign clk_i  = s_axil.clk_i;
-    assign rstn_i = s_axil.rstn_i;
+    assign rstn_i = s_axil.arstn_i;
 
     logic [ADDR_WIDTH-1:0] awaddr;
     logic [ADDR_WIDTH-1:0] araddr;

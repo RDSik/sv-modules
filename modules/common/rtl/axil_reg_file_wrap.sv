@@ -22,29 +22,29 @@ module axil_reg_file_wrap #(
 );
 
     if (MODE == "async") begin : g_async_mode
-        logic rstn_i;
+        logic arstn_i;
 
         xpm_cdc_async_rst #(
             .DEST_SYNC_FF   (3),
             .INIT_SYNC_FF   (0),
             .RST_ACTIVE_HIGH(0)
         ) i_xpm_cdc_async_rst (
-            .src_arst (s_axil.rstn_i),
+            .src_arst (s_axil.arstn_i),
             .dest_clk (clk_i),
-            .dest_arst(rstn_i)
+            .dest_arst(arstn_i)
         );
 
         axil_if #(
             .ADDR_WIDTH(REG_ADDR_WIDTH),
             .DATA_WIDTH(REG_DATA_WIDTH)
         ) reg_axil (
-            .clk_i (clk_i),
-            .rstn_i(rstn_i)
+            .clk_i  (clk_i),
+            .arstn_i(arstn_i)
         );
 
         axi_clock_converter i_axi_clock_converter (
             .s_axi_aclk   (s_axil.clk_i),
-            .s_axi_aresetn(s_axil.rstn_i),
+            .s_axi_aresetn(s_axil.arstn_i),
             .s_axi_awaddr (s_axil.awaddr),
             .s_axi_awprot (s_axil.awprot),
             .s_axi_awvalid(s_axil.awvalid),
@@ -65,7 +65,7 @@ module axil_reg_file_wrap #(
             .s_axi_rvalid (s_axil.rvalid),
             .s_axi_rready (s_axil.rready),
             .m_axi_aclk   (reg_axil.clk_i),
-            .m_axi_aresetn(reg_axil.rstn_i),
+            .m_axi_aresetn(reg_axil.arstn_i),
             .m_axi_awaddr (reg_axil.awaddr),
             .m_axi_awprot (reg_axil.awprot),
             .m_axi_awvalid(reg_axil.awvalid),

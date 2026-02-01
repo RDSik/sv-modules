@@ -42,8 +42,8 @@ module axil_top #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
     ) m_axil[SLAVE_NUM-1:0] (
-        .clk_i (s_axil[0].clk_i),
-        .rstn_i(s_axil[0].rstn_i)
+        .clk_i  (s_axil[0].clk_i),
+        .arstn_i(s_axil[0].arstn_i)
     );
 
     axil_crossbar #(
