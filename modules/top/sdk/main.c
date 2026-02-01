@@ -14,4 +14,6 @@ int main() {
         spi_test();
         i2c_test();
     }
+
+    return EXIT_SUCCESS;
 }
