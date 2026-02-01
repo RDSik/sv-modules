@@ -51,7 +51,7 @@ else ifeq ($(BOARD), pz7020starlite)
 endif
 
 sdk:
-	xsdk -batch -source $(SDK_TCL) -tclargs $(PROJECT_DIR)/$(BOARD)
+	xsdk -batch -source $(SDK_TCL)
 ifeq ($(GUI), 1)
 	xsdk -workspace $(PROJECT_DIR)/$(BOARD)/$(TOP).sdk
 endif
