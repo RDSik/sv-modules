@@ -1,4 +1,4 @@
-#include "I2C.h"
+#include "i2c.h"
 
 #include <stdlib.h>
 #include <stdio.h>
