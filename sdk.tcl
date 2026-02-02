@@ -25,6 +25,8 @@ createbsp -name $bsp -hwproject $hw_project -proc $cpu -os standalone
 createapp -name $app -app {Empty Application} -hwproject $hw_project -bsp $bsp -proc $cpu -os standalone -lang C
 
 configapp -app $app build-config debug
+updatemss -mss $sdk_dir/$bsp/system.mss
+regenbsp -bsp $bsp
 
 createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
