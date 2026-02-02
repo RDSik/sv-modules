@@ -22,6 +22,7 @@ if {$xilinx == 1} {
         $path/rtl/crc.sv
         $path/rtl/iddr.sv
         $path/rtl/oddr.sv
+        $path/rtl/axis_connect.sv
     "
 
     add_files -norecurse $xil_defaultlib
@@ -39,4 +40,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/crc.sv
     add_file $path/rtl/iddr.sv
     add_file $path/rtl/oddr.sv
+    add_file $path/rtl/axis_connect.sv
 }

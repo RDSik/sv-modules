@@ -57,7 +57,4 @@ wait_on_run impl_1
 
 file mkdir $sdk_dir
 
-write_sysdef \
-    -hwdef $project_dir/$syn_top.srcs/sources_1/bd/zynq_bd/synth/zynq_bd.hwdef \
-    -bitfile $project_dir/$syn_top.runs/impl_1/ps_pl_top.bit \
-    -file $sdk_dir/$syn_top.hdf
+write_hwdef -force $sdk_dir/$syn_top.hdf

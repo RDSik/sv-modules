@@ -5,10 +5,12 @@ set bsp         ${app}_bsp
 set device_tree ${app}_devtree_bsp
 set cpu         "ps7_cortexa9_0"
 set modules_dir [file normalize "modules"]
-set sdk_dir     [file normalize "project/pz7020starlite/$syn_top.sdk"]
+set project_dir [file normalize "project/pz7020starlite"]
+set sdk_dir     [file normalize "$project_dir/$syn_top.sdk"]
 
 file delete -force $sdk_dir/SDK.log
 file delete -force $sdk_dir/.metadata
+file delete -force $sdk_dir/RemoteSystemsTempFiles
 file delete -force $sdk_dir/$hw_project
 file delete -force $sdk_dir/$bsp
 file delete -force $sdk_dir/$app
@@ -30,16 +32,14 @@ regenbsp -bsp $bsp
 
 createbsp -name $device_tree -hwproject $hw_project -proc $cpu -os device_tree
 
-proc import_sdk {current_dir name} {
-	set sdk_dirs [glob -nocomplain -type d [file join $current_dir */sdk]]
-    foreach sdk_path $sdk_dirs  {
-        if {[file isdirectory $sdk_path]} {
-            puts "Current dir: $sdk_path"
-            importsources -name $name -path $sdk_path
-        }
+file copy -force $project_dir/$syn_top.runs/impl_1/$syn_top.bit $sdk_dir/$hw_project
+
+set sdk_dirs [glob -nocomplain -type d [file join $modules_dir */sdk]]
+foreach sdk_path $sdk_dirs  {
+    if {[file isdirectory $sdk_path]} {
+        puts "Current dir: $sdk_path"
+        importsources -name $app -path $sdk_path
     }
 }
-
-import_sdk $modules_dir $syn_top
 
 projects -build
