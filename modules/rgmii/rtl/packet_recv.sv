@@ -248,18 +248,9 @@ module packet_recv
         .a_empty_o    ()
     );
 
-    always_ff @(posedge m_axis.clk_i) begin
-        if (m_axis.rst_i) begin
-            m_axis.tvalid <= '0;
-            m_axis.tlast  <= '0;
-            m_axis.tdata  <= '0;
-        end else if (m_axis.tready | ~m_axis.tvalid) begin
-            m_axis.tvalid <= axis.tvalid;
-            m_axis.tlast  <= axis.tlast;
-            m_axis.tdata  <= axis.tdata;
-        end
-    end
-
-    assign axis.tready = m_axis.tready | ~m_axis.tvalid;
+    axis_connect i_axis_connect (
+        .s_axis(axis),
+        .m_axis(m_axis)
+    );
 
 endmodule
