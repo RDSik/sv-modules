@@ -253,13 +253,13 @@ module packet_recv
             m_axis.tvalid <= '0;
             m_axis.tlast  <= '0;
             m_axis.tdata  <= '0;
-        end else if (m_axis.tready) begin
+        end else if (m_axis.tready | ~m_axis.tvalid) begin
             m_axis.tvalid <= axis.tvalid;
             m_axis.tlast  <= axis.tlast;
             m_axis.tdata  <= axis.tdata;
         end
     end
 
-    assign axis.tready = m_axis.tready;
+    assign axis.tready = m_axis.tready | ~m_axis.tvalid;
 
 endmodule
