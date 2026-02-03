@@ -136,7 +136,7 @@ module axil_i2c
                         write <= 1'b0;
                         read  <= 1'b0;
                         start <= 1'b0;
-                        state <= CHECK;
+                        state <= DATA;
                     end
                 end
                 DATA: begin
