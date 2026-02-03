@@ -140,7 +140,7 @@ module axil_i2c
                     end
                 end
                 DATA: begin
-                    if (tx_fifo_empty | rx_fifo_full) begin
+                    if ((tx_fifo_empty & ~rw_reg) || (rx_fifo_full & rw_reg)) begin
                         state <= STOP;
                         stop  <= 1'b1;
                         write <= 1'b0;
