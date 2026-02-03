@@ -81,8 +81,8 @@ module axil_i2c
 
     typedef enum logic [1:0] {
         IDLE  = 2'b00,
-        DATA  = 2'b01,
-        CHECK = 2'b10,
+        CHECK = 2'b01,
+        DATA  = 2'b10,
         STOP  = 2'b11
     } state_t;
 
