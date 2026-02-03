@@ -112,7 +112,7 @@ module axil_i2c
     assign rx_fifo_pop = rd_request[I2C_RX_DATA_REG_POS];
     assign rx_fifo_push = cmd_ack & read;
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (reset | i2c_al) begin
             state  <= IDLE;
             write  <= 1'b0;
