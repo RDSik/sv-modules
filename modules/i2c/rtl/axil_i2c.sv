@@ -124,14 +124,14 @@ module axil_i2c
             case (state)
                 IDLE: begin
                     if (tx_fifo_push) begin
-                        state  <= DATA;
+                        state  <= CHECK;
                         start  <= 1'b1;
                         rw_reg <= rw;
                         write  <= ~rw;
                         read   <= rw;
                     end
                 end
-                DATA: begin
+                CHECK: begin
                     if (cmd_ack) begin
                         write <= 1'b0;
                         read  <= 1'b0;
@@ -139,14 +139,14 @@ module axil_i2c
                         state <= CHECK;
                     end
                 end
-                CHECK: begin
+                DATA: begin
                     if (tx_fifo_empty | rx_fifo_full) begin
                         state <= STOP;
                         stop  <= 1'b1;
                         write <= 1'b0;
                         read  <= 1'b0;
                     end else begin
-                        state <= DATA;
+                        state <= CHECK;
                         write <= ~rw_reg;
                         read  <= rw_reg;
                     end
