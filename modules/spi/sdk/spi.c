@@ -25,7 +25,7 @@ int spi_test() {
 
     for (uint32_t i = 0; i < data_num; i++) {
         spi_regs->tx.data = i;
-        if (i == data_num -1) {
+        if (i == data_num - 1) {
             spi_regs->tx.last = 1;
         }
     }
