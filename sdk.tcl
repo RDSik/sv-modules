@@ -27,6 +27,8 @@ createbsp -name $bsp -hwproject $hw_project -proc $cpu -os standalone
 createapp -name $app -app {Empty Application} -hwproject $hw_project -bsp $bsp -proc $cpu -os standalone -lang C
 
 configapp -app $app build-config debug
+configbsp -bsp $bsp stdin $stdinout
+configbsp -bsp $bsp stdout $stdinout
 updatemss -mss $sdk_dir/$bsp/system.mss
 regenbsp -bsp $bsp
 
@@ -39,7 +41,6 @@ foreach sdk_path $sdk_dirs  {
     if {[file isdirectory $sdk_path]} {
         puts "Current dir: $sdk_path"
         importsources -name $app -path $sdk_path
-        configapp -app $app -add include-path "$sdk_path"
     }
 }
 
