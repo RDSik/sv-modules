@@ -4,6 +4,7 @@ set app         $syn_top
 set bsp         ${app}_bsp
 set device_tree ${app}_devtree_bsp
 set cpu         "ps7_cortexa9_0"
+set stdinout    "ps7_coresight_comp_0"
 set modules_dir [file normalize "modules"]
 set project_dir [file normalize "project/pz7020starlite"]
 set sdk_dir     [file normalize "$project_dir/$syn_top.sdk"]
