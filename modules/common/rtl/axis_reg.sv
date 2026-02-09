@@ -1,4 +1,4 @@
-module axis_connect (
+module axis_reg (
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );

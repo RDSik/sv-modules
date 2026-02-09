@@ -20,12 +20,13 @@ vlog modules/dw_conv/rtl/axis_dw_conv_wrap.sv
 
 vlog modules/common/rtl/iddr.sv
 vlog modules/common/rtl/oddr.sv
+vlog modules/common/rtl/crc.sv
 vlog modules/common/rtl/ram_sdp.sv
 vlog modules/common/rtl/shift_reg.sv
 vlog modules/common/rtl/axil_reg_file.sv
 vlog modules/common/rtl/axil_reg_file_wrap.sv
 vlog modules/common/rtl/axil_crossbar.sv
-vlog modules/common/rtl/axis_connect.sv
+vlog modules/common/rtl/axis_reg.sv
 
 vlog  modules/uart/rtl/axil_uart.sv
 vlog  modules/uart/rtl/axis_uart_tx.sv

@@ -9,14 +9,14 @@
 #include "xparameters.h"
 #include "sleep.h"
 
-int spi_test() {
+int spi_test(uint32_t module_addr) {
     xil_printf("[SPI]: start test\n");
 
     uint32_t clk_freq = 50e6;
     uint32_t clk_div  = 4;
     uint32_t data_num = 10;
 
-    spi_regs_t *spi_regs = (spi_regs_t *)XPAR_M01_AXI_0_BASEADDR + SPI_ADDR_OFFSET;
+    spi_regs_t *spi_regs = (spi_regs_t *)((size_t)module_addr);
 
     spi_regs->control.reset = 0;
     spi_regs->control.cpol  = 0;

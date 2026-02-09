@@ -248,7 +248,7 @@ module packet_recv
         .a_empty_o    ()
     );
 
-    axis_connect i_axis_connect (
+    axis_reg i_axis_reg (
         .s_axis(axis),
         .m_axis(m_axis)
     );

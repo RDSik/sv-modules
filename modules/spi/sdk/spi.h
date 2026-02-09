@@ -1,7 +1,5 @@
 #include <stdint.h>
 
-#define SPI_ADDR_OFFSET 0x10000
-
 typedef struct __attribute__((packed)) {
     uint32_t data_width : 8;
     uint32_t reg_num    : 8;
@@ -46,4 +44,4 @@ typedef volatile struct {
     spi_param_reg_t    param;
 } spi_regs_t;
 
-int spi_test();
+int spi_test(uint32_t module_addr);

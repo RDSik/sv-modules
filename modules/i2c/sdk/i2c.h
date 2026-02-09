@@ -1,8 +1,7 @@
 #include <stdint.h>
 
-#define I2C_ADDR_OFFSET 0x20000
-#define I2C_READ_ADDR   0xA1
-#define I2C_WRITE_ADDR  0xA0
+#define I2C_READ_ADDR  0xA1
+#define I2C_WRITE_ADDR 0xA0
 
 typedef struct __attribute__((packed)) {
     uint32_t data_width : 8;
@@ -46,4 +45,4 @@ typedef volatile struct {
     i2c_param_reg_t        param;
 } i2c_regs_t;
 
-int i2c_test();
+int i2c_test(uint32_t module_addr);

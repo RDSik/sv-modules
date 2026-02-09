@@ -9,13 +9,13 @@
 #include "xparameters.h"
 #include "sleep.h"
 
-int i2c_test() {
+int i2c_test(uint32_t module_addr) {
     xil_printf("[I2C]: start test\n");
 
     uint32_t clk_freq = 50e6;
     uint32_t data_num = 10;
 
-    i2c_regs_t *i2c_regs = (i2c_regs_t *)XPAR_M01_AXI_0_BASEADDR + I2C_ADDR_OFFSET;
+    i2c_regs_t *i2c_regs = (i2c_regs_t *)((size_t)module_addr);
 
     i2c_regs->control.core_rst = 0;
     i2c_regs->control.core_en  = 1;

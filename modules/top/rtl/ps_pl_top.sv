@@ -46,6 +46,33 @@ module ps_pl_top #(
     inout        FIXED_IO_0_ps_srstb
 );
 
+    localparam int FIFO_DEPTH = 128;
+    localparam int AXIL_ADDR_WIDTH = 32;
+    localparam int AXIL_DATA_WIDTH = 32;
+    localparam int AXIS_DATA_WIDTH = 8;
+    localparam int SLAVE_NUM = 4;
+    localparam int MASTER_NUM = 1;
+
+    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_LOW_ADDR = 32'h43c0_0000;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] ADDR_OFFSET = 32'h0001_0000;
+
+    function automatic logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] slave_addr_get;
+        input logic [AXIL_ADDR_WIDTH-1:0] addr;
+        begin
+            for (int i = 0; i < SLAVE_NUM; i++) begin
+                slave_addr_get[i] = addr + i * ADDR_OFFSET;
+            end
+        end
+    endfunction
+
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = slave_addr_get(
+        BASE_LOW_ADDR
+    );
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = slave_addr_get(
+        BASE_HIGTH_ADDR
+    );
+
     logic ps_clk;
     logic ps_arstn;
 
@@ -105,25 +132,6 @@ module ps_pl_top #(
     assign eth_tx_clk_o = m_eth.tx_clk;
     assign eth_mdc_o    = m_eth.mdc;
 
-    localparam int FIFO_DEPTH = 128;
-    localparam int AXIL_ADDR_WIDTH = 32;
-    localparam int AXIL_DATA_WIDTH = 32;
-    localparam int AXIS_DATA_WIDTH = 8;
-    localparam int MODULES_NUM = 4;
-
-    localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
-        32'h43c0_0000,
-        32'h43c1_0000,
-        32'h43c2_0000,
-        32'h43c3_0000
-    };
-    localparam logic [MODULES_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
-        32'h43c0_ffff,
-        32'h43c1_ffff,
-        32'h43c2_ffff,
-        32'h43c3_ffff
-    };
-
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis_mm2s (
@@ -141,7 +149,7 @@ module ps_pl_top #(
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
-    ) axil[0:0] (
+    ) axil[MASTER_NUM-1:0] (
         .clk_i  (ps_clk),
         .arstn_i(ps_arstn)
     );
@@ -152,11 +160,11 @@ module ps_pl_top #(
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
-        .SLAVE_NUM      (MODULES_NUM),
+        .SLAVE_NUM      (SLAVE_NUM),
         .SPI_CS_WIDTH   (SPI_CS_WIDTH),
         .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (ILA_EN),
-        .MASTER_NUM     (1),
+        .MASTER_NUM     (MASTER_NUM),
         .MODE           ("async"),
         .VENDOR         ("xilinx")
     ) i_axil_top (

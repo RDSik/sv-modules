@@ -16,18 +16,25 @@ module axil_top_tb ();
     localparam int MASTER_NUM = 1;
     localparam int SLAVE_NUM = 4;
 
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = '{
-        32'h43c0_0000,
-        32'h43c1_0000,
-        32'h43c2_0000,
-        32'h43c3_0000
-    };
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{
-        32'h43c0_ffff,
-        32'h43c1_ffff,
-        32'h43c2_ffff,
-        32'h43c3_ffff
-    };
+    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_LOW_ADDR = 32'h43c0_0000;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] ADDR_OFFSET = 32'h0001_0000;
+
+    function automatic logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] slave_addr_get;
+        input logic [AXIL_ADDR_WIDTH-1:0] addr;
+        begin
+            for (int i = 0; i < SLAVE_NUM; i++) begin
+                slave_addr_get[i] = addr + i * ADDR_OFFSET;
+            end
+        end
+    endfunction
+
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = slave_addr_get(
+        BASE_LOW_ADDR
+    );
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = slave_addr_get(
+        BASE_HIGTH_ADDR
+    );
 
     localparam int WAT_CYCLES = 250;
     localparam int CLK_PER_NS = 2;
