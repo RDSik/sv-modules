@@ -19,7 +19,7 @@ file delete -force $sdk_dir/$device_tree
 
 setws $sdk_dir
 
-repo -set "device-tree-xlnx-xilinx-v2019.1"
+repo -set "Zynq-Linux/device-tree-xlnx-xilinx-v2019.1"
 
 createhw -name $hw_project -hwspec $sdk_dir/$syn_top.hdf
 
