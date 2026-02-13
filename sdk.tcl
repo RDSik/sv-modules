@@ -41,10 +41,10 @@ set sdk_dirs [glob -nocomplain -type d [file join $modules_dir */sdk]]
 foreach sdk_path $sdk_dirs  {
     if {[file isdirectory $sdk_path]} {
         puts "Current dir: $sdk_path"
-        configapp -app $app -add include-path    $sdk_path
+        configapp -app $app -add include-path $sdk_path
     }
 }
 
-importsources -name $app -path "$modules_for/top/main.c"
+importsources -name $app -path "$modules/top/sdk/main.c"
 
 projects -build
