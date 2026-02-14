@@ -4,7 +4,6 @@ set app         $syn_top
 set bsp         ${app}_bsp
 set device_tree ${app}_devtree_bsp
 set cpu         "ps7_cortexa9_0"
-set stdinout    "ps7_coresight_comp_0"
 set modules_dir [file normalize "modules"]
 set project_dir [file normalize "project/pz7020starlite"]
 set sdk_dir     [file normalize "$project_dir/$syn_top.sdk"]
@@ -28,8 +27,6 @@ createbsp -name $bsp -hwproject $hw_project -proc $cpu -os standalone
 createapp -name $app -app {Empty Application} -hwproject $hw_project -bsp $bsp -proc $cpu -os standalone -lang C
 
 configapp -app $app build-config debug
-configbsp -bsp $bsp stdin $stdinout
-configbsp -bsp $bsp stdout $stdinout
 updatemss -mss $sdk_dir/$bsp/system.mss
 regenbsp -bsp $bsp
 
