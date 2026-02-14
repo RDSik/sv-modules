@@ -45,6 +45,6 @@ foreach sdk_path $sdk_dirs  {
     }
 }
 
-importsources -name $app -path "$modules_dir/top/sdk/main.c"
+importsources -name $app -path "$modules_dir/top/sdk"
 
 projects -build
