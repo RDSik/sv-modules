@@ -234,7 +234,7 @@ proc create_root_design { parentCell } {
   # Create ports
   set FCLK_CLK0_0 [ create_bd_port -dir O -type clk FCLK_CLK0_0 ]
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {M_AXIS_MM2S_0:S_AXIS_S2MM_0:M01_AXI_0} \
+   CONFIG.ASSOCIATED_BUSIF {M01_AXI_0:S_AXIS_0:M_AXIS_0} \
    CONFIG.FREQ_HZ {50000000} \
  ] $FCLK_CLK0_0
   set peripheral_aresetn_0 [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_aresetn_0 ]
