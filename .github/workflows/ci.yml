@@ -32,18 +32,15 @@ jobs:
   #             make SIM=verilator
   build-project:
     runs-on: ubuntu-latest
+    container:
+      image: ${{env.image_name}}
     defaults:
       run:
         shell: bash
         working-directory: ./
     steps:
-      - name: Check out the repository to the runner
-        uses: actions/checkout@v2
       - name: Run Docker container
-        uses: addnab/docker-run-action@v3
-        with:
-            image: ${{env.image_name}}
-            run: |
-              git clone https://github.com/RDSik/sv-modules.git
-              cd sv-modules
-              make BOARD=tangprimer20k project
+        run: |
+          git clone https://github.com/RDSik/sv-modules.git
+          cd sv-modules
+          make BOARD=tangprimer20k project
