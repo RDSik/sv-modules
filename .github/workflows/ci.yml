@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [master]
 
-env:
-    image_name: r0d0s/fpga_tools:latest
+# env:
+#     image_name: r0d0s/fpga_tools:latest
 
 jobs:
   # simulation:
@@ -33,7 +33,7 @@ jobs:
   build-project:
     runs-on: ubuntu-latest
     container:
-      image: ${{env.image_name}}
+      image: r0d0s/fpga_tools:latest
     defaults:
       run:
         shell: bash
