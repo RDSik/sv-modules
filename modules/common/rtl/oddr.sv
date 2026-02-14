@@ -39,7 +39,9 @@ module oddr #(
             .dataout   (q_o)
         );
     end else if (VENDOR == "gowin") begin : g_gowin
-        ODDR i_oddr (
+        ODDR #(
+            .INIT(1'b0)
+        ) i_oddr (
             .Q0 (q_o),
             .Q1 (),
             .D0 (d1_i),
@@ -47,7 +49,6 @@ module oddr #(
             .TX (1'b0),
             .CLK(clk_i)
         );
-        defparam i_oddr.INIT = 1'b0;
     end else begin : g_otehr
         logic d_reg_1 = 1'b0;
         logic d_reg_2 = 1'b0;

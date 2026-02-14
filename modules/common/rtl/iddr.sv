@@ -57,13 +57,15 @@ module iddr #(
         logic q1_delay;
         logic q2_delay;
 
-        IDDR i_iddr (
+        IDDR #(
+            .Q0_INIT(1'b0),
+            .Q1_INIT(1'b0)
+        ) i_iddr (
             .Q0 (q1_int),
             .Q1 (q2_int),
             .D  (d_i),
             .CLK(clk_i)
         );
-        defparam i_iddr.Q0_INIT = 1'b0; defparam i_iddr.Q1_INIT = 1'b0;
 
         always_ff @(posedge clk_i) begin
             q1_delay <= q1_int;
