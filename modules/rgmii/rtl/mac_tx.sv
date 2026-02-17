@@ -1,6 +1,6 @@
 `include "rgmii_pkg.svh"
 
-module packet_gen
+module mac_tx
     import rgmii_pkg::*;
 #(
     parameter int GMII_WIDTH      = 8,

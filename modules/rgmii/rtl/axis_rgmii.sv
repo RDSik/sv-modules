@@ -34,13 +34,13 @@ module axis_rgmii #(
     logic [GMII_WIDTH-1:0] tx_d;
     logic                  tx_en;
 
-    packet_gen #(
+    mac_tx #(
         .GMII_WIDTH     (GMII_WIDTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(GMII_WIDTH),
         .CDC_REG_NUM    (CDC_REG_NUM),
         .FIFO_MODE      (FIFO_MODE)
-    ) i_packet_gen (
+    ) i_mac_tx (
         .clk_i          (m_eth.rx_clk),
         .rst_i          (rst_i),
         .tx_en_o        (tx_en),
@@ -58,13 +58,13 @@ module axis_rgmii #(
     logic [GMII_WIDTH-1:0] rx_d;
     logic                  rx_dv;
 
-    packet_recv #(
+    mac_rx #(
         .GMII_WIDTH     (GMII_WIDTH),
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(GMII_WIDTH),
         .CDC_REG_NUM    (CDC_REG_NUM),
         .FIFO_MODE      (FIFO_MODE)
-    ) i_packet_recv (
+    ) i_mac_rx (
         .clk_i              (m_eth.rx_clk),
         .rst_i              (rst_i),
         .rx_dv_i            (rx_dv),

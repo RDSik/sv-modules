@@ -10,8 +10,8 @@ if {$xilinx == 1} {
         $path/rtl/axil_rgmii.sv
         $path/rtl/axis_rgmii.sv
         $path/rtl/eth_header_gen.sv
-        $path/rtl/packet_gen.sv
-        $path/rtl/packet_recv.sv
+        $path/rtl/mac_tx.sv
+        $path/rtl/mac_rx.sv
         $path/rtl/rgmii_rx.sv
         $path/rtl/rgmii_tx.sv
         $path/rtl/rgmii_pkg.svh
@@ -24,8 +24,8 @@ if {$xilinx == 1} {
     add_files -fileset sim_1 $xil_defaultlib
 } elseif {$gowin == 1} {
     add_file $path/rtl/eth_header_gen.sv
-    add_file $path/rtl/packet_gen.sv
-    add_file $path/rtl/packet_recv.sv
+    add_file $path/rtl/mac_tx.sv
+    add_file $path/rtl/mac_rx.sv
     add_file $path/rtl/rgmii_rx.sv
     add_file $path/rtl/rgmii_tx.sv
     add_file $path/rtl/axis_rgmii.sv

@@ -46,9 +46,9 @@ vlog  modules/i2c/rtl/axil_i2c.sv
 vlog  modules/i2c/rtl/i2c_pkg.svh
 
 vlog  modules/rgmii/rtl/rgmii_pkg.svh
-vlog  modules/rgmii/rtl/packet_gen.sv
+vlog  modules/rgmii/rtl/mac_tx.sv
 vlog  modules/rgmii/rtl/eth_header_gen.sv
-vlog  modules/rgmii/rtl/packet_recv.sv
+vlog  modules/rgmii/rtl/mac_rx.sv
 vlog  modules/rgmii/rtl/rgmii_rx.sv
 vlog  modules/rgmii/rtl/rgmii_tx.sv
 vlog  modules/rgmii/rtl/axis_rgmii.sv
