@@ -251,7 +251,7 @@ module mac_tx
         end else begin
             if (current_state == IDLE) begin
                 header_buffer   <= header;
-                preamble_buffer <= PREAMBULE_VAL;
+                preamble_buffer <= PREAMBLE_VAL;
                 sfd_buffer      <= SFD_VAL;
             end
             if (next_state == FCS && current_state != FCS) begin
