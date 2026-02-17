@@ -120,7 +120,7 @@ module mac_tx
         .a_empty_o    ()
     );
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (rst_i) begin
             state_counter <= '0;
         end else begin
@@ -174,7 +174,7 @@ module mac_tx
         endcase
     end
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (rst_i) begin
             current_state <= IDLE;
         end else begin
@@ -294,7 +294,7 @@ module mac_tx
         .crc_o (fcs)
     );
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (rst_i) begin
             tx_en_o <= 0;
         end else begin

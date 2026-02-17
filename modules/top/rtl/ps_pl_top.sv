@@ -7,13 +7,16 @@ module ps_pl_top #(
     input  logic uart_rx_i,
     output logic uart_tx_o,
 
-    inout              eth_mdio_io,
-    output logic       eth_mdc_o,
+    inout        eth_mdio_io,
+    output logic eth_mdc_o,
+
+    input logic       eth_rx_clk_i,
+    input logic [3:0] eth_rxd_i,
+    input logic       eth_rx_ctl_i,
+
     output logic       eth_tx_clk_o,
     output logic [3:0] eth_txd_o,
     output logic       eth_tx_ctl_o,
-    input  logic [3:0] eth_rxd_i,
-    input  logic       eth_rx_ctl_i,
 
     input  logic spi_miso_i,
     output logic spi_mosi_o,
@@ -124,7 +127,7 @@ module ps_pl_top #(
         .O(clk_125m)        // 1-bit output: Clock output
     );
 
-    assign m_eth.rx_clk = clk_125m;
+    assign m_eth.rx_clk = eth_rx_clk_i;
     assign m_eth.rxd    = eth_rxd_i;
     assign m_eth.rx_ctl = eth_rx_ctl_i;
     assign eth_txd_o    = m_eth.txd;

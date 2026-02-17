@@ -41,7 +41,7 @@ module mac_rx
     assign packet_start = (rxdv_z[2] == 0 && rxdv_z[1] == 1);
     assign packet_done  = (rxdv_z[2] == 1 && rxdv_z[1] == 0);
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (rst_i) begin
             rxd_z  <= 0;
             rxdv_z <= 0;
@@ -82,7 +82,7 @@ module mac_rx
 
     logic [31:0] state_counter;
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (rst_i) begin
             state_counter <= '0;
         end else begin
@@ -116,7 +116,7 @@ module mac_rx
                 if (state_counter == HEADER_LENGTH - 1) begin
                     next_state = DATA;
                 end
-                if (packet_done || ({PREAMBULE_VAL, SFD_VAL} != {preamble_buffer, sfd_buffer})) begin
+                if (packet_done || ({PREAMBLE_VAL, SFD_VAL} != {preamble_buffer, sfd_buffer})) begin
                     next_state = IDLE;
                 end
             end
@@ -137,7 +137,7 @@ module mac_rx
         endcase
     end
 
-    always @(posedge clk_i) begin
+    always_ff @(posedge clk_i) begin
         if (rst_i) begin
             current_state <= IDLE;
         end else begin

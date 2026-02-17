@@ -38,7 +38,7 @@ package rgmii_pkg;
     localparam int PREAMBLE_BYTES = 7;
     localparam int FCS_BYTES = 4;
 
-    localparam logic [55:0] PREAMBULE_VAL = 56'h55555555555555;
+    localparam logic [55:0] PREAMBLE_VAL = 56'h55555555555555;
     localparam logic [7:0] SFD_VAL = 8'hd5;
 
     typedef struct packed {
