@@ -63,27 +63,23 @@ module axil_rgmii
     end
 
     if (VENDOR == "xilinx") begin : g_mmcm
-        localparam real CLK_MULT = 5;
-        localparam real CLK0_DIVIDE = 2;
-        localparam real CLK1_DIVIDE = 10;
-        localparam real CLK2_DIVIDE = 100;
+        localparam real CLK_MULT = 20;
+        localparam real CLK0_DIVIDE = 8;
+        localparam real CLK1_DIVIDE = 5;
 
         logic clk_125_m;
-        logic clk_25_m;
-        logic clk_2_5_m;
+        logic clk_200_m;
 
         clk_manager #(
             .CLK_FREQ   (CLK_FREQ),
             .CLK_MULT   (CLK_MULT),
             .CLK0_DIVIDE(CLK0_DIVIDE),
-            .CLK1_DIVIDE(CLK1_DIVIDE),
-            .CLK2_DIVIDE(CLK2_DIVIDE)
+            .CLK1_DIVIDE(CLK1_DIVIDE)
         ) i_clk_manager (
             .clk_i   (clk_i),
             .rst_i   (~sync_arstn),
             .clk0_o  (clk_125_m),
-            .clk1_o  (clk_25_m),
-            .clk2_o  (clk_2_5_m),
+            .clk1_o  (clk_200_m),
             .locked_o()
         );
 

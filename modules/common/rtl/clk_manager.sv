@@ -3,15 +3,13 @@ module clk_manager #(
     parameter real CLK_FREQ    = 50*10**6,
     parameter real CLK_MULT    = 5,
     parameter real CLK0_DIVIDE = 2,
-    parameter real CLK1_DIVIDE = 10,
-    parameter real CLK2_DIVIDE = 100
+    parameter real CLK1_DIVIDE = 10
 ) (
     input logic clk_i,
     input logic rst_i,
 
     output logic clk0_o,
     output logic clk1_o,
-    output logic clk2_o,
 
     output logic locked_o
 );
@@ -23,7 +21,6 @@ module clk_manager #(
 
     logic clk0_out;
     logic clk1_out;
-    logic clk2_out;
 
     MMCME2_ADV #(
         .BANDWIDTH           ("OPTIMIZED"),  // Jitter programming (OPTIMIZED, HIGH, LOW)
@@ -38,26 +35,22 @@ module clk_manager #(
         // CLKOUT0_DIVIDE - CLKOUT6_DIVIDE: Divide amount for CLKOUT (1-128)
         .CLKOUT0_DIVIDE_F    (CLK0_DIVIDE),
         .CLKOUT1_DIVIDE      (CLK1_DIVIDE),
-        .CLKOUT2_DIVIDE      (CLK2_DIVIDE),
         // CLKOUT0_DUTY_CYCLE - CLKOUT6_DUTY_CYCLE: Duty cycle for CLKOUT outputs (0.01-0.99).
         .CLKOUT0_DUTY_CYCLE  (0.500),
         .CLKOUT1_DUTY_CYCLE  (0.500),
-        .CLKOUT2_DUTY_CYCLE  (0.500),
         // CLKOUT0_PHASE - CLKOUT6_PHASE: Phase offset for CLKOUT outputs (-360.000-360.000).
         .CLKOUT0_PHASE       (0.000),
         .CLKOUT1_PHASE       (0.000),
-        .CLKOUT2_PHASE       (0.000),
         // USE_FINE_PS: Fine phase shift enable (TRUE/FALSE)
         .CLKFBOUT_USE_FINE_PS("FALSE"),
         .CLKOUT0_USE_FINE_PS ("FALSE"),
-        .CLKOUT1_USE_FINE_PS ("FALSE"),
-        .CLKOUT2_USE_FINE_PS ("FALSE")
+        .CLKOUT1_USE_FINE_PS ("FALSE")
     ) i_mmcm (
         .CLKOUT0     (clk0_out),      // 1-bit output: CLKOUT0
         .CLKOUT0B    (),              // 1-bit output: Inverted CLKOUT0
         .CLKOUT1     (clk1_out),      // 1-bit output: CLKOUT1
         .CLKOUT1B    (),              // 1-bit output: Inverted CLKOUT1
-        .CLKOUT2     (clk2_out),      // 1-bit output: CLKOUT2
+        .CLKOUT2     (),              // 1-bit output: CLKOUT2
         .CLKOUT2B    (),              // 1-bit output: Inverted CLKOUT2
         .CLKOUT3     (),              // 1-bit output: CLKOUT3
         .CLKOUT3B    (),              // 1-bit output: Inverted CLKOUT3
@@ -110,11 +103,6 @@ module clk_manager #(
     BUFG i_clk1_out (
         .I(clk1_out),  // 1-bit input: Clock input
         .O(clk1_o)     // 1-bit output: Clock output
-    );
-
-    BUFG i_clk2_out (
-        .I(clk2_out),  // 1-bit input: Clock input
-        .O(clk2_o)     // 1-bit output: Clock output
     );
 
 endmodule
