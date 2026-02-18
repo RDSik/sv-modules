@@ -109,6 +109,7 @@ module axil_top #(
         .MODE           (MODE),
         .VENDOR         (VENDOR)
     ) i_axil_rgmii (
+        .clk_i (clk_i),
         .m_eth (m_eth),
         .s_axis(s_axis),
         .m_axis(m_axis),

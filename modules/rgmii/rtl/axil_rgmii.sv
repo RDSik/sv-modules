@@ -11,6 +11,8 @@ module axil_rgmii
     parameter       MODE            = "sync",
     parameter       VENDOR          = "xilinx"
 ) (
+    input logic clk_i,
+
     eth_if.master m_eth,
 
     axis_if.slave  s_axis,
