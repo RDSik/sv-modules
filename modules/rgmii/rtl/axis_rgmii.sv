@@ -41,7 +41,7 @@ module axis_rgmii #(
         .CDC_REG_NUM    (CDC_REG_NUM),
         .FIFO_MODE      (FIFO_MODE)
     ) i_mac_tx (
-        .clk_i          (m_eth.rx_clk),
+        .clk_i          (m_eth.tx_clk),
         .rst_i          (rst_i),
         .tx_en_o        (tx_en),
         .tx_d_o         (tx_d),
@@ -86,7 +86,7 @@ module axis_rgmii #(
         .RGMII_WIDTH(RGMII_WIDTH),
         .VENDOR     (VENDOR)
     ) i_rgmii_tx (
-        .clk_i         (m_eth.rx_clk),
+        .clk_i         (m_eth.tx_clk),
         .gmii_tx_en_i  (tx_en),
         .gmii_txd_i    (tx_d),
         .rgmii_txd_o   (m_eth.txd),

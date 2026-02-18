@@ -23,6 +23,7 @@ if {$xilinx == 1} {
         $path/rtl/iddr.sv
         $path/rtl/oddr.sv
         $path/rtl/axis_reg.sv
+        $path/rtl/clk_manager.sv
     "
 
     add_files -norecurse $xil_defaultlib

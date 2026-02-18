@@ -114,19 +114,6 @@ module ps_pl_top #(
 
     eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
-    logic clk_bufg_125m;
-    logic clk_125m;
-
-    clk_wiz_eth i_clk_wiz_eth (
-        .clk_in1 (clk_i),
-        .clk_out1(clk_bufg_125m)
-    );
-
-    BUFG BUFG_inst (
-        .I(clk_bufg_125m),  // 1-bit input: Clock input
-        .O(clk_125m)        // 1-bit output: Clock output
-    );
-
     assign m_eth.rx_clk = eth_rx_clk_i;
     assign m_eth.rxd    = eth_rxd_i;
     assign m_eth.rx_ctl = eth_rx_ctl_i;
@@ -157,7 +144,10 @@ module ps_pl_top #(
         .arstn_i(ps_arstn)
     );
 
+    localparam real CLK_FREQ = 50 * 10 ** 6;
+
     axil_top #(
+        .CLK_FREQ       (CLK_FREQ),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),

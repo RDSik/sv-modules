@@ -1,5 +1,6 @@
 /* verilator lint_off TIMESCALEMOD */
 module axil_top #(
+    parameter real                                       CLK_FREQ        = 50 * 10 ** 6,
     parameter int                                        FIFO_DEPTH      = 128,
     parameter int                                        AXIL_ADDR_WIDTH = 32,
     parameter int                                        AXIL_DATA_WIDTH = 32,
@@ -102,6 +103,7 @@ module axil_top #(
     );
 
     axil_rgmii #(
+        .CLK_FREQ       (CLK_FREQ),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .RGMII_WIDTH    (RGMII_WIDTH),

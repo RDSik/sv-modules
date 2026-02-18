@@ -7,6 +7,7 @@
 
 module axil_top_tb ();
 
+    localparam real CLK_FREQ = 500 * 10 ** 6;
     localparam int FIFO_DEPTH = 128;
     localparam int CS_WIDTH = 8;
     localparam int RGMII_WIDTH = 4;
@@ -37,7 +38,7 @@ module axil_top_tb ();
     );
 
     localparam int WAT_CYCLES = 250;
-    localparam int CLK_PER_NS = 2;
+    localparam int CLK_PER_NS = 10 ** 9 / CLK_FREQ;
     localparam int RESET_DELAY = 10;
 
     logic clk_i;
@@ -129,6 +130,7 @@ module axil_top_tb ();
     end
 
     axil_top #(
+        .CLK_FREQ       (CLK_FREQ),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH),
