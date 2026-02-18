@@ -24,6 +24,9 @@ module axil_reg_file_wrap #(
 );
 
     if (MODE == "async") begin : g_async_mode
+        logic arstn;
+        assign sync_arstn_o = arstn;
+
         xpm_cdc_async_rst #(
             .DEST_SYNC_FF   (3),
             .INIT_SYNC_FF   (0),
@@ -31,7 +34,7 @@ module axil_reg_file_wrap #(
         ) i_xpm_cdc_async_rst (
             .src_arst (s_axil.arstn_i),
             .dest_clk (clk_i),
-            .dest_arst(sync_arstn_o)
+            .dest_arst(arstn)
         );
 
         axil_if #(
@@ -39,7 +42,7 @@ module axil_reg_file_wrap #(
             .DATA_WIDTH(REG_DATA_WIDTH)
         ) reg_axil (
             .clk_i  (clk_i),
-            .arstn_i(sync_arstn_o)
+            .arstn_i(arstn)
         );
 
         axi_clock_converter i_axi_clock_converter (
