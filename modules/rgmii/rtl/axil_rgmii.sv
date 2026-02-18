@@ -11,8 +11,6 @@ module axil_rgmii
     parameter       MODE            = "sync",
     parameter       VENDOR          = "xilinx"
 ) (
-    inout eth_mdio_io,
-
     eth_if.master m_eth,
 
     axis_if.slave  s_axis,
@@ -99,7 +97,6 @@ module axil_rgmii
         .VENDOR       (VENDOR)
     ) i_axis_rgmii (
         .rst_i              (wr_regs.control.reset),
-        .eth_mdio_io        (eth_mdio_io),
         .check_destination_i(wr_regs.control.check_destination),
         .payload_bytes_i    (wr_regs.control.payload_bytes),
         .fpga_port_i        (wr_regs.port.fpga),

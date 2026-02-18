@@ -2,7 +2,11 @@ interface eth_if #(
     parameter int DATA_WIDTH = 4
 );
 
+    logic                  mdio_i;
+    logic                  mdio_o;
+    logic                  mdio_oen;
     logic                  mdc;
+
     logic [DATA_WIDTH-1:0] txd;
     logic                  tx_ctl;
     logic                  tx_clk;
@@ -11,6 +15,9 @@ interface eth_if #(
     logic                  rx_clk;
 
     modport master(
+        input mdio_i,
+        output mdio_o,
+        output mdio_oen,
         output mdc,
         output txd,
         output tx_ctl,
@@ -21,6 +28,9 @@ interface eth_if #(
     );
 
     modport slave(
+        output mdio_i,
+        input mdio_o,
+        input mdio_oen,
         input mdc,
         input txd,
         input tx_ctl,

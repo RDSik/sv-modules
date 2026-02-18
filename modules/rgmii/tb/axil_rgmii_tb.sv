@@ -4,6 +4,7 @@
 
 module axil_rgmii_tb ();
 
+    localparam real CLK_FREQ = 500 * 10 ** 6;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
     localparam int AXIS_DATA_WIDTH = 8;
@@ -11,7 +12,7 @@ module axil_rgmii_tb ();
 
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'h200000;
 
-    localparam int CLK_PER_NS = 2;
+    localparam int CLK_PER_NS = 10 ** 9 / CLK_FREQ;
     localparam int RESET_DELAY = 10;
 
     logic clk_i;
@@ -77,6 +78,7 @@ module axil_rgmii_tb ();
     end
 
     axil_rgmii #(
+        .CLK_FREQ       (CLK_FREQ),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .ILA_EN         (0),

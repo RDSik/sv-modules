@@ -27,8 +27,6 @@ module axil_top #(
     output logic sda_pad_o,
     output logic sda_padoen_o,
 
-    inout eth_mdio_io,
-
     eth_if.master m_eth,
 
     spi_if.master m_spi,
@@ -111,11 +109,10 @@ module axil_top #(
         .MODE           (MODE),
         .VENDOR         (VENDOR)
     ) i_axil_rgmii (
-        .eth_mdio_io(eth_mdio_io),
-        .m_eth      (m_eth),
-        .s_axis     (s_axis),
-        .m_axis     (m_axis),
-        .s_axil     (m_axil[3])
+        .m_eth (m_eth),
+        .s_axis(s_axis),
+        .m_axis(m_axis),
+        .s_axil(m_axil[3])
     );
 
 endmodule

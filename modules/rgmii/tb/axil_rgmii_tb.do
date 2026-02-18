@@ -1,6 +1,7 @@
 vlib work
 vmap work
 
+vlog modules/interface/rtl/axil_if.sv
 vlog modules/interface/rtl/axis_if.sv
 vlog modules/interface/rtl/eth_if.sv
 
@@ -34,6 +35,7 @@ vlog modules/rgmii/tb/axil_rgmii_tb.sv
 vsim -voptargs="+acc" axil_rgmii_tb
 add log -r /*
 
+add wave -expand -group TOP     /axil_rgmii_tb/i_axil_rgmii/i_axis_rgmii/*
 add wave -expand -group MAC_TX  /axil_rgmii_tb/i_axil_rgmii/i_axis_rgmii/i_mac_tx/*
 add wave -expand -group MAC_RX  /axil_rgmii_tb/i_axil_rgmii/i_axis_rgmii/i_mac_rx/*
 add wave -expand -group M_AXIS  /axil_rgmii_tb/m_axis/*

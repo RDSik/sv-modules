@@ -114,6 +114,13 @@ module ps_pl_top #(
 
     eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
+    IOBUF i_mdio_IOBUF (
+        .O (m_eth.mdio_i),
+        .IO(eth_mdio_io),
+        .I (m_eth.mdio_o),
+        .T (m_eth.mdio_oen)
+    );
+
     assign m_eth.rx_clk = eth_rx_clk_i;
     assign m_eth.rxd    = eth_rxd_i;
     assign m_eth.rx_ctl = eth_rx_ctl_i;
@@ -170,7 +177,6 @@ module ps_pl_top #(
         .sda_pad_i   (sda_pad_i),
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
-        .eth_mdio_io (eth_mdio_io),
         .m_eth       (m_eth),
         .m_spi       (m_spi),
         .m_axis      (s_axis_s2mm),
