@@ -20,13 +20,13 @@ module clk_manager (
         .CLKOUT2_PHASE   (0.000),
         .CLKOUT2_DUTY_CYCLE (0.500),
     ) i_mmcm (
-        .CLKIN1  (clk_i),
-        .CLKFBIN (),
-        .CLKFBOUT(),
+        .CLKIN1 (clk_i),
+        .CLKFBIN(),
 
-        .CLKOUT0(),
-        .CLKOUT1(),
-        .CLKOUT2(),
+        .CLKFBOUT(),
+        .CLKOUT0 (),
+        .CLKOUT1 (),
+        .CLKOUT2 (),
 
         .LOCKED(locked_o),
         .PWRDWN(1'b0),
