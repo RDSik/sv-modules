@@ -17,7 +17,8 @@ module clk_manager (
         .CLKOUT1_PHASE   (90.000),
         .CLKOUT1_DUTY_CYCLE (0.500),
         .CLKOUT2_DIVIDE  (4),
-        .CLKOUT2_PHASE   (0.000)
+        .CLKOUT2_PHASE   (0.000),
+        .CLKOUT2_DUTY_CYCLE (0.500),
     ) i_mmcm (
         .CLKIN1  (clk_i),
         .CLKFBIN (),
