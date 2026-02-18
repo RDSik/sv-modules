@@ -6,19 +6,18 @@ module clk_manager (
     output logic locked_o
 );
 
-    MMCME2_BASE #(
-        .BANDWIDTH       ("OPTIMIZED"),
+    MMCME2_ADV #(
         .CLKFBOUT_MULT_F (8.0),
-        .CLKFBOUT_PHASE  (0.0),
+        .CLKFBOUT_PHASE  (0.000),
         .CLKIN1_PERIOD   (8.0),
         .CLKOUT0_DIVIDE_F(8.0),
-        .CLKOUT0_PHASE   (0.0),
+        .CLKOUT0_PHASE   (0.000),
+        .CLKOUT0_DUTY_CYCLE (0.500),
         .CLKOUT1_DIVIDE  (8),
-        .CLKOUT1_PHASE   (90.0),
+        .CLKOUT1_PHASE   (90.000),
+        .CLKOUT1_DUTY_CYCLE (0.500),
         .CLKOUT2_DIVIDE  (4),
-        .CLKOUT2_PHASE   (0.0),
-        .DIVCLK_DIVIDE   (1),
-        .STARTUP_WAIT    ("FALSE")
+        .CLKOUT2_PHASE   (0.000)
     ) i_mmcm (
         .CLKIN1  (clk_i),
         .CLKFBIN (),
