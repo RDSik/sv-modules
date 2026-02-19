@@ -6,8 +6,6 @@ module axis_rgmii #(
 ) (
     input logic rst_i,
 
-    inout eth_mdio_io,
-
     eth_if.master m_eth,
 
     input logic check_destination_i,
