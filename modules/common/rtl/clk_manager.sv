@@ -17,7 +17,7 @@ module clk_manager #(
     localparam real CLK_PERIOD = 10 ** 9 / CLK_FREQ;
 
     logic clk_fbin;
-    logic clk_fbin_bufg;
+    logic clk_fbout;
 
     logic clk0_out;
     logic clk1_out;
@@ -54,7 +54,7 @@ module clk_manager #(
         .CLKOUT5  (),              // 1-bit output: CLKOUT5
         .CLKOUT6  (),              // 1-bit output: CLKOUT6
         // Feedback Clocks: 1-bit (each) output: Clock feedback ports
-        .CLKFBOUT (clk_fbin),      // 1-bit output: Feedback clock
+        .CLKFBOUT (clk_fbout),     // 1-bit output: Feedback clock
         .CLKFBOUTB(),              // 1-bit output: Inverted CLKFBOUT
         // Status Ports: 1-bit (each) output: MMCM status ports
         .LOCKED   (locked_o),      // 1-bit output: LOCK
@@ -64,12 +64,12 @@ module clk_manager #(
         .PWRDWN   ('0),            // 1-bit input: Power-down
         .RST      (rst_i),         // 1-bit input: Reset
         // Feedback Clocks: 1-bit (each) input: Clock feedback ports
-        .CLKFBIN  (clk_fbin_bufg)  // 1-bit input: Feedback clock
+        .CLKFBIN  (clk_fbin)       // 1-bit input: Feedback clock
     );
 
     BUFG i_bufg_fbin (
-        .I(clk_fbin),      // 1-bit input: Clock input
-        .O(clk_fbin_bufg)  // 1-bit output: Clock output
+        .I(clk_fbout), // 1-bit input: Clock input
+        .O(clk_fbin)   // 1-bit output: Clock output
     );
 
     BUFG i_clk0_out (
