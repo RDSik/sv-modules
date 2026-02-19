@@ -14,7 +14,6 @@ module axis_dw_conv_wrap #(
 
     if (MODE == "async") begin : g_async
         localparam int READ_LATENCY = 0;
-        localparam FIFO_MODE = "async";
         localparam RAM_STYLE = "distributed";
 
         logic s_clk;
@@ -40,7 +39,7 @@ module axis_dw_conv_wrap #(
             axis_fifo #(
                 .FIFO_DEPTH  (FIFO_DEPTH),
                 .FIFO_WIDTH  (DATA_WIDTH_IN),
-                .FIFO_MODE   (FIFO_MODE),
+                .FIFO_MODE   (MODE),
                 .READ_LATENCY(READ_LATENCY),
                 .RAM_STYLE   (RAM_STYLE),
                 .CDC_REG_NUM (CDC_REG_NUM),
