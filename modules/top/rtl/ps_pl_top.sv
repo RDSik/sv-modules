@@ -61,19 +61,19 @@ module ps_pl_top #(
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff;
     localparam logic [AXIL_ADDR_WIDTH-1:0] ADDR_OFFSET = 32'h0001_0000;
 
-    function automatic logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] slave_addr_get;
+    function automatic logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] get_slave_addr;
         input logic [AXIL_ADDR_WIDTH-1:0] addr;
         begin
             for (int i = 0; i < SLAVE_NUM; i++) begin
-                slave_addr_get[i] = addr + i * ADDR_OFFSET;
+                get_slave_addr[i] = addr + i * ADDR_OFFSET;
             end
         end
     endfunction
 
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = slave_addr_get(
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = get_slave_addr(
         BASE_LOW_ADDR
     );
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = slave_addr_get(
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = get_slave_addr(
         BASE_HIGTH_ADDR
     );
 
