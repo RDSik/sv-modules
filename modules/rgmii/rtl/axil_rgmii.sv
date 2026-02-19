@@ -51,15 +51,17 @@ module axil_rgmii
     );
 
     logic crc_err;
+    logic pll_locked;
 
     always_comb begin
-        rd_valid                 = '1;
-        rd_regs                  = wr_regs;
+        rd_valid                  = '1;
+        rd_regs                   = wr_regs;
 
-        rd_regs.param.reg_num    = RGMII_REG_NUM;
-        rd_regs.param.fifo_depth = 2 ** PAYLOAD_WIDTH;
+        rd_regs.param.reg_num     = RGMII_REG_NUM;
+        rd_regs.param.fifo_depth  = 2 ** PAYLOAD_WIDTH;
 
-        rd_regs.status.crc_err   = crc_err;
+        rd_regs.status.crc_err    = crc_err;
+        rd_regs.status.pll_locked = pll_locked;
     end
 
     if (VENDOR == "xilinx") begin : g_mmcm
@@ -80,11 +82,12 @@ module axil_rgmii
             .rst_i   (~sync_arstn),
             .clk0_o  (clk_125_m),
             .clk1_o  (clk_200_m),
-            .locked_o()
+            .locked_o(pll_locked)
         );
 
         assign m_eth.tx_clk = clk_125_m;
     end else begin : g_other
+        assign pll_locked   = 1'b0;
         assign m_eth.tx_clk = m_eth.rx_clk;
     end
 

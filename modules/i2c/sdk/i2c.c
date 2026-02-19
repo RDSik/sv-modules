@@ -10,7 +10,7 @@
 #include "sleep.h"
 
 int i2c_test(uint32_t module_addr) {
-    xil_printf("[I2C]: start test\n");
+    xil_printf("[I2C]: start test, module addr = %x\n", module_addr);
 
     uint32_t clk_freq = 50e6;
     uint32_t data_num = 10;

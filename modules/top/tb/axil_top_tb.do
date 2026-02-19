@@ -54,6 +54,7 @@ vlog  modules/rgmii/rtl/rgmii_tx.sv
 vlog  modules/rgmii/rtl/axis_rgmii.sv
 vlog  modules/rgmii/rtl/axil_rgmii.sv
 
+vlog modules/top/rtl/top_pkg.svh
 vlog modules/top/rtl/axil_top.sv
 vlog modules/top/tb/axil_top_tb.sv
 

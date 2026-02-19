@@ -45,6 +45,7 @@ class axil_uart_class #(
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * UART_STATUS_REG_POS, uart_regs.status);
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * UART_PARAM_REG_POS, uart_regs.param);
 
+            $display("[%0t][UART]: base_addr     = %0h", $time, BASE_ADDR);
             $display("[%0t][UART]: parity_even   = %0d", $time, uart_regs.control.parity_even);
             $display("[%0t][UART]: parity_odd    = %0d", $time, uart_regs.control.parity_odd);
             $display("[%0t][UART]: tx_reset      = %0d", $time, uart_regs.control.tx_reset);

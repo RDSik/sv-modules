@@ -87,6 +87,7 @@ class axil_rgmii_class #(
             axil_env.master_read_reg(BASE_ADDR + ADDR_OFFSET * RGMII_PARAM_REG_POS,
                                      rgmii_regs.param);
 
+            $display("[%0t][RGMII]: base_addr         = %0h", $time, BASE_ADDR);
             $display("[%0t][RGMII]: reset             = %0d", $time, rgmii_regs.control.reset);
             $display("[%0t][RGMII]: payload_bytes     = %0d", $time,
                      rgmii_regs.control.payload_bytes);

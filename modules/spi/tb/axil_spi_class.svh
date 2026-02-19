@@ -47,6 +47,7 @@ class axil_spi_class #(
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * SPI_STATUS_REG_POS, spi_regs.status);
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * SPI_PARAM_REG_POS, spi_regs.param);
 
+            $display("[%0t][SPI]: base_addr     = %0h", $time, BASE_ADDR);
             $display("[%0t][SPI]: reset         = %0d", $time, spi_regs.control.reset);
             $display("[%0t][SPI]: cpol          = %0d", $time, spi_regs.control.cpol);
             $display("[%0t][SPI]: cpha          = %0d", $time, spi_regs.control.cpha);

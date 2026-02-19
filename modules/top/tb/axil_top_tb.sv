@@ -4,48 +4,22 @@
 `include "modules/uart/tb/axil_uart_class.svh"
 `include "modules/i2c/tb/axil_i2c_class.svh"
 `include "modules/rgmii/tb/axil_rgmii_class.svh"
+`include "modules/top/rtl/top_pkg.svh"
 
-module axil_top_tb ();
+module axil_top_tb
+    import top_pkg::*;
+();
 
-    localparam real CLK_FREQ = 500 * 10 ** 6;
-    localparam int FIFO_DEPTH = 128;
-    localparam int CS_WIDTH = 8;
-    localparam int RGMII_WIDTH = 4;
-    localparam int AXIL_ADDR_WIDTH = 32;
-    localparam int AXIL_DATA_WIDTH = 32;
-    localparam int AXIS_DATA_WIDTH = 8;
-    localparam int MASTER_NUM = 1;
-    localparam int SLAVE_NUM = 4;
-
-    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_LOW_ADDR = 32'h43c0_0000;
-    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff;
-    localparam logic [AXIL_ADDR_WIDTH-1:0] ADDR_OFFSET = 32'h0001_0000;
-
-    function automatic logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] slave_addr_get;
-        input logic [AXIL_ADDR_WIDTH-1:0] addr;
-        begin
-            for (int i = 0; i < SLAVE_NUM; i++) begin
-                slave_addr_get[i] = addr + i * ADDR_OFFSET;
-            end
-        end
-    endfunction
-
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = slave_addr_get(
-        BASE_LOW_ADDR
-    );
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = slave_addr_get(
-        BASE_HIGTH_ADDR
-    );
-
+    localparam real SIM_CLK_FREQ = CLK_FREQ * 10;
     localparam int WAT_CYCLES = 250;
-    localparam int CLK_PER_NS = 10 ** 9 / CLK_FREQ;
+    localparam int CLK_PER_NS = 10 ** 9 / SIM_CLK_FREQ;
     localparam int RESET_DELAY = 10;
 
     logic clk_i;
     logic arstn_i;
     logic uart;
 
-    spi_if #(.CS_WIDTH(CS_WIDTH)) m_spi ();
+    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
 
     assign m_spi.miso = m_spi.mosi;
 
@@ -134,7 +108,7 @@ module axil_top_tb ();
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .FIFO_DEPTH     (FIFO_DEPTH),
-        .SPI_CS_WIDTH   (CS_WIDTH),
+        .SPI_CS_WIDTH   (SPI_CS_WIDTH),
         .RGMII_WIDTH    (RGMII_WIDTH),
         .SLAVE_NUM      (SLAVE_NUM),
         .MASTER_NUM     (MASTER_NUM),

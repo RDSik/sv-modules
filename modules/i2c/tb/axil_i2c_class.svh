@@ -42,6 +42,7 @@ class axil_i2c_class #(
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * I2C_STATUS_REG_POS, i2c_regs.status);
             env.master_read_reg(BASE_ADDR + ADDR_OFFSET * I2C_PARAM_REG_POS, i2c_regs.param);
 
+            $display("[%0t][I2C]: base_addr     = %0h", $time, BASE_ADDR);
             $display("[%0t][I2C]: core_en       = %0d", $time, i2c_regs.control.core_en);
             $display("[%0t][I2C]: core_rst      = %0d", $time, i2c_regs.control.core_rst);
             $display("[%0t][I2C]: prescale      = %0d", $time, i2c_regs.clk.prescale);

@@ -2,8 +2,9 @@ set path [file dirname [info script]]
 
 if {$xilinx == 1} {
     set xil_defaultlib "
-        $path/rtl/ps_pl_top.sv
         $path/rtl/axil_top.sv
+        $path/rtl/ps_pl_top.sv
+        $path/rtl/top_pkg.svh
     "
 
     add_files -norecurse $xil_defaultlib

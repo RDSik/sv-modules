@@ -48,7 +48,8 @@ package rgmii_pkg;
     } rgmii_param_t;
 
     typedef struct packed {
-        logic [30:0] rsrvd;
+        logic [29:0] rsrvd;
+        logic        pll_locked;
         logic        crc_err;
     } rgmii_status_t;
 

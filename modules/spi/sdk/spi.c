@@ -10,7 +10,7 @@
 #include "sleep.h"
 
 int spi_test(uint32_t module_addr) {
-    xil_printf("[SPI]: start test\n");
+    xil_printf("[SPI]: start test, module addr = %x\n", module_addr);
 
     uint32_t clk_freq = 50e6;
     uint32_t clk_div  = 4;

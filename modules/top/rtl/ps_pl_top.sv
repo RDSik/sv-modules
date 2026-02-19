@@ -1,7 +1,9 @@
 /* verilator lint_off TIMESCALEMOD */
-module ps_pl_top #(
-    parameter logic ILA_EN = 1
-) (
+`include "top_pkg.svh"
+
+module ps_pl_top
+    import top_pkg::*;
+(
     input logic clk_i,
 
     input  logic uart_rx_i,
@@ -10,18 +12,18 @@ module ps_pl_top #(
     inout        eth_mdio_io,
     output logic eth_mdc_o,
 
-    input logic       eth_rx_clk_i,
-    input logic [3:0] eth_rxd_i,
-    input logic       eth_rx_ctl_i,
+    input logic                   eth_rx_clk_i,
+    input logic [RGMII_WIDTH-1:0] eth_rxd_i,
+    input logic                   eth_rx_ctl_i,
 
-    output logic       eth_tx_clk_o,
-    output logic [3:0] eth_txd_o,
-    output logic       eth_tx_ctl_o,
+    output logic                   eth_tx_clk_o,
+    output logic [RGMII_WIDTH-1:0] eth_txd_o,
+    output logic                   eth_tx_ctl_o,
 
-    input  logic spi_miso_i,
-    output logic spi_mosi_o,
-    output logic spi_clk_o,
-    output logic spi_cs_o,
+    input  logic                    spi_miso_i,
+    output logic                    spi_mosi_o,
+    output logic                    spi_clk_o,
+    output logic [SPI_CS_WIDTH-1:0] spi_cs_o,
 
     inout i2c_scl_io,
     inout i2c_sda_io,
@@ -49,34 +51,6 @@ module ps_pl_top #(
     inout        FIXED_IO_0_ps_srstb
 );
 
-    localparam real CLK_FREQ = 50 * 10 ** 6;  
-    localparam int SLAVE_NUM = 4;
-    localparam int MASTER_NUM = 1;
-    localparam int FIFO_DEPTH = 128;
-    localparam int AXIL_ADDR_WIDTH = 32;
-    localparam int AXIL_DATA_WIDTH = 32;
-    localparam int AXIS_DATA_WIDTH = 8;
-
-    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff; 
-    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_LOW_ADDR = 32'h43c0_0000;
-    localparam logic [AXIL_ADDR_WIDTH-1:0] ADDR_OFFSET = 32'h0001_0000;
-
-    function automatic logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] get_slave_addr;
-        input logic [AXIL_ADDR_WIDTH-1:0] addr;
-        begin
-            for (int i = 0; i < SLAVE_NUM; i++) begin
-                get_slave_addr[i] = addr + i * ADDR_OFFSET;
-            end
-        end
-    endfunction
-
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = get_slave_addr(
-        BASE_HIGTH_ADDR
-    );
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = get_slave_addr(
-        BASE_LOW_ADDR
-    );
-
     logic ps_clk;
     logic ps_arstn;
 
@@ -102,16 +76,12 @@ module ps_pl_top #(
         .T (sda_padoen_o)
     );
 
-    localparam int SPI_CS_WIDTH = $bits(spi_cs_o);
-
     spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
 
     assign spi_cs_o   = m_spi.cs;
     assign spi_clk_o  = m_spi.clk;
     assign spi_mosi_o = m_spi.mosi;
     assign m_spi.miso = spi_miso_i;
-
-    localparam int RGMII_WIDTH = 4;
 
     eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 

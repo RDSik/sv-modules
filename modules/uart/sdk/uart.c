@@ -9,7 +9,7 @@
 #include "sleep.h"
 
 int uart_test(uint32_t module_addr) {
-    xil_printf("[UART]: start test\n");
+    xil_printf("[UART]: start test, module addr = %x\n", module_addr);
 
     char words[]       = "Hello world";
     uint32_t clk_freq  = 50e6;
