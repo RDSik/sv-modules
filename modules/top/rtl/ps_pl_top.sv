@@ -70,11 +70,11 @@ module ps_pl_top #(
         end
     endfunction
 
-    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = get_slave_addr(
-        BASE_LOW_ADDR
-    );
     localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = get_slave_addr(
         BASE_HIGTH_ADDR
+    );
+    localparam logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR = get_slave_addr(
+        BASE_LOW_ADDR
     );
 
     logic ps_clk;
