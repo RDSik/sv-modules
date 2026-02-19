@@ -79,7 +79,7 @@ module axis_dw_conv_wrap #(
             axis_fifo #(
                 .FIFO_DEPTH  (FIFO_DEPTH),
                 .FIFO_WIDTH  (DATA_WIDTH_OUT),
-                .FIFO_MODE   (FIFO_MODE),
+                .FIFO_MODE   (MODE),
                 .READ_LATENCY(READ_LATENCY),
                 .RAM_STYLE   (RAM_STYLE),
                 .CDC_REG_NUM (CDC_REG_NUM),
