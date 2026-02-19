@@ -6,8 +6,6 @@ module axis_rgmii #(
 ) (
     input logic rst_i,
 
-    eth_if.master m_eth,
-
     input logic check_destination_i,
 
     input logic [PAYLOAD_WIDTH-1:0] payload_bytes_i,
@@ -21,6 +19,8 @@ module axis_rgmii #(
     input logic [47:0] host_mac_i,
 
     output logic crc_err_o,
+
+    eth_if.master m_eth,
 
     axis_if.slave  s_axis,
     axis_if.master m_axis
