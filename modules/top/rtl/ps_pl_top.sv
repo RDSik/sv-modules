@@ -49,12 +49,13 @@ module ps_pl_top #(
     inout        FIXED_IO_0_ps_srstb
 );
 
+    localparam real CLK_FREQ = 50 * 10 ** 6;  
+    localparam int SLAVE_NUM = 4;
+    localparam int MASTER_NUM = 1;
     localparam int FIFO_DEPTH = 128;
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
     localparam int AXIS_DATA_WIDTH = 8;
-    localparam int SLAVE_NUM = 4;
-    localparam int MASTER_NUM = 1;
 
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_LOW_ADDR = 32'h43c0_0000;
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff;
@@ -150,8 +151,6 @@ module ps_pl_top #(
         .clk_i  (ps_clk),
         .arstn_i(ps_arstn)
     );
-
-    localparam real CLK_FREQ = 50 * 10 ** 6;
 
     axil_top #(
         .CLK_FREQ       (CLK_FREQ),
