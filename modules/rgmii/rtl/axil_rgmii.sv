@@ -97,7 +97,8 @@ module axil_rgmii
         .FIFO_MODE    (MODE),
         .VENDOR       (VENDOR)
     ) i_axis_rgmii (
-        .rst_i              (wr_regs.control.reset),
+        .tx_rst_i           (wr_regs.control.tx_reset),
+        .rx_rst_i           (wr_regs.control.rx_reset),
         .check_destination_i(wr_regs.control.check_destination),
         .payload_bytes_i    (wr_regs.control.payload_bytes),
         .fpga_port_i        (wr_regs.port.fpga),
