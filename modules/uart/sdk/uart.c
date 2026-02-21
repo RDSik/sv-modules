@@ -8,25 +8,7 @@
 #include "xil_io.h"
 #include "sleep.h"
 
-int uart_test(uint32_t module_addr) {
-    xil_printf("[UART]: start test, module addr = %x\n", module_addr);
-
-    char words[]       = "Hello world";
-    uint32_t clk_freq  = 50e6;
-    uint32_t baud_rate = 115200;
-
-    uart_regs_t *uart_regs = (uart_regs_t *)((size_t)module_addr);
-
-    uart_regs->control.rx_reset    = 0;
-    uart_regs->control.tx_reset    = 0;
-    uart_regs->control.parity_even = 0;
-    uart_regs->control.parity_odd  = 0;
-    uart_regs->clk_divider         = clk_freq/baud_rate;
-
-    for (uint32_t i = 0; i < strlen(words); i++) {
-        uart_regs->tx.data = words[i];
-    }
-
+void uart_read_regs(uart_regs_t *uart_regs) {
     xil_printf("[UART] : parity_even   = %d\n", uart_regs->control.parity_even);
     xil_printf("[UART] : parity_odd    = %d\n", uart_regs->control.parity_odd);
     xil_printf("[UART] : rx_reset      = %d\n", uart_regs->control.rx_reset);
@@ -42,6 +24,23 @@ int uart_test(uint32_t module_addr) {
     xil_printf("[UART] : data_width    = %d\n", uart_regs->param.data_width);
     xil_printf("[UART] : fifo_depth    = %d\n", uart_regs->param.fifo_depth);
     xil_printf("[UART] : reg_num       = %d\n", uart_regs->param.reg_num);
+}
+
+int uart_test(uart_regs_t *uart_regs, uint32_t clk_freq) {
+    char words[]       = "Hello world";
+    uint32_t baud_rate = 115200;
+
+    uart_regs->control.rx_reset    = 0;
+    uart_regs->control.tx_reset    = 0;
+    uart_regs->control.parity_even = 0;
+    uart_regs->control.parity_odd  = 0;
+    uart_regs->clk_divider         = clk_freq/baud_rate;
+
+    for (uint32_t i = 0; i < strlen(words); i++) {
+        uart_regs->tx.data = words[i];
+    }
+
+    uart_read_regs(uart_regs);
 
     usleep(100000);
 

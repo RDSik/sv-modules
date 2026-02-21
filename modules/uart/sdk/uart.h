@@ -1,7 +1,5 @@
 #include <stdint.h>
 
-#define UART_ADDR_OFFSET 0x0
-
 typedef struct __attribute__((packed)) {
     uint32_t data_width : 8;
     uint32_t reg_num    : 8;
@@ -40,4 +38,5 @@ typedef volatile struct {
     uart_param_reg_t   param;
 } uart_regs_t;
 
-int uart_test(uint32_t module_addr);
+void uart_read_regs(uart_regs_t *uart_regs);
+int uart_test(uart_regs_t *uart_regs, uint32_t clk_freq);

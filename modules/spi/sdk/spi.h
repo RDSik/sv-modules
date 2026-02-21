@@ -44,4 +44,5 @@ typedef volatile struct {
     spi_param_reg_t    param;
 } spi_regs_t;
 
-int spi_test(uint32_t module_addr);
+void spi_read_regs(spi_regs_t, *spi_regs);
+int spi_test(spi_regs_t *spi_regs, uint32_t clk_freq);

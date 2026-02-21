@@ -45,4 +45,5 @@ typedef volatile struct {
     i2c_param_reg_t        param;
 } i2c_regs_t;
 
-int i2c_test(uint32_t module_addr);
+void i2c_read_regs(i2c_regs_t *i2c_regs);
+int i2c_test(i2c_regs_t *i2c_regs, uint32_t clk_freq);

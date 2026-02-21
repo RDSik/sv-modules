@@ -9,23 +9,7 @@
 #include "xparameters.h"
 #include "sleep.h"
 
-int i2c_test(uint32_t module_addr) {
-    xil_printf("[I2C]: start test, module addr = %x\n", module_addr);
-
-    uint32_t clk_freq = 50e6;
-    uint32_t data_num = 10;
-
-    i2c_regs_t *i2c_regs = (i2c_regs_t *)((size_t)module_addr);
-
-    i2c_regs->control.core_rst = 0;
-    i2c_regs->control.core_en  = 1;
-    i2c_regs->clk.prescale     = clk_freq/(5*100e3);
-    i2c_regs->tx.data          = I2C_WRITE_ADDR;
-
-    for (uint32_t i = 0; i < data_num; i++) {
-        i2c_regs->tx.data = i;
-    }
-
+void i2c_read_regs(i2c_regs_t *i2c_regs) {
     xil_printf("[I2C] : core_en       = %d\n", i2c_regs->control.core_en);
     xil_printf("[I2C] : core_rst      = %d\n", i2c_regs->control.core_rst);
     xil_printf("[I2C] : clk_prescale  = %d\n", i2c_regs->clk.prescale);
@@ -40,6 +24,21 @@ int i2c_test(uint32_t module_addr) {
     xil_printf("[I2C] : data_width    = %d\n", i2c_regs->param.data_width);
     xil_printf("[I2C] : fifo_depth    = %d\n", i2c_regs->param.fifo_depth);
     xil_printf("[I2C] : reg_num       = %d\n", i2c_regs->param.reg_num);
+}
+
+int i2c_test(i2c_regs_t *i2c_regs, uint32_t clk_freq) {
+    uint32_t data_num = 10;
+
+    i2c_regs->control.core_rst = 0;
+    i2c_regs->control.core_en  = 1;
+    i2c_regs->clk.prescale     = clk_freq/(5*100e3);
+    i2c_regs->tx.data          = I2C_WRITE_ADDR;
+
+    for (uint32_t i = 0; i < data_num; i++) {
+        i2c_regs->tx.data = i;
+    }
+
+    i2c_read_regs(i2c_regs);
 
     usleep(100000);
 
