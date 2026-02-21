@@ -109,8 +109,8 @@ module axis_rgmii_tb ();
         .FIFO_MODE    (FIFO_MODE),
         .VENDOR       ("")
     ) i_axis_rgmii (
-        .rst_i              (eth_rst_i),
-        .eth_mdio_io        (),
+        .rx_rst_i           (eth_rst_i),
+        .tx_rst_i           (eth_rst_i),
         .check_destination_i(CHECK_DESTINATION),
         .payload_bytes_i    (PAYLOAD),
         .fpga_port_i        (FPGA_PORT),
