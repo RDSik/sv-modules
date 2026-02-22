@@ -12,7 +12,7 @@ module resampler #(
 
     input logic en_i,
 
-    input logic                  round_type_i,
+    input logic [           2:0] round_type_i,
     input logic [DATA_WIDTH-1:0] decimation_i,
     input logic [DATA_WIDTH-1:0] interpolation_i,
 
@@ -127,17 +127,20 @@ module resampler #(
     end
 
     round #(
-        .CH_NUM        (CH_NUM),
-        .DATA_WIDTH_IN (FIR_WIDTH),
-        .DATA_WIDTH_OUT(DATA_WIDTH)
+        .CH_NUM  (CH_NUM),
+        .BITS_IN (FIR_WIDTH),
+        .BITS_OUT(DATA_WIDTH)
     ) i_round (
-        .clk_i     (clk_i),
-        .rst_i     (rst_i),
-        .odd_even_i(round_type_i),
-        .tvalid_i  (dec_tvalid),
-        .tdata_i   (fir_tdata),
-        .tvalid_o  (tvalid_o),
-        .tdata_o   (tdata_o)
+        .clk_i           (clk_i),
+        .rst_i           (rst_i),
+        .round_to_zero   (round_type_i[0]),
+        .round_to_nearest(round_type_i[1]),
+        .trunc           (round_type_i[2]),
+        .tvalid_i        (dec_tvalid),
+        .tdata_i         (fir_tdata),
+        .tvalid_o        (tvalid_o),
+        .tdata_o         (tdata_o),
+        .err_o           ()
     );
 
 endmodule

@@ -27,14 +27,14 @@ module round #(
         logic round_corr_nearest;
         logic round_corr_nearest_safe;
 
-        assign round_corr_trunc = 0;
-        assign round_corr_rtz = (tdata_i[i][BITS_IN-1] & |tdata_i[i][BITS_IN-BITS_OUT-1:0]);
+        assign round_corr_trunc   = 0;
+        assign round_corr_rtz     = (tdata_i[i][BITS_IN-1] & |tdata_i[i][BITS_IN-BITS_OUT-1:0]);
         assign round_corr_nearest = tdata_i[i][BITS_IN-BITS_OUT-1];
 
-        if (BITS_IN - BITS_OUT > 1) begin
+        if (BITS_IN - BITS_OUT > 1) begin : g_round
             assign  round_corr_nearest_safe = (~tdata_i[i][BITS_IN-1] & (&tdata_i[i][BITS_IN-2:BITS_OUT])) ? 0 :
                  round_corr_nearest;
-        end else begin
+        end else begin : g_equal
             assign round_corr_nearest_safe = round_corr_nearest;
         end
 
@@ -44,13 +44,18 @@ module round #(
                0;  // default to trunc
 
         always_ff @(posedge clk_i) begin
-            if (rst_i) begin
-                tvalid_o <= 1'b0;
-            end else begin
-                tvalid_i <= tvalid_i;
+            if (tvalid_i) begin
+                tdata_o[i] <= tdata_i[i][BITS_IN-1:BITS_IN-BITS_OUT] + round_corr;
+                err_o[i]   <= tdata_i[i] - {tdata_o[i], {(BITS_IN - BITS_OUT) {1'b0}}};
             end
-            tdata_o[i] <= tdata_i[i][BITS_IN-1:BITS_IN-BITS_OUT] + round_corr;
-            err_o[i]   <= tdata_i[i] - {tdata_o[i], {(BITS_IN - BITS_OUT) {1'b0}}};
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            tvalid_o <= 1'b0;
+        end else begin
+            tvalid_o <= tvalid_i;
         end
     end
 

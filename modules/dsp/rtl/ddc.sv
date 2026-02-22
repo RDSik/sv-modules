@@ -3,6 +3,7 @@ module ddc #(
     parameter     COE_FILE    = "fir.mem",
     parameter int IQ_NUM      = 2,
     parameter int DATA_WIDTH  = 16,
+    parameter int ADDR_WIDTH  = 14,
     parameter int COEF_WIDTH  = 18,
     parameter int PHASE_WIDTH = 14,
     parameter int TAP_NUM     = 16
@@ -11,7 +12,7 @@ module ddc #(
     input logic rst_i,
     input logic en_i,
 
-    input logic round_type_i,
+    input logic [2:0] round_type_i,
 
     input logic [DATA_WIDTH-1:0] decimation_i,
 
@@ -31,6 +32,7 @@ module ddc #(
     mixer #(
         .IQ_NUM     (IQ_NUM),
         .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH),
         .PHASE_WIDTH(PHASE_WIDTH),
         .DDS_IP_EN  (0)
     ) i_mixed_round (
