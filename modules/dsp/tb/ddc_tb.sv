@@ -82,19 +82,23 @@ module ddc_tb ();
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        dds_wrap #(
-            .IQ_NUM     (IQ_NUM),
-            .PHASE_WIDTH(PHASE_WIDTH),
-            .DATA_WIDTH (DATA_WIDTH),
-            .IP_EN      (1)
-        ) i_dds (
-            .clk_i         (clk_i),
-            .rst_i         (rst_i),
-            .en_i          (en_i),
-            .phase_inc_i   (freq_to_phase(FREQ[dds_indx])),
-            .phase_offset_i('0),
-            .tvalid_o      (dds_tvalid[dds_indx]),
-            .tdata_o       (dds_tdata[dds_indx])
+        logic dds_start;
+
+        always_ff @(posedge clk_i) begin
+            if (rst_i) begin
+                dds_start <= 1'b0;
+            end else if (en_i) begin
+                dds_start <= 1'b1;
+            end
+        end
+
+        dds_compiler i_dds_compiler (
+            .aclk               (clk_i),
+            .aresetn            (~rst_i),
+            .s_axis_phase_tvalid(dds_start),
+            .s_axis_phase_tdata ({'0, freq_to_phase(FREQ[dds_indx])}),
+            .m_axis_data_tvalid (dds_tvalid[dds_indx]),
+            .m_axis_data_tdata  (dds_tdata[dds_indx])
         );
     end
 
