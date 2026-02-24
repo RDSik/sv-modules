@@ -88,7 +88,7 @@ module fir_filter #(
         end
 
         always_ff @(posedge clk_i) begin
-            tdata_o[ch_indx] <= acc[TAP_NUM-1];
+            tdata_o[ch_indx] <= acc[TAP_NUM-2];
         end
     end
 
