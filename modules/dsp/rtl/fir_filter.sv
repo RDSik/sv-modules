@@ -18,7 +18,7 @@ module fir_filter #(
 );
 
     if (TAP_NUM % 2 != 0) begin : g_tap_num_err
-        $error("");
+        $error("TAP_NUM must be pow of 2!");
     end
 
     logic [COEF_WIDTH-1:0] coe_mem[TAP_NUM];
@@ -73,7 +73,7 @@ module fir_filter #(
 
         always_ff @(posedge clk_i) begin
             for (int tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin
-                mult[tap_indx] <= delay[tap_indx] * coe_mem[tap_indx];
+                mult[tap_indx] <= delay[tap_indx] * signed'(coe_mem[tap_indx]);
             end
         end
 
