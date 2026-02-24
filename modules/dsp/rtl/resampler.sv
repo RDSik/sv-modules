@@ -37,7 +37,7 @@ module resampler #(
     logic [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;
 
     if (INTERPOLATION_EN) begin : g_int_en
-        assign s_axis.tready = (state == IDLE) && ~rst_i;
+        assign s_axis.tready = (state == IDLE) && en_i;
 
         logic [$clog2(DATA_WIDTH)-1:0] int_cnt;
         logic                          int_cnt_done;
@@ -73,7 +73,7 @@ module resampler #(
             end
         end
     end else begin : g_int_disable
-        assign s_axis.tready = ~rst_i;
+        assign s_axis.tready = en_i;
         assign int_tdata     = s_axis.tdata;
         assign int_tvalid    = s_axis.tvalid;
     end
