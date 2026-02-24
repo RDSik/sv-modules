@@ -16,7 +16,7 @@ module resampler #(
     input logic [DATA_WIDTH-1:0] decimation_i,
     input logic [DATA_WIDTH-1:0] interpolation_i,
 
-    output logic                                                tvalid_o,
+    output logic                                     tvalid_o,
     output logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o
 );
 
