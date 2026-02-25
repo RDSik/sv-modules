@@ -8,7 +8,6 @@ module fir_filter #(
 ) (
     input logic clk_i,
     input logic rst_i,
-    input logic en_i,
 
     input logic                                     tvalid_i,
     input logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
