@@ -39,7 +39,7 @@ module fir_filter #(
     ) i_shift_reg (
         .clk_i (clk_i),
         .rst_i (rst_i),
-        .en_i  (en_i),
+        .en_i  (tvalid_i),
         .data_i(tvalid_i),
         .data_o(tvalid_d)
     );
@@ -49,11 +49,7 @@ module fir_filter #(
         if (rst_i) begin
             tvalid_o <= 1'b0;
         end else begin
-            if (en_i) begin
-                tvalid_o <= tvalid_d;
-            end else begin
-                tvalid_o <= 1'b0;
-            end
+            tvalid_o <= tvalid_d
         end
     end
 
@@ -78,7 +74,7 @@ module fir_filter #(
         end
 
         always_ff @(posedge clk_i) begin
-            for (int tap_indx = 0; tap_indx < TAP_NUM; tap_indx++) begin
+            for (int tap_indx = 0; tap_indx < TAP_NUM - 1; tap_indx++) begin
                 if (tap_indx < TAP_NUM / 2) begin
                     acc[tap_indx] <= mult[2*tap_indx] + mult[2*tap_indx+1];
                 end else begin
