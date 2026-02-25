@@ -12,8 +12,8 @@ module fir_filter #(
     input logic                                     tvalid_i,
     input logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
 
-    output logic                                                        tvalid_o,
-    output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+TAP_NUM-1:0] tdata_o
+    output logic                                                                tvalid_o,
+    output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+$clog2(TAP_NUM)-1:0] tdata_o
 );
 
     if ($countones(TAP_NUM) != 1) begin : g_tap_num_err
@@ -26,43 +26,29 @@ module fir_filter #(
         $readmemh(COE_FILE, coe_mem);
     end
 
-    localparam int DELAY = TAP_NUM + $clog2(TAP_NUM);
+    localparam int LATENCY = $clog2(TAP_NUM) + 3;
 
-    logic tvalid_d;
-
-    shift_reg #(
-        .DATA_WIDTH($bits(tvalid_i)),
-        .DELAY     (DELAY),
-        .RESET_EN  (1),
-        .SRL_STYLE ("srl")
-    ) i_shift_reg (
-        .clk_i (clk_i),
-        .rst_i (rst_i),
-        .en_i  (tvalid_i),
-        .data_i(tvalid_i),
-        .data_o(tvalid_d)
-    );
+    logic [LATENCY-1:0] tvalid_d;
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            tvalid_o <= 1'b0;
+            tvalid_d <= '0;
         end else begin
-            tvalid_o <= tvalid_d;
+            tvalid_d <= {tvalid_d[LATENCY-2:0], tvalid_i};
         end
     end
 
+    assign tvalid_o = tvalid_d[LATENCY-1];
+
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
-        logic signed [TAP_NUM-1:0][                   DATA_WIDTH-1:0] delay;
-        logic signed [TAP_NUM-1:0][        DATA_WIDTH+COEF_WIDTH-1:0] mult;
-        logic signed [TAP_NUM-2:0][DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc;
+        logic signed [TAP_NUM-1:0][                           DATA_WIDTH-1:0] delay;
+        logic signed [TAP_NUM-1:0][                DATA_WIDTH+COEF_WIDTH-1:0] mult;
+        logic signed [TAP_NUM-2:0][DATA_WIDTH+COEF_WIDTH+$clog2(TAP_NUM)-1:0] acc;
 
         always_ff @(posedge clk_i) begin
             if (tvalid_i) begin
-                delay[0] <= tdata_i[ch_indx];
-                for (int tap_indx = 1; tap_indx < TAP_NUM; tap_indx++) begin
-                    delay[tap_indx] <= delay[tap_indx-1];
-                end
-             end
+                delay <= {delay[TAP_NUM-2:0], tdata_i[ch_indx]};
+            end
         end
 
         always_ff @(posedge clk_i) begin

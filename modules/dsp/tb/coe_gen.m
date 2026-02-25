@@ -26,10 +26,10 @@ fvtool(filter_coe, 'Fs', Fs);
 if (strcmp(FILE_FORMAT, 'coe'))
     hq = dfilt.dffir(filter_coe); 
     hq.Arithmetic = 'fixed';
-    hq.CoeffWordLenght = COE_WIDTH;
+    hq.CoeffWordLength = COE_WIDTH;
     hq.CoeffAutoScale = false;
-    hq.NumFractLenght = 0;
-    coewrite(hq, 10, COE_FILE_NAME);
+    hq.NumFracLength = 0;
+    coewrite(hq, 16, COE_FILE_NAME);
 elseif (strcmp(FILE_FORMAT, 'mem'))
     fid = fopen(COE_MEM_NAME, 'wb');
 

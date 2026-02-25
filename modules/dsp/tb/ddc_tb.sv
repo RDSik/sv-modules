@@ -5,13 +5,13 @@ module ddc_tb ();
     localparam int IQ_NUM = 2;
     localparam int PHASE_INC = 100;
     localparam int DECIMATION = 4;
-    localparam logic ROUND_TYPE = 1;
+    localparam logic [2:0] ROUND_TYPE = 1;
 
     localparam int PHASE_WIDTH = 32;
     localparam int DATA_WIDTH = 16;
     localparam int COEF_WIDTH = 18;
     localparam int TAP_NUM = 32 / 2;
-    localparam COE_FILE = "fir.mem";
+    localparam COE_FILE = "../../../../../../modules/dsp/tb/fir.mem";
 
     localparam int FS = 100_000_000;
     localparam int DDS_NUM = 2;
@@ -96,7 +96,7 @@ module ddc_tb ();
             .aclk               (clk_i),
             .aresetn            (~rst_i),
             .s_axis_phase_tvalid(dds_start),
-            .s_axis_phase_tdata ({'0, freq_to_phase(FREQ[dds_indx])}),
+            .s_axis_phase_tdata ({32'(0), freq_to_phase(FREQ[dds_indx])}),
             .m_axis_data_tvalid (dds_tvalid[dds_indx]),
             .m_axis_data_tdata  (dds_tdata[dds_indx])
         );

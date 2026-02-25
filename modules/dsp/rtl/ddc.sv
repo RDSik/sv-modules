@@ -71,7 +71,6 @@ module ddc #(
         .interpolation_i('0),
         .decimation_i   (decimation_i),
         .round_type_i   (round_type_i),
-        .en_i           (en_i),
         .tvalid_o       (tvalid_o),
         .tdata_o        (tdata_o)
     );

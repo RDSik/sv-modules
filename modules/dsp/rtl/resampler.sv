@@ -10,8 +10,6 @@ module resampler #(
 ) (
     axis_if.slave s_axis,
 
-    input logic en_i,
-
     input logic [           2:0] round_type_i,
     input logic [DATA_WIDTH-1:0] decimation_i,
     input logic [DATA_WIDTH-1:0] interpolation_i,
@@ -33,24 +31,33 @@ module resampler #(
     assign clk_i = s_axis.clk_i;
     assign rst_i = s_axis.rst_i;
 
-    logic                              int_tvalid;
-    logic [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;
+    logic                                     int_tvalid;
+    logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;
 
     if (INTERPOLATION_EN) begin : g_int_en
-        assign s_axis.tready = (state == IDLE) && en_i && ~rst_i;
+        assign s_axis.tready = (state == IDLE) && ~rst_i;
 
-        logic [$clog2(DATA_WIDTH)-1:0] int_cnt;
-        logic                          int_cnt_done;
+        logic [DATA_WIDTH-1:0] int_cnt;
+        logic [  DATA_WIDTH:0] int_cnt_next;
+        logic                  int_cnt_last;
 
-        assign int_cnt_done = (int_cnt == interpolation_i - 1);
+        assign int_cnt_last = (int_cnt_next == interpolation_i);
+
+        always_comb begin
+            if (state == INTERP) begin
+                int_cnt_next = int_cnt + 1'b1;
+            end else begin
+                int_cnt_next = int_cnt;
+            end
+        end
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
                 int_tvalid <= '0;
                 int_cnt    <= '0;
                 state      <= IDLE;
-            end else if (en_i) begin
-                unique case (state)
+            end else begin
+                case (state)
                     IDLE: begin
                         if (s_axis.tvalid) begin
                             int_tdata  <= s_axis.tdata;
@@ -60,39 +67,39 @@ module resampler #(
                     end
                     INTERP: begin
                         int_tdata <= '0;
-                        if (int_cnt_done) begin
+                        if (int_cnt_last) begin
                             int_cnt    <= '0;
                             int_tvalid <= '0;
                             state      <= IDLE;
                         end else begin
-                            int_cnt    <= int_cnt + 1'b1;
-                            int_tvalid <= 1'b1;
+                            int_cnt    <= int_cnt_next;
+                            int_tvalid <= '1;
                         end
                     end
+                    default: state <= IDLE;
                 endcase
             end
         end
     end else begin : g_int_disable
-        assign s_axis.tready = en_i & ~rst_i;
+        assign s_axis.tready = ~rst_i;
         assign int_tdata     = s_axis.tdata;
         assign int_tvalid    = s_axis.tvalid;
     end
 
-    localparam int FIR_WIDTH = DATA_WIDTH + COEF_WIDTH;
+    localparam int FIR_WIDTH = DATA_WIDTH + COEF_WIDTH + $clog2(TAP_NUM);
 
-    logic                             fir_tvalid;
-    logic [CH_NUM-1:0][FIR_WIDTH-1:0] fir_tdata;
+    logic                                    fir_tvalid;
+    logic signed [CH_NUM-1:0][FIR_WIDTH-1:0] fir_tdata;
 
-    sfir #(
+    fir_filter #(
         .CH_NUM    (CH_NUM),
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),
         .TAP_NUM   (TAP_NUM),
         .COE_FILE  (COE_FILE)
-    ) i_sfir (
+    ) i_fir_filter (
         .clk_i   (clk_i),
         .rst_i   (rst_i),
-        .en_i    (en_i),
         .tvalid_i(int_tvalid),
         .tdata_i (int_tdata),
         .tvalid_o(fir_tvalid),
@@ -102,21 +109,28 @@ module resampler #(
     logic dec_tvalid;
 
     if (DECIMATION_EN) begin : g_dec_en
-        logic [$clog2(DATA_WIDTH)-1:0] dec_cnt;
-        logic                          dec_cnt_done;
+        logic [DATA_WIDTH-1:0] dec_cnt;
+        logic [  DATA_WIDTH:0] dec_cnt_next;
+        logic                  dec_cnt_last;
 
-        assign dec_cnt_done = (dec_cnt == decimation_i - 1);
+        assign dec_cnt_last = (dec_cnt_next == decimation_i);
+
+        always_comb begin
+            if (fir_tvalid) begin
+                dec_cnt_next = dec_cnt + 1'b1;
+            end else begin
+                dec_cnt_next = dec_cnt;
+            end
+        end
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
                 dec_cnt <= '0;
-            end else if (en_i) begin
-                if (fir_tvalid) begin
-                    if (dec_cnt_done) begin
-                        dec_cnt <= '0;
-                    end else begin
-                        dec_cnt <= dec_cnt + 1'b1;
-                    end
+            end else begin
+                if (dec_cnt_last) begin
+                    dec_cnt <= '0;
+                end else begin
+                    dec_cnt <= dec_cnt_next;
                 end
             end
         end

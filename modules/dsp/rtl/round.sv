@@ -1,3 +1,5 @@
+// Based on https://github.com/EttusResearch/fpga/blob/UHD-3.15.LTS/usrp2/sdr_lib/round.v
+
 /* verilator lint_off TIMESCALEMOD */
 module round #(
     parameter int CH_NUM   = 2,
@@ -19,6 +21,9 @@ module round #(
 
     output logic [CH_NUM-1:0][BITS_IN-BITS_OUT:0] err_o
 );
+
+    logic [CH_NUM-1:0][BITS_IN-BITS_OUT:0] err;
+    logic [CH_NUM-1:0][       BITS_IN-1:0] out;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
         logic round_corr;
@@ -43,12 +48,8 @@ module round #(
                round_to_zero ? round_corr_rtz :
                0;  // default to trunc
 
-        always_ff @(posedge clk_i) begin
-            if (tvalid_i) begin
-                tdata_o[i] <= tdata_i[i][BITS_IN-1:BITS_IN-BITS_OUT] + round_corr;
-                err_o[i]   <= tdata_i[i] - {tdata_o[i], {(BITS_IN - BITS_OUT) {1'b0}}};
-            end
-        end
+        assign out[i] = tdata_i[i][BITS_IN-1:BITS_IN-BITS_OUT] + round_corr;
+        assign err[i] = tdata_i[i] - {out[i], {(BITS_IN - BITS_OUT) {1'b0}}};
     end
 
     always_ff @(posedge clk_i) begin
@@ -57,6 +58,8 @@ module round #(
         end else begin
             tvalid_o <= tvalid_i;
         end
+        tdata_o <= out;
+        err_o   <= err;
     end
 
 endmodule
