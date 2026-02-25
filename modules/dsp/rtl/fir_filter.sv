@@ -59,10 +59,10 @@ module fir_filter #(
         always_ff @(posedge clk_i) begin
             if (tvalid_i) begin
                 delay[0] <= tdata_i[ch_indx];
-            end
-            for (int tap_indx = 1; tap_indx < TAP_NUM; tap_indx++) begin
-                delay[tap_indx] <= delay[tap_indx-1];
-            end
+                for (int tap_indx = 1; tap_indx < TAP_NUM; tap_indx++) begin
+                    delay[tap_indx] <= delay[tap_indx-1];
+                end
+             end
         end
 
         always_ff @(posedge clk_i) begin
