@@ -20,7 +20,7 @@ module cmult #(
     logic signed [AWIDTH+BWIDTH:0] mult0, multr, multi, pr_int, pi_int;
     logic signed [AWIDTH+BWIDTH:0] common, commonr1, commonr2;
 
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         ar_d   <= ar;
         ar_dd  <= ar_d;
         ai_d   <= ai;
@@ -35,7 +35,7 @@ module cmult #(
 
     // Common factor (ar ai) x bi, shared for the calculations of the real and imaginary final products
     //
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         addcommon <= ar_d - ai_d;
         mult0     <= addcommon * bi_dd;
         common    <= mult0;
@@ -43,7 +43,7 @@ module cmult #(
 
     // Real product
     //
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         ar_ddd   <= ar_dd;
         ar_dddd  <= ar_ddd;
         addr     <= br_ddd - bi_ddd;
@@ -54,7 +54,7 @@ module cmult #(
 
     // Imaginary product
     //
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         ai_ddd   <= ai_dd;
         ai_dddd  <= ai_ddd;
         addi     <= br_ddd + bi_ddd;
