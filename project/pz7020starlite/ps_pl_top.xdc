@@ -4,6 +4,7 @@
 
 create_clock -period 20.000 -name clk_i -waveform {0.000 5.000} [get_ports clk_i]
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports clk_i]
+set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks clk_i]
 
 create_clock -period 8.000 -name clk_i -waveform {0.000 5.000} [get_ports eth_rx_clk_i]
 set_property -dict {PACKAGE_PIN N18 IOSTANDARD LVCMOS33} [get_ports eth_rx_clk_i]
