@@ -43,7 +43,6 @@ module fir_filter #(
         .data_o(tvalid_d)
     );
 
-
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             tvalid_o <= 1'b0;
