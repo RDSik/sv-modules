@@ -17,7 +17,7 @@ module fir_filter #(
     output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+TAP_NUM-1:0] tdata_o
 );
 
-    if (TAP_NUM % 2 != 0) begin : g_tap_num_err
+    if ($countones(TAP_NUM) != 1) begin : g_tap_num_err
         $error("TAP_NUM must be pow of 2!");
     end
 
