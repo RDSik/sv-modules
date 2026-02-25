@@ -23,7 +23,6 @@ module mixer #(
     logic                              dds_tvalid;
     logic [IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
 
-
     logic                              dds_start;
 
     always_ff @(posedge clk_i) begin
