@@ -47,7 +47,7 @@ module fir_filter #(
         if (rst_i) begin
             tvalid_o <= 1'b0;
         end else begin
-            tvalid_o <= tvalid_d
+            tvalid_o <= tvalid_d;
         end
     end
 
