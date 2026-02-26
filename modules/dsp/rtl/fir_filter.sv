@@ -12,8 +12,8 @@ module fir_filter #(
     input logic                                     tvalid_i,
     input logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
 
-    output logic                                                                tvalid_o,
-    output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+$clog2(TAP_NUM)-1:0] tdata_o
+    output logic                                                        tvalid_o,
+    output logic signed [CH_NUM-1:0][COEF_WIDTH+DATA_WIDTH+TAP_NUM-1:0] tdata_o
 );
 
     if ($countones(TAP_NUM) != 1) begin : g_tap_num_err
@@ -41,9 +41,9 @@ module fir_filter #(
     assign tvalid_o = tvalid_d[LATENCY];
 
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
-        logic signed [TAP_NUM-1:0][                           DATA_WIDTH-1:0] delay;
-        logic signed [TAP_NUM-1:0][                DATA_WIDTH+COEF_WIDTH-1:0] mult;
-        logic signed [TAP_NUM-2:0][DATA_WIDTH+COEF_WIDTH+$clog2(TAP_NUM)-1:0] acc;
+        logic signed [TAP_NUM-1:0][                   DATA_WIDTH-1:0] delay;
+        logic signed [TAP_NUM-1:0][        DATA_WIDTH+COEF_WIDTH-1:0] mult;
+        logic signed [TAP_NUM-2:0][DATA_WIDTH+COEF_WIDTH+TAP_NUM-1:0] acc;
 
         always_ff @(posedge clk_i) begin
             if (tvalid_i) begin
