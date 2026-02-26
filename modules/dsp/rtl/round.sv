@@ -26,7 +26,7 @@ module round #(
     logic [CH_NUM-1:0][      BITS_OUT-1:0] out;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
-        logic [BITS-1:0] in;
+        logic [BITS_IN-1:0] in;
         assign in = tdata_i[i];
 
         logic round_corr;
