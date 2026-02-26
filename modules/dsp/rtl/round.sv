@@ -1,5 +1,3 @@
-// Based on https://github.com/EttusResearch/fpga/blob/UHD-3.15.LTS/usrp2/sdr_lib/round.v
-
 /* verilator lint_off TIMESCALEMOD */
 module round #(
     parameter int CH_NUM   = 2,
