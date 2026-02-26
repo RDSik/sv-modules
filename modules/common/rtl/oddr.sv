@@ -52,7 +52,7 @@ module oddr #(
     end else begin : g_otehr
         logic d_reg_1 = 1'b0;
         logic d_reg_2 = 1'b0;
-        logic q_reg = 1'b0;
+        logic q_reg   = 1'b0;
 
         always @(posedge clk_i) begin
             d_reg_1 <= d1_i;
