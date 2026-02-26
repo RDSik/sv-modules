@@ -23,7 +23,7 @@ module round #(
 );
 
     logic [CH_NUM-1:0][BITS_IN-BITS_OUT:0] err;
-    logic [CH_NUM-1:0][       BITS_IN-1:0] out;
+    logic [CH_NUM-1:0][      BITS_OUT-1:0] out;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
         logic [BITS-1:0] in;
