@@ -69,7 +69,7 @@ module resampler #(
                         if (int_cnt_last) begin
                             int_cnt    <= '0;
                             int_tvalid <= s_axis.tvalid;
-                            int_data   <= s_axis.tdata;
+                            int_tdata  <= s_axis.tdata;
                         end else begin
                             int_cnt    <= int_cnt_next;
                             int_tvalid <= '1;
