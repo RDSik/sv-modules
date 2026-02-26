@@ -96,7 +96,7 @@ module ddc_tb ();
             .aclk               (clk_i),
             .aresetn            (~rst_i),
             .s_axis_phase_tvalid(dds_start),
-            .s_axis_phase_tdata ({32'(0), freq_to_phase(FREQ[dds_indx])}),
+            .s_axis_phase_tdata ({PHASE_WIDTH'(0), freq_to_phase(FREQ[dds_indx])}),
             .m_axis_data_tvalid (dds_tvalid[dds_indx]),
             .m_axis_data_tdata  (dds_tdata[dds_indx])
         );
