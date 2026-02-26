@@ -26,6 +26,9 @@ module round #(
     logic [CH_NUM-1:0][       BITS_IN-1:0] out;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
+        logic [BITS-1:0] in;
+        assign in = t_data_i[i];
+
         logic round_corr;
         logic round_corr_trunc;
         logic round_corr_rtz;
@@ -33,11 +36,11 @@ module round #(
         logic round_corr_nearest_safe;
 
         assign round_corr_trunc   = 0;
-        assign round_corr_rtz     = (tdata_i[i][BITS_IN-1] & |tdata_i[i][BITS_IN-BITS_OUT-1:0]);
-        assign round_corr_nearest = tdata_i[i][BITS_IN-BITS_OUT-1];
+        assign round_corr_rtz     = (in[BITS_IN-1] & |in[BITS_IN-BITS_OUT-1:0]);
+        assign round_corr_nearest = in[BITS_IN-BITS_OUT-1];
 
         if (BITS_IN - BITS_OUT > 1) begin : g_round
-            assign  round_corr_nearest_safe = (~tdata_i[i][BITS_IN-1] & (&tdata_i[i][BITS_IN-2:BITS_OUT])) ? 0 :
+            assign  round_corr_nearest_safe = (~in[BITS_IN-1] & (&in[BITS_IN-2:BITS_OUT])) ? 0 :
                  round_corr_nearest;
         end else begin : g_equal
             assign round_corr_nearest_safe = round_corr_nearest;
@@ -48,8 +51,8 @@ module round #(
                round_to_zero ? round_corr_rtz :
                0;  // default to trunc
 
-        assign out[i] = tdata_i[i][BITS_IN-1:BITS_IN-BITS_OUT] + round_corr;
-        assign err[i] = tdata_i[i] - {out[i], {(BITS_IN - BITS_OUT) {1'b0}}};
+        assign out[i] = in[BITS_IN-1:BITS_IN-BITS_OUT] + round_corr;
+        assign err[i] = in - {out[i], {(BITS_IN - BITS_OUT) {1'b0}}};
     end
 
     always_ff @(posedge clk_i) begin
