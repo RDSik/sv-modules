@@ -56,7 +56,7 @@ module ram_tdp #(
         end
     end
 
-    if (READ_LATENCY == 1) begin : g_distributed_ram
+    if (READ_LATENCY == 0) begin : g_distributed_ram
         assign a_data_o = ram[a_addr_i];
         assign b_data_o = ram[b_addr_i];
     end else begin : g_block_ultram_ram
