@@ -51,9 +51,6 @@ module ps_pl_top
     inout        FIXED_IO_0_ps_srstb
 );
 
-    logic ps_clk;
-    logic ps_arstn;
-
     logic scl_pad_i;
     logic scl_pad_o;
     logic scl_padoen_o;
@@ -100,6 +97,9 @@ module ps_pl_top
     assign eth_tx_clk_o = m_eth.tx_clk;
     assign eth_mdc_o    = m_eth.mdc;
 
+    logic ps_clk;
+    logic ps_arstn;
+
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis_mm2s (
@@ -122,6 +122,18 @@ module ps_pl_top
         .arstn_i(ps_arstn)
     );
 
+    logic arstn;
+
+    xpm_cdc_async_rst #(
+        .DEST_SYNC_FF   (3),
+        .INIT_SYNC_FF   (0),
+        .RST_ACTIVE_HIGH(0)
+    ) i_xpm_cdc_async_rst (
+        .src_arst (ps_arstn),
+        .dest_clk (clk_i),
+        .dest_arst(arstn)
+    );
+
     axil_top #(
         .CLK_FREQ       (CLK_FREQ),
         .FIFO_DEPTH     (FIFO_DEPTH),
@@ -138,6 +150,7 @@ module ps_pl_top
         .VENDOR         ("xilinx")
     ) i_axil_top (
         .clk_i       (clk_i),
+        .arstn_i     (arstn),
         .uart_rx_i   (uart_rx_i),
         .uart_tx_o   (uart_tx_o),
         .scl_pad_i   (scl_pad_i),

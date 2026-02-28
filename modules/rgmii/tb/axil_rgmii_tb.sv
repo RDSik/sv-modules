@@ -85,10 +85,12 @@ module axil_rgmii_tb ();
         .MODE           ("sync"),
         .VENDOR         ("")
     ) i_axil_rgmii (
-        .s_axil(s_axil),
-        .s_axis(m_axis),
-        .m_axis(s_axis),
-        .m_eth (m_eth)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i),
+        .s_axil (s_axil),
+        .s_axis (m_axis),
+        .m_axis (s_axis),
+        .m_eth  (m_eth)
     );
 
 endmodule

@@ -11,6 +11,7 @@ module axil_i2c
     parameter       MODE            = "sync"
 ) (
     input logic clk_i,
+    input logic arstn_i,
 
     input  logic scl_pad_i,
     output logic scl_pad_o,
@@ -71,6 +72,7 @@ module axil_i2c
         .MODE          (MODE)
     ) i_axil_reg_file (
         .clk_i       (clk_i),
+        .arstn_i     (arstn_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),

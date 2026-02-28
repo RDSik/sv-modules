@@ -67,9 +67,10 @@ module axil_spi_tb ();
         .ILA_EN         (0),
         .MODE           ("sync")
     ) i_axil_spi (
-        .clk_i (clk_i),
-        .s_axil(s_axil),
-        .m_spi (m_spi)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i),
+        .s_axil (s_axil),
+        .m_spi  (m_spi)
     );
 
 endmodule

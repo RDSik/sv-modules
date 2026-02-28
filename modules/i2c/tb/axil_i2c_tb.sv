@@ -64,6 +64,7 @@ module axil_i2c_tb ();
         .MODE           ("sync")
     ) i_axil_i2c (
         .clk_i       (clk_i),
+        .arstn_i     (arstn_i),
         .scl_pad_i   (),
         .scl_pad_o   (),
         .scl_padoen_o(),

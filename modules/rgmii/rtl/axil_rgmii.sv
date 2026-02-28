@@ -12,6 +12,7 @@ module axil_rgmii
     parameter       VENDOR          = "xilinx"
 ) (
     input logic clk_i,
+    input logic arstn_i,
 
     eth_if.master m_eth,
 
@@ -29,7 +30,6 @@ module axil_rgmii
     logic       [RGMII_REG_NUM-1:0] rd_request;
     logic       [RGMII_REG_NUM-1:0] rd_valid;
     logic       [RGMII_REG_NUM-1:0] wr_valid;
-    logic                           sync_arstn;
 
     axil_reg_file_wrap #(
         .REG_DATA_WIDTH(AXIL_DATA_WIDTH),
@@ -41,13 +41,13 @@ module axil_rgmii
         .MODE          (MODE)
     ) i_axil_reg_file (
         .clk_i       (m_eth.tx_clk),
+        .arstn_i     (arstn_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),
         .rd_request_o(rd_request),
         .wr_regs_o   (wr_regs),
-        .wr_valid_o  (wr_valid),
-        .sync_arstn_o(sync_arstn)
+        .wr_valid_o  (wr_valid)
     );
 
     logic crc_err;
@@ -79,7 +79,7 @@ module axil_rgmii
             .CLK1_DIVIDE(CLK1_DIVIDE)
         ) i_clk_manager (
             .clk_i   (clk_i),
-            .rst_i   (~sync_arstn),
+            .rst_i   (~arstn_i),
             .clk0_o  (clk_125_m),
             .clk1_o  (clk_200_m),
             .locked_o(pll_locked)

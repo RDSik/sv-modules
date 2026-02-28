@@ -88,7 +88,8 @@ class axil_rgmii_class #(
                                      rgmii_regs.param);
 
             $display("[%0t][RGMII]: base_addr         = %0h", $time, BASE_ADDR);
-            $display("[%0t][RGMII]: reset             = %0d", $time, rgmii_regs.control.reset);
+            $display("[%0t][RGMII]: rx_reset          = %0d", $time, rgmii_regs.control.rx_reset);
+            $display("[%0t][RGMII]: tx_reset          = %0d", $time, rgmii_regs.control.tx_reset);
             $display("[%0t][RGMII]: payload_bytes     = %0d", $time,
                      rgmii_regs.control.payload_bytes);
             $display("[%0t][RGMII]: check_destination = %0d", $time,

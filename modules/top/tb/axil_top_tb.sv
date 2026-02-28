@@ -119,6 +119,7 @@ module axil_top_tb
         .VENDOR         ("")
     ) i_axil_top (
         .clk_i    (clk_i),
+        .arstn_i  (arstn_i),
         .uart_rx_i(uart),
         .uart_tx_o(uart),
         .s_axil   (s_axil),

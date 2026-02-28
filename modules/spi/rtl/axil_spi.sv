@@ -12,6 +12,7 @@ module axil_spi
     parameter       MODE            = "sync"
 ) (
     input logic clk_i,
+    input logic arstn_i,
 
     axil_if.slave s_axil,
 
@@ -89,6 +90,7 @@ module axil_spi
         .MODE          (MODE)
     ) i_axil_reg_file (
         .clk_i       (clk_i),
+        .arstn_i     (arstn_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),

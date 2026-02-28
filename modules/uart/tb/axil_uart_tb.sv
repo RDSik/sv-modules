@@ -63,6 +63,7 @@ module axil_uart_tb ();
         .MODE           ("sync")
     ) i_axil_uart (
         .clk_i    (clk_i),
+        .arstn_i  (arstn_i),
         .uart_rx_i(rx_tx),
         .uart_tx_o(rx_tx),
         .s_axil   (s_axil)

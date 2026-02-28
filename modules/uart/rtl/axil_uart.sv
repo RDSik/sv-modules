@@ -11,6 +11,7 @@ module axil_uart
     parameter       MODE            = "sync"
 ) (
     input logic clk_i,
+    input logic arstn_i,
 
     input  logic uart_rx_i,
     output logic uart_tx_o,
@@ -92,6 +93,7 @@ module axil_uart
         .MODE          (MODE)
     ) i_axil_reg_file (
         .clk_i       (clk_i),
+        .arstn_i     (arstn_i),
         .s_axil      (s_axil),
         .rd_regs_i   (rd_regs),
         .rd_valid_i  (rd_valid),

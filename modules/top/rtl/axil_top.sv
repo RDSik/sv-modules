@@ -15,6 +15,7 @@ module axil_top #(
     parameter                                            VENDOR          = "gowin"
 ) (
     input logic clk_i,
+    input logic arstn_i,
 
     input  logic uart_rx_i,
     output logic uart_tx_o,
@@ -65,6 +66,7 @@ module axil_top #(
         .MODE           (MODE)
     ) i_axil_uart (
         .clk_i    (clk_i),
+        .arstn_i  (arstn_i),
         .uart_rx_i(uart_rx_i),
         .uart_tx_o(uart_tx_o),
         .s_axil   (m_axil[0])
@@ -78,9 +80,10 @@ module axil_top #(
         .ILA_EN         (ILA_EN),
         .MODE           (MODE)
     ) i_axil_spi (
-        .clk_i (clk_i),
-        .m_spi (m_spi),
-        .s_axil(m_axil[1])
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i),
+        .m_spi  (m_spi),
+        .s_axil (m_axil[1])
     );
 
     axil_i2c #(
@@ -91,6 +94,7 @@ module axil_top #(
         .MODE           (MODE)
     ) i_axil_i2c (
         .clk_i       (clk_i),
+        .arstn_i     (arstn_i),
         .scl_pad_i   (scl_pad_i),
         .scl_pad_o   (scl_pad_o),
         .scl_padoen_o(scl_padoen_o),
@@ -109,11 +113,12 @@ module axil_top #(
         .MODE           (MODE),
         .VENDOR         (VENDOR)
     ) i_axil_rgmii (
-        .clk_i (clk_i),
-        .m_eth (m_eth),
-        .s_axis(s_axis),
-        .m_axis(m_axis),
-        .s_axil(m_axil[3])
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i),
+        .m_eth  (m_eth),
+        .s_axis (s_axis),
+        .m_axis (m_axis),
+        .s_axil (m_axil[3])
     );
 
 endmodule
