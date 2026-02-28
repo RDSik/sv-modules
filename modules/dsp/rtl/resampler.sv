@@ -66,14 +66,14 @@ module resampler #(
                         end
                     end
                     INTERP: begin
+                        int_tdata <= '0;
                         if (int_cnt_last) begin
                             int_cnt    <= '0;
-                            int_tvalid <= s_axis.tvalid;
-                            int_tdata  <= s_axis.tdata;
+                            int_tvalid <= '0;
+                            state      <= IDLE;
                         end else begin
                             int_cnt    <= int_cnt_next;
                             int_tvalid <= '1;
-                            int_tdata  <= '0;
                         end
                     end
                     default: state <= IDLE;
