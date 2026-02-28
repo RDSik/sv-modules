@@ -15,8 +15,6 @@ if {$xilinx == 1} {
         $path/rtl/ddc.sv
         $path/rtl/mixer.sv
         $path/rtl/resampler.sv
-        $path/rtl/dds.sv
-        $path/rtl/dds_wrap.sv
     "
     add_files -norecurse $xil_defaultlib
 
