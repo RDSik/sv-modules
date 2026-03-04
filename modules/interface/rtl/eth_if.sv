@@ -4,7 +4,7 @@ interface eth_if #(
 
     logic                  mdio_i;
     logic                  mdio_o;
-    logic                  mdio_oen;
+    logic                  mdio_t;
     logic                  mdc;
 
     logic [DATA_WIDTH-1:0] txd;
@@ -17,7 +17,7 @@ interface eth_if #(
     modport master(
         input mdio_i,
         output mdio_o,
-        output mdio_oen,
+        output mdio_t,
         output mdc,
         output txd,
         output tx_ctl,
@@ -30,7 +30,7 @@ interface eth_if #(
     modport slave(
         output mdio_i,
         input mdio_o,
-        input mdio_oen,
+        input mdio_t,
         input mdc,
         input txd,
         input tx_ctl,
