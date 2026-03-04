@@ -135,7 +135,7 @@ module resampler #(
             end
         end
 
-        assign dec_tvalid = fir_tvalid && (dec_cnt_next == '0);
+        assign dec_tvalid = fir_tvalid && (dec_cnt == '0);
     end else begin : g_dec_disable
         assign dec_tvalid = fir_tvalid;
     end
