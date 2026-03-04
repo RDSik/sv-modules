@@ -72,7 +72,7 @@ module ddc_tb ();
         .rst_i         (rst_i),
         .en_i          (en_i),
         .round_type_i  (ROUND_TYPE),
-        .decimation_i  (DECIMATION),
+        .decimation_i  (DECIMATION - 1),
         .phase_inc_i   (PHASE_INC),
         .phase_offset_i('0),
         .tdata_i       (noise),

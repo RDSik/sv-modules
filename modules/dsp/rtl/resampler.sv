@@ -38,18 +38,9 @@ module resampler #(
         assign s_axis.tready = (state == IDLE) && ~rst_i;
 
         logic [DATA_WIDTH-1:0] int_cnt;
-        logic [  DATA_WIDTH:0] int_cnt_next;
         logic                  int_cnt_last;
 
-        assign int_cnt_last = (int_cnt_next == interpolation_i);
-
-        always_comb begin
-            if (state == INTERP) begin
-                int_cnt_next = int_cnt + 1'b1;
-            end else begin
-                int_cnt_next = int_cnt;
-            end
-        end
+        assign int_cnt_last = (int_cnt == interpolation_i);
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
@@ -68,12 +59,12 @@ module resampler #(
                     INTERP: begin
                         int_tdata <= '0;
                         if (int_cnt_last) begin
-                            int_cnt    <= '0;
                             int_tvalid <= '0;
+                            int_cnt    <= '0;
                             state      <= IDLE;
                         end else begin
-                            int_cnt    <= int_cnt_next;
                             int_tvalid <= '1;
+                            int_cnt    <= int_cnt + 1'd1;
                         end
                     end
                     default: state <= IDLE;
@@ -110,27 +101,18 @@ module resampler #(
 
     if (DECIMATION_EN) begin : g_dec_en
         logic [DATA_WIDTH-1:0] dec_cnt;
-        logic [  DATA_WIDTH:0] dec_cnt_next;
         logic                  dec_cnt_last;
 
-        assign dec_cnt_last = (dec_cnt_next == decimation_i);
-
-        always_comb begin
-            if (fir_tvalid) begin
-                dec_cnt_next = dec_cnt + 1'b1;
-            end else begin
-                dec_cnt_next = dec_cnt;
-            end
-        end
+        assign dec_cnt_last = (dec_cnt == decimation_i);
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
                 dec_cnt <= '0;
-            end else begin
+            end else if (fir_tvalid) begin
                 if (dec_cnt_last) begin
                     dec_cnt <= '0;
                 end else begin
-                    dec_cnt <= dec_cnt_next;
+                    dec_cnt <= dec_cnt + 1'b1;
                 end
             end
         end
