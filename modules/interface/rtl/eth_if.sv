@@ -10,6 +10,7 @@ interface eth_if #(
     logic [DATA_WIDTH-1:0] txd;
     logic                  tx_ctl;
     logic                  tx_clk;
+
     logic [DATA_WIDTH-1:0] rxd;
     logic                  rx_ctl;
     logic                  rx_clk;
