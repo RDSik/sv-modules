@@ -86,7 +86,7 @@ module ps_pl_top
         .O (m_eth.mdio_i),
         .IO(eth_mdio_io),
         .I (m_eth.mdio_o),
-        .T (m_eth.mdio_oen)
+        .T (m_eth.mdio_t)
     );
 
     assign m_eth.rx_clk = eth_rx_clk_i;
