@@ -3,9 +3,9 @@
 module ddc_tb ();
 
     localparam int IQ_NUM = 2;
-    localparam int PHASE_INC = 100;
+    localparam int PINC = 0;
     localparam int DECIMATION = 4;
-    localparam logic [2:0] ROUND_TYPE = 1;
+    localparam logic ROUND_TYPE = 1;
 
     localparam int PHASE_WIDTH = 32;
     localparam int DATA_WIDTH = 16;
@@ -48,11 +48,7 @@ module ddc_tb ();
 
     initial begin
         repeat (SIM_TIME) @(posedge clk_i);
-`ifdef VERILATOR
-        $finish();
-`else
         $stop();
-`endif
     end
 
     initial begin
@@ -68,37 +64,32 @@ module ddc_tb ();
         .TAP_NUM    (TAP_NUM),
         .COE_FILE   (COE_FILE)
     ) dut (
-        .clk_i         (clk_i),
-        .rst_i         (rst_i),
-        .en_i          (en_i),
-        .round_type_i  (ROUND_TYPE),
-        .decimation_i  (DECIMATION - 1),
-        .phase_inc_i   (PHASE_INC),
-        .phase_offset_i('0),
-        .tdata_i       (noise),
-        .tvalid_i      (&dds_tvalid),
-        .tvalid_o      (ddc_tvalid),
-        .tdata_o       (ddc_tdata)
+        .clk_i       (clk_i),
+        .rst_i       (rst_i),
+        .en_i        (en_i),
+        .round_type_i(ROUND_TYPE),
+        .decimation_i(DECIMATION - 1),
+        .pinc_i      (PINC),
+        .poff_i      ('0),
+        .tdata_i     (noise),
+        .tvalid_i    (&dds_tvalid),
+        .tvalid_o    (ddc_tvalid),
+        .tdata_o     (ddc_tdata)
     );
 
     for (genvar dds_indx = 0; dds_indx < DDS_NUM; dds_indx++) begin : g_dds
-        logic dds_start;
-
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
-                dds_start <= 1'b0;
-            end else if (en_i) begin
-                dds_start <= 1'b1;
-            end
-        end
-
-        dds_compiler i_dds_compiler (
-            .aclk               (clk_i),
-            .aresetn            (~rst_i),
-            .s_axis_phase_tvalid(dds_start),
-            .s_axis_phase_tdata ({PHASE_WIDTH'(0), freq_to_phase(FREQ[dds_indx])}),
-            .m_axis_data_tvalid (dds_tvalid[dds_indx]),
-            .m_axis_data_tdata  (dds_tdata[dds_indx])
+        dds #(
+            .IQ_NUM     (IQ_NUM),
+            .PHASE_WIDTH(PHASE_WIDTH),
+            .DATA_WIDTH (DATA_WIDTH)
+        ) i_dds (
+            .clk_i   (clk_i),
+            .rst_i   (rst_i),
+            .en_i    (en_i),
+            .pinc_i  (freq_to_phase(FREQ[dds_indx])),
+            .poff_i  ('0),
+            .tdata_o (dds_tdata[dds_indx]),
+            .tvalid_o(dds_tvalid[dds_indx])
         );
     end
 

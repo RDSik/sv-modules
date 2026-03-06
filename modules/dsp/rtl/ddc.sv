@@ -3,21 +3,20 @@ module ddc #(
     parameter     COE_FILE    = "fir.mem",
     parameter int IQ_NUM      = 2,
     parameter int DATA_WIDTH  = 16,
-    parameter int ADDR_WIDTH  = 14,
     parameter int COEF_WIDTH  = 18,
-    parameter int PHASE_WIDTH = 14,
+    parameter int PHASE_WIDTH = 32,
     parameter int TAP_NUM     = 16
 ) (
     input logic clk_i,
     input logic rst_i,
     input logic en_i,
 
-    input logic [2:0] round_type_i,
+    input logic round_type_i,
 
     input logic [DATA_WIDTH-1:0] decimation_i,
 
-    input logic [PHASE_WIDTH-1:0] phase_inc_i,
-    input logic [PHASE_WIDTH-1:0] phase_offset_i,
+    input logic [PHASE_WIDTH-1:0] pinc_i,
+    input logic [PHASE_WIDTH-1:0] poff_i,
 
     input logic                              tvalid_i,
     input logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
@@ -32,20 +31,18 @@ module ddc #(
     mixer #(
         .IQ_NUM     (IQ_NUM),
         .DATA_WIDTH (DATA_WIDTH),
-        .ADDR_WIDTH (ADDR_WIDTH),
-        .PHASE_WIDTH(PHASE_WIDTH),
-        .DDS_IP_EN  (0)
-    ) i_mixed_round (
-        .clk_i         (clk_i),
-        .rst_i         (rst_i),
-        .en_i          (en_i),
-        .round_type_i  (round_type_i),
-        .phase_inc_i   (phase_inc_i),
-        .phase_offset_i(phase_offset_i),
-        .tvalid_i      (tvalid_i),
-        .tdata_i       (tdata_i),
-        .tvalid_o      (mixed_tvalid),
-        .tdata_o       (mixed_tdata)
+        .PHASE_WIDTH(PHASE_WIDTH)
+    ) i_mixer (
+        .clk_i       (clk_i),
+        .rst_i       (rst_i),
+        .en_i        (en_i),
+        .round_type_i(round_type_i),
+        .pinc_i      (pinc_i),
+        .poff_i      (poff_i),
+        .tvalid_i    (tvalid_i),
+        .tdata_i     (tdata_i),
+        .tvalid_o    (mixed_tvalid),
+        .tdata_o     (mixed_tdata)
     );
 
     axis_if #(

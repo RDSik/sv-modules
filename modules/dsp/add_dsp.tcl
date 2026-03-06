@@ -13,6 +13,7 @@ if {$xilinx == 1} {
         $path/rtl/sfir_even_symmetric_systolic_top.sv
         $path/rtl/sfir.sv
         $path/rtl/ddc.sv
+        $path/rtl/dds.sv
         $path/rtl/mixer.sv
         $path/rtl/resampler.sv
     "

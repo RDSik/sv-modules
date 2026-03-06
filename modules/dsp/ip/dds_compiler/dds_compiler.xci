@@ -126,7 +126,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Channels">1</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Component_Name">dds_compiler</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DATA_Has_TLAST">Not_Required</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DDS_Clock_Rate">100</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DDS_Clock_Rate">50</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.DSP48_Use">Minimal</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.Frequency_Resolution">0.4</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.GUI_Behaviour">Coregen</spirit:configurableElementValue>
@@ -276,6 +276,7 @@
             <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXIS_PHASE.TDEST_WIDTH" xilinx:valueSource="constant"/>
             <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.S_AXIS_PHASE.TID_WIDTH" xilinx:valueSource="constant"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.DATA_Has_TLAST" xilinx:valueSource="user"/>
+            <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.DDS_Clock_Rate" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Has_ACLKEN" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Has_ARESETn" xilinx:valueSource="user"/>
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.Has_Phase_Out" xilinx:valueSource="user"/>
