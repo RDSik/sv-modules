@@ -29,14 +29,15 @@ typedef struct __attribute__((packed)) {
     uint32_t rsrvd : 24;
 } uart_data_reg_t;
 
-typedef volatile struct {
+typedef union {
     uart_control_reg_t control;
     uint32_t           clk_divider;
     uart_data_reg_t    tx;
     uart_data_reg_t    rx;
     uart_status_reg_t  status;
     uart_param_reg_t   param;
+    uint32_t           data;
 } uart_regs_t;
 
-void uart_read_regs(uart_regs_t *uart_regs);
-int uart_test(uart_regs_t *uart_regs, uint32_t clk_freq);
+void uart_read_regs(UINTPTR Addr);
+int uart_test(UINTPTR Addr, uint32_t clk_freq);

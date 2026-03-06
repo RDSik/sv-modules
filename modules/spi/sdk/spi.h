@@ -33,7 +33,7 @@ typedef struct __attribute__((packed)) {
     uint32_t rsrvd : 23;
 } spi_data_reg_t;
 
-typedef volatile struct {
+typedef union {
     spi_control_reg_t  control;
     uint32_t           clk_divider;
     uint32_t           wait_time;
@@ -42,7 +42,8 @@ typedef volatile struct {
     spi_data_reg_t     rx;
     spi_status_reg_t   status;
     spi_param_reg_t    param;
+    uint32_t           data;
 } spi_regs_t;
 
-void spi_read_regs(spi_regs_t *spi_regs);
-int spi_test(spi_regs_t *spi_regs, uint32_t clk_freq);
+void spi_read_regs(UINTPTR Addr);
+int spi_test(UINTPTR Addr, uint32_t clk_freq);

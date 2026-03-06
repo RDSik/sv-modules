@@ -36,14 +36,15 @@ typedef struct __attribute__((packed)) {
     uint32_t rsrvd : 24;
 } i2c_data_reg_t;
 
-typedef volatile struct {
+typedef union {
     i2c_control_reg_t      control;
     i2c_clk_prescale_reg_t clk;
     i2c_data_reg_t         tx;
     i2c_data_reg_t         rx;
     i2c_status_reg_t       status;
     i2c_param_reg_t        param;
+    uint32_t               data;
 } i2c_regs_t;
 
-void i2c_read_regs(i2c_regs_t *i2c_regs);
-int i2c_test(i2c_regs_t *i2c_regs, uint32_t clk_freq);
+void i2c_read_regs(UINTPTR Addr);
+int i2c_test(UINTPTR Addr, uint32_t clk_freq);

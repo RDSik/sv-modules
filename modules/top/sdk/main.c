@@ -14,13 +14,9 @@ int main() {
     Xil_ICacheDisable();
 
     while (1) {
-        uart_regs_t *uart_regs = (uart_regs_t *)((size_t)(XPAR_M01_AXI_0_BASEADDR + 0 * ADDR_OFFSET));
-        spi_regs_t *spi_regs   = (spi_regs_t *)((size_t)(XPAR_M01_AXI_0_BASEADDR + 1 * ADDR_OFFSET));
-        i2c_regs_t *i2c_regs   = (i2c_regs_t *)((size_t)(XPAR_M01_AXI_0_BASEADDR + 2 * ADDR_OFFSET));
-
-        uart_test(uart_regs, CLK_FREQ);
-        spi_test(spi_regs, CLK_FREQ);
-        i2c_test(i2c_regs, CLK_FREQ);
+        uart_test(XPAR_M01_AXI_0_BASEADDR + 0 * ADDR_OFFSET, CLK_FREQ);
+        spi_test(XPAR_M01_AXI_0_BASEADDR + 1 * ADDR_OFFSET, CLK_FREQ);
+        i2c_test(XPAR_M01_AXI_0_BASEADDR + 2 * ADDR_OFFSET, CLK_FREQ);
     }
 
     return EXIT_SUCCESS;
