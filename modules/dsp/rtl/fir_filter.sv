@@ -26,19 +26,19 @@ module fir_filter #(
         $readmemh(COE_FILE, coe_mem);
     end
 
-    localparam int LATENCY = $clog2(TAP_NUM) + TAP_NUM;
+    localparam int LATENCY = $clog2(TAP_NUM) + TAP_NUM + 1;
 
-    logic [LATENCY:0] tvalid_d;
+    logic [LATENCY-1:0] tvalid_d;
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             tvalid_d <= '0;
         end else begin
-            tvalid_d <= {tvalid_d[LATENCY-1:0], tvalid_i};
+            tvalid_d <= {tvalid_d[LATENCY-2:0], tvalid_i};
         end
     end
 
-    assign tvalid_o = tvalid_d[LATENCY];
+    assign tvalid_o = tvalid_d[LATENCY-1];
 
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
         logic signed [TAP_NUM-1:0][                           DATA_WIDTH-1:0] delay;
