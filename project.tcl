@@ -12,6 +12,7 @@ set sdk_dir     [file normalize "$project_dir/$syn_top.sdk"]
 create_project -force $syn_top $project_dir -part $part
 
 set_property target_language $language [current_project]
+set_property target_simulator Questa [current_project]
 set_property top $syn_top [current_fileset]
 set_property top $sim_top [get_filesets sim_1]
 
