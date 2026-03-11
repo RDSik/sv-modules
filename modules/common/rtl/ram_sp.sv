@@ -23,7 +23,7 @@ module ram_sp #(
 
     (* ram_style = RAM_STYLE *) logic [MEM_WIDTH-1:0] ram[MEM_DEPTH];
 
-    if (MEM_FILE != 0) begin : g_mem_file_init
+    if (MEM_FILE != "") begin : g_mem_file_init
         initial begin
             $readmemh(MEM_FILE, ram);
         end
