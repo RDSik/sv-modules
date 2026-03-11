@@ -11,7 +11,7 @@ module axil_ram #(
     localparam int BYTE_WIDTH = 8;
     localparam int BYTE_NUM = s_axil.STRB_WIDTH;
     localparam int ADDR_WIDTH = s_axil.ADDR_WIDTH;
-    localparam int ADDR_LSB = (BYTE_WIDTH * BYTE_NUM) / 32 + 1;
+    localparam int ADDR_LSB = $clog2(BYTE_NUM);
     localparam int ADDR_MSB = ADDR_LSB + $clog2(MEM_DEPTH);
 
     logic clk_i;
