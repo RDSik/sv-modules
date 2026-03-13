@@ -44,7 +44,7 @@ module sfir_even_symmetric_systolic_top #(
                 .CSIZE(CSIZE)
             ) fte_inst0 (
                 .clk     (clk),
-                .coeffin (h[i]),
+                .coeffin (signed'(h[i])),
                 .datain  (datain),
                 .datazin (shifterout),
                 .cascin  ('0),
@@ -57,7 +57,7 @@ module sfir_even_symmetric_systolic_top #(
                 .CSIZE(CSIZE)
             ) fte_inst (
                 .clk     (clk),
-                .coeffin (h[i]),
+                .coeffin (signed'(h[i])),
                 .datain  (arraydata[i-1]),
                 .datazin (shifterout),
                 .cascin  (arrayprod[i-1]),
