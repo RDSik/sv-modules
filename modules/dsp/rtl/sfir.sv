@@ -19,11 +19,9 @@ module sfir #(
 
     localparam int DELAY = 3 * TAP_NUM + 3;
 
-    logic tvalid_d;
-
     shift_reg #(
         .DATA_WIDTH($bits(tvalid_i)),
-        .DELAY     (DELAY - 1),
+        .DELAY     (DELAY),
         .RESET_EN  (1),
         .SRL_STYLE ("srl")
     ) i_shift_reg (
@@ -31,20 +29,8 @@ module sfir #(
         .rst_i (rst_i),
         .en_i  (en_i),
         .data_i(tvalid_i),
-        .data_o(tvalid_d)
+        .data_o(tvalid_o)
     );
-
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
-            tvalid_o <= 1'b0;
-        end else begin
-            if (en_i) begin
-                tvalid_o <= tvalid_d;
-            end else begin
-                tvalid_o <= 1'b0;
-            end
-        end
-    end
 
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
         sfir_even_symmetric_systolic_top #(
