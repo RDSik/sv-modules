@@ -4,12 +4,12 @@ module cmult #(
     parameter integer BWIDTH = 18
 ) (
     input  logic                          clk,
-    input  logic signed [     AWIDTH-1:0] ar,
-    input  logic signed [     AWIDTH-1:0] ai,
-    input  logic signed [     BWIDTH-1:0] br,
-    input  logic signed [     BWIDTH-1:0] bi,
-    output logic signed [AWIDTH+BWIDTH:0] pr,
-    output logic signed [AWIDTH+BWIDTH:0] pi
+    input  logic signed [     AWIDTH-1:0] ar, // i
+    input  logic signed [     AWIDTH-1:0] ai, // q
+    input  logic signed [     BWIDTH-1:0] br, // i
+    input  logic signed [     BWIDTH-1:0] bi, // q
+    output logic signed [AWIDTH+BWIDTH:0] pr, // i
+    output logic signed [AWIDTH+BWIDTH:0] pi  // q
 );
 
     logic signed [AWIDTH-1:0] ai_d, ai_dd, ai_ddd, ai_dddd;
