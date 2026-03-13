@@ -81,7 +81,7 @@ module sfir_shifter #(
 );
 
     (* srl_style = "srl_logicister" *) logic [DSIZE-1:0] tmp[0:2*NBTAP-1];
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         tmp[0] <= datain;
         for (integer i = 0; i <= 2 * NBTAP - 2; i = i + 1) begin
             tmp[i+1] <= tmp[i];
@@ -115,7 +115,7 @@ module sfir_even_symmetric_systolic_element #(
 
     assign cascdata = datatwo;
 
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         coeff   <= coeffin;
         data    <= datain;
         datatwo <= data;
