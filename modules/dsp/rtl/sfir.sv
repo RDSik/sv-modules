@@ -17,7 +17,7 @@ module sfir #(
     output logic signed [CH_NUM-1:0][DATA_WIDTH+COEF_WIDTH-1:0] tdata_o
 );
 
-    localparam int DELAY = 3 * TAP_NUM + 3;
+    localparam int DELAY = 2 * TAP_NUM - 1;
 
     shift_reg #(
         .DATA_WIDTH($bits(tvalid_i)),
