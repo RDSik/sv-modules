@@ -6,8 +6,8 @@ module axis_dw_conv_tb ();
 
     import test_pkg::*;
 
-    localparam int DATA_WIDTH_IN = 32;
-    localparam int DATA_WIDTH_OUT = 8;
+    localparam int S_DATA_WIDTH = 32;
+    localparam int M_DATA_WIDTH = 8;
     localparam int RESET_DELAY = 10;
     localparam int CLK_PER_NS = 2;
     localparam int FIFO_DEPTH = 16;
@@ -71,8 +71,8 @@ module axis_dw_conv_tb ();
 
     initial begin
         env_base #(
-            .DATA_WIDTH_IN (DATA_WIDTH_OUT),
-            .DATA_WIDTH_OUT(DATA_WIDTH_IN),
+            .DATA_WIDTH_IN (S_DATA_WIDTH),
+            .DATA_WIDTH_OUT(M_DATA_WIDTH),
             .TLAST_EN      (TLAST_EN)
         ) env;
         env = new(s_axis, m_axis);
@@ -85,13 +85,13 @@ module axis_dw_conv_tb ();
     end
 
     axis_dw_conv_wrap #(
-        .DATA_WIDTH_IN (DATA_WIDTH_OUT),
-        .DATA_WIDTH_OUT(DATA_WIDTH_IN),
-        .FIFO_DEPTH    (FIFO_DEPTH),
-        .CDC_REG_NUM   (CDC_REG_NUM),
-        .TLAST_EN      (TLAST_EN),
-        .FIFO_FIRST    (FIFO_FIRST),
-        .MODE          (MODE)
+        .S_DATA_WIDTH(S_DATA_WIDTH),
+        .M_DATA_WIDTH(M_DATA_WIDTH),
+        .FIFO_DEPTH  (FIFO_DEPTH),
+        .CDC_REG_NUM (CDC_REG_NUM),
+        .TLAST_EN    (TLAST_EN),
+        .FIFO_FIRST  (FIFO_FIRST),
+        .MODE        (MODE)
     ) dut (
         .m_axis(s_axis),
         .s_axis(m_axis)

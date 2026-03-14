@@ -52,19 +52,6 @@ module axil_crossbar #(
         end
     endfunction
 
-    function automatic logic [MASTER_SEL_WIDTH-1:0] get_grant_index(
-        input logic [MASTER_NUM-1:0] grant);
-        begin
-            get_grant_index = '0;
-            for (int i = 0; i < MASTER_NUM; i++) begin
-                if (grant[i]) begin
-                    get_grant_index = MASTER_SEL_WIDTH'(i);
-                    break;
-                end
-            end
-        end
-    endfunction
-
     logic clk_i;
     logic arstn_i;
 
@@ -209,8 +196,19 @@ module axil_crossbar #(
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
 
-    assign wr_grant_indx = get_grant_index(wr_grant);
-    assign rd_grant_indx = get_grant_index(rd_grant);
+    onehot_to_indx #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_wr_onehot_to_indx (
+        .onehot_i(wr_grant),
+        .indx_o  (wr_grant_indx)
+    );
+
+    onehot_to_indx #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_rd_onehot_to_indx (
+        .onehot_i(rd_grant),
+        .indx_o  (rd_grant_indx)
+    );
 
     addr_decode_t m_awindx;
     addr_decode_t m_awindx_reg;

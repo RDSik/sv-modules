@@ -1,9 +1,8 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_dw_conv #(
-    parameter int   DATA_WIDTH_IN  = 32,
-    parameter int   DATA_WIDTH_OUT = 128,
-    parameter logic TLAST_EN       = 0
-
+    parameter int   S_DATA_WIDTH = 32,
+    parameter int   M_DATA_WIDTH = 128,
+    parameter logic TLAST_EN     = 0
 ) (
     axis_if.master m_axis,
     axis_if.slave  s_axis
@@ -19,18 +18,16 @@ module axis_dw_conv #(
     assign s_handshake = s_axis.tvalid & s_axis.tready;
     assign m_handshake = m_axis.tvalid & m_axis.tready;
 
-    if (DATA_WIDTH_IN > DATA_WIDTH_OUT) begin : g_down_size
-        localparam int RATIO = DATA_WIDTH_IN / DATA_WIDTH_OUT;
+    if (S_DATA_WIDTH > M_DATA_WIDTH) begin : g_down_size
+        localparam int RATIO = S_DATA_WIDTH / M_DATA_WIDTH;
 
-        logic [$clog2(RATIO)-1:0]                     cnt;
-        logic                                         cnt_done;
-        logic                                         busy;
-        logic                                         m_axis_tlast;
-        logic [        RATIO-1:0][DATA_WIDTH_OUT-1:0] m_axis_tdata;
+        logic [$clog2(RATIO)-1:0]                   cnt;
+        logic                                       cnt_done;
+        logic                                       busy;
+        logic                                       m_axis_tlast;
+        logic [        RATIO-1:0][M_DATA_WIDTH-1:0] m_axis_tdata;
 
-        /* verilator lint_off WIDTHEXPAND */
         assign cnt_done = (cnt == RATIO - 1);
-        /* verilator lint_on WIDTHEXPAND */
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
@@ -77,33 +74,42 @@ module axis_dw_conv #(
         end
 
         assign m_axis.tdata  = m_axis_tdata[cnt];
-        assign m_axis.tlast  = TLAST_EN ? m_axis_tlast & cnt_done : 1'b0;
+        assign m_axis.tlast  = m_axis_tlast & cnt_done;
         assign m_axis.tvalid = busy;
         assign s_axis.tready = ~busy;
+    end else if (S_DATA_WIDTH < M_DATA_WIDTH) begin : g_up_size
 
-    end else if (DATA_WIDTH_IN < DATA_WIDTH_OUT) begin : g_up_size
+        localparam int RATIO = M_DATA_WIDTH / S_DATA_WIDTH;
 
-        localparam int RATIO = DATA_WIDTH_OUT / DATA_WIDTH_IN;
+        logic [$clog2(RATIO)-1:0]                   cnt;
+        logic                                       cnt_done;
+        logic                                       done;
+        logic                                       flush;
+        logic                                       m_axis_tlast;
+        logic [        RATIO-1:0][S_DATA_WIDTH-1:0] m_axis_tdata;
 
-        logic [$clog2(RATIO)-1:0]                    cnt;
-        logic                                        cnt_done;
-        logic                                        m_axis_tvalid;
-        logic                                        m_axis_tlast;
-        logic [        RATIO-1:0][DATA_WIDTH_IN-1:0] m_axis_tdata;
-
-        /* verilator lint_off WIDTHEXPAND */
+        assign flush    = cnt_done | (TLAST_EN & s_axis.tlast);
         assign cnt_done = (cnt == RATIO - 1);
-        /* verilator lint_on WIDTHEXPAND */
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
                 cnt <= '0;
             end else if (s_handshake) begin
-                if (cnt_done) begin
+                if (flush) begin
                     cnt <= '0;
                 end else begin
                     cnt <= cnt + 1'b1;
                 end
+            end
+        end
+
+        always_ff @(posedge clk_i) begin
+            if (rst_i) begin
+                done <= 1'b0;
+            end else if (m_handshake) begin
+                done <= 1'b0;
+            end else if (s_handshake & flush) begin
+                done <= 1'b1;
             end
         end
 
@@ -123,30 +129,21 @@ module axis_dw_conv #(
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
-                m_axis_tvalid <= 1'b0;
-            end else if (m_handshake) begin
-                m_axis_tvalid <= 1'b0;
-            end else if (cnt_done & s_handshake) begin
-                m_axis_tvalid <= 1'b1;
-            end
-        end
-
-        always_ff @(posedge clk_i) begin
-            if (s_handshake) begin
+                m_axis_tdata <= '0;
+            end else if (s_handshake) begin
                 m_axis_tdata[cnt] <= s_axis.tdata;
             end
         end
 
         assign m_axis.tdata  = m_axis_tdata;
-        assign m_axis.tlast  = TLAST_EN ? m_axis_tlast & m_axis_tvalid : 1'b0;
-        assign m_axis.tvalid = m_axis_tvalid;
-        assign s_axis.tready = ~m_axis_tvalid & m_axis.tready;
-
+        assign m_axis.tlast  = m_axis_tlast & done;
+        assign m_axis.tvalid = done;
+        assign s_axis.tready = ~done;
     end else begin : g_bypass
-        assign m_axis.tlast  = s_axis.tlast;
         assign m_axis.tvalid = s_axis.tvalid;
         assign m_axis.tdata  = s_axis.tdata;
         assign s_axis.tready = m_axis.tready;
+        assign m_axis.tlast  = s_axis.tlast;
     end
 
 endmodule

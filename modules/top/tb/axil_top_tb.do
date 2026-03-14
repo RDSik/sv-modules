@@ -14,6 +14,8 @@ vlog modules/fifo/rtl/sync_fifo.sv
 vlog modules/fifo/rtl/wr_ptr_full.sv
 
 vlog modules/arbiter/rtl/round_robin_arbiter.sv
+vlog modules/arbiter/rtl/onehot_to_indx.sv
+vlog modules/arbiter/rtl/axil_crossbar.sv
 
 vlog modules/dw_conv/rtl/axis_dw_conv.sv
 vlog modules/dw_conv/rtl/axis_dw_conv_wrap.sv
@@ -25,7 +27,6 @@ vlog modules/common/rtl/ram_sdp.sv
 vlog modules/common/rtl/shift_reg.sv
 vlog modules/common/rtl/axil_reg_file.sv
 vlog modules/common/rtl/axil_reg_file_wrap.sv
-vlog modules/common/rtl/axil_crossbar.sv
 vlog modules/common/rtl/axis_reg.sv
 
 vlog  modules/uart/rtl/axil_uart.sv

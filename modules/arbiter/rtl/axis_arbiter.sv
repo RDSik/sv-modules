@@ -12,8 +12,9 @@ module axis_arbiter #(
     logic                                  rst_i;
     logic                                  m_handshake;
     logic [MASTER_NUM-1:0]                 grant;
+    logic [MASTER_NUM-1:0]                 grant_indx;
     logic [MASTER_NUM-1:0]                 s_axis_tvalid;
-    logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] m_axis_tdata;
+    logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] s_axis_tdata;
     logic [MASTER_NUM-1:0][USER_WIDTH-1:0] m_axis_tuser;
 
     assign clk_i         = m_axis.clk_i;
@@ -24,27 +25,18 @@ module axis_arbiter #(
     for (genvar i = 0; i < MASTER_NUM; i++) begin : g_axis
         assign s_axis[i].tready = m_axis.tready & grant[i];
         assign s_axis_tvalid[i] = s_axis[i].tvalid;
-        assign m_axis_tdata[i]  = {DATA_WIDTH{grant[i]}} & s_axis[i].tdata;
-        assign m_axis_tuser[i]  = {USER_WIDTH{grant[i]}} & USER_WIDTH'(i);
+        assign s_axis_tdata[i]  = s_axis[i].tdata;
     end
 
-    always_comb begin
-        m_axis.tdata = '0;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (m_axis_tdata[i] != 0) begin
-                m_axis.tdata = m_axis_tdata[i];
-            end
-        end
-    end
+    assign m_axis.tdata = s_axis_tdata[grant_indx];
+    assign m_axis.tuser = grant_indx;
 
-    always_comb begin
-        m_axis.tuser = '0;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (m_axis_tuser[i] != 0) begin
-                m_axis.tuser = m_axis_tuser[i];
-            end
-        end
-    end
+    onehot_to_indx #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_onehot_to_indx (
+        .onehot_i(grant),
+        .indx_o  (grant_indx)
+    );
 
     round_robin_arbiter #(
         .MASTER_NUM(MASTER_NUM)

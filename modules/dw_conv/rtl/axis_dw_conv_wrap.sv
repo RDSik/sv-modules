@@ -1,12 +1,12 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_dw_conv_wrap #(
-    parameter int   DATA_WIDTH_IN  = 32,
-    parameter int   DATA_WIDTH_OUT = 128,
-    parameter int   FIFO_DEPTH     = 128,
-    parameter int   CDC_REG_NUM    = 3,
-    parameter logic TLAST_EN       = 0,
-    parameter logic FIFO_FIRST     = 1,
-    parameter       MODE           = "sync"
+    parameter int   S_DATA_WIDTH = 32,
+    parameter int   M_DATA_WIDTH = 128,
+    parameter int   FIFO_DEPTH   = 128,
+    parameter int   CDC_REG_NUM  = 3,
+    parameter logic TLAST_EN     = 0,
+    parameter logic FIFO_FIRST   = 1,
+    parameter       MODE         = "sync"
 ) (
     axis_if.master m_axis,
     axis_if.slave  s_axis
@@ -30,7 +30,7 @@ module axis_dw_conv_wrap #(
 
         if (FIFO_FIRST) begin : g_fast_to_slow
             axis_if #(
-                .DATA_WIDTH(DATA_WIDTH_IN)
+                .DATA_WIDTH(S_DATA_WIDTH)
             ) axis (
                 .clk_i(m_clk),
                 .rst_i(m_rst)
@@ -38,7 +38,7 @@ module axis_dw_conv_wrap #(
 
             axis_fifo #(
                 .FIFO_DEPTH  (FIFO_DEPTH),
-                .FIFO_WIDTH  (DATA_WIDTH_IN),
+                .FIFO_WIDTH  (S_DATA_WIDTH),
                 .FIFO_MODE   (MODE),
                 .READ_LATENCY(READ_LATENCY),
                 .RAM_STYLE   (RAM_STYLE),
@@ -52,25 +52,25 @@ module axis_dw_conv_wrap #(
             );
 
             axis_dw_conv #(
-                .DATA_WIDTH_IN (DATA_WIDTH_IN),
-                .DATA_WIDTH_OUT(DATA_WIDTH_OUT),
-                .TLAST_EN      (TLAST_EN)
+                .S_DATA_WIDTH(S_DATA_WIDTH),
+                .M_DATA_WIDTH(M_DATA_WIDTH),
+                .TLAST_EN    (TLAST_EN)
             ) i_axis_dw_conv (
                 .m_axis(m_axis),
                 .s_axis(axis)
             );
         end else begin : g_slow_to_fast
             axis_if #(
-                .DATA_WIDTH(DATA_WIDTH_OUT)
+                .DATA_WIDTH(M_DATA_WIDTH)
             ) axis (
                 .clk_i(s_clk),
                 .rst_i(s_rst)
             );
 
             axis_dw_conv #(
-                .DATA_WIDTH_IN (DATA_WIDTH_IN),
-                .DATA_WIDTH_OUT(DATA_WIDTH_OUT),
-                .TLAST_EN      (TLAST_EN)
+                .S_DATA_WIDTH(S_DATA_WIDTH),
+                .M_DATA_WIDTH(M_DATA_WIDTH),
+                .TLAST_EN    (TLAST_EN)
             ) i_axis_dw_conv (
                 .m_axis(axis),
                 .s_axis(s_axis)
@@ -78,7 +78,7 @@ module axis_dw_conv_wrap #(
 
             axis_fifo #(
                 .FIFO_DEPTH  (FIFO_DEPTH),
-                .FIFO_WIDTH  (DATA_WIDTH_OUT),
+                .FIFO_WIDTH  (M_DATA_WIDTH),
                 .FIFO_MODE   (MODE),
                 .READ_LATENCY(READ_LATENCY),
                 .RAM_STYLE   (RAM_STYLE),
@@ -93,9 +93,9 @@ module axis_dw_conv_wrap #(
         end
     end else if (MODE == "sync") begin : g_sync
         axis_dw_conv #(
-            .DATA_WIDTH_IN (DATA_WIDTH_IN),
-            .DATA_WIDTH_OUT(DATA_WIDTH_OUT),
-            .TLAST_EN      (TLAST_EN)
+            .S_DATA_WIDTH(S_DATA_WIDTH),
+            .M_DATA_WIDTH(M_DATA_WIDTH),
+            .TLAST_EN    (TLAST_EN)
         ) i_axis_dw_conv (
             .m_axis(m_axis),
             .s_axis(s_axis)

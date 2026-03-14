@@ -16,7 +16,6 @@ if {$xilinx == 1} {
         $path/rtl/axil_ram.sv
         $path/rtl/axil_reg_file.sv
         $path/rtl/axil_reg_file_wrap.sv
-        $path/rtl/axil_crossbar.sv
         $path/rtl/axis_lfsr_wrap.sv
         $path/rtl/lfsr.sv
         $path/rtl/crc.sv
@@ -24,6 +23,7 @@ if {$xilinx == 1} {
         $path/rtl/oddr.sv
         $path/rtl/axis_reg.sv
         $path/rtl/clk_manager.sv
+        $path/rtl/write_iq_to_file.sv
     "
 
     add_files -norecurse $xil_defaultlib
