@@ -35,6 +35,12 @@ module ram_tdp #(
         initial begin
             $readmemh(MEM_FILE, ram);
         end
+    end else begin : g_cnt_init
+        initial begin
+            for (int i = 0; i < MEM_DEPTH; i++) begin
+                ram[i] = i;
+            end
+        end
     end
 
     logic [MEM_WIDTH-1:0] a_data;
