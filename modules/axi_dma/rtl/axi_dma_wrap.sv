@@ -1,9 +1,6 @@
 module axi_dma_wrap (
     axil_if.slave s_axil,
 
-    axil_if.master m_axil_s2mm,
-    axil_if.master m_axil_mm2s,
-
     axis_if.slave  s_axis_s2mm,
     axis_if.master m_axis_mm2s,
 
@@ -14,141 +11,15 @@ module axi_dma_wrap (
     axi_if #(
         .ADDR_WIDTH(s_axil.ADDR_WIDTH),
         .DATA_WIDTH(s_axil.DATA_WIDTH)
-    ) m_axi_s2mm (
+    ) axi (
         .clk_i  (s_axil.clk_i),
         .arstn_i(s_axil.arstn_i)
-    );
-
-    axi_if #(
-        .ADDR_WIDTH(s_axil.ADDR_WIDTH),
-        .DATA_WIDTH(s_axil.DATA_WIDTH)
-    ) m_axi_mm2s (
-        .clk_i  (s_axil.clk_i),
-        .arstn_i(s_axil.arstn_i)
-    );
-
-    axi_protocol_converter i_s2mm_protocol_converter (
-        .aclk          (m_axil_s2mm.clk_i),
-        .aresetn       (m_axil_s2mm.arstn_i),
-        .s_axi_awaddr  (m_axi_s2mm.awaddr),
-        .s_axi_awlen   (m_axi_s2mm.awlen),
-        .s_axi_awsize  (m_axi_s2mm.awsize),
-        .s_axi_awburst (m_axi_s2mm.awburst),
-        .s_axi_awlock  (m_axi_s2mm.awlock),
-        .s_axi_awcache (m_axi_s2mm.awcache),
-        .s_axi_awprot  (m_axi_s2mm.awprot),
-        .s_axi_awregion(m_axi_s2mm.awregion),
-        .s_axi_awqos   (m_axi_s2mm.awqos),
-        .s_axi_awvalid (m_axi_s2mm.awvalid),
-        .s_axi_awready (m_axi_s2mm.awready),
-        .s_axi_wdata   (m_axi_s2mm.wdata),
-        .s_axi_wstrb   (m_axi_s2mm.wstrb),
-        .s_axi_wlast   (m_axi_s2mm.wlast),
-        .s_axi_wvalid  (m_axi_s2mm.wvalid),
-        .s_axi_wready  (m_axi_s2mm.wready),
-        .s_axi_bresp   (m_axi_s2mm.bresp),
-        .s_axi_bvalid  (m_axi_s2mm.bvalid),
-        .s_axi_bready  (m_axi_s2mm.bready),
-        .s_axi_araddr  (m_axi_s2mm.araddr),
-        .s_axi_arlen   (m_axi_s2mm.arlen),
-        .s_axi_arsize  (m_axi_s2mm.arsize),
-        .s_axi_arburst (m_axi_s2mm.arburst),
-        .s_axi_arlock  (m_axi_s2mm.arlock),
-        .s_axi_arcache (m_axi_s2mm.arcache),
-        .s_axi_arprot  (m_axi_s2mm.arprot),
-        .s_axi_arregion(m_axi_s2mm.arregion),
-        .s_axi_arqos   (m_axi_s2mm.arqos),
-        .s_axi_arvalid (m_axi_s2mm.arvalid),
-        .s_axi_arready (m_axi_s2mm.arready),
-        .s_axi_rdata   (m_axi_s2mm.rdata),
-        .s_axi_rresp   (m_axi_s2mm.rresp),
-        .s_axi_rlast   (m_axi_s2mm.rlast),
-        .s_axi_rvalid  (m_axi_s2mm.rvalid),
-        .s_axi_rready  (m_axi_s2mm.rready),
-        .m_axi_awaddr  (m_axil_s2mm.awaddr),
-        .m_axi_awprot  (m_axil_s2mm.awprot),
-        .m_axi_awvalid (m_axil_s2mm.awvalid),
-        .m_axi_awready (m_axil_s2mm.awready),
-        .m_axi_wdata   (m_axil_s2mm.wdata),
-        .m_axi_wstrb   (m_axil_s2mm.wstrb),
-        .m_axi_wvalid  (m_axil_s2mm.wvalid),
-        .m_axi_wready  (m_axil_s2mm.wready),
-        .m_axi_bresp   (m_axil_s2mm.bresp),
-        .m_axi_bvalid  (m_axil_s2mm.bvalid),
-        .m_axi_bready  (m_axil_s2mm.bready),
-        .m_axi_araddr  (m_axil_s2mm.araddr),
-        .m_axi_arprot  (m_axil_s2mm.arprot),
-        .m_axi_arvalid (m_axil_s2mm.arvalid),
-        .m_axi_arready (m_axil_s2mm.arready),
-        .m_axi_rdata   (m_axil_s2mm.rdata),
-        .m_axi_rresp   (m_axil_s2mm.rresp),
-        .m_axi_rvalid  (m_axil_s2mm.rvalid),
-        .m_axi_rready  (m_axil_s2mm.rready)
-    );
-
-    axi_protocol_converter i_mm2s_protocol_converter (
-        .aclk          (m_axil_mm2s.clk_i),
-        .aresetn       (m_axil_mm2s.arstn_i),
-        .s_axi_awaddr  (m_axi_mm2s.awaddr),
-        .s_axi_awlen   (m_axi_mm2s.awlen),
-        .s_axi_awsize  (m_axi_mm2s.awsize),
-        .s_axi_awburst (m_axi_mm2s.awburst),
-        .s_axi_awlock  (m_axi_mm2s.awlock),
-        .s_axi_awcache (m_axi_mm2s.awcache),
-        .s_axi_awprot  (m_axi_mm2s.awprot),
-        .s_axi_awregion(m_axi_mm2s.awregion),
-        .s_axi_awqos   (m_axi_mm2s.awqos),
-        .s_axi_awvalid (m_axi_mm2s.awvalid),
-        .s_axi_awready (m_axi_mm2s.awready),
-        .s_axi_wdata   (m_axi_mm2s.wdata),
-        .s_axi_wstrb   (m_axi_mm2s.wstrb),
-        .s_axi_wlast   (m_axi_mm2s.wlast),
-        .s_axi_wvalid  (m_axi_mm2s.wvalid),
-        .s_axi_wready  (m_axi_mm2s.wready),
-        .s_axi_bresp   (m_axi_mm2s.bresp),
-        .s_axi_bvalid  (m_axi_mm2s.bvalid),
-        .s_axi_bready  (m_axi_mm2s.bready),
-        .s_axi_araddr  (m_axi_mm2s.araddr),
-        .s_axi_arlen   (m_axi_mm2s.arlen),
-        .s_axi_arsize  (m_axi_mm2s.arsize),
-        .s_axi_arburst (m_axi_mm2s.arburst),
-        .s_axi_arlock  (m_axi_mm2s.arlock),
-        .s_axi_arcache (m_axi_mm2s.arcache),
-        .s_axi_arprot  (m_axi_mm2s.arprot),
-        .s_axi_arregion(m_axi_mm2s.arregion),
-        .s_axi_arqos   (m_axi_mm2s.arqos),
-        .s_axi_arvalid (m_axi_mm2s.arvalid),
-        .s_axi_arready (m_axi_mm2s.arready),
-        .s_axi_rdata   (m_axi_mm2s.rdata),
-        .s_axi_rresp   (m_axi_mm2s.rresp),
-        .s_axi_rlast   (m_axi_mm2s.rlast),
-        .s_axi_rvalid  (m_axi_mm2s.rvalid),
-        .s_axi_rready  (m_axi_mm2s.rready),
-        .m_axi_awaddr  (m_axil_mm2s.awaddr),
-        .m_axi_awprot  (m_axil_mm2s.awprot),
-        .m_axi_awvalid (m_axil_mm2s.awvalid),
-        .m_axi_awready (m_axil_mm2s.awready),
-        .m_axi_wdata   (m_axil_mm2s.wdata),
-        .m_axi_wstrb   (m_axil_mm2s.wstrb),
-        .m_axi_wvalid  (m_axil_mm2s.wvalid),
-        .m_axi_wready  (m_axil_mm2s.wready),
-        .m_axi_bresp   (m_axil_mm2s.bresp),
-        .m_axi_bvalid  (m_axil_mm2s.bvalid),
-        .m_axi_bready  (m_axil_mm2s.bready),
-        .m_axi_araddr  (m_axil_mm2s.araddr),
-        .m_axi_arprot  (m_axil_mm2s.arprot),
-        .m_axi_arvalid (m_axil_mm2s.arvalid),
-        .m_axi_arready (m_axil_mm2s.arready),
-        .m_axi_rdata   (m_axil_mm2s.rdata),
-        .m_axi_rresp   (m_axil_mm2s.rresp),
-        .m_axi_rvalid  (m_axil_mm2s.rvalid),
-        .m_axi_rready  (m_axil_mm2s.rready)
     );
 
     axi_dma_sim i_axi_dma_sim (
         .s_axi_lite_aclk       (s_axil.clk_i),
-        .m_axi_mm2s_aclk       (m_axil_mm2s.clk_i),
-        .m_axi_s2mm_aclk       (m_axil_s2mm.clk_i),
+        .m_axi_mm2s_aclk       (s_axil.clk_i),
+        .m_axi_s2mm_aclk       (s_axil.clk_i),
         .axi_resetn            (s_axil.arstn_i),
         .s_axi_lite_awvalid    (s_axil.awvalid),
         .s_axi_lite_awready    (s_axil.awready),
@@ -166,41 +37,41 @@ module axi_dma_wrap (
         .s_axi_lite_rready     (s_axil.rready),
         .s_axi_lite_rdata      (s_axil.rdata),
         .s_axi_lite_rresp      (s_axil.rresp),
-        .m_axi_mm2s_araddr     (m_axi_mm2s.araddr),
-        .m_axi_mm2s_arlen      (m_axi_mm2s.arlen),
-        .m_axi_mm2s_arsize     (m_axi_mm2s.arsize),
-        .m_axi_mm2s_arburst    (m_axi_mm2s.arburst),
-        .m_axi_mm2s_arprot     (m_axi_mm2s.arprot),
-        .m_axi_mm2s_arcache    (m_axi_mm2s.arcache),
-        .m_axi_mm2s_arvalid    (m_axi_mm2s.arvalid),
-        .m_axi_mm2s_arready    (m_axi_mm2s.arready),
-        .m_axi_mm2s_rdata      (m_axi_mm2s.rdata),
-        .m_axi_mm2s_rresp      (m_axi_mm2s.rresp),
-        .m_axi_mm2s_rlast      (m_axi_mm2s.rlast),
-        .m_axi_mm2s_rvalid     (m_axi_mm2s.rvalid),
-        .m_axi_mm2s_rready     (m_axi_mm2s.rready),
+        .m_axi_mm2s_araddr     (axi.araddr),
+        .m_axi_mm2s_arlen      (axi.arlen),
+        .m_axi_mm2s_arsize     (axi.arsize),
+        .m_axi_mm2s_arburst    (axi.arburst),
+        .m_axi_mm2s_arprot     (axi.arprot),
+        .m_axi_mm2s_arcache    (axi.arcache),
+        .m_axi_mm2s_arvalid    (axi.arvalid),
+        .m_axi_mm2s_arready    (axi.arready),
+        .m_axi_mm2s_rdata      (axi.rdata),
+        .m_axi_mm2s_rresp      (axi.rresp),
+        .m_axi_mm2s_rlast      (axi.rlast),
+        .m_axi_mm2s_rvalid     (axi.rvalid),
+        .m_axi_mm2s_rready     (axi.rready),
         .mm2s_prmry_reset_out_n(),
         .m_axis_mm2s_tdata     (m_axis_mm2s.tdata),
         .m_axis_mm2s_tkeep     (m_axis_mm2s.tkeep),
         .m_axis_mm2s_tvalid    (m_axis_mm2s.tvalid),
         .m_axis_mm2s_tready    (m_axis_mm2s.tready),
         .m_axis_mm2s_tlast     (m_axis_mm2s.tlast),
-        .m_axi_s2mm_awaddr     (m_axi_s2mm.awaddr),
-        .m_axi_s2mm_awlen      (m_axi_s2mm.awlen),
-        .m_axi_s2mm_awsize     (m_axi_s2mm.awsize),
-        .m_axi_s2mm_awburst    (m_axi_s2mm.awburst),
-        .m_axi_s2mm_awprot     (m_axi_s2mm.awprot),
-        .m_axi_s2mm_awcache    (m_axi_s2mm.awcache),
-        .m_axi_s2mm_awvalid    (m_axi_s2mm.awvalid),
-        .m_axi_s2mm_awready    (m_axi_s2mm.awready),
-        .m_axi_s2mm_wdata      (m_axi_s2mm.wdata),
-        .m_axi_s2mm_wstrb      (m_axi_s2mm.wstrb),
-        .m_axi_s2mm_wlast      (m_axi_s2mm.wlast),
-        .m_axi_s2mm_wvalid     (m_axi_s2mm.wvalid),
-        .m_axi_s2mm_wready     (m_axi_s2mm.wready),
-        .m_axi_s2mm_bresp      (m_axi_s2mm.bresp),
-        .m_axi_s2mm_bvalid     (m_axi_s2mm.bvalid),
-        .m_axi_s2mm_bready     (m_axi_s2mm.bready),
+        .m_axi_s2mm_awaddr     (axi.awaddr),
+        .m_axi_s2mm_awlen      (axi.awlen),
+        .m_axi_s2mm_awsize     (axi.awsize),
+        .m_axi_s2mm_awburst    (axi.awburst),
+        .m_axi_s2mm_awprot     (axi.awprot),
+        .m_axi_s2mm_awcache    (axi.awcache),
+        .m_axi_s2mm_awvalid    (axi.awvalid),
+        .m_axi_s2mm_awready    (axi.awready),
+        .m_axi_s2mm_wdata      (axi.wdata),
+        .m_axi_s2mm_wstrb      (axi.wstrb),
+        .m_axi_s2mm_wlast      (axi.wlast),
+        .m_axi_s2mm_wvalid     (axi.wvalid),
+        .m_axi_s2mm_wready     (axi.wready),
+        .m_axi_s2mm_bresp      (axi.bresp),
+        .m_axi_s2mm_bvalid     (axi.bvalid),
+        .m_axi_s2mm_bready     (axi.bready),
         .s2mm_prmry_reset_out_n(),
         .s_axis_s2mm_tdata     (s_axis_s2mm.tdata),
         .s_axis_s2mm_tkeep     (s_axis_s2mm.tkeep),
@@ -210,6 +81,100 @@ module axi_dma_wrap (
         .mm2s_introut          (mm2s_introut_o),
         .s2mm_introut          (s2mm_introut_o),
         .axi_dma_tstvec        ()
+    );
+
+    localparam READ_LATENCY = 1;
+    localparam MEM_DEPTH = 8192;
+    localparam MEM_WIDTH = s_axil.DATA_WIDTH;
+    localparam BYTE_NUM = s_axil.STRB_WIDTH;
+
+    logic                         bram_rst_a;
+    logic                         bram_clk_a;
+    logic                         bram_en_a;
+    logic [         BYTE_NUM-1:0] bram_we_a;
+    logic [$clog2(MEM_DEPTH)-1:0] bram_addr_a;
+    logic [        MEM_WIDTH-1:0] bram_wrdata_a;
+    logic [        MEM_WIDTH-1:0] bram_rddata_a;
+
+    logic                         bram_rst_b;
+    logic                         bram_clk_b;
+    logic                         bram_en_b;
+    logic [         BYTE_NUM-1:0] bram_we_b;
+    logic [$clog2(MEM_DEPTH)-1:0] bram_addr_b;
+    logic [        MEM_WIDTH-1:0] bram_wrdata_b;
+    logic [        MEM_WIDTH-1:0] bram_rddata_b;
+
+    axi_bram_ctrl_sim i_axi_bram_ctrl_sim (
+        .s_axi_aclk   (axi.clk_i),
+        .s_axi_aresetn(axi.arstn_i),
+        .s_axi_awaddr (axi.awaddr),
+        .s_axi_awlen  (axi.awlen),
+        .s_axi_awsize (axi.awsize),
+        .s_axi_awburst(axi.awburst),
+        .s_axi_awlock (axi.awlock),
+        .s_axi_awcache(axi.awcache),
+        .s_axi_awprot (axi.awprot),
+        .s_axi_awvalid(axi.awvalid),
+        .s_axi_awready(axi.awready),
+        .s_axi_wdata  (axi.wdata),
+        .s_axi_wstrb  (axi.wstrb),
+        .s_axi_wlast  (axi.wlast),
+        .s_axi_wvalid (axi.wvalid),
+        .s_axi_wready (axi.wready),
+        .s_axi_bresp  (axi.bresp),
+        .s_axi_bvalid (axi.bvalid),
+        .s_axi_bready (axi.bready),
+        .s_axi_araddr (axi.araddr),
+        .s_axi_arlen  (axi.arlen),
+        .s_axi_arsize (axi.arsize),
+        .s_axi_arburst(axi.arburst),
+        .s_axi_arlock (axi.arlock),
+        .s_axi_arcache(axi.arcache),
+        .s_axi_arprot (axi.arprot),
+        .s_axi_arvalid(axi.arvalid),
+        .s_axi_arready(axi.arready),
+        .s_axi_rdata  (axi.rdata),
+        .s_axi_rresp  (axi.rresp),
+        .s_axi_rlast  (axi.rlast),
+        .s_axi_rvalid (axi.rvalid),
+        .s_axi_rready (axi.rready),
+        .bram_rst_a   (bram_rst_a),
+        .bram_clk_a   (bram_clk_a),
+        .bram_en_a    (bram_en_a),
+        .bram_we_a    (bram_we_a),
+        .bram_addr_a  (bram_addr_a),
+        .bram_wrdata_a(bram_wrdata_a),
+        .bram_rddata_a(bram_rddata_a),
+        .bram_rst_b   (bram_rst_b),
+        .bram_clk_b   (bram_clk_b),
+        .bram_en_b    (bram_en_b),
+        .bram_we_b    (bram_we_b),
+        .bram_addr_b  (bram_addr_b),
+        .bram_wrdata_b(bram_wrdata_b),
+        .bram_rddata_b(bram_rddata_b)
+    );
+
+    ram_tdp #(
+        .READ_LATENCY(READ_LATENCY),
+        .BYTE_NUM    (BYTE_NUM),
+        .MEM_DEPTH   (MEM_DEPTH),
+        .MEM_WIDTH   (MEM_WIDTH),
+        .MEM_MODE    ("no_change"),
+        .RAM_STYLE   ("block"),
+        .BYTE_WIDTH  (8)
+    ) i_ram_tdp (
+        .a_clk_i  (bram_clk_a),
+        .a_en_i   (bram_en_a),
+        .a_wr_en_i(bram_we_a),
+        .a_addr_i (bram_addr_a),
+        .a_data_i (bram_wrdata_a),
+        .a_data_o (bram_rddata_a),
+        .b_clk_i  (bram_clk_b),
+        .b_en_i   (bram_en_b),
+        .b_wr_en_i(bram_we_b),
+        .b_addr_i (bram_addr_b),
+        .b_data_i (bram_wrdata_b),
+        .b_data_o (bram_rddata_b)
     );
 
 endmodule
