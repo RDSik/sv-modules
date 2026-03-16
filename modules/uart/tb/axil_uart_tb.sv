@@ -60,7 +60,7 @@ module axil_uart_tb ();
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .ILA_EN         (0),
-        .MODE           ("sync")
+        .ASYNC_MODE_EN  (0)
     ) i_axil_uart (
         .clk_i    (clk_i),
         .arstn_i  (arstn_i),

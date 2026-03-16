@@ -59,9 +59,9 @@ module axis_spi_tb ();
 
     initial begin
         env_base #(
-            .DATA_WIDTH_IN (DATA_WIDTH),
-            .DATA_WIDTH_OUT(DATA_WIDTH),
-            .TLAST_EN      (1)
+            .S_DATA_WIDTH(DATA_WIDTH),
+            .M_DATA_WIDTH(DATA_WIDTH),
+            .TLAST_EN    (1)
         ) env;
         env = new(s_axis, m_axis);
         env.run();

@@ -1,8 +1,8 @@
 module axis_rgmii #(
-    parameter int RGMII_WIDTH   = 4,
-    parameter int PAYLOAD_WIDTH = 11,
-    parameter     FIFO_MODE     = "sync",
-    parameter     VENDOR        = "xilinx"
+    parameter int   RGMII_WIDTH   = 4,
+    parameter int   PAYLOAD_WIDTH = 11,
+    parameter logic ASYNC_MODE_EN = 0,
+    parameter       VENDOR        = "xilinx"
 ) (
     input logic tx_rst_i,
     input logic rx_rst_i,
@@ -38,7 +38,7 @@ module axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(GMII_WIDTH),
         .CDC_REG_NUM    (CDC_REG_NUM),
-        .FIFO_MODE      (FIFO_MODE)
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN)
     ) i_mac_tx (
         .clk_i          (m_eth.tx_clk),
         .rst_i          (tx_rst_i),
@@ -62,7 +62,7 @@ module axis_rgmii #(
         .PAYLOAD_WIDTH  (PAYLOAD_WIDTH),
         .AXIS_DATA_WIDTH(GMII_WIDTH),
         .CDC_REG_NUM    (CDC_REG_NUM),
-        .FIFO_MODE      (FIFO_MODE)
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN)
     ) i_mac_rx (
         .clk_i              (m_eth.rx_clk),
         .rst_i              (rx_rst_i),

@@ -8,7 +8,7 @@ module axil_rgmii
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   RGMII_WIDTH     = 4,
     parameter logic ILA_EN          = 0,
-    parameter       MODE            = "sync",
+    parameter logic ASYNC_MODE_EN   = 0,
     parameter       VENDOR          = "xilinx"
 ) (
     input logic clk_i,
@@ -38,7 +38,7 @@ module axil_rgmii
         .reg_t         (rgmii_reg_t),
         .REG_INIT      (RGMII_REG_INIT),
         .ILA_EN        (ILA_EN),
-        .MODE          (MODE)
+        .ASYNC_MODE_EN (ASYNC_MODE_EN)
     ) i_axil_reg_file (
         .clk_i       (m_eth.tx_clk),
         .arstn_i     (arstn_i),
@@ -94,7 +94,7 @@ module axil_rgmii
     axis_rgmii #(
         .RGMII_WIDTH  (RGMII_WIDTH),
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH),
-        .FIFO_MODE    (MODE),
+        .ASYNC_MODE_EN(ASYNC_MODE_EN),
         .VENDOR       (VENDOR)
     ) i_axis_rgmii (
         .tx_rst_i           (wr_regs.control.tx_reset),

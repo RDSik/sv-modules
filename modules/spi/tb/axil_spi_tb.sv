@@ -65,7 +65,7 @@ module axil_spi_tb ();
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .SLAVE_NUM      (CS_WIDTH),
         .ILA_EN         (0),
-        .MODE           ("sync")
+        .ASYNC_MODE_EN  (0)
     ) i_axil_spi (
         .clk_i  (clk_i),
         .arstn_i(arstn_i),

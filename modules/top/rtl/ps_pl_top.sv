@@ -146,7 +146,7 @@ module ps_pl_top
         .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (ILA_EN),
         .MASTER_NUM     (MASTER_NUM),
-        .MODE           ("async"),
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN),
         .VENDOR         ("xilinx")
     ) i_axil_top (
         .clk_i       (clk_i),

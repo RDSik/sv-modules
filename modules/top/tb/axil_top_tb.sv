@@ -115,7 +115,7 @@ module axil_top_tb
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .ILA_EN         (0),
-        .MODE           ("sync"),
+        .ASYNC_MODE_EN  (0),
         .VENDOR         ("")
     ) i_axil_top (
         .clk_i    (clk_i),

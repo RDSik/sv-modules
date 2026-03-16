@@ -2,35 +2,35 @@
 `define ENV_SVH
 
 class env_base #(
-    parameter int   DATA_WIDTH_IN  = 16,
-    parameter int   DATA_WIDTH_OUT = 16,
-    parameter logic TLAST_EN       = 0
+    parameter int   S_DATA_WIDTH = 16,
+    parameter int   M_DATA_WIDTH = 16,
+    parameter logic TLAST_EN     = 0
 );
 
     test_cfg_base cfg;
 
-    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_IN)) s_axis;
+    virtual axis_if #(.DATA_WIDTH(S_DATA_WIDTH)) s_axis;
 
-    virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_OUT)) m_axis;
+    virtual axis_if #(.DATA_WIDTH(M_DATA_WIDTH)) m_axis;
 
     typedef struct {
-        rand int                       delay;
-        rand logic [DATA_WIDTH_IN-1:0] tdata;
-        rand logic                     tlast;
+        rand int                      delay;
+        rand logic [S_DATA_WIDTH-1:0] tdata;
+        rand logic                    tlast;
     } packet_in_t;
 
     typedef struct {
-        rand int                        delay;
-        rand logic [DATA_WIDTH_OUT-1:0] tdata;
-        rand logic                      tlast;
+        rand int                      delay;
+        rand logic [M_DATA_WIDTH-1:0] tdata;
+        rand logic                    tlast;
     } packet_out_t;
 
     mailbox #(packet_in_t)  gen2drv;
     mailbox #(packet_in_t)  in_mbx;
     mailbox #(packet_out_t) out_mbx;
 
-    function new(virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_OUT)) m_axis,
-                 virtual axis_if #(.DATA_WIDTH(DATA_WIDTH_IN)) s_axis);
+    function new(virtual axis_if #(.DATA_WIDTH(M_DATA_WIDTH)) m_axis,
+                 virtual axis_if #(.DATA_WIDTH(S_DATA_WIDTH)) s_axis);
         this.s_axis = s_axis;
         this.m_axis = m_axis;
         cfg         = new();

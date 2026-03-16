@@ -3,11 +3,11 @@
 module mac_tx
     import rgmii_pkg::*;
 #(
-    parameter int GMII_WIDTH      = 8,
-    parameter int PAYLOAD_WIDTH   = 11,
-    parameter int AXIS_DATA_WIDTH = 8,
-    parameter int CDC_REG_NUM     = 2,
-    parameter     FIFO_MODE       = "sync"
+    parameter int   GMII_WIDTH      = 8,
+    parameter int   PAYLOAD_WIDTH   = 11,
+    parameter int   AXIS_DATA_WIDTH = 8,
+    parameter int   CDC_REG_NUM     = 2,
+    parameter logic ASYNC_MODE_EN   = 0
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -105,13 +105,11 @@ module mac_tx
     end
 
     axis_fifo #(
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .FIFO_WIDTH  (AXIS_DATA_WIDTH),
-        .CDC_REG_NUM (CDC_REG_NUM),
-        .TLAST_EN    (1),
-        .FIFO_MODE   (FIFO_MODE),
-        .READ_LATENCY(0),
-        .RAM_STYLE   ("distributed")
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .FIFO_WIDTH   (AXIS_DATA_WIDTH),
+        .CDC_REG_NUM  (CDC_REG_NUM),
+        .ASYNC_MODE_EN(ASYNC_MODE_EN),
+        .TLAST_EN     (1)
     ) i_axis_fifo_rx (
         .s_axis       (s_axis),
         .m_axis       (m_axis),

@@ -51,8 +51,8 @@ module axis_uart_tb ();
 
     initial begin
         env_base #(
-            .DATA_WIDTH_IN (DATA_WIDTH),
-            .DATA_WIDTH_OUT(DATA_WIDTH)
+            .S_DATA_WIDTH(DATA_WIDTH),
+            .M_DATA_WIDTH(DATA_WIDTH)
         ) env;
         env = new(s_axis, m_axis);
         env.run();

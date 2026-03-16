@@ -4,6 +4,7 @@
 package top_pkg;
 
     localparam logic ILA_EN = 1;
+    localparam logic ASYNC_MODE_EN = 1;
     localparam real CLK_FREQ = 50 * 10 ** 6;
     localparam int SLAVE_NUM = 4;
     localparam int MASTER_NUM = 1;

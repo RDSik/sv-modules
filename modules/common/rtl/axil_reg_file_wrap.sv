@@ -6,7 +6,7 @@ module axil_reg_file_wrap #(
     parameter type  reg_t          = logic          [REG_NUM-1:0][REG_DATA_WIDTH-1:0],
     parameter reg_t REG_INIT       = '{default: '0},
     parameter logic ILA_EN         = 0,
-    parameter       MODE           = "sync"
+    parameter logic ASYNC_MODE_EN  = 0
 ) (
     input logic clk_i,
     input logic arstn_i,
@@ -22,7 +22,7 @@ module axil_reg_file_wrap #(
     axil_if.slave s_axil
 );
 
-    if (MODE == "async") begin : g_async_mode
+    if (ASYNC_MODE_EN) begin : g_async_mode
         axil_if #(
             .ADDR_WIDTH(REG_ADDR_WIDTH),
             .DATA_WIDTH(REG_DATA_WIDTH)
@@ -91,7 +91,7 @@ module axil_reg_file_wrap #(
             .rd_request_o(rd_request_o),
             .wr_valid_o  (wr_valid_o)
         );
-    end else if (MODE == "sync") begin : g_sync_mode
+    end else begin : g_sync_mode
         axil_reg_file #(
             .REG_DATA_WIDTH(REG_DATA_WIDTH),
             .REG_ADDR_WIDTH(REG_ADDR_WIDTH),
@@ -107,8 +107,6 @@ module axil_reg_file_wrap #(
             .rd_request_o(rd_request_o),
             .wr_valid_o  (wr_valid_o)
         );
-    end else begin : g_mode_err
-        $error("Only sync or async MODE is available!");
     end
 
 endmodule

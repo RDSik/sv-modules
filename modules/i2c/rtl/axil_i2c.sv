@@ -8,7 +8,7 @@ module axil_i2c
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   AXIL_ADDR_WIDTH = 32,
     parameter logic ILA_EN          = 0,
-    parameter       MODE            = "sync"
+    parameter logic ASYNC_MODE_EN   = 0
 ) (
     input logic clk_i,
     input logic arstn_i,
@@ -69,7 +69,7 @@ module axil_i2c
         .reg_t         (i2c_regs_t),
         .REG_INIT      (I2C_REG_INIT),
         .ILA_EN        (ILA_EN),
-        .MODE          (MODE)
+        .ASYNC_MODE_EN (ASYNC_MODE_EN)
     ) i_axil_reg_file (
         .clk_i       (clk_i),
         .arstn_i     (arstn_i),
@@ -189,16 +189,16 @@ module axil_i2c
         .sda_oen (sda_padoen_o)
     );
 
+    localparam logic FIFO_ASYNC_MODE = 0;
     localparam int READ_LATENCY = 1;
-    localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
     fifo_wrap #(
-        .FIFO_WIDTH  (I2C_DATA_WIDTH),
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .FIFO_MODE   (FIFO_MODE),
-        .READ_LATENCY(READ_LATENCY),
-        .RAM_STYLE   (RAM_STYLE)
+        .FIFO_WIDTH   (I2C_DATA_WIDTH),
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
+        .READ_LATENCY (READ_LATENCY),
+        .RAM_STYLE    (RAM_STYLE)
     ) i_fifo_tx (
         .wr_clk_i     (clk_i),
         .wr_rst_i     (reset),
@@ -218,11 +218,11 @@ module axil_i2c
     );
 
     fifo_wrap #(
-        .FIFO_WIDTH  (I2C_DATA_WIDTH),
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .FIFO_MODE   (FIFO_MODE),
-        .READ_LATENCY(READ_LATENCY),
-        .RAM_STYLE   (RAM_STYLE)
+        .FIFO_WIDTH   (I2C_DATA_WIDTH),
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
+        .READ_LATENCY (READ_LATENCY),
+        .RAM_STYLE    (RAM_STYLE)
     ) i_fifo_rx (
         .wr_clk_i     (clk_i),
         .wr_rst_i     (reset),

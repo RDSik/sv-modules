@@ -9,7 +9,7 @@ module axil_spi
     parameter int   AXIL_DATA_WIDTH = 32,
     parameter int   SLAVE_NUM       = 1,
     parameter logic ILA_EN          = 0,
-    parameter       MODE            = "sync"
+    parameter logic ASYNC_MODE_EN   = 0
 ) (
     input logic clk_i,
     input logic arstn_i,
@@ -87,7 +87,7 @@ module axil_spi
         .reg_t         (spi_regs_t),
         .REG_INIT      (SPI_REG_INIT),
         .ILA_EN        (ILA_EN),
-        .MODE          (MODE)
+        .ASYNC_MODE_EN (ASYNC_MODE_EN)
     ) i_axil_reg_file (
         .clk_i       (clk_i),
         .arstn_i     (arstn_i),
@@ -115,18 +115,18 @@ module axil_spi
         .m_spi        (m_spi)
     );
 
+    localparam logic FIFO_ASYNC_MODE = 0;
     localparam int READ_LATENCY = 1;
     localparam logic TLAST_EN = 1;
-    localparam FIFO_MODE = "sync";
     localparam RAM_STYLE = "distributed";
 
     axis_fifo #(
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .FIFO_WIDTH  (SPI_DATA_WIDTH),
-        .FIFO_MODE   (FIFO_MODE),
-        .TLAST_EN    (TLAST_EN),
-        .READ_LATENCY(READ_LATENCY),
-        .RAM_STYLE   (RAM_STYLE)
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .FIFO_WIDTH   (SPI_DATA_WIDTH),
+        .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
+        .TLAST_EN     (TLAST_EN),
+        .READ_LATENCY (READ_LATENCY),
+        .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_tx (
         .s_axis   (fifo_tx),
         .m_axis   (spi_tx),
@@ -135,12 +135,12 @@ module axil_spi
     );
 
     axis_fifo #(
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .FIFO_WIDTH  (SPI_DATA_WIDTH),
-        .FIFO_MODE   (FIFO_MODE),
-        .TLAST_EN    (TLAST_EN),
-        .READ_LATENCY(READ_LATENCY),
-        .RAM_STYLE   (RAM_STYLE)
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .FIFO_WIDTH   (SPI_DATA_WIDTH),
+        .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
+        .TLAST_EN     (TLAST_EN),
+        .READ_LATENCY (READ_LATENCY),
+        .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_rx (
         .s_axis   (spi_rx),
         .m_axis   (fifo_rx),

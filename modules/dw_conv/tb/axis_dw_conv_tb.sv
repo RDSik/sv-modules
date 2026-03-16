@@ -13,7 +13,7 @@ module axis_dw_conv_tb ();
     localparam int FIFO_DEPTH = 16;
     localparam int CDC_REG_NUM = 3;
     localparam logic TLAST_EN = 1;
-    localparam MODE = "async";
+    localparam logic ASYNC_MODE_EN = 1;
 
     localparam int M_CLK_PER = 2;
     localparam int S_CLK_PER = 4;
@@ -28,14 +28,14 @@ module axis_dw_conv_tb ();
     logic m_axis_rst;
 
     axis_if #(
-        .DATA_WIDTH(DATA_WIDTH_IN)
+        .DATA_WIDTH(S_DATA_WIDTH)
     ) s_axis (
         .clk_i(s_axis_clk),
         .rst_i(s_axis_rst)
     );
 
     axis_if #(
-        .DATA_WIDTH(DATA_WIDTH_OUT)
+        .DATA_WIDTH(M_DATA_WIDTH)
     ) m_axis (
         .clk_i(m_axis_clk),
         .rst_i(m_axis_rst)
@@ -71,9 +71,9 @@ module axis_dw_conv_tb ();
 
     initial begin
         env_base #(
-            .DATA_WIDTH_IN (S_DATA_WIDTH),
-            .DATA_WIDTH_OUT(M_DATA_WIDTH),
-            .TLAST_EN      (TLAST_EN)
+            .S_DATA_WIDTH(M_DATA_WIDTH),
+            .M_DATA_WIDTH(S_DATA_WIDTH),
+            .TLAST_EN    (TLAST_EN)
         ) env;
         env = new(s_axis, m_axis);
         env.run();
@@ -85,13 +85,13 @@ module axis_dw_conv_tb ();
     end
 
     axis_dw_conv_wrap #(
-        .S_DATA_WIDTH(S_DATA_WIDTH),
-        .M_DATA_WIDTH(M_DATA_WIDTH),
-        .FIFO_DEPTH  (FIFO_DEPTH),
-        .CDC_REG_NUM (CDC_REG_NUM),
-        .TLAST_EN    (TLAST_EN),
-        .FIFO_FIRST  (FIFO_FIRST),
-        .MODE        (MODE)
+        .S_DATA_WIDTH (M_DATA_WIDTH),
+        .M_DATA_WIDTH (S_DATA_WIDTH),
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .CDC_REG_NUM  (CDC_REG_NUM),
+        .TLAST_EN     (TLAST_EN),
+        .FIFO_FIRST   (FIFO_FIRST),
+        .ASYNC_MODE_EN(ASYNC_MODE_EN)
     ) dut (
         .m_axis(s_axis),
         .s_axis(m_axis)

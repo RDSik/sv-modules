@@ -1,21 +1,19 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_dw_conv_wrap #(
-    parameter int   S_DATA_WIDTH = 32,
-    parameter int   M_DATA_WIDTH = 128,
-    parameter int   FIFO_DEPTH   = 128,
-    parameter int   CDC_REG_NUM  = 3,
-    parameter logic TLAST_EN     = 0,
-    parameter logic FIFO_FIRST   = 1,
-    parameter       MODE         = "sync"
+    parameter int   S_DATA_WIDTH  = 32,
+    parameter int   M_DATA_WIDTH  = 128,
+    parameter int   FIFO_DEPTH    = 128,
+    parameter int   CDC_REG_NUM   = 3,
+    parameter logic TLAST_EN      = 0,
+    parameter logic FIFO_FIRST    = 1,
+    parameter logic ASYNC_MODE_EN = 0
+
 ) (
     axis_if.master m_axis,
     axis_if.slave  s_axis
 );
 
-    if (MODE == "async") begin : g_async
-        localparam int READ_LATENCY = 0;
-        localparam RAM_STYLE = "distributed";
-
+    if (ASYNC_MODE_EN) begin : g_async
         logic s_clk;
         logic m_clk;
 
@@ -37,13 +35,11 @@ module axis_dw_conv_wrap #(
             );
 
             axis_fifo #(
-                .FIFO_DEPTH  (FIFO_DEPTH),
-                .FIFO_WIDTH  (S_DATA_WIDTH),
-                .FIFO_MODE   (MODE),
-                .READ_LATENCY(READ_LATENCY),
-                .RAM_STYLE   (RAM_STYLE),
-                .CDC_REG_NUM (CDC_REG_NUM),
-                .TLAST_EN    (TLAST_EN)
+                .FIFO_DEPTH   (FIFO_DEPTH),
+                .FIFO_WIDTH   (S_DATA_WIDTH),
+                .CDC_REG_NUM  (CDC_REG_NUM),
+                .TLAST_EN     (TLAST_EN),
+                .ASYNC_MODE_EN(ASYNC_MODE_EN)
             ) i_axis_fifo (
                 .s_axis   (s_axis),
                 .m_axis   (axis),
@@ -77,13 +73,11 @@ module axis_dw_conv_wrap #(
             );
 
             axis_fifo #(
-                .FIFO_DEPTH  (FIFO_DEPTH),
-                .FIFO_WIDTH  (M_DATA_WIDTH),
-                .FIFO_MODE   (MODE),
-                .READ_LATENCY(READ_LATENCY),
-                .RAM_STYLE   (RAM_STYLE),
-                .CDC_REG_NUM (CDC_REG_NUM),
-                .TLAST_EN    (TLAST_EN)
+                .FIFO_DEPTH   (FIFO_DEPTH),
+                .FIFO_WIDTH   (M_DATA_WIDTH),
+                .CDC_REG_NUM  (CDC_REG_NUM),
+                .TLAST_EN     (TLAST_EN),
+                .ASYNC_MODE_EN(ASYNC_MODE_EN)
             ) i_axis_fifo (
                 .s_axis   (axis),
                 .m_axis   (m_axis),
@@ -91,7 +85,7 @@ module axis_dw_conv_wrap #(
                 .a_empty_o()
             );
         end
-    end else if (MODE == "sync") begin : g_sync
+    end else begin : g_sync
         axis_dw_conv #(
             .S_DATA_WIDTH(S_DATA_WIDTH),
             .M_DATA_WIDTH(M_DATA_WIDTH),
@@ -100,8 +94,6 @@ module axis_dw_conv_wrap #(
             .m_axis(m_axis),
             .s_axis(s_axis)
         );
-    end else begin : g_err
-        $error("Only sync or async MODE is available!");
     end
 
 endmodule

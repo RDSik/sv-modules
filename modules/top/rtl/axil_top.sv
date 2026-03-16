@@ -11,7 +11,7 @@ module axil_top #(
     parameter int                                        RGMII_WIDTH     = 4,
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_LOW_ADDR  = '{default: '0},
     parameter logic [SLAVE_NUM-1:0][AXIL_ADDR_WIDTH-1:0] SLAVE_HIGH_ADDR = '{default: '0},
-    parameter                                            MODE            = "sync",
+    parameter logic                                      ASYNC_MODE_EN   = 0,
     parameter                                            VENDOR          = "gowin"
 ) (
     input logic clk_i,
@@ -63,7 +63,7 @@ module axil_top #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .ILA_EN         (ILA_EN),
-        .MODE           (MODE)
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN)
     ) i_axil_uart (
         .clk_i    (clk_i),
         .arstn_i  (arstn_i),
@@ -78,7 +78,7 @@ module axil_top #(
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .SLAVE_NUM      (SPI_CS_WIDTH),
         .ILA_EN         (ILA_EN),
-        .MODE           (MODE)
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN)
     ) i_axil_spi (
         .clk_i  (clk_i),
         .arstn_i(arstn_i),
@@ -91,7 +91,7 @@ module axil_top #(
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .ILA_EN         (ILA_EN),
-        .MODE           (MODE)
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN)
     ) i_axil_i2c (
         .clk_i       (clk_i),
         .arstn_i     (arstn_i),
@@ -110,7 +110,7 @@ module axil_top #(
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (ILA_EN),
-        .MODE           (MODE),
+        .ASYNC_MODE_EN  (ASYNC_MODE_EN),
         .VENDOR         (VENDOR)
     ) i_axil_rgmii (
         .clk_i  (clk_i),

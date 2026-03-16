@@ -81,8 +81,9 @@ module axil_rgmii_tb ();
         .CLK_FREQ       (CLK_FREQ),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .RGMII_WIDTH    (RGMII_WIDTH),
         .ILA_EN         (0),
-        .MODE           ("sync"),
+        .ASYNC_MODE_EN  (0),
         .VENDOR         ("")
     ) i_axil_rgmii (
         .clk_i  (clk_i),
