@@ -1,16 +1,17 @@
+/* verilator lint_off TIMESCALEMOD */
 module mult_signed #(
-    parameter int A_WIDTH = 16,
-    parameter int B_WIDTH = 16
+    parameter int AWIDTH = 16,
+    parameter int BWIDTH = 16
 ) (
-    input  logic                            clk,
-    input  logic signed [      A_WIDTH-1:0] a,
-    input  logic signed [      B_WIDTH-1:0] b,
-    output logic signed [A_WIDTH+B_WIDTH:0] p
+    input  logic                          clk,
+    input  logic signed [     AWIDTH-1:0] a,
+    input  logic signed [     BWIDTH-1:0] b,
+    output logic signed [AWIDTH+BWIDTH:0] p
 );
 
-    logic signed [A_WIDTH-1:0] a_d, a_dd;
-    logic signed [B_WIDTH-1:0] b_d, b_dd;
-    logic signed [A_WIDTH+B_WIDTH:0] p_d, p_dd;
+    logic signed [AWIDTH-1:0] a_d, a_dd;
+    logic signed [BWIDTH-1:0] b_d, b_dd;
+    logic signed [AWIDTH+BWIDTH:0] p_d, p_dd;
 
     always_ff @(posedge clk) begin
         a_d  <= a;

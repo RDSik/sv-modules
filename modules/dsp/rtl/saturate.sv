@@ -1,3 +1,4 @@
+/* verilator lint_off TIMESCALEMOD */
 module saturate #(
     parameter int CH_NUM         = 2,
     parameter int DATA_WIDTH_IN  = 33,
