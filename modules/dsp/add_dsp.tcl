@@ -16,6 +16,8 @@ if {$xilinx == 1} {
         $path/rtl/dds.sv
         $path/rtl/mixer.sv
         $path/rtl/resampler.sv
+        $path/rtl/mult_signed.sv
+        $path/rtl/saturate.sv
     "
     add_files -norecurse $xil_defaultlib
 
@@ -29,4 +31,6 @@ if {$xilinx == 1} {
     add_file $path/rtl/round.sv
     add_file $path/rtl/sfir_even_symmetric_systolic_top.sv
     add_file $path/rtl/resampler.sv
+    add_file $path/rtl/mult_signed.sv
+    add_file $path/rtl/saturate.sv
 }
