@@ -1,7 +1,7 @@
 module saturate #(
+    parameter int CH_NUM         = 2,
     parameter int DATA_WIDTH_IN  = 33,
-    parameter int DATA_WIDTH_OUT = 16,
-    parameter int CH_NUM         = 2
+    parameter int DATA_WIDTH_OUT = 16
 ) (
     input logic clk_i,
     input logic rst_i,
