@@ -16,8 +16,8 @@ module saturate #(
     output logic ovf_o
 );
 
-    localparam MAX_NEG_VAL = {1'b1, {DATA_WIDTH_OUT - 1{1'b0}}};
-    localparam MAX_POS_VAL = {1'b0, {DATA_WIDTH_OUT - 1{1'b1}}};
+    localparam logic [DATA_WIDTH_OUT-1:0] MAX_NEG_VAL = {1'b1, {DATA_WIDTH_OUT - 1{1'b0}}};
+    localparam logic [DATA_WIDTH_OUT-1:0] MAX_POS_VAL = {1'b0, {DATA_WIDTH_OUT - 1{1'b1}}};
 
     logic [CH_NUM-1:0] overflow;
 
