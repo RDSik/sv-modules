@@ -63,8 +63,8 @@ module amplitude #(
     ) i_saturate (
         .clk_i   (clk_i),
         .rst_i   (rst_i),
-        .tdata_i (product_tdata),
-        .tvalid_i(product_tvalid),
+        .tdata_i (mult_tdata),
+        .tvalid_i(mult_tvalid),
         .tdata_o (sat_tdata),
         .tvalid_o(sat_tvalid),
         .ovf_o   (ovf_o),
