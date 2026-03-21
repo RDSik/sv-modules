@@ -22,8 +22,8 @@ module amplitude #(
     localparam int MULT_DELAY = 4;
     localparam int MULT_DATA_WIDTH = 2 * DATA_WIDTH_IN + 1;
 
-    logic [CH_NUM-1:0][MULT_DATA_WIDTH:0] mult_tdata;
-    logic                                 mult_tvalid;
+    logic [CH_NUM-1:0][MULT_DATA_WIDTH-1:0] mult_tdata;
+    logic                                   mult_tvalid;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
         mult_signed #(
@@ -67,7 +67,7 @@ module amplitude #(
         .tvalid_i(mult_tvalid),
         .tdata_o (sat_tdata),
         .tvalid_o(sat_tvalid),
-        .ovf_o   (ovf_o),
+        .ovf_o   (ovf_o)
     );
 
     round #(
