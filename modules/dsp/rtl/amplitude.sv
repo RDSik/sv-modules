@@ -78,8 +78,8 @@ module amplitude #(
         .clk_i       (clk_i),
         .rst_i       (rst_i),
         .round_type_i(round_type_i),
-        .tvalid_i    (sat_tdata),
-        .tdata_i     (sat_tvalid),
+        .tvalid_i    (sat_tvalid),
+        .tdata_i     (sat_tdata),
         .tvalid_o    (tvalid_o),
         .tdata_o     (tdata_o)
     );
