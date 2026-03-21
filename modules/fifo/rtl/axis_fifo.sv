@@ -43,7 +43,7 @@ module axis_fifo #(
     assign push = s_axis.tvalid & s_axis.tready;
     assign pop = m_axis.tvalid & m_axis.tready;
 
-    if (ASYNC_MODE_EN) begin : g_sync_fifo
+    if (ASYNC_MODE_EN) begin : g_async_fifo
         async_fifo #(
             .FIFO_WIDTH  (FULL_WIDTH),
             .FIFO_DEPTH  (FIFO_DEPTH),

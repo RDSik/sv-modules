@@ -34,11 +34,7 @@ module saturate #(
             if (rst_i) begin
                 overflow[i] <= 1'b0;
             end else begin
-                if (saturate) begin
-                    overflow[i] <= 1'b1;
-                end else begin
-                    overflow[i] <= 1'b0;
-                end
+                overflow[i] <= saturate;
             end
         end
 
