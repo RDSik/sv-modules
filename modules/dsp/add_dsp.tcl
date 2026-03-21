@@ -18,6 +18,7 @@ if {$xilinx == 1} {
         $path/rtl/resampler.sv
         $path/rtl/mult_signed.sv
         $path/rtl/saturate.sv
+        $path/rtl/amplitude.sv
     "
     add_files -norecurse $xil_defaultlib
 
@@ -33,4 +34,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/resampler.sv
     add_file $path/rtl/mult_signed.sv
     add_file $path/rtl/saturate.sv
+    add_file $path/rtl/amplitude.sv
 }
