@@ -77,12 +77,12 @@ module resampler #(
         assign int_tvalid    = s_axis.tvalid;
     end
 
-    localparam int FIR_WIDTH = DATA_WIDTH + COEF_WIDTH + $clog2(TAP_NUM);
+    localparam int FIR_WIDTH = DATA_WIDTH + COEF_WIDTH;
 
     logic                                    fir_tvalid;
     logic signed [CH_NUM-1:0][FIR_WIDTH-1:0] fir_tdata;
 
-    fir_filter #(
+    sfir #(
         .CH_NUM    (CH_NUM),
         .DATA_WIDTH(DATA_WIDTH),
         .COEF_WIDTH(COEF_WIDTH),

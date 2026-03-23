@@ -1,34 +1,33 @@
 module amplitude #(
-    parameter int CH_NUM         = 2,
-    parameter int DATA_WIDTH_IN  = 32,
-    parameter int DATA_WIDTH_OUT = 16
+    parameter int CH_NUM     = 2,
+    parameter int DATA_WIDTH = 16
 ) (
     input logic clk_i,
     input logic rst_i,
 
     input logic round_type_i,
 
-    input logic [DATA_WIDTH_IN-1:0] ampl_i,
+    input logic [DATA_WIDTH-1:0] ampl_i,
 
-    input logic [CH_NUM-1:0][DATA_WIDTH_IN-1:0] tdata_i,
-    input logic                                 tvalid_i,
+    input logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
+    input logic                              tvalid_i,
 
-    output logic [CH_NUM-1:0][DATA_WIDTH_OUT-1:0] tdata_o,
-    output logic                                  tvalid_o,
+    output logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o,
+    output logic                              tvalid_o,
 
     output logic ovf_o
 );
 
     localparam int MULT_DELAY = 4;
-    localparam int MULT_DATA_WIDTH = 2 * DATA_WIDTH_IN + 1;
+    localparam int MULT_DATA_WIDTH = 2 * DATA_WIDTH + 1;
 
     logic [CH_NUM-1:0][MULT_DATA_WIDTH-1:0] mult_tdata;
     logic                                   mult_tvalid;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
         mult_signed #(
-            .AWIDTH(DATA_WIDTH_IN),
-            .BWIDTH(DATA_WIDTH_IN)
+            .AWIDTH(DATA_WIDTH),
+            .BWIDTH(DATA_WIDTH)
         ) i_mult_signed (
             .clk(clk_i),
             .a  (ampl_i),
@@ -50,8 +49,8 @@ module amplitude #(
         .data_o(mult_tvalid)
     );
 
-    localparam int RADIX = DATA_WIDTH_IN - 1;
-    localparam int SAT_DATA_WIDTH = DATA_WIDTH_IN + RADIX;
+    localparam int RADIX = DATA_WIDTH - 2;
+    localparam int SAT_DATA_WIDTH = DATA_WIDTH + RADIX;
 
     logic [CH_NUM-1:0][SAT_DATA_WIDTH-1:0] sat_tdata;
     logic                                  sat_tvalid;
@@ -73,7 +72,7 @@ module amplitude #(
     round #(
         .CH_NUM        (CH_NUM),
         .DATA_WIDTH_IN (SAT_DATA_WIDTH),
-        .DATA_WIDTH_OUT(DATA_WIDTH_OUT)
+        .DATA_WIDTH_OUT(DATA_WIDTH)
     ) i_round (
         .clk_i       (clk_i),
         .rst_i       (rst_i),
