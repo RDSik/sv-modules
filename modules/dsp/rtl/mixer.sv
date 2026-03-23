@@ -1,6 +1,6 @@
 module mixer #(
     parameter int CH_NUM      = 2,
-    parameter int PHASE_WIDTH = 14,
+    parameter int PHASE_WIDTH = 32,
     parameter int DATA_WIDTH  = 16
 ) (
     input logic clk_i,
