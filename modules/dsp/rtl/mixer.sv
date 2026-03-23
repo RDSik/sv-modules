@@ -1,5 +1,5 @@
 module mixer #(
-    parameter int IQ_NUM      = 2,
+    parameter int CH_NUM      = 2,
     parameter int PHASE_WIDTH = 14,
     parameter int DATA_WIDTH  = 16
 ) (
@@ -12,17 +12,17 @@ module mixer #(
     input logic [PHASE_WIDTH-1:0] poff_i,
 
     input logic                              tvalid_i,
-    input logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
+    input logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
 
     output logic                              tvalid_o,
-    output logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_o
+    output logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o
 );
 
     logic                              dds_tvalid;
-    logic [IQ_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
+    logic [CH_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
 
     dds #(
-        .IQ_NUM     (IQ_NUM),
+        .IQ_NUM     (CH_NUM),
         .PHASE_WIDTH(PHASE_WIDTH),
         .DATA_WIDTH (DATA_WIDTH)
     ) i_dds (
@@ -36,8 +36,9 @@ module mixer #(
     );
 
     localparam int CMULT_DELAY = 6;
+    localparam int CMULT_DATA_WIDTH = 2 * DATA_WIDTH + 1;
 
-    logic [IQ_NUM-1:0][2*DATA_WIDTH:0] mixed_tdata;
+    logic [CH_NUM-1:0][CMULT_DATA_WIDTH-1:0] mixed_tdata;
     logic                              mixed_tvalid;
 
     cmult #(
@@ -67,8 +68,8 @@ module mixer #(
     );
 
     round #(
-        .CH_NUM        (IQ_NUM),
-        .DATA_WIDTH_IN (2 * DATA_WIDTH + 1),
+        .CH_NUM        (CH_NUM),
+        .DATA_WIDTH_IN (CMULT_DATA_WIDTH),
         .DATA_WIDTH_OUT(DATA_WIDTH)
     ) i_round (
         .clk_i       (clk_i),
