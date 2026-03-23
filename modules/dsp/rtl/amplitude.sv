@@ -50,7 +50,7 @@ module amplitude #(
         .data_o(mult_tvalid)
     );
 
-    localparam int RADIX = DATA_WIDTH_IN - 2;
+    localparam int RADIX = DATA_WIDTH_IN - 1;
     localparam int SAT_DATA_WIDTH = DATA_WIDTH_IN + RADIX;
 
     logic [CH_NUM-1:0][SAT_DATA_WIDTH-1:0] sat_tdata;
