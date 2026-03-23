@@ -40,7 +40,7 @@ module mixer #(
     localparam int CMULT_DATA_WIDTH = 2 * DATA_WIDTH + 1;
 
     logic [CH_NUM-1:0][CMULT_DATA_WIDTH-1:0] mixed_tdata;
-    logic                                  mixed_tvalid;
+    logic                                     mixed_tvalid;
 
     cmult #(
         .AWIDTH(DATA_WIDTH),
