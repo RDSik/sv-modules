@@ -7,7 +7,8 @@ module mixer #(
     input logic rst_i,
     input logic en_i,
 
-    input logic                   round_type_i,
+    input logic round_type_i,
+
     input logic [PHASE_WIDTH-1:0] pinc_i,
     input logic [PHASE_WIDTH-1:0] poff_i,
 
