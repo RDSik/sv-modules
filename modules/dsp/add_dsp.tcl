@@ -19,6 +19,7 @@ if {$xilinx == 1} {
         $path/rtl/mult_signed.sv
         $path/rtl/saturate.sv
         $path/rtl/amplitude.sv
+        $path/rtl/test_signal_gen.sv
     "
     add_files -norecurse $xil_defaultlib
 
