@@ -13,11 +13,10 @@ module test_signal_gen #(
     input logic [PHASE_WIDTH-1:0] pinc_i,
     input logic [PHASE_WIDTH-1:0] poff_i,
 
-    input logic                              tvalid_i,
-    input logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
-
     output logic                              tvalid_o,
-    output logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o
+    output logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o,
+
+    output logic ovf_o
 );
 
     logic [CH_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
@@ -43,13 +42,13 @@ module test_signal_gen #(
     ) i_amplitude (
         .clk_i       (clk_i),
         .rst_i       (rst_i),
-        .round_type_i(ROUND_TYPE),
-        .ampl_i      (AMPL),
+        .round_type_i(round_type_i),
+        .ampl_i      (ampl_i),
         .tdata_i     (dds_tdata),
         .tvalid_i    (dds_tvalid),
-        .tdata_o     (ampl_tdata),
-        .tvalid_o    (ampl_tvalid),
-        .ovf_o       (ovf)
+        .tdata_o     (tdata_o),
+        .tvalid_o    (tvalid_o),
+        .ovf_o       (ovf_o)
     );
 
 endmodule
