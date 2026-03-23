@@ -1,7 +1,7 @@
 /* verilator lint_off TIMESCALEMOD */
 module ddc #(
     parameter     COE_FILE    = "fir.mem",
-    parameter int IQ_NUM      = 2,
+    parameter int CH_NUM      = 2,
     parameter int DATA_WIDTH  = 16,
     parameter int COEF_WIDTH  = 18,
     parameter int PHASE_WIDTH = 32,
@@ -19,17 +19,17 @@ module ddc #(
     input logic [PHASE_WIDTH-1:0] poff_i,
 
     input logic                              tvalid_i,
-    input logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
+    input logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
 
     output logic                              tvalid_o,
-    output logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_o
+    output logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o
 );
 
-    logic [IQ_NUM-1:0][DATA_WIDTH-1:0] mixed_tdata;
+    logic [CH_NUM-1:0][DATA_WIDTH-1:0] mixed_tdata;
     logic                              mixed_tvalid;
 
     mixer #(
-        .IQ_NUM     (IQ_NUM),
+        .CH_NUM     (CH_NUM),
         .DATA_WIDTH (DATA_WIDTH),
         .PHASE_WIDTH(PHASE_WIDTH)
     ) i_mixer (
@@ -46,7 +46,7 @@ module ddc #(
     );
 
     axis_if #(
-        .DATA_WIDTH(IQ_NUM * DATA_WIDTH)
+        .DATA_WIDTH(CH_NUM * DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
         .rst_i(rst_i)
@@ -58,7 +58,7 @@ module ddc #(
     resampler #(
         .INTERPOLATION_EN(0),
         .DECIMATION_EN   (1),
-        .CH_NUM          (IQ_NUM),
+        .CH_NUM          (CH_NUM),
         .DATA_WIDTH      (DATA_WIDTH),
         .COEF_WIDTH      (COEF_WIDTH),
         .TAP_NUM         (TAP_NUM),
