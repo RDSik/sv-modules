@@ -64,7 +64,7 @@ module axil_rgmii
         rd_regs.status.pll_locked = pll_locked;
     end
 
-    if (VENDOR == "xilinx") begin : g_mmcm
+    if (VENDOR == "xilinx") begin : g_pll
         localparam real CLK_MULT = 20;
         localparam real CLK0_DIVIDE = 8;
         localparam real CLK1_DIVIDE = 5;
