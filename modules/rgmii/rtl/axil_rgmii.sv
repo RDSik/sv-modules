@@ -72,12 +72,12 @@ module axil_rgmii
         logic clk_125_m;
         logic clk_200_m;
 
-        clk_manager #(
+        pll #(
             .CLK_FREQ   (CLK_FREQ),
             .CLK_MULT   (CLK_MULT),
             .CLK0_DIVIDE(CLK0_DIVIDE),
             .CLK1_DIVIDE(CLK1_DIVIDE)
-        ) i_clk_manager (
+        ) i_pll (
             .clk_i   (clk_i),
             .rst_i   (~arstn_i),
             .clk0_o  (clk_125_m),
