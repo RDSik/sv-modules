@@ -31,9 +31,8 @@ module round #(
         logic [DATA_WIDTH_IN-1:0] add;
         assign add = (round_type_i) ? {{DATA_WIDTH_OUT{1'b0}}, even_val} : {{DATA_WIDTH_OUT{1'b0}}, odd_val};
         
-        logic signed [DATA_WIDTH_IN-1:0] sum;
         logic signed [DATA_WIDTH_IN-1:0] sum_reg;
-
+        logic signed [DATA_WIDTH_IN-1:0] sum;
         assign sum = data_in + add;
 
         logic [FRAC_WIDTH-1:0] pattern_even;
