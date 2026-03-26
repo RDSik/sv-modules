@@ -1,6 +1,5 @@
 /* verilator lint_off TIMESCALEMOD */
 module dds #(
-    parameter int IQ_NUM      = 2,
     parameter int PHASE_WIDTH = 32,
     parameter int DATA_WIDTH  = 16
 ) (
@@ -11,8 +10,8 @@ module dds #(
     input logic [PHASE_WIDTH-1:0] pinc_i,
     input logic [PHASE_WIDTH-1:0] poff_i,
 
-    output logic                              tvalid_o,
-    output logic [IQ_NUM-1:0][DATA_WIDTH-1:0] tdata_o
+    output logic                       tvalid_o,
+    output logic [1:0][DATA_WIDTH-1:0] tdata_o
 );
 
     logic [PHASE_WIDTH-1:0] poff_d;
