@@ -23,7 +23,6 @@ module mixer #(
     logic [CH_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
 
     dds #(
-        .IQ_NUM     (CH_NUM),
         .PHASE_WIDTH(PHASE_WIDTH),
         .DATA_WIDTH (DATA_WIDTH)
     ) i_dds (
