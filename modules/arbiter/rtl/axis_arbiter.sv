@@ -12,7 +12,7 @@ module axis_arbiter #(
     logic                                  rst_i;
     logic                                  m_handshake;
     logic [MASTER_NUM-1:0]                 grant;
-    logic [$clog2(MASTER_NUM)-1:0]             grant_indx;
+    logic [$clog2(MASTER_NUM)-1:0]         grant_indx;
     logic [MASTER_NUM-1:0]                 s_axis_tvalid;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] s_axis_tdata;
     logic [MASTER_NUM-1:0][USER_WIDTH-1:0] m_axis_tuser;
