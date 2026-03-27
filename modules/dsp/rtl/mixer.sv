@@ -19,7 +19,7 @@ module mixer #(
     output logic [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o
 );
 
-    logic                              dds_tvalid;
+    logic                       dds_tvalid;
     logic [1:0][DATA_WIDTH-1:0] dds_tdata;
 
     dds #(
