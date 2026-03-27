@@ -20,7 +20,7 @@ module mixer #(
 );
 
     logic                              dds_tvalid;
-    logic [CH_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
+    logic [1:0][DATA_WIDTH-1:0] dds_tdata;
 
     dds #(
         .PHASE_WIDTH(PHASE_WIDTH),
