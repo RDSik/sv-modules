@@ -19,8 +19,8 @@ module test_signal_gen #(
     output logic ovf_o
 );
 
-    logic [CH_NUM-1:0][DATA_WIDTH-1:0] dds_tdata;
-    logic                              dds_tvalid;
+    logic [1:0][DATA_WIDTH-1:0] dds_tdata;
+    logic                       dds_tvalid;
 
     dds #(
         .PHASE_WIDTH(PHASE_WIDTH),
