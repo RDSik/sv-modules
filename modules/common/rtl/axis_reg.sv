@@ -5,6 +5,7 @@ module axis_reg (
 
     logic enable;
     assign enable = m_axis.tready | ~m_axis.tvalid;
+    assign s_axis.tready = enable;
 
     always_ff @(posedge m_axis.clk_i) begin
         if (m_axis.rst_i) begin
@@ -17,7 +18,5 @@ module axis_reg (
             m_axis.tdata  <= s_axis.tdata;
         end
     end
-
-    assign s_axis.tready = enable;
 
 endmodule
