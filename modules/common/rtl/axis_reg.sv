@@ -3,7 +3,8 @@ module axis_reg (
     axis_if.master m_axis
 );
 
-    logic enable = m_axis.tready | ~m_axis.tvalid;
+    logic enable;
+    assign enable = m_axis.tready | ~m_axis.tvalid;
 
     always_ff @(posedge m_axis.clk_i) begin
         if (m_axis.rst_i) begin
