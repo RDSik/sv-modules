@@ -5,6 +5,7 @@ module axis_reg (
 
     logic enable;
     assign enable = m_axis.tready | ~m_axis.tvalid;
+
     assign s_axis.tready = enable;
 
     always_ff @(posedge m_axis.clk_i) begin
