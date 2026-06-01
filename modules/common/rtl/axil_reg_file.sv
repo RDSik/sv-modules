@@ -1,6 +1,5 @@
 // Based on https://github.com/ZipCPU/wb2axip/blob/53dafe2d54e7a72304afe36e73875a940a351b70/bench/formal/xlnxdemo.v#L309-L314
 
-/* verilator lint_off TIMESCALEMOD */
 module axil_reg_file #(
     parameter int   REG_DATA_WIDTH = 32,
     parameter int   REG_ADDR_WIDTH = 32,
@@ -85,7 +84,6 @@ module axil_reg_file #(
             for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                 wr_reg[reg_indx] <= REG_INIT_UNPACK[reg_indx];
             end
-            wr_valid <= '0;
         end else begin
             if (slv_reg_wren) begin
                 for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
@@ -95,7 +93,22 @@ module axil_reg_file #(
                                 wr_reg[reg_indx][i*8+:8] <= s_axil.wdata[i*8+:8];
                             end
                         end
+                    end
+                end
+            end
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (~rstn_i) begin
+            wr_valid <= '0;
+        end else begin
+            if (slv_reg_wren) begin
+                for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
+                    if (awaddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         wr_valid[reg_indx] <= 1'b1;
+                    end else begin
+                        wr_valid[reg_indx] <= 1'b0;
                     end
                 end
             end else begin
@@ -160,8 +173,10 @@ module axil_reg_file #(
     always_ff @(posedge clk_i) begin
         if (~rstn_i) begin
             s_axil.rdata <= '0;
-        end else if (slv_reg_rden) begin
-            s_axil.rdata <= reg_data_out;
+        end else begin
+            if (slv_reg_rden) begin
+                s_axil.rdata <= reg_data_out;
+            end
         end
     end
 
@@ -187,6 +202,8 @@ module axil_reg_file #(
                 for (int reg_indx = 0; reg_indx < REG_NUM; reg_indx++) begin
                     if (araddr[ADDR_MSB:ADDR_LSB] == reg_indx) begin
                         rd_request[reg_indx] <= 1'b1;
+                    end else begin
+                        rd_request[reg_indx] <= 1'b0;
                     end
                 end
             end else begin
