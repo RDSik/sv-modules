@@ -1,5 +1,6 @@
 // Based on https://github.com/ZipCPU/wb2axip/blob/53dafe2d54e7a72304afe36e73875a940a351b70/bench/formal/xlnxdemo.v#L309-L314
 
+/* verilator lint_off TIMESCALEMOD */
 module axil_reg_file #(
     parameter int   REG_DATA_WIDTH = 32,
     parameter int   REG_ADDR_WIDTH = 32,
