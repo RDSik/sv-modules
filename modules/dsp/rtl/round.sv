@@ -16,61 +16,54 @@ module round #(
     output logic                                  tvalid_o
 );
 
-    localparam int FRAC_WIDTH = DATA_WIDTH_IN - DATA_WIDTH_OUT;
-
-    for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
-        logic signed [DATA_WIDTH_IN-1:0] data_in;
-        assign data_in = tdata_i[i];
+    if (DATA_WIDTH_IN == DATA_WIDTH_OUT) begin : g_equal
+        assign tdata_o  = tdata_i;
+        assign tvalid_o = tvalid_i;
+    end else begin : g_round
+        localparam int FRAC_WIDTH = DATA_WIDTH_IN - DATA_WIDTH_OUT;
         
-        logic [FRAC_WIDTH-1:0] even_val;
-        logic [FRAC_WIDTH-1:0] odd_val;
-
-        assign even_val = {1'b1, {{FRAC_WIDTH - 1} {1'b0}}};
-        assign odd_val  = {1'b0, {{FRAC_WIDTH - 1} {1'b1}}};
-
-        logic [DATA_WIDTH_IN-1:0] add;
-        assign add = (round_type_i) ? {{DATA_WIDTH_OUT{1'b0}}, even_val} : {{DATA_WIDTH_OUT{1'b0}}, odd_val};
-        
-        logic signed [DATA_WIDTH_IN-1:0] sum_reg;
-        logic signed [DATA_WIDTH_IN-1:0] sum;
-        assign sum = data_in + add;
-
-        logic [FRAC_WIDTH-1:0] pattern_even;
-        logic [FRAC_WIDTH-1:0] pattern_odd;
-        logic [FRAC_WIDTH-1:0] pattern;
-        logic                  pattern_detect;
-
-        assign pattern_even = {FRAC_WIDTH{1'b0}};
-        assign pattern_odd  = {FRAC_WIDTH{1'b1}};
-        assign pattern      = (round_type_i) ? pattern_even : pattern_odd;
-
-        always_ff @(posedge clk_i) begin
-            pattern_detect <= (sum[FRAC_WIDTH-1:0] == pattern);
-            sum_reg        <= sum;
-        end
-
-        logic lsb_bit;
-        assign lsb_bit = (round_type_i) ? 1'b0 : 1'b1;
-
-        logic signed [DATA_WIDTH_OUT-1:0] data_out;
-        assign tdata_o[i] = data_out;
-        
-        always_ff @(posedge clk_i) begin
-            if (pattern_detect) begin
-                data_out <= {sum_reg[DATA_WIDTH_IN-1:FRAC_WIDTH+1], lsb_bit};
-            end else begin
-                data_out <= sum_reg[DATA_WIDTH_IN-1:FRAC_WIDTH];
+        for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
+            logic signed [DATA_WIDTH_IN-1:0] data_in;
+            assign data_in = signed'(tdata_i[i]);
+    
+            logic [FRAC_WIDTH-1:0] add;
+            assign add = (round_type_i) ? {1'b1, {{FRAC_WIDTH - 1} {1'b0}}} : {1'b0, {{FRAC_WIDTH - 1} {1'b1}}};
+    
+            logic signed [DATA_WIDTH_IN-1:0] sum_reg;
+            logic signed [DATA_WIDTH_IN-1:0] sum;
+            assign sum = data_in + {{DATA_WIDTH_OUT{1'b0}}, add};
+    
+            logic [FRAC_WIDTH-1:0] pattern;
+            logic                  pattern_detect;
+    
+            assign pattern = (round_type_i) ? {FRAC_WIDTH{1'b0}} : {FRAC_WIDTH{1'b1}};
+    
+            always_ff @(posedge clk_i) begin
+                pattern_detect <= (sum[FRAC_WIDTH-1:0] == pattern);
+                sum_reg        <= sum;
             end
+    
+            logic signed [DATA_WIDTH_OUT-1:0] data_out;
+    
+            always_ff @(posedge clk_i) begin
+                if (pattern_detect) begin
+                    data_out <= {sum_reg[DATA_WIDTH_IN-1:FRAC_WIDTH+1], ~round_type_i};
+                end else begin
+                    data_out <= sum_reg[DATA_WIDTH_IN-1:FRAC_WIDTH];
+                end
+            end
+
+            assign tdata_o[i] = data_out;
         end
-    end
-
-    logic tvalid_d;
-
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
-            {tvalid_o, tvalid_d} <= '0;
-        end else begin
-            {tvalid_o, tvalid_d} <= {tvalid_d, tvalid_i};
+    
+        logic tvalid_d;
+    
+        always_ff @(posedge clk_i) begin
+            if (rst_i) begin
+                {tvalid_o, tvalid_d} <= '0;
+            end else begin
+                {tvalid_o, tvalid_d} <= {tvalid_d, tvalid_i};
+            end
         end
     end
 
