@@ -71,7 +71,7 @@ package axi_dma_pkg;
     } sg_reg_t;
 
     typedef union {
-        sg_reg_t          sg;
+        sg_reg_t          regs;
         logic [3:0][31:0] reserved;
     } sg_reg_t;
 
