@@ -73,15 +73,15 @@ package axi_dma_pkg;
     typedef union {
         sg_reg_t          regs;
         logic [3:0][31:0] reserved;
-    } sg_reg_t;
+    } sg_union_reg_t;
 
     typedef struct packed {
-        length_reg_t length;
-        logic [31:0] addr_msb;
-        logic [31:0] addr_lsb;
-        sg_reg_t     sg;
-        dmasr_reg_t  dmasr;
-        dmacr_reg_t  dmacr;
+        length_reg_t   length;
+        logic [31:0]   addr_msb;
+        logic [31:0]   addr_lsb;
+        sg_union_reg_t sg;
+        dmasr_reg_t    dmasr;
+        dmacr_reg_t    dmacr;
     } channel_t;
 
     typedef struct packed {
