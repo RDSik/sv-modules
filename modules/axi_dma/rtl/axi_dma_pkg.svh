@@ -91,5 +91,4 @@ package axi_dma_pkg;
 
 endpackage
 
-
 `endif  // AXI_DMA_PKG_SVH
