@@ -15,5 +15,4 @@ if {$xilinx == 1} {
         $path/tb/axi_dma_class.svh
     "
     add_files -fileset sim_1 $xil_defaultlib
-
 }
