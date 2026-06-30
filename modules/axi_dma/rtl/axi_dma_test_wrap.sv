@@ -4,6 +4,7 @@ module axi_dma_test_wrap (
     output logic s2mm_introut_o,
     output logic mm2s_introut_o
 );
+
     localparam READ_LATENCY = 1;
     localparam MEM_DEPTH = 8192;
     localparam MEM_WIDTH = s_axil.DATA_WIDTH;
