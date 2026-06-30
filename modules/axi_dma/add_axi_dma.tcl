@@ -5,6 +5,7 @@ if {$xilinx == 1} {
 
     set xil_defaultlib "
         $path/rtl/axi_dma_test_wrap.sv
+        $path/rtl/axi_dma_pkg.svh
     "
 
     add_files -norecurse $xil_defaultlib
