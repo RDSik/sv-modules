@@ -193,16 +193,18 @@ proc create_root_design { parentCell } {
   set BRAM_PORTA_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:bram_rtl:1.0 BRAM_PORTA_0 ]
   set_property -dict [ list \
    CONFIG.MASTER_TYPE {BRAM_CTRL} \
+   CONFIG.READ_WRITE_MODE {WRITE_ONLY} \
    ] $BRAM_PORTA_0
 
   set BRAM_PORTB_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:bram_rtl:1.0 BRAM_PORTB_0 ]
   set_property -dict [ list \
    CONFIG.MASTER_TYPE {BRAM_CTRL} \
+   CONFIG.READ_WRITE_MODE {READ_ONLY} \
    ] $BRAM_PORTB_0
 
   set S_AXI_LITE_0 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI_LITE_0 ]
   set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {10} \
+   CONFIG.ADDR_WIDTH {12} \
    CONFIG.ARUSER_WIDTH {0} \
    CONFIG.AWUSER_WIDTH {0} \
    CONFIG.BUSER_WIDTH {0} \
@@ -283,6 +285,7 @@ proc create_root_design { parentCell } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -294,6 +297,4 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 
-
-common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
