@@ -2,17 +2,19 @@
 module round_robin_arbiter #(
     parameter int MASTER_NUM = 4
 ) (
-    input  logic                  clk_i,
-    input  logic                  rst_i,
-    input  logic                  ack_i,
-    input  logic [MASTER_NUM-1:0] req_i,
-    output logic [MASTER_NUM-1:0] grant_o
+    input  logic                          clk_i,
+    input  logic                          rst_i,
+    input  logic                          ack_i,
+    input  logic [        MASTER_NUM-1:0] req_i,
+    output logic [        MASTER_NUM-1:0] grant_o,
+    output logic [$clog2(MASTER_NUM)-1:0] grant_indx_o
 );
 
     localparam int PTR_WIDTH = $clog2(MASTER_NUM);
-
+    
     logic [    MASTER_NUM-1:0] req_shift;
     logic [    MASTER_NUM-1:0] grant_shift;
+    logic [    MASTER_NUM-1:0] grant_next;
 
     logic [(MASTER_NUM*2)-1:0] req_shift_double;
     logic [(MASTER_NUM*2)-1:0] grant_shift_double;
@@ -24,7 +26,7 @@ module round_robin_arbiter #(
     assign req_shift          = req_shift_double[MASTER_NUM-1:0];
 
     assign grant_shift_double = {grant_shift, grant_shift} << ptr;
-    assign grant_o            = grant_shift_double[(MASTER_NUM*2)-1:MASTER_NUM];
+    assign grant_next         = grant_shift_double[(MASTER_NUM*2)-1:MASTER_NUM];
 
     always_comb begin
         grant_shift = '0;
@@ -39,7 +41,7 @@ module round_robin_arbiter #(
     always_comb begin
         ptr_next = ptr;
         for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant_o[i]) begin
+            if (grant_next[i]) begin
                 if (i == MASTER_NUM - 1) begin
                     ptr_next = '0;
                 end else begin
@@ -52,10 +54,19 @@ module round_robin_arbiter #(
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            ptr <= '0;
+            ptr   <= '0;
+            grant <= '0;
         end else if (ack_i) begin
-            ptr <= ptr_next;
+            ptr     <= ptr_next;
+            grant_o <= grant_next;
         end
     end
+
+    onehot_to_indx #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_onehot_to_indx (
+        .onehot_i(grant_next),
+        .indx_o  (grant_idx_o)
+    );
 
 endmodule
