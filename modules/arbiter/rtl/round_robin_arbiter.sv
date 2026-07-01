@@ -62,11 +62,13 @@ module round_robin_arbiter #(
         end
     end
 
-    onehot_to_indx #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_onehot_to_indx (
-        .onehot_i(grant_next),
-        .indx_o  (grant_idx_o)
-    );
+    always_comb begin
+        grant_indx_o = '0;
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            if (grant_o[i]) begin
+                grant_indx_o = i;
+            end
+        end
+    end
 
 endmodule
