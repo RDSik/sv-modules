@@ -7,7 +7,6 @@ module round_robin_arbiter #(
     input  logic                          ack_i,
     input  logic [        MASTER_NUM-1:0] req_i,
     output logic [        MASTER_NUM-1:0] grant_o,
-    output logic [$clog2(MASTER_NUM)-1:0] grant_indx_o
 );
 
     localparam int PTR_WIDTH = $clog2(MASTER_NUM);
@@ -59,15 +58,6 @@ module round_robin_arbiter #(
         end else if (ack_i) begin
             ptr     <= ptr_next;
             grant_o <= grant_next;
-        end
-    end
-
-    always_comb begin
-        grant_indx_o = '0;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant_o[i]) begin
-                grant_indx_o = i;
-            end
         end
     end
 
