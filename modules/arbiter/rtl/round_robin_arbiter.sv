@@ -13,7 +13,6 @@ module round_robin_arbiter #(
     
     logic [    MASTER_NUM-1:0] req_shift;
     logic [    MASTER_NUM-1:0] grant_shift;
-    logic [    MASTER_NUM-1:0] grant_next;
 
     logic [(MASTER_NUM*2)-1:0] req_shift_double;
     logic [(MASTER_NUM*2)-1:0] grant_shift_double;
@@ -25,7 +24,7 @@ module round_robin_arbiter #(
     assign req_shift          = req_shift_double[MASTER_NUM-1:0];
 
     assign grant_shift_double = {grant_shift, grant_shift} << ptr;
-    assign grant_next         = grant_shift_double[(MASTER_NUM*2)-1:MASTER_NUM];
+    assign grant_o            = grant_shift_double[(MASTER_NUM*2)-1:MASTER_NUM];
 
     always_comb begin
         grant_shift = '0;
@@ -40,7 +39,7 @@ module round_robin_arbiter #(
     always_comb begin
         ptr_next = ptr;
         for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant_next[i]) begin
+            if (grant_o[i]) begin
                 if (i == MASTER_NUM - 1) begin
                     ptr_next = '0;
                 end else begin
@@ -53,11 +52,9 @@ module round_robin_arbiter #(
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            ptr     <= '0;
-            grant_o <= '0;
+            ptr <= '0;
         end else if (ack_i) begin
-            ptr     <= ptr_next;
-            grant_o <= grant_next;
+            ptr <= ptr_next;
         end
     end
 
