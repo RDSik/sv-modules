@@ -54,8 +54,8 @@ module round_robin_arbiter #(
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
-            ptr   <= '0;
-            grant <= '0;
+            ptr     <= '0;
+            grant_o <= '0;
         end else if (ack_i) begin
             ptr     <= ptr_next;
             grant_o <= grant_next;
