@@ -69,7 +69,7 @@ class axil_env #(
     task automatic master_write_reg(
         input logic [ADDR_WIDTH-1:0] addr, input logic [DATA_WIDTH-1:0] data,
         int master_delay_min = cfg.master_min_delay, int master_delay_max = cfg.master_max_delay);
-        logic bresp;
+        logic [1:0] bresp;
         wait (s_axil.arstn_i);
         fork
             master_write_awaddr(addr, master_delay_min, master_delay_max);
