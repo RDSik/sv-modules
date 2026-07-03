@@ -3,6 +3,11 @@
 
 package axi_dma_pkg;
 
+    typedef enum logic {
+        S2MM,
+        MM2S
+    } ch_direction_e;
+
     typedef struct packed {
         logic [7:0] irq_delay;         // 24 - 31
         logic [7:0] irq_treshhold;     // 16 -23
@@ -77,8 +82,7 @@ package axi_dma_pkg;
 
     typedef struct packed {
         length_reg_t   length;
-        logic [31:0]   addr_msb;
-        logic [31:0]   addr_lsb;
+        addr_reg_t     addr;
         sg_union_reg_t sg;
         dmasr_reg_t    dmasr;
         dmacr_reg_t    dmacr;
@@ -88,6 +92,22 @@ package axi_dma_pkg;
         channel_t s2mm;
         channel_t mm2s;
     } axi_dma_direct_reg_t;
+
+    localparam int CHANNGEL_OFFSET = $bits(channel_t) / 32;
+
+    localparam int AXI_DMA_MM2S_DMACR_REG_POS = 0;
+    localparam int AXI_DMA_MM2S_DMASR_REG_POS = AXI_DMA_MM2S_DMACR_REG_POS + $bits(dmacr_reg_t) / 32;
+    localparam int AXI_DMA_MM2S_ADDR_LSB_REG_POS = AXI_DMA_MM2S_DMASR_REG_POS + $bits(sg_union_reg_t) / 32;
+    localparam int AXI_DMA_MM2S_ADDR_MSB_REG_POS = AXI_DMA_MM2S_ADDR_LSB_REG_POS + 1;
+    localparam int AXI_DMA_MM2S_LENGTH_REG_POS = AXI_DMA_MM2S_ADDR_LSB_REG_POS + $bits(addr_reg_t) / 32;
+
+    localparam int AXI_DMA_S2MM_DMACR_REG_POS = AXI_DMA_MM2S_DMACR_REG_POS + $bits(channel_t) / 32;
+    localparam int AXI_DMA_S2MM_DMASR_REG_POS = AXI_DMA_S2MM_DMACR_REG_POS + $bits(dmacr_reg_t) / 32;
+    localparam int AXI_DMA_S2MM_ADDR_LSB_REG_POS = AXI_DMA_S2MM_DMASR_REG_POS + $bits(sg_union_reg_t) / 32;
+    localparam int AXI_DMA_S2MM_ADDR_MSB_REG_POS = AXI_DMA_S2MM_ADDR_LSB_REG_POS + 1;
+    localparam int AXI_DMA_S2MM_LENGTH_REG_POS = AXI_DMA_S2MM_ADDR_LSB_REG_POS + $bits(addr_reg_t) / 32;
+
+    localparam int AXI_DMA_REG_NUM = $bits(axi_dma_direct_reg_t) / 32;
 
 endpackage
 
