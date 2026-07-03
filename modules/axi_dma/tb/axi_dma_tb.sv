@@ -7,7 +7,8 @@ module axi_dma_tb ();
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
 
-    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = 'hc000_0000;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = '0;
+    localparam logic [AXIL_ADDR_WIDTH-1:0] MEM_ADDR = 'hc000_0000;
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
@@ -47,7 +48,9 @@ module axi_dma_tb ();
             .BASE_ADDR (BASE_ADDR)
         ) dma;
         dma = new(s_axil);
-        dma.dma_start();
+        dma.axi_dma_tansfer(MEM_ADDR, 128, MM2S);
+        dma.axi_dma_tansfer(MEM_ADDR, 128, S2MM);
+        dma.status();
         #WAT_CYCLES;
         $stop;
     end
