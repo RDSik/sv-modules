@@ -32,7 +32,7 @@ package axi_dma_pkg;
         logic       reserved;           // 7
         logic       dma_dec_err;        // 6
         logic       dma_slv_err;        // 5
-        logic       dma_int_err;        //4 
+        logic       dma_int_err;        // 4 
         logic       sg_incld;           // 3
         logic       reserved;           // 2
         logic       idle;               // 1
