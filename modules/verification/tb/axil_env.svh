@@ -25,6 +25,20 @@ class axil_env #(
         void'(cfg.randomize());
     endfunction
 
+    task automatic master_reset();
+        s_axil.wvalid  = 0;
+        s_axil.wstrb   = 0;
+        s_axil.wdata   = 0;
+        s_axil.awprot  = 0;
+        s_axil.awvalid = 0;
+        s_axil.awaddr  = 0;
+        s_axil.bready  = 0;
+        s_axil.arprot  = 0;
+        s_axil.arvalid = 0;
+        s_axil.araddr  = 0;
+        s_axil.rready  = 0;
+    endtask
+
     task automatic master_write_wdata(input logic [DATA_WIDTH-1:0] data, int delay_min,
                                       int delay_max);
         int delay;
