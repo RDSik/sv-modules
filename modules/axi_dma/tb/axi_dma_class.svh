@@ -37,7 +37,11 @@ class axi_dma_class #(
         begin
             if (direction == MM2S) begin
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
+                dmacr.reset = 1'b0;
+                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
             end else begin
+                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, dmacr);
+                dmacr.reset = 1'b0;
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, dmacr);
             end
             $display("[%0t][AXI_DMA]: dmacr = %0d", $time, dmacr);
