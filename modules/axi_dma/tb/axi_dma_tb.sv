@@ -48,17 +48,20 @@ module axi_dma_tb ();
             .BASE_ADDR (BASE_ADDR)
         ) dma;
         dma = new(s_axil);
-        dma.axi_dma_tansfer(MEM_ADDR, 128, MM2S);
-        dma.axi_dma_tansfer(MEM_ADDR, 128, S2MM);
-        dma.status();
+        dma.axi_dma_reset(MM2S);
+        dma.axi_dma_reset(S2MM);
+        dma.axi_dma_transfer(MEM_ADDR, 128, MM2S);
+        dma.axi_dma_transfer(MEM_ADDR, 128, S2MM);
+        dma.axi_dma_status(S2MM);
+        dma.axi_dma_status(MM2S);
         #WAT_CYCLES;
         $stop;
     end
 
-    initial begin
-        $dumpfile("axi_dma_tb.vcd");
-        $dumpvars(0, axi_dma_tb);
-    end
+    // initial begin
+    //     $dumpfile("axi_dma_tb.vcd");
+    //     $dumpvars(0, axi_dma_tb);
+    // end
 
     axi_dma_test_wrap i_axi_dma_test_wrap (
         .s_axil        (s_axil),
