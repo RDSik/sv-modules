@@ -94,7 +94,7 @@ package axi_dma_pkg;
         channel_t s2mm;
         sg_ctl_t  sg_ctl;
         channel_t mm2s;
-    } axi_dma_direct_t;
+    } axi_dma_t;
 
     localparam int AXI_DMA_MM2S_DMACR_REG_POS = 0;
     localparam int AXI_DMA_MM2S_DMASR_REG_POS = AXI_DMA_MM2S_DMACR_REG_POS + $bits(dmacr_t) / 32;
