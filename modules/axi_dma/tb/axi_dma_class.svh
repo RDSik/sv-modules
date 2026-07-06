@@ -35,6 +35,7 @@ class axi_dma_class #(
         dmacr       = '0;
         dmacr.reset = 1'b1;
         begin
+            env.master_reset();
             if (direction == MM2S) begin
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
                 dmacr.reset = 1'b0;
