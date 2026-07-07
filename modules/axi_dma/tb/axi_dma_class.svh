@@ -30,21 +30,17 @@ class axi_dma_class #(
         env         = new(s_axil);
     endfunction
 
-    task automatic axi_dma_reset(input ch_direction_e direction);
+    task automatic axi_dma_reset();
         dmacr_t dmacr;
         dmacr       = '0;
         dmacr.reset = 1'b1;
         begin
             env.master_reset();
-            if (direction == MM2S) begin
-                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
-                dmacr.reset = 1'b0;
-                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
-            end else begin
-                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, dmacr);
-                dmacr.reset = 1'b0;
-                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, dmacr);
-            end
+            env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, dmacr);
+            env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
+            dmacr.reset = 1'b0;
+            env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, dmacr);
+            env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, dmacr);
             $display("[%0t][AXI_DMA]: dmacr = %0d", $time, dmacr);
         end
     endtask
@@ -63,10 +59,10 @@ class axi_dma_class #(
                     $error("[%0t][AXI_DMA]: MM2S channel is busy!", $time);
                 end
 
+                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, channel_regs.dmacr);
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_ADDR_LSB_REG_POS, channel_regs.addr.addr_lsb);
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_ADDR_MSB_REG_POS, channel_regs.addr.addr_msb);
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_LENGTH_REG_POS, channel_regs.length);
-                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_MM2S_DMACR_REG_POS, channel_regs.dmacr);
             end else begin
                 env.master_read_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMASR_REG_POS, channel_regs.dmasr);
 
@@ -74,13 +70,13 @@ class axi_dma_class #(
                     $error("[%0t][AXI_DMA]: S2MM channel is busy!", $time);
                 end
 
+                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, channel_regs.dmacr);
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_ADDR_LSB_REG_POS, channel_regs.addr.addr_lsb);
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_ADDR_MSB_REG_POS, channel_regs.addr.addr_msb);
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_LENGTH_REG_POS, channel_regs.length);
-                env.master_write_reg(BASE_ADDR + ADDR_OFFSET * AXI_DMA_S2MM_DMACR_REG_POS, channel_regs.dmacr);
             end
 
-            $display("[%0t][AXI_DMA]: addr   = %0d", $time, channel_regs.addr);
+            $display("[%0t][AXI_DMA]: addr   = %0h", $time, channel_regs.addr);
             $display("[%0t][AXI_DMA]: length = %0d", $time, channel_regs.length.length);
             $display("[%0t][AXI_DMA]: dmacr  = %0d", $time, channel_regs.dmacr);
         end
