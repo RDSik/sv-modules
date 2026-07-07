@@ -1,4 +1,8 @@
-module axi_dma_test_wrap (
+module axi_dma_test_wrap #(
+    parameter int TLAST_VAL = 256
+) (
+    input logic en_i,
+
     axil_if.slave s_axil,
 
     output logic s2mm_introut_o,
@@ -26,6 +30,20 @@ module axi_dma_test_wrap (
     logic [        MEM_WIDTH-1:0] bram_wrdata_b;
     logic [        MEM_WIDTH-1:0] bram_rddata_b;
 
+    logic [$clog2(TLAST_VAL)-1:0] cnt;
+    logic                         cnt_last;
+    logic                         cnt_ready;
+
+    cnt #(
+        .MAX_VAL(TLAST_VAL)
+    ) i_cnt (
+        .clk_i     (s_axil.clk_i),
+        .rst_i     (~s_axil.arstn_i),
+        .en_i      (en_i & ready),
+        .cnt_o     (cnt),
+        .cnt_last_o(cnt_last)
+    );
+
     axi_dma_test i_axi_dma_test (
         .BRAM_PORTA_0_addr   (bram_addr_a),
         .BRAM_PORTA_0_clk    (bram_clk_a),
@@ -41,6 +59,16 @@ module axi_dma_test_wrap (
         .BRAM_PORTB_0_en     (bram_en_b),
         .BRAM_PORTB_0_rst    (bram_rst_b),
         .BRAM_PORTB_0_we     (bram_we_b),
+        .M_AXIS_MM2S_0_tdata (),
+        .M_AXIS_MM2S_0_tkeep (),
+        .M_AXIS_MM2S_0_tlast (),
+        .M_AXIS_MM2S_0_tready('1),
+        .M_AXIS_MM2S_0_tvalid(),
+        .S_AXIS_S2MM_0_tdata (MEM_WIDTH'(cnt)),
+        .S_AXIS_S2MM_0_tkeep ('1),
+        .S_AXIS_S2MM_0_tlast (cnt_last),
+        .S_AXIS_S2MM_0_tready(cnt_ready),
+        .S_AXIS_S2MM_0_tvalid(en_i),
         .S_AXI_LITE_0_araddr (s_axil.araddr),
         .S_AXI_LITE_0_arready(s_axil.arready),
         .S_AXI_LITE_0_arvalid(s_axil.arvalid),
@@ -75,13 +103,13 @@ module axi_dma_test_wrap (
         .a_clk_i  (bram_clk_a),
         .a_en_i   (bram_en_a),
         .a_wr_en_i(bram_we_a),
-        .a_addr_i (bram_addr_a),
+        .a_addr_i (bram_addr_a >> $clog2(MEM_WIDTH/8)),
         .a_data_i (bram_wrdata_a),
         .a_data_o (bram_rddata_a),
         .b_clk_i  (bram_clk_b),
         .b_en_i   (bram_en_b),
         .b_wr_en_i(bram_we_b),
-        .b_addr_i (bram_addr_b),
+        .b_addr_i (bram_addr_b >> $clog2(MEM_WIDTH/8)),
         .b_data_i (bram_wrdata_b),
         .b_data_o (bram_rddata_b)
     );
