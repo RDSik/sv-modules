@@ -246,7 +246,7 @@ module mac_rx
         .a_empty_o    ()
     );
 
-    axis_reg i_axis_reg (
+    axis_reg_slice i_axis_reg_slice (
         .s_axis(axis),
         .m_axis(m_axis)
     );
