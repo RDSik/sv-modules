@@ -14,7 +14,7 @@ module axis_tlast_gen #(
         .MAX_VAL(TLAST_VAL)
     ) i_cnt (
         .clk_i     (s_axis.clk_i),
-        .rst_i     (~s_axis.arstn_i),
+        .rst_i     (s_axis.rst_i),
         .en_i      (handshake),
         .cnt_last_o(cnt_last),
         .cnt_o     ()
@@ -26,8 +26,8 @@ module axis_tlast_gen #(
         .ID_WIDTH  (s_axis.ID_WIDTH),
         .USER_WIDTH(s_axis.USER_WIDTH)
     ) axis (
-        .clk_i  (s_axis.clk_i),
-        .arstn_i(s_axis.arstn_i)
+        .clk_i(s_axis.clk_i),
+        .rst_i(s_axis.rst_i)
     );
 
     assign axis.tdata  = s_axis.tdata;
