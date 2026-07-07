@@ -12,7 +12,7 @@ module axi_dma_tb ();
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
-    localparam int WAT_CYCLES = 250;
+    localparam int WAIT_CYCLES = 250;
 
     logic clk_i;
     logic arstn_i;
@@ -54,7 +54,7 @@ module axi_dma_tb ();
         dma.axi_dma_transfer(MEM_ADDR, 128, S2MM);
         dma.axi_dma_status(S2MM);
         dma.axi_dma_status(MM2S);
-        #WAT_CYCLES;
+        #WAIT_CYCLES;
         $stop;
     end
 
