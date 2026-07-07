@@ -1,4 +1,4 @@
-module axis_reg (
+module axis_reg_slice (
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );
