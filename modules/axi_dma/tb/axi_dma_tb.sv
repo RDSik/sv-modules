@@ -15,8 +15,6 @@ module axi_dma_tb ();
     localparam int RESET_DELAY = 10;
     localparam int WAIT_CYCLES = 1000;
 
-    ch_direction_e direction;
-
     logic clk_i;
     logic arstn_i;
     logic s2mm_introut;
