@@ -22,7 +22,6 @@ if {$xilinx == 1} {
         $path/rtl/iddr.sv
         $path/rtl/oddr.sv
         $path/rtl/axis_reg_slice.sv
-        $path/rtl/axis_tlast_gen.sv
         $path/rtl/cnt.sv
         $path/rtl/pll.sv
         $path/rtl/write_iq_to_file.sv
