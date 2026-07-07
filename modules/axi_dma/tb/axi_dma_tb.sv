@@ -6,18 +6,22 @@ module axi_dma_tb ();
 
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int TLAS_VAL = 64;
 
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_ADDR = '0;
     localparam logic [AXIL_ADDR_WIDTH-1:0] MEM_ADDR = 'hc000_0000;
 
     localparam int CLK_PER_NS = 2;
     localparam int RESET_DELAY = 10;
-    localparam int WAIT_CYCLES = 250;
+    localparam int WAIT_CYCLES = 1000;
+
+    ch_direction_e direction;
 
     logic clk_i;
     logic arstn_i;
     logic s2mm_introut;
     logic mm2s_introut;
+    logic en;
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -48,11 +52,13 @@ module axi_dma_tb ();
             .BASE_ADDR (BASE_ADDR)
         ) dma;
         dma = new(s_axil);
-        dma.axi_dma_reset(MM2S);
-        dma.axi_dma_reset(S2MM);
-        dma.axi_dma_transfer(MEM_ADDR, 128, MM2S);
-        dma.axi_dma_transfer(MEM_ADDR, 128, S2MM);
+        en  = 1'b0;
+        dma.axi_dma_reset();
+        en = 1'b1;
+        dma.axi_dma_transfer(MEM_ADDR, TLAS_VAL * (AXIL_DATA_WIDTH / 8), S2MM);
         dma.axi_dma_status(S2MM);
+        dma.axi_dma_status(MM2S);
+        dma.axi_dma_transfer(MEM_ADDR, TLAS_VAL * (AXIL_DATA_WIDTH / 8), MM2S);
         dma.axi_dma_status(MM2S);
         #WAIT_CYCLES;
         $stop;
@@ -63,7 +69,10 @@ module axi_dma_tb ();
     //     $dumpvars(0, axi_dma_tb);
     // end
 
-    axi_dma_test_wrap i_axi_dma_test_wrap (
+    axi_dma_test_wrap #(
+        .TLAST_VAL(TLAS_VAL)
+    ) i_axi_dma_test_wrap (
+        .en_i          (en),
         .s_axil        (s_axil),
         .s2mm_introut_o(s2mm_introut),
         .mm2s_introut_o(mm2s_introut)
