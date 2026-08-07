@@ -41,7 +41,7 @@ module axil_i2c
 
     logic      [I2C_DATA_WIDTH-1:0] rx_data;
     logic                           i2c_busy;
-    logic                           i2c_ack;
+    logic                           i2c_ackn;
     logic                           i2c_al;
 
     always_comb begin
