@@ -19,7 +19,7 @@ package i2c_pkg;
         logic        tx_fifo_empty;
         logic        rx_fifo_full;
         logic        tx_fifo_full;
-        logic        rx_ack;
+        logic        rx_ackn;
         logic        busy;
     } i2c_status_reg_t;
 
