@@ -57,7 +57,7 @@ module axil_i2c
         rd_regs.status.tx_fifo_empty = tx_fifo_empty;
         rd_regs.status.tx_fifo_full  = tx_fifo_full;
         rd_regs.status.busy          = i2c_busy;
-        rd_regs.status.rx_ack        = i2c_ack;
+        rd_regs.status.rx_ackn       = i2c_ackn;
 
         rd_regs.rx.data              = rx_data;
     end
@@ -177,7 +177,7 @@ module axil_i2c
         .ack_in  (read),
         .din     (i2c_tx_data),
         .cmd_ack (cmd_ack),
-        .ack_out (i2c_ack),
+        .ack_out (i2c_ackn),
         .dout    (i2c_rx_data),
         .i2c_busy(i2c_busy),
         .i2c_al  (i2c_al),
