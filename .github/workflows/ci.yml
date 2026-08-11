@@ -30,17 +30,17 @@ jobs:
   #             git clone https://github.com/RDSik/sv-modules.git
   #             cd sv-modules/modules/${{matrix.arg}}/tb
   #             make SIM=verilator
-  # build-project:
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: r0d0s/fpga_tools:latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #       working-directory: ./
-  #   steps:
-  #     - name: Run Docker container
-  #       run: |
-  #         git clone https://github.com/RDSik/sv-modules.git
-  #         cd sv-modules
-  #         make BOARD=tangprimer20k project
+  build-project:
+    runs-on: ubuntu-latest
+    container:
+      image: r0d0s/fpga_tools:latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./
+    steps:
+      - name: Run Docker container
+        run: |
+          git clone https://github.com/RDSik/sv-modules.git
+          cd sv-modules
+          make BOARD=tangprimer20k project
