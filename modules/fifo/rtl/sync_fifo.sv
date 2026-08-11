@@ -32,17 +32,12 @@ module sync_fifo #(
     logic [FIFO_WIDTH-1:0] ram_data;
     logic                  wr_en;
     logic                  rd_en;
-    logic                  push;
-    logic                  pop;
-
-    assign pop  = pop_i & ~empty_o;
-    assign push = push_i & ~full_o;
 
     // Write pointer
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             wr_ptr <= '0;
-        end else if (push) begin
+        end else if (push_i) begin
             if (wr_ptr == MAX_PTR) begin
                 wr_ptr <= '0;
             end else begin
@@ -55,7 +50,7 @@ module sync_fifo #(
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             rd_ptr <= '0;
-        end else if (pop) begin
+        end else if (pop_i) begin
             if (rd_ptr == MAX_PTR) begin
                 rd_ptr <= '0;
             end else begin
@@ -70,10 +65,10 @@ module sync_fifo #(
         logic [FIFO_WIDTH-1:0] bypass_data;
 
         assign prefetch_ptr  = (rd_ptr == MAX_PTR) ? '0 : rd_ptr + 1'b1;
-        assign wr_en         = push & ~enable_bypass;
-        assign rd_en         = pop & ~a_empty_o;
+        assign wr_en         = push_i & ~enable_bypass;
+        assign rd_en         = pop_i & ~a_empty_o;
 
-        assign enable_bypass = push && (empty_o || (a_empty_o && pop));
+        assign enable_bypass = push_i && (empty_o || (a_empty_o && pop_i));
 
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
@@ -94,8 +89,8 @@ module sync_fifo #(
         assign data_o = bypass_valid ? bypass_data : ram_data;
     end else begin : g_bypass_reg_disable
         assign prefetch_ptr = rd_ptr;
-        assign wr_en        = push;
-        assign rd_en        = pop;
+        assign wr_en        = push_i & ~full_o;
+        assign rd_en        = pop_i & ~empty_o;
         assign data_o       = ram_data;
     end
 
@@ -126,7 +121,9 @@ module sync_fifo #(
     logic               empty;
 
     always_comb begin
-        case ({push, pop})
+        case ({
+            push_i, pop_i
+        })
             2'b10:   data_cnt_next = data_cnt + 1'b1;
             2'b01:   data_cnt_next = data_cnt - 1'b1;
             default: data_cnt_next = data_cnt;
