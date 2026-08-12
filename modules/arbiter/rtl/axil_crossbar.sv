@@ -157,12 +157,14 @@ module axil_crossbar #(
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
 
     if (MASTER_NUM == 1) begin : g_arbiter_disable
-        assign wr_grant = (wr_state == WR_IDLE) && s_awvalid[0];
-        assign rd_grant = (rd_state == RD_IDLE) && s_arvalid[0];
-        assign wr_req   = '0;
-        assign rd_req   = '0;
-        assign wr_ack   = '0;
-        assign rd_ack   = '0;
+        assign wr_grant      = (wr_state == WR_IDLE) && s_awvalid[0];
+        assign rd_grant      = (rd_state == RD_IDLE) && s_arvalid[0];
+        assign wr_req        = '0;
+        assign rd_req        = '0;
+        assign wr_ack        = '0;
+        assign rd_ack        = '0;
+        assign wr_grant_indx = '0;
+        assign rd_grant_indx = '0;
     end else begin : g_arbiter_enable
         always_comb begin
             for (int i = 0; i < MASTER_NUM; i++) begin
