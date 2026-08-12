@@ -7,7 +7,6 @@ module round_robin_arbiter #(
     input  logic                          ack_i,
     input  logic [        MASTER_NUM-1:0] req_i,
     output logic [        MASTER_NUM-1:0] grant_o,
-    output logic [        MASTER_NUM-1:0] grant_o,
     output logic [$clog2(MASTER_NUM)-1:0] indx_o
 );
 
