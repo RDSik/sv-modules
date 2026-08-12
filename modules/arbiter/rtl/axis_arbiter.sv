@@ -31,13 +31,6 @@ module axis_arbiter #(
     assign m_axis.tdata = s_axis_tdata[grant_indx];
     assign m_axis.tuser = grant_indx;
 
-    onehot_to_indx #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_onehot_to_indx (
-        .onehot_i(grant),
-        .indx_o  (grant_indx)
-    );
-
     round_robin_arbiter #(
         .MASTER_NUM(MASTER_NUM)
     ) i_round_robin_arbiter (
@@ -45,7 +38,8 @@ module axis_arbiter #(
         .rst_i  (rst_i),
         .ack_i  (m_handshake),
         .req_i  (s_axis_tvalid),
-        .grant_o(grant)
+        .grant_o(grant),
+        .indx_o (grant_indx)
     );
 
 endmodule
