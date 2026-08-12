@@ -153,6 +153,9 @@ module axil_crossbar #(
     logic [MASTER_NUM-1:0] rd_grant;
     logic                  rd_ack;
 
+    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
+    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
+
     if (MASTER_NUM == 1) begin : g_arbiter_disable
         assign wr_grant = (wr_state == WR_IDLE) && s_awvalid[0];
         assign rd_grant = (rd_state == RD_IDLE) && s_arvalid[0];
@@ -170,11 +173,6 @@ module axil_crossbar #(
 
         assign wr_ack = (wr_state == WR_RESP) && (wr_next_state == WR_IDLE);
         assign rd_ack = (rd_state == RD_DATA) && (rd_next_state == RD_IDLE);
-
-        logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
-        logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
-        logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
-        logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
         
         round_robin_arbiter #(
             .MASTER_NUM(MASTER_NUM)
@@ -198,6 +196,11 @@ module axil_crossbar #(
             .indx_o (rd_grant_indx)
         );
     end
+
+    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
+    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
+    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
+    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
 
     addr_decode_t m_awindx;
     addr_decode_t m_awindx_reg;
