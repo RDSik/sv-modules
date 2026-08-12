@@ -11,7 +11,7 @@ module axil_top_tb
 ();
 
     localparam real SIM_CLK_FREQ = CLK_FREQ * 10;
-    localparam int WAT_CYCLES = 250;
+    localparam int WAIT_CYCLES = 250;
     localparam int CLK_PER_NS = 10 ** 9 / SIM_CLK_FREQ;
     localparam int RESET_DELAY = 10;
 
