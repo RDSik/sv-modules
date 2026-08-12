@@ -22,17 +22,17 @@ module axil_crossbar #(
         WR_ADDR = 2'b01,
         WR_DATA = 2'b10,
         WR_RESP = 2'b11
-    } wr_state_t;
+    } wr_state_e;
 
-    wr_state_t wr_state, wr_next_state;
+    wr_state_e wr_state, wr_next_state;
 
     typedef enum logic [1:0] {
         RD_IDLE = 2'b00,
         RD_ADDR = 2'b01,
         RD_DATA = 2'b10
-    } rd_state_t;
+    } rd_state_e;
 
-    rd_state_t rd_state, rd_next_state;
+    rd_state_e rd_state, rd_next_state;
 
     typedef struct packed {
         logic [SLAVE_SEL_WIDTH-1:0] indx;
