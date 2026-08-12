@@ -162,22 +162,22 @@ module axil_crossbar #(
     assign wr_grant_valid = |wr_grant;
     assign rd_grant_valid = |rd_grant;
 
+    always_comb begin
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
+            rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
+        end
+    end
+
+    assign wr_ack = (wr_state == WR_RESP) && wr_grant_valid;
+    assign rd_ack = (rd_state == RD_DATA) && rd_grant_valid;
+
     if (MASTER_NUM == 1) begin : g_no_arbiters
         assign wr_grant      = wr_req;
         assign wr_grant_indx = '0;
         assign rd_grant      = rd_req;
         assign rd_grant_indx = '0;
     end else begin
-        always_comb begin
-            for (int i = 0; i < MASTER_NUM; i++) begin
-                wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
-                rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
-            end
-        end
-    
-        assign wr_ack = (wr_state == WR_RESP) && wr_grant_valid;
-        assign rd_ack = (rd_state == RD_DATA) && rd_grant_valid;
-        
         round_robin_arbiter #(
             .MASTER_NUM(MASTER_NUM)
         ) i_wr_round_robin_arbiter (
