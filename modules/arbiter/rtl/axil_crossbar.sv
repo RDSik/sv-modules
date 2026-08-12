@@ -327,14 +327,14 @@ module axil_crossbar #(
                         wr_w_done <= 1'b1;
                     end
 
-                    if ((wr_aw_done || wr_aw_handshake) && (wr_w_done || wr_w_handshake)) begin
+                    if ((wr_aw_done | wr_aw_handshake) && (wr_w_done | wr_w_handshake)) begin
                         wr_state <= WR_RESP;
                     end
                 end
 
                 WR_RESP: begin
                     if (wr_target_valid) begin
-                        if (m_bvalid[wr_target] && s_bready[wr_owner]) begin
+                        if (m_bvalid[wr_target] & s_bready[wr_owner]) begin
                             wr_state <= WR_IDLE;
                         end
                     end else begin
@@ -423,10 +423,10 @@ module axil_crossbar #(
         if ((wr_state == WR_SEND) && wr_target_valid) begin
             m_awaddr[wr_target]  = wr_addr_reg;
             m_awprot[wr_target]  = wr_prot_reg;
-            m_awvalid[wr_target] = !wr_aw_done;
+            m_awvalid[wr_target] = ~wr_aw_done;
             m_wdata[wr_target]   = wr_data_reg;
             m_wstrb[wr_target]   = wr_strb_reg;
-            m_wvalid[wr_target]  = !wr_w_done;
+            m_wvalid[wr_target]  = ~wr_w_done;
         end
 
         if ((wr_state == WR_RESP) && wr_target_valid) begin
