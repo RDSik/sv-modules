@@ -6,7 +6,9 @@ module round_robin_arbiter #(
     input  logic                          rst_i,
     input  logic                          ack_i,
     input  logic [        MASTER_NUM-1:0] req_i,
-    output logic [        MASTER_NUM-1:0] grant_o
+    output logic [        MASTER_NUM-1:0] grant_o,
+    output logic [        MASTER_NUM-1:0] grant_o,
+    output logic [$clog2(MASTER_NUM)-1:0] indx_o
 );
 
     localparam int PTR_WIDTH = $clog2(MASTER_NUM);
@@ -57,5 +59,12 @@ module round_robin_arbiter #(
             ptr <= ptr_next;
         end
     end
+
+    onehot_to_indx #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_onehot_to_indx (
+        .onehot_i(grant_o),
+        .indx_o  (indx_o)
+    );
 
 endmodule
