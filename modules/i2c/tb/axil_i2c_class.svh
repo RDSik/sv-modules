@@ -53,7 +53,7 @@ class axil_i2c_class #(
             $display("[%0t][I2C]: rx_fifo_full  = %0d", $time, i2c_regs.status.rx_fifo_full);
             $display("[%0t][I2C]: tx_fifo_full  = %0d", $time, i2c_regs.status.tx_fifo_full);
             $display("[%0t][I2C]: busy          = %0d", $time, i2c_regs.status.busy);
-            $display("[%0t][I2C]: rx_ack        = %0d", $time, i2c_regs.status.rx_ack);
+            $display("[%0t][I2C]: rx_ackn       = %0d", $time, i2c_regs.status.rx_ackn);
             $display("[%0t][I2C]: fifo_depth    = %0d", $time, i2c_regs.param.fifo_depth);
             $display("[%0t][I2C]: data_width    = %0d", $time, i2c_regs.param.data_width);
             $display("[%0t][I2C]: reg_num       = %0d", $time, i2c_regs.param.reg_num);
