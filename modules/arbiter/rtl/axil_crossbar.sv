@@ -219,7 +219,7 @@ module axil_crossbar #(
             wr_grant_indx_reg <= '0;
         end else begin
             wr_state <= wr_next_state;
-            if (wr_state == WR_IDLE && |wr_grant) begin
+            if (wr_state == WR_IDLE && wr_grant_valid) begin
                 wr_grant_indx_reg <= wr_grant_indx;
                 m_awindx_reg      <= m_awindx;
             end
@@ -233,7 +233,7 @@ module axil_crossbar #(
             rd_grant_indx_reg <= '0;
         end else begin
             rd_state <= rd_next_state;
-            if (rd_state == RD_IDLE && |rd_grant) begin
+            if (rd_state == RD_IDLE && rd_grant_valid) begin
                 rd_grant_indx_reg <= rd_grant_indx;
                 m_arindx_reg      <= m_arindx;
             end
