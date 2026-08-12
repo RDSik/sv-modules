@@ -182,7 +182,7 @@ module axil_crossbar #(
             .rst_i  (~arstn_i),
             .ack_i  (wr_ack),
             .req_i  (wr_req),
-            .grant_o(wr_grant)
+            .grant_o(wr_grant),
             .indx_o (wr_grant_indx)
         );
 
