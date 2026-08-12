@@ -162,37 +162,44 @@ module axil_crossbar #(
     assign wr_grant_valid = |wr_grant;
     assign rd_grant_valid = |rd_grant;
 
-    always_comb begin
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
-            rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
+    if (MASTER_NUM == 1) begin : g_no_arbiters
+        assign wr_grant      = wr_req;
+        assign wr_grant_indx = '0;
+        assign rd_grant      = rd_req;
+        assign rd_grant_indx = '0;
+    end else 
+        always_comb begin
+            for (int i = 0; i < MASTER_NUM; i++) begin
+                wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
+                rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
+            end
         end
-    end
-
-    assign wr_ack = (wr_state == WR_RESP) && wr_grant_valid;
-    assign rd_ack = (rd_state == RD_DATA) && rd_grant_valid;
     
-    round_robin_arbiter #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_wr_round_robin_arbiter (
-        .clk_i  (clk_i),
-        .rst_i  (~arstn_i),
-        .ack_i  (wr_ack),
-        .req_i  (wr_req),
-        .grant_o(wr_grant),
-        .indx_o (wr_grant_indx)
-    );
-
-    round_robin_arbiter #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_rd_round_robin_arbiter (
-        .clk_i  (clk_i),
-        .rst_i  (~arstn_i),
-        .ack_i  (rd_ack),
-        .req_i  (rd_req),
-        .grant_o(rd_grant),
-        .indx_o (rd_grant_indx)
-    );
+        assign wr_ack = (wr_state == WR_RESP) && wr_grant_valid;
+        assign rd_ack = (rd_state == RD_DATA) && rd_grant_valid;
+        
+        round_robin_arbiter #(
+            .MASTER_NUM(MASTER_NUM)
+        ) i_wr_round_robin_arbiter (
+            .clk_i  (clk_i),
+            .rst_i  (~arstn_i),
+            .ack_i  (wr_ack),
+            .req_i  (wr_req),
+            .grant_o(wr_grant),
+            .indx_o (wr_grant_indx)
+        );
+    
+        round_robin_arbiter #(
+            .MASTER_NUM(MASTER_NUM)
+        ) i_rd_round_robin_arbiter (
+            .clk_i  (clk_i),
+            .rst_i  (~arstn_i),
+            .ack_i  (rd_ack),
+            .req_i  (rd_req),
+            .grant_o(rd_grant),
+            .indx_o (rd_grant_indx)
+        );
+    end
 
     logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
