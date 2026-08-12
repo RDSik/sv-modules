@@ -197,9 +197,7 @@ module axil_crossbar #(
         );
     end
 
-    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
     logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
-    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
 
     addr_decode_t m_awindx;
