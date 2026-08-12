@@ -26,7 +26,7 @@ vlog modules/common/rtl/ram_sdp.sv
 vlog modules/common/rtl/shift_reg.sv
 vlog modules/common/rtl/axil_reg_file.sv
 vlog modules/common/rtl/axil_reg_file_wrap.sv
-vlog modules/common/rtl/axis_reg.sv
+vlog modules/common/rtl/axis_reg_slice.sv
 
 vlog  modules/uart/rtl/axil_uart.sv
 vlog  modules/uart/rtl/axis_uart_tx.sv
