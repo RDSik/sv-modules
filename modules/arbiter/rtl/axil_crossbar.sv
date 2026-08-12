@@ -40,13 +40,13 @@ module axil_crossbar #(
         logic                       valid;
     } addr_decode_t;
 
-    function automatic addr_decode_t get_addr_index(input logic [ADDR_WIDTH-1:0] addr);
+    function automatic addr_decode_t get_addr_indx(input logic [ADDR_WIDTH-1:0] addr);
         begin
-            get_addr_index = '0;
+            get_addr_indx = '0;
             for (int i = 0; i < SLAVE_NUM; i++) begin
                 if (addr >= SLAVE_LOW_ADDR[i] && addr <= SLAVE_HIGH_ADDR[i]) begin
-                    get_addr_index.indx  = SLAVE_SEL_WIDTH'(i);
-                    get_addr_index.valid = 1'b1;
+                    get_addr_indx.indx  = SLAVE_SEL_WIDTH'(i);
+                    get_addr_indx.valid = 1'b1;
                     break;
                 end
             end
@@ -209,8 +209,8 @@ module axil_crossbar #(
     addr_decode_t m_arindx;
     addr_decode_t m_arindx_reg;
 
-    assign m_awindx = get_addr_index(s_awaddr[wr_grant_indx]);
-    assign m_arindx = get_addr_index(s_araddr[rd_grant_indx]);
+    assign m_awindx = get_addr_indx(s_awaddr[wr_grant_indx]);
+    assign m_arindx = get_addr_indx(s_araddr[rd_grant_indx]);
 
     always_ff @(posedge clk_i or negedge arstn_i) begin
         if (~arstn_i) begin
