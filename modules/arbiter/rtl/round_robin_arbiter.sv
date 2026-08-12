@@ -44,7 +44,7 @@ module round_robin_arbiter #(
                 if (i == MASTER_NUM - 1) begin
                     ptr_next = '0;
                 end else begin
-                    ptr_next = i + 1;
+                    ptr_next = PTR_WIDTH'(i + 1);
                 end
                 break;
             end
