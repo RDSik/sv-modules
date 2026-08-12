@@ -170,6 +170,11 @@ module axil_crossbar #(
         assign wr_ack = (wr_state == WR_RESP) && (wr_next_state == WR_IDLE);
         assign rd_ack = (rd_state == RD_DATA) && (rd_next_state == RD_IDLE);
 
+        logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
+        logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
+        logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
+        logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
+        
         round_robin_arbiter #(
             .MASTER_NUM(MASTER_NUM)
         ) i_wr_round_robin_arbiter (
@@ -178,6 +183,7 @@ module axil_crossbar #(
             .ack_i  (wr_ack),
             .req_i  (wr_req),
             .grant_o(wr_grant)
+            .indx_o (wr_grant_indx)
         );
 
         round_robin_arbiter #(
@@ -187,28 +193,10 @@ module axil_crossbar #(
             .rst_i  (~arstn_i),
             .ack_i  (rd_ack),
             .req_i  (rd_req),
-            .grant_o(rd_grant)
+            .grant_o(rd_grant),
+            .indx_o (rd_grant_indx)
         );
     end
-
-    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
-    logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
-    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
-    logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
-
-    onehot_to_indx #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_wr_onehot_to_indx (
-        .onehot_i(wr_grant),
-        .indx_o  (wr_grant_indx)
-    );
-
-    onehot_to_indx #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_rd_onehot_to_indx (
-        .onehot_i(rd_grant),
-        .indx_o  (rd_grant_indx)
-    );
 
     addr_decode_t m_awindx;
     addr_decode_t m_awindx_reg;
