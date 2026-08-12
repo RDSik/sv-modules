@@ -42,4 +42,5 @@ if {$xilinx == 1} {
     add_file $path/rtl/iddr.sv
     add_file $path/rtl/oddr.sv
     add_file $path/rtl/axis_reg_slice.sv
+    add_file $path/rtl/cnt.sv
 }
