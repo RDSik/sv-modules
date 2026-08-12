@@ -59,11 +59,14 @@ module round_robin_arbiter #(
         end
     end
 
-    onehot_to_indx #(
-        .MASTER_NUM(MASTER_NUM)
-    ) i_onehot_to_indx (
-        .onehot_i(grant_o),
-        .indx_o  (indx_o)
-    );
+    always_comb begin
+        indx_o = '0;
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            if (grant_o[i]) begin
+                indx_o = PTR_WIDTH'(i);
+                break;
+            end
+        end
+    end
 
 endmodule
