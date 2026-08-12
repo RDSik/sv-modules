@@ -156,48 +156,43 @@ module axil_crossbar #(
     logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx;
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx;
 
-    if (MASTER_NUM == 1) begin : g_arbiter_disable
-        assign wr_grant      = (wr_state == WR_IDLE) && s_awvalid[0];
-        assign rd_grant      = (rd_state == RD_IDLE) && s_arvalid[0];
-        assign wr_req        = '0;
-        assign rd_req        = '0;
-        assign wr_ack        = '0;
-        assign rd_ack        = '0;
-        assign wr_grant_indx = '0;
-        assign rd_grant_indx = '0;
-    end else begin : g_arbiter_enable
-        always_comb begin
-            for (int i = 0; i < MASTER_NUM; i++) begin
-                wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
-                rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
-            end
+    logic wr_grant_valid;
+    logic rd_grant_valid;
+
+    assign wr_grant_valid = |wr_grant;
+    assign rd_grant_valid = |rd_grant;
+
+    always_comb begin
+        for (int i = 0; i < MASTER_NUM; i++) begin
+            wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
+            rd_req[i] = (rd_state == RD_IDLE) && s_arvalid[i];
         end
-
-        assign wr_ack = (wr_state == WR_RESP) && (wr_next_state == WR_IDLE);
-        assign rd_ack = (rd_state == RD_DATA) && (rd_next_state == RD_IDLE);
-        
-        round_robin_arbiter #(
-            .MASTER_NUM(MASTER_NUM)
-        ) i_wr_round_robin_arbiter (
-            .clk_i  (clk_i),
-            .rst_i  (~arstn_i),
-            .ack_i  (wr_ack),
-            .req_i  (wr_req),
-            .grant_o(wr_grant),
-            .indx_o (wr_grant_indx)
-        );
-
-        round_robin_arbiter #(
-            .MASTER_NUM(MASTER_NUM)
-        ) i_rd_round_robin_arbiter (
-            .clk_i  (clk_i),
-            .rst_i  (~arstn_i),
-            .ack_i  (rd_ack),
-            .req_i  (rd_req),
-            .grant_o(rd_grant),
-            .indx_o (rd_grant_indx)
-        );
     end
+
+    assign wr_ack = (wr_state == WR_RESP) && wr_grant_valid;
+    assign rd_ack = (rd_state == RD_DATA) && rd_grant_valid;
+    
+    round_robin_arbiter #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_wr_round_robin_arbiter (
+        .clk_i  (clk_i),
+        .rst_i  (~arstn_i),
+        .ack_i  (wr_ack),
+        .req_i  (wr_req),
+        .grant_o(wr_grant),
+        .indx_o (wr_grant_indx)
+    );
+
+    round_robin_arbiter #(
+        .MASTER_NUM(MASTER_NUM)
+    ) i_rd_round_robin_arbiter (
+        .clk_i  (clk_i),
+        .rst_i  (~arstn_i),
+        .ack_i  (rd_ack),
+        .req_i  (rd_req),
+        .grant_o(rd_grant),
+        .indx_o (rd_grant_indx)
+    );
 
     logic [MASTER_SEL_WIDTH-1:0] wr_grant_indx_reg;
     logic [MASTER_SEL_WIDTH-1:0] rd_grant_indx_reg;
@@ -242,7 +237,7 @@ module axil_crossbar #(
         wr_next_state = wr_state;
         case (wr_state)
             WR_IDLE: begin
-                if (|wr_grant) begin
+                if (wr_grant_valid) begin
                     wr_next_state = WR_ADDR;
                 end
             end
@@ -285,7 +280,7 @@ module axil_crossbar #(
         rd_next_state = rd_state;
         case (rd_state)
             RD_IDLE: begin
-                if (|rd_grant) begin
+                if (rd_grant_valid) begin
                     rd_next_state = RD_ADDR;
                 end
             end
