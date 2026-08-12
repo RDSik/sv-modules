@@ -35,9 +35,9 @@ class axil_rgmii_class #(
     localparam logic [31:0] FPGA_IP = {FPGA_IP_1, FPGA_IP_2, FPGA_IP_3, FPGA_IP_4};
 
     env_base #(
-        .DATA_WIDTH_IN (DATA_WIDTH / ADDR_OFFSET),
-        .DATA_WIDTH_OUT(DATA_WIDTH / ADDR_OFFSET),
-        .TLAST_EN      (TLAST_EN)
+        .S_DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET),
+        .M_DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET),
+        .TLAST_EN    (TLAST_EN)
     ) env;
 
     virtual axis_if #(.DATA_WIDTH(DATA_WIDTH / ADDR_OFFSET)) s_axis;
