@@ -167,7 +167,7 @@ module axil_crossbar #(
         assign wr_grant_indx = '0;
         assign rd_grant      = rd_req;
         assign rd_grant_indx = '0;
-    end else 
+    end else begin
         always_comb begin
             for (int i = 0; i < MASTER_NUM; i++) begin
                 wr_req[i] = (wr_state == WR_IDLE) && s_awvalid[i];
