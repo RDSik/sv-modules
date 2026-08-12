@@ -390,7 +390,7 @@ module axil_crossbar #(
 
                 RD_RESP: begin
                     if (rd_target_valid) begin
-                        if (m_rvalid[rd_target] && s_rready[rd_owner]) begin
+                        if (m_rvalid[rd_target] & s_rready[rd_owner]) begin
                             rd_state <= RD_IDLE;
                         end
                     end else begin
