@@ -304,7 +304,6 @@ module axil_crossbar #(
                         wr_owner        <= wr_grant_indx;
                         wr_target       <= wr_grant_decode.indx;
                         wr_target_valid <= wr_grant_decode.valid;
-
                         wr_addr_reg     <= aw_buf_addr[wr_grant_indx];
                         wr_prot_reg     <= aw_buf_prot[wr_grant_indx];
                         wr_data_reg     <= w_buf_data[wr_grant_indx];
