@@ -5,11 +5,14 @@ module onehot_to_indx #(
     output logic [$clog2(MASTER_NUM)-1:0] indx_o
 );
 
+    localparam int INDEX_WIDTH = $clog2(MASTER_NUM);
+
     always_comb begin
         indx_o = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
             if (onehot_i[i]) begin
-                indx_o = i;
+                indx_o = INDEX_WIDTH'(i);
+                break;
             end
         end
     end
