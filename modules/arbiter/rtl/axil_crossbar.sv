@@ -177,7 +177,7 @@ module axil_crossbar #(
         assign wr_grant_indx = '0;
         assign rd_grant      = rd_req;
         assign rd_grant_indx = '0;
-    end else begin
+    end else begin :  g_arbiters
         round_robin_arbiter #(
             .MASTER_NUM(MASTER_NUM)
         ) i_wr_round_robin_arbiter (
