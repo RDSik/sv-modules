@@ -12,8 +12,8 @@ module mac_rx
     input logic clk_i,
     input logic rst_i,
 
-    input logic m_axis_clk_i,
-    input logic m_axis_rst_i,
+    input logic m_clk_i,
+    input logic m_rst_i,
 
     input logic [GMII_WIDTH-1:0] rx_d_i,
     input logic                  rx_dv_i,
@@ -231,8 +231,8 @@ module mac_rx
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) axis (
-        .clk_i  (m_axis_clk_i),
-        .arstn_i(~m_axis_rst_i)
+        .clk_i  (m_clk_i),
+        .arstn_i(~m_rst_i)
     );
 
     axis_fifo #(
@@ -244,8 +244,8 @@ module mac_rx
     ) i_axis_fifo_rx (
         .s_clk_i      (clk_i),
         .s_rst_i      (rst_i),
-        .m_clk_i      (m_axis_clk_i),
-        .m_rst_i      (m_axis_rst_i),
+        .m_clk_i      (m_clk_i),
+        .m_rst_i      (m_rst_i),
         .s_axis       (s_axis),
         .m_axis       (axis),
         .wr_data_cnt_o(),
@@ -254,8 +254,8 @@ module mac_rx
     );
 
     axis_reg_slice i_axis_reg_slice (
-        .clk_i (m_axis_clk_i),
-        .rst_i (m_axis_rst_i),
+        .clk_i (m_clk_i),
+        .rst_i (m_rst_i),
         .s_axis(axis),
         .m_axis(m_axis)
     );

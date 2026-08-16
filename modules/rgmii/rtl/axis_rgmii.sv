@@ -7,10 +7,10 @@ module axis_rgmii #(
     input logic tx_rst_i,
     input logic rx_rst_i,
 
-    input logic s_axis_clk_i,
-    input logic s_axis_rst_i,
-    input logic m_axis_clk_i,
-    input logic m_axis_rst_i,
+    input logic s_clk_i,
+    input logic s_rst_i,
+    input logic m_clk_i,
+    input logic m_rst_i,
 
     input logic check_destination_i,
 
@@ -47,8 +47,8 @@ module axis_rgmii #(
     ) i_mac_tx (
         .clk_i          (m_eth.tx_clk),
         .rst_i          (tx_rst_i),
-        .s_axis_clk_i   (s_axis_clk_i),
-        .s_axis_rst_i   (s_axis_rst_i),
+        .s_clk_i        (s_clk_i),
+        .s_rst_i        (s_rst_i),
         .tx_en_o        (tx_en),
         .tx_d_o         (tx_d),
         .payload_bytes_i(payload_bytes_i),
@@ -73,8 +73,8 @@ module axis_rgmii #(
     ) i_mac_rx (
         .clk_i              (m_eth.rx_clk),
         .rst_i              (rx_rst_i),
-        .m_axis_clk_i       (m_axis_clk_i),
-        .m_axis_rst_i       (m_axis_rst_i),
+        .m_clk_i            (m_clk_i),
+        .m_rst_i            (m_rst_i),
         .rx_dv_i            (rx_dv),
         .rx_d_i             (rx_d),
         .check_destination_i(check_destination_i),
