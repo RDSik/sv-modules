@@ -179,6 +179,8 @@ module ps_pl_top
         .s_axi              (axi),
         .ps_clk_o           (ps_clk),
         .ps_arstn_o         (ps_arstn),
+        .s2mm_irq_i         (),
+        .mm2s_irq_i         (),
         .DDR_0_addr         (DDR_0_addr),
         .DDR_0_ba           (DDR_0_ba),
         .DDR_0_cas_n        (DDR_0_cas_n),

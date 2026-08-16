@@ -21,6 +21,9 @@ module bd_top (
     inout        FIXED_IO_0_ps_porb,
     inout        FIXED_IO_0_ps_srstb,
 
+    input logic s2mm_irq_i,
+    input logic mm2s_irq_i,
+
     output logic ps_clk_o,
     output logic ps_arstn_o,
 
@@ -111,7 +114,9 @@ module bd_top (
         .FIXED_IO_0_ps_clk   (FIXED_IO_0_ps_clk),
         .FIXED_IO_0_ps_porb  (FIXED_IO_0_ps_porb),
         .FIXED_IO_0_ps_srstb (FIXED_IO_0_ps_srstb),
-        .peripheral_aresetn_0(ps_arstn_o)
+        .peripheral_aresetn_0(ps_arstn_o),
+        .s2mm_irq            (s2mm_irq_i),
+        .mm2s_irq            (mm2s_irq_i)
     );
 
 endmodule

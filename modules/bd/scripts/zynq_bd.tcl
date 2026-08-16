@@ -243,9 +243,9 @@ proc create_root_design { parentCell } {
    CONFIG.ASSOCIATED_BUSIF {M00_AXI_0:S_AXI_HP0_0} \
    CONFIG.FREQ_HZ {50000000} \
  ] $FCLK_CLK0_0
-  set In0_0 [ create_bd_port -dir I -from 0 -to 0 In0_0 ]
-  set In1_0 [ create_bd_port -dir I -from 0 -to 0 In1_0 ]
+  set mm2s_irq [ create_bd_port -dir I -from 0 -to 0 mm2s_irq ]
   set peripheral_aresetn_0 [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_aresetn_0 ]
+  set s2mm_irq [ create_bd_port -dir I -from 0 -to 0 s2mm_irq ]
 
   # Create instance: processing_system7_0, and set properties
   set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
@@ -517,8 +517,8 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net ps7_0_axi_periph_M00_AXI [get_bd_intf_ports M00_AXI_0] [get_bd_intf_pins ps7_0_axi_periph/M00_AXI]
 
   # Create port connections
-  connect_bd_net -net In0_0_1 [get_bd_ports In0_0] [get_bd_pins xlconcat_0/In0]
-  connect_bd_net -net In1_0_1 [get_bd_ports In1_0] [get_bd_pins xlconcat_0/In1]
+  connect_bd_net -net In0_0_1 [get_bd_ports s2mm_irq] [get_bd_pins xlconcat_0/In0]
+  connect_bd_net -net In1_0_1 [get_bd_ports mm2s_irq] [get_bd_pins xlconcat_0/In1]
   connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_ports FCLK_CLK0_0] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in]
   connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_ports peripheral_aresetn_0] [get_bd_pins ps7_0_axi_periph/ARESETN] [get_bd_pins ps7_0_axi_periph/M00_ARESETN] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_ps7_0_50M/peripheral_aresetn]
