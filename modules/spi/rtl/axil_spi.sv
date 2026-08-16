@@ -34,28 +34,28 @@ module axil_spi
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_tx (
         .clk_i(clk_i),
-        .rst_i(reset)
+        .arstn_i(~reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_rx (
         .clk_i(clk_i),
-        .rst_i(reset)
+        .arstn_i(~reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_tx (
         .clk_i(clk_i),
-        .rst_i(reset)
+        .arstn_i(~reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_rx (
         .clk_i(clk_i),
-        .rst_i(reset)
+        .arstn_i(~reset)
     );
 
     always_comb begin
@@ -105,6 +105,8 @@ module axil_spi
         .DIVIDER_WIDTH(SPI_DIVIDER_WIDTH),
         .WAIT_WIDTH   (SPI_WAIT_WIDTH)
     ) i_axis_spi_master (
+        .clk_i        (clk_i),
+        .rst_i        (reset),
         .select_i     (wr_regs.slave.select),
         .cpol_i       (wr_regs.control.cpol),
         .cpha_i       (wr_regs.control.cpha),
@@ -128,6 +130,10 @@ module axil_spi
         .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_tx (
+        .s_clk_i  (clk_i),
+        .s_rst_i  (reset),
+        .m_clk_i  (clk_i),
+        .m_rst_i  (reset),
         .s_axis   (fifo_tx),
         .m_axis   (spi_tx),
         .a_full_o (),
@@ -142,6 +148,10 @@ module axil_spi
         .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_rx (
+        .s_clk_i  (clk_i),
+        .s_rst_i  (reset),
+        .m_clk_i  (clk_i),
+        .m_rst_i  (reset),
         .s_axis   (spi_rx),
         .m_axis   (fifo_rx),
         .a_full_o (),

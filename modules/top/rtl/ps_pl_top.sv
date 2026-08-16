@@ -103,15 +103,15 @@ module ps_pl_top
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis_mm2s (
-        .clk_i(ps_clk),
-        .rst_i(~ps_arstn)
+        .clk_i  (ps_clk),
+        .arstn_i(ps_arstn)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis_s2mm (
-        .clk_i(ps_clk),
-        .rst_i(~ps_arstn)
+        .clk_i  (ps_clk),
+        .arstn_i(ps_arstn)
     );
 
     axil_if #(

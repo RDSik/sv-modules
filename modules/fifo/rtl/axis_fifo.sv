@@ -8,6 +8,11 @@ module axis_fifo #(
     parameter logic ASYNC_MODE_EN = 0,
     parameter       RAM_STYLE     = "block"
 ) (
+    input logic s_clk_i,
+    input logic s_rst_i,
+    input logic m_clk_i,
+    input logic m_rst_i,
+
     axis_if.slave  s_axis,
     axis_if.master m_axis,
 
@@ -51,11 +56,11 @@ module axis_fifo #(
             .READ_LATENCY(0),
             .RAM_STYLE   ("distributed")
         ) i_async_fifo (
-            .wr_clk_i     (s_axis.clk_i),
-            .wr_rst_i     (s_axis.rst_i),
+            .wr_clk_i     (s_clk_i),
+            .wr_rst_i     (s_rst_i),
             .wr_data_i    (wr_data),
-            .rd_clk_i     (m_axis.clk_i),
-            .rd_rst_i     (m_axis.rst_i),
+            .rd_clk_i     (m_clk_i),
+            .rd_rst_i     (m_rst_i),
             .rd_data_o    (rd_data),
             .push_i       (push),
             .pop_i        (pop),
@@ -75,8 +80,8 @@ module axis_fifo #(
             .READ_LATENCY(READ_LATENCY),
             .RAM_STYLE   (RAM_STYLE)
         ) i_sync_fifo (
-            .clk_i     (s_axis.clk_i),
-            .rst_i     (s_axis.rst_i),
+            .clk_i     (s_clk_i),
+            .rst_i     (s_rst_i),
             .data_i    (wr_data),
             .data_o    (rd_data),
             .push_i    (push),

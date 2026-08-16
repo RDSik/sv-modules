@@ -6,8 +6,8 @@ module axis_dw_conv_tb ();
 
     import test_pkg::*;
 
-    localparam int S_DATA_WIDTH = 32;
-    localparam int M_DATA_WIDTH = 8;
+    localparam int S_DATA_WIDTH = 8;
+    localparam int M_DATA_WIDTH = 32;
     localparam int RESET_DELAY = 10;
     localparam int CLK_PER_NS = 2;
     localparam int FIFO_DEPTH = 16;
@@ -30,15 +30,15 @@ module axis_dw_conv_tb ();
     axis_if #(
         .DATA_WIDTH(S_DATA_WIDTH)
     ) s_axis (
-        .clk_i(s_axis_clk),
-        .rst_i(s_axis_rst)
+        .clk_i  (s_axis_clk),
+        .arstn_i(~s_axis_rst)
     );
 
     axis_if #(
         .DATA_WIDTH(M_DATA_WIDTH)
     ) m_axis (
-        .clk_i(m_axis_clk),
-        .rst_i(m_axis_rst)
+        .clk_i  (m_axis_clk),
+        .arstn_i(~m_axis_rst)
     );
 
     initial begin
@@ -85,16 +85,18 @@ module axis_dw_conv_tb ();
     end
 
     axis_dw_conv_wrap #(
-        .S_DATA_WIDTH (M_DATA_WIDTH),
-        .M_DATA_WIDTH (S_DATA_WIDTH),
         .FIFO_DEPTH   (FIFO_DEPTH),
         .CDC_REG_NUM  (CDC_REG_NUM),
         .TLAST_EN     (TLAST_EN),
         .FIFO_FIRST   (FIFO_FIRST),
         .ASYNC_MODE_EN(ASYNC_MODE_EN)
     ) dut (
-        .m_axis(s_axis),
-        .s_axis(m_axis)
+        .s_clk_i(m_axis_clk),
+        .s_rst_i(m_axis_rst),
+        .m_clk_i(s_axis_clk),
+        .m_rst_i(s_axis_rst),
+        .m_axis (s_axis),
+        .s_axis (m_axis)
     );
 
 endmodule

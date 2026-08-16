@@ -28,15 +28,15 @@ module axis_fifo_tb ();
     axis_if #(
         .DATA_WIDTH(FIFO_WIDTH)
     ) s_axis (
-        .clk_i(s_axis_clk),
-        .rst_i(s_axis_rst)
+        .clk_i  (s_axis_clk),
+        .arstn_i(~s_axis_rst)
     );
 
     axis_if #(
         .DATA_WIDTH(FIFO_WIDTH)
     ) m_axis (
-        .clk_i(m_axis_clk),
-        .rst_i(m_axis_rst)
+        .clk_i  (m_axis_clk),
+        .arstn_i(~m_axis_rst)
     );
 
     initial begin
@@ -85,6 +85,10 @@ module axis_fifo_tb ();
         .READ_LATENCY (READ_LATENCY),
         .TLAST_EN     (TLAST_EN)
     ) dut (
+        .s_clk_i  (m_axis_clk),
+        .s_rst_i  (m_axis_rst),
+        .m_clk_i  (s_axis_clk),
+        .m_rst_i  (s_axis_rst),
         .s_axis   (m_axis),
         .m_axis   (s_axis),
         .a_full_o (a_full),

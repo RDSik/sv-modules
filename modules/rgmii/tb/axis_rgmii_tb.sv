@@ -50,14 +50,14 @@ module axis_rgmii_tb ();
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
-        .rst_i(rst_i)
+        .arstn_i(~rst_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
         .clk_i(clk_i),
-        .rst_i(rst_i)
+        .arstn_i(~rst_i)
     );
 
     initial begin
@@ -111,6 +111,10 @@ module axis_rgmii_tb ();
     ) i_axis_rgmii (
         .rx_rst_i           (eth_rst_i),
         .tx_rst_i           (eth_rst_i),
+        .s_axis_clk_i       (clk_i),
+        .s_axis_rst_i       (rst_i),
+        .m_axis_clk_i       (clk_i),
+        .m_axis_rst_i       (rst_i),
         .check_destination_i(CHECK_DESTINATION),
         .payload_bytes_i    (PAYLOAD),
         .fpga_port_i        (FPGA_PORT),

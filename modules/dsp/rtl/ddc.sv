@@ -48,8 +48,8 @@ module ddc #(
     axis_if #(
         .DATA_WIDTH(CH_NUM * DATA_WIDTH)
     ) s_axis (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     assign s_axis.tdata  = mixed_tdata;
@@ -64,6 +64,8 @@ module ddc #(
         .TAP_NUM         (TAP_NUM),
         .COE_FILE        (COE_FILE)
     ) i_resampler (
+        .clk_i          (clk_i),
+        .rst_i          (rst_i),
         .s_axis         (s_axis),
         .interpolation_i('0),
         .decimation_i   (decimation_i),

@@ -8,7 +8,6 @@ vlog modules/common/rtl/crc.sv
 
 vlog modules/arbiter/rtl/axis_arbiter.sv
 vlog modules/arbiter/rtl/round_robin_arbiter.sv
-vlog modules/arbiter/rtl/onehot_to_indx.sv
 
 vlog modules/arbiter/tb/axis_arbiter_tb.sv
 

@@ -24,15 +24,15 @@ module axis_uart_tb ();
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
     ) s_axis (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
     ) m_axis (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     initial begin
@@ -67,6 +67,8 @@ module axis_uart_tb ();
         .DATA_WIDTH   (DATA_WIDTH),
         .DIVIDER_WIDTH(DIVIDER_WIDTH)
     ) i_axis_uart_tx (
+        .clk_i        (clk_i),
+        .rst_i        (rst_i),
         .clk_divider_i(DIVIDER),
         .parity_odd_i (PARITY_ODD),
         .parity_even_i(PARITY_EVEN),
@@ -78,6 +80,8 @@ module axis_uart_tb ();
         .DATA_WIDTH   (DATA_WIDTH),
         .DIVIDER_WIDTH(DIVIDER_WIDTH)
     ) i_axis_uart_rx (
+        .clk_i        (clk_i),
+        .rst_i        (rst_i),
         .clk_divider_i(DIVIDER),
         .parity_odd_i (PARITY_ODD),
         .parity_even_i(PARITY_EVEN),

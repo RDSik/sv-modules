@@ -19,24 +19,24 @@ module axis_arbiter_tb ();
         .DATA_WIDTH(DATA_WIDTH),
         .USER_WIDTH(USER_WIDTH)
     ) arb_s_axis (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH),
         .USER_WIDTH(USER_WIDTH)
     ) lfsr_s_axis[MASTER_NUM-1:0] (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH),
         .USER_WIDTH(USER_WIDTH)
     ) lfsr_m_axis[MASTER_NUM-1:0] (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     initial begin
@@ -111,6 +111,8 @@ module axis_arbiter_tb ();
         .DATA_WIDTH(DATA_WIDTH),
         .USER_WIDTH(USER_WIDTH)
     ) dut (
+        .clk_i (clk_i),
+        .rst_i (rst_i),
         .s_axis(lfsr_m_axis),
         .m_axis(arb_s_axis)
     );
@@ -122,6 +124,8 @@ module axis_arbiter_tb ();
             .CRC_MODE_EN(0),
             .DATA_WIDTH (DATA_WIDTH)
         ) i_axis_lfsr_wrap (
+            .clk_i (clk_i),
+            .rst_i (rst_i),
             .poly_i(poly_i[i]),
             .seed_i(seed_i[i]),
             .s_axis(lfsr_s_axis[i]),

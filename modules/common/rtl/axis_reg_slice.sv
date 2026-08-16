@@ -1,4 +1,7 @@
 module axis_reg_slice (
+    input logic clk_i,
+    input logic rst_i,
+
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );
@@ -8,8 +11,8 @@ module axis_reg_slice (
 
     assign s_axis.tready = enable;
 
-    always_ff @(posedge s_axis.clk_i) begin
-        if (s_axis.rst_i) begin
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
             m_axis.tvalid <= '0;
             m_axis.tlast  <= '0;
             m_axis.tdata  <= '0;

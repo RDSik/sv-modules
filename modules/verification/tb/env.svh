@@ -88,10 +88,10 @@ class env_base #(
                     drive_master(p);
                 end
             join_none
-            wait (s_axis.rst_i);
+            wait (~s_axis.arstn_i);
             disable fork;
             reset_master();
-            wait (~s_axis.rst_i);
+            wait (s_axis.arstn_i);
         end
     endtask
 
@@ -107,13 +107,13 @@ class env_base #(
 
     task do_master_monitor();
         forever begin
-            wait (~s_axis.rst_i);
+            wait (s_axis.arstn_i);
             fork
                 forever begin
                     monitor_master();
                 end
             join_none
-            wait (s_axis.rst_i);
+            wait (~s_axis.arstn_i);
             disable fork;
         end
     endtask
@@ -150,10 +150,10 @@ class env_base #(
                     drive_slave(delay_min, delay_max);
                 end
             join_none
-            wait (m_axis.rst_i);
+            wait (~m_axis.arstn_i);
             disable fork;
             reset_slave();
-            wait (~m_axis.rst_i);
+            wait (m_axis.arstn_i);
         end
     endtask
 
@@ -169,13 +169,13 @@ class env_base #(
 
     task do_slave_monitor();
         forever begin
-            wait (~m_axis.rst_i);
+            wait (m_axis.arstn_i);
             fork
                 forever begin
                     monitor_slave();
                 end
             join_none
-            wait (m_axis.rst_i);
+            wait (~m_axis.arstn_i);
             disable fork;
         end
     endtask
@@ -205,7 +205,7 @@ class env_base #(
         packet_in_t in_p;
         packet_out_t out_p;
         forever begin
-            wait (~s_axis.rst_i);
+            wait (s_axis.arstn_i);
             fork
                 forever begin
                     in_mbx.get(in_p);
@@ -219,7 +219,7 @@ class env_base #(
                     end
                 end
                 begin
-                    wait (s_axis.rst_i);
+                    wait (~s_axis.arstn_i);
                 end
             join_any
             disable fork;

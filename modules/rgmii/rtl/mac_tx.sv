@@ -11,6 +11,8 @@ module mac_tx
 ) (
     input logic clk_i,
     input logic rst_i,
+    input logic s_axis_clk_i,
+    input logic s_axis_rst_i,
 
     output logic                  tx_en_o,
     output logic [GMII_WIDTH-1:0] tx_d_o,
@@ -84,8 +86,8 @@ module mac_tx
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
-        .clk_i(clk_i),
-        .rst_i(rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(~rst_i)
     );
 
     logic m_axis_tready;
@@ -111,6 +113,10 @@ module mac_tx
         .ASYNC_MODE_EN(ASYNC_MODE_EN),
         .TLAST_EN     (1)
     ) i_axis_fifo_rx (
+        .s_clk_i      (s_axis_clk_i),
+        .s_rst_i      (s_axis_rst_i),
+        .m_clk_i      (clk_i),
+        .m_rst_i      (rst_i),
         .s_axis       (s_axis),
         .m_axis       (m_axis),
         .wr_data_cnt_o(fifo_count),

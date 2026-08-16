@@ -28,14 +28,14 @@ module axil_rgmii_tb ();
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
         .clk_i(clk_i),
-        .rst_i(~arstn_i)
+        .arstn_i(arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
         .clk_i(clk_i),
-        .rst_i(~arstn_i)
+        .arstn_i(arstn_i)
     );
 
     axil_if #(

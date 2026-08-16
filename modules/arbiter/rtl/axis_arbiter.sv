@@ -4,12 +4,13 @@ module axis_arbiter #(
     parameter int DATA_WIDTH = 16,
     parameter int USER_WIDTH = 2
 ) (
+    input logic clk_i,
+    input logic rst_i,
+
     axis_if.slave  s_axis[MASTER_NUM-1:0],
     axis_if.master m_axis
 );
 
-    logic                                  clk_i;
-    logic                                  rst_i;
     logic                                  m_handshake;
     logic [MASTER_NUM-1:0]                 grant;
     logic [$clog2(MASTER_NUM)-1:0]         grant_indx;
@@ -17,8 +18,6 @@ module axis_arbiter #(
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] s_axis_tdata;
     logic [MASTER_NUM-1:0][USER_WIDTH-1:0] m_axis_tuser;
 
-    assign clk_i         = m_axis.clk_i;
-    assign rst_i         = m_axis.rst_i;
     assign m_handshake   = m_axis.tvalid & m_axis.tready;
     assign m_axis.tvalid = |grant;
 

@@ -7,6 +7,8 @@ module axis_uart_rx
     parameter int DATA_WIDTH    = 8,
     parameter int DIVIDER_WIDTH = 32
 ) (
+    input  logic                     clk_i,
+    input  logic                     rst_i,
     input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
     input  logic                     parity_odd_i,
     input  logic                     parity_even_i,
@@ -18,8 +20,6 @@ module axis_uart_rx
 
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
 
-    logic                      clk_i;
-    logic                      rst_i;
     logic [DATA_CNT_WIDTH-1:0] bit_cnt;
     logic [ DIVIDER_WIDTH-1:0] baud_cnt;
     logic [    DATA_WIDTH-1:0] rx_data;
@@ -40,9 +40,6 @@ module axis_uart_rx
     } uart_state_e;
 
     uart_state_e state;
-
-    assign clk_i = m_axis.clk_i;
-    assign rst_i = m_axis.rst_i;
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin

@@ -8,6 +8,9 @@ module resampler #(
     parameter int   COEF_WIDTH       = 18,
     parameter int   TAP_NUM          = 16
 ) (
+    input logic clk_i,
+    input logic rst_i,
+
     axis_if.slave s_axis,
 
     input logic                  round_type_i,
@@ -24,12 +27,6 @@ module resampler #(
     } state_e;
 
     state_e state;
-
-    logic   clk_i;
-    logic   rst_i;
-
-    assign clk_i = s_axis.clk_i;
-    assign rst_i = s_axis.rst_i;
 
     logic                                     int_tvalid;
     logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;

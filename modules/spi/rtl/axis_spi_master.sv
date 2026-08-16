@@ -15,6 +15,8 @@ module axis_spi_master #(
     parameter int WAIT_WIDTH    = 32,
     parameter int SLAVE_NUM     = 1
 ) (
+    input logic                     clk_i,
+    input logic                     rst_i,
     input logic [    SLAVE_NUM-1:0] select_i,
     input logic [   WAIT_WIDTH-1:0] wait_time_i,
     input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
@@ -59,11 +61,6 @@ module axis_spi_master #(
     logic                      s_handshake;
     logic                      s_handshake_d;
 
-    logic                      clk_i;
-    logic                      rst_i;
-
-    assign clk_i = s_axis.clk_i;
-    assign rst_i = s_axis.rst_i;
 
     typedef enum logic [1:0] {
         IDLE = 2'b00,

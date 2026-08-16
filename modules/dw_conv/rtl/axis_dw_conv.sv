@@ -1,20 +1,20 @@
 /* verilator lint_off TIMESCALEMOD */
 module axis_dw_conv #(
-    parameter int   S_DATA_WIDTH = 32,
-    parameter int   M_DATA_WIDTH = 128,
-    parameter logic TLAST_EN     = 0
+    parameter logic TLAST_EN = 0
 ) (
+    input logic clk_i,
+    input logic rst_i,
+
     axis_if.master m_axis,
     axis_if.slave  s_axis
 );
 
-    logic clk_i;
-    logic rst_i;
+    localparam int S_DATA_WIDTH = s_axis.DATA_WIDTH;
+    localparam int M_DATA_WIDTH = m_axis.DATA_WIDTH;
+
     logic s_handshake;
     logic m_handshake;
 
-    assign clk_i       = s_axis.clk_i;
-    assign rst_i       = s_axis.rst_i;
     assign s_handshake = s_axis.tvalid & s_axis.tready;
     assign m_handshake = m_axis.tvalid & m_axis.tready;
 

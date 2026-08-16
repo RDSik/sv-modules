@@ -7,6 +7,9 @@ module axis_lfsr_wrap #(
     parameter logic INVERT_OUT  = 0,
     parameter logic LEFT_SHIFT  = 1
 ) (
+    input logic clk_i,
+    input logic rst_i,
+
     input logic [DATA_WIDTH-1:0] seed_i,
     input logic [DATA_WIDTH-1:0] poly_i,
 
@@ -14,12 +17,7 @@ module axis_lfsr_wrap #(
     axis_if.master m_axis
 );
 
-    logic clk_i;
-    logic rst_i;
-
-    assign clk_i         = m_axis.clk_i;
-    assign rst_i         = m_axis.rst_i;
-    assign s_axis.tready = ~s_axis.rst_i;
+    assign s_axis.tready = ~rst_i;
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
