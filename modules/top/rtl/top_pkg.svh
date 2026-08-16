@@ -15,6 +15,7 @@ package top_pkg;
 
     localparam int AXIL_ADDR_WIDTH = 32;
     localparam int AXIL_DATA_WIDTH = 32;
+    localparam int AXI_DATA_WIDTH = 64;
     localparam int AXIS_DATA_WIDTH = 8;
 
     localparam logic [AXIL_ADDR_WIDTH-1:0] BASE_HIGTH_ADDR = 32'h43c0_ffff;

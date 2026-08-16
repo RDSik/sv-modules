@@ -6,6 +6,7 @@ module axis_rgmii #(
 ) (
     input logic tx_rst_i,
     input logic rx_rst_i,
+
     input logic s_axis_clk_i,
     input logic s_axis_rst_i,
     input logic m_axis_clk_i,

@@ -122,6 +122,14 @@ module ps_pl_top
         .arstn_i(ps_arstn)
     );
 
+    axi_if #(
+        .ADDR_WIDTH(AXIL_ADDR_WIDTH),
+        .DATA_WIDTH(AXI_DATA_WIDTH)
+    ) axi (
+        .clk_i  (ps_clk),
+        .arstn_i(ps_arstn)
+    );
+
     logic arstn;
 
     xpm_cdc_async_rst #(
@@ -166,59 +174,32 @@ module ps_pl_top
         .s_axil      (axil)
     );
 
-    zynq_bd zynq_bd_i (
-        .M01_AXI_0_araddr    (axil[0].araddr),
-        .M01_AXI_0_arprot    (axil[0].arprot),
-        .M01_AXI_0_arready   (axil[0].arready),
-        .M01_AXI_0_arvalid   (axil[0].arvalid),
-        .M01_AXI_0_awaddr    (axil[0].awaddr),
-        .M01_AXI_0_awprot    (axil[0].awprot),
-        .M01_AXI_0_awready   (axil[0].awready),
-        .M01_AXI_0_awvalid   (axil[0].awvalid),
-        .M01_AXI_0_bready    (axil[0].bready),
-        .M01_AXI_0_bresp     (axil[0].bresp),
-        .M01_AXI_0_bvalid    (axil[0].bvalid),
-        .M01_AXI_0_rdata     (axil[0].rdata),
-        .M01_AXI_0_rready    (axil[0].rready),
-        .M01_AXI_0_rresp     (axil[0].rresp),
-        .M01_AXI_0_rvalid    (axil[0].rvalid),
-        .M01_AXI_0_wdata     (axil[0].wdata),
-        .M01_AXI_0_wready    (axil[0].wready),
-        .M01_AXI_0_wstrb     (axil[0].wstrb),
-        .M01_AXI_0_wvalid    (axil[0].wvalid),
-        .M_AXIS_0_tdata      (m_axis_mm2s.tdata),
-        .M_AXIS_0_tkeep      (),
-        .M_AXIS_0_tlast      (m_axis_mm2s.tlast),
-        .M_AXIS_0_tready     (m_axis_mm2s.tready),
-        .M_AXIS_0_tvalid     (m_axis_mm2s.tvalid),
-        .S_AXIS_0_tdata      (s_axis_s2mm.tdata),
-        .S_AXIS_0_tkeep      ('1),
-        .S_AXIS_0_tlast      (s_axis_s2mm.tlast),
-        .S_AXIS_0_tready     (s_axis_s2mm.tready),
-        .S_AXIS_0_tvalid     (s_axis_s2mm.tvalid),
-        .DDR_0_addr          (DDR_0_addr),
-        .DDR_0_ba            (DDR_0_ba),
-        .DDR_0_cas_n         (DDR_0_cas_n),
-        .DDR_0_ck_n          (DDR_0_ck_n),
-        .DDR_0_ck_p          (DDR_0_ck_p),
-        .DDR_0_cke           (DDR_0_cke),
-        .DDR_0_cs_n          (DDR_0_cs_n),
-        .DDR_0_dm            (DDR_0_dm),
-        .DDR_0_dq            (DDR_0_dq),
-        .DDR_0_dqs_n         (DDR_0_dqs_n),
-        .DDR_0_dqs_p         (DDR_0_dqs_p),
-        .DDR_0_odt           (DDR_0_odt),
-        .DDR_0_ras_n         (DDR_0_ras_n),
-        .DDR_0_reset_n       (DDR_0_reset_n),
-        .DDR_0_we_n          (DDR_0_we_n),
-        .FCLK_CLK0_0         (ps_clk),
-        .FIXED_IO_0_ddr_vrn  (FIXED_IO_0_ddr_vrn),
-        .FIXED_IO_0_ddr_vrp  (FIXED_IO_0_ddr_vrp),
-        .FIXED_IO_0_mio      (FIXED_IO_0_mio),
-        .FIXED_IO_0_ps_clk   (FIXED_IO_0_ps_clk),
-        .FIXED_IO_0_ps_porb  (FIXED_IO_0_ps_porb),
-        .FIXED_IO_0_ps_srstb (FIXED_IO_0_ps_srstb),
-        .peripheral_aresetn_0(ps_arstn)
+    bd_top i_bd_top (
+        .m_axil             (axil[0]),
+        .s_axi              (axi),
+        .ps_clk_o           (ps_clk),
+        .ps_arstn_o         (ps_arstn),
+        .DDR_0_addr         (DDR_0_addr),
+        .DDR_0_ba           (DDR_0_ba),
+        .DDR_0_cas_n        (DDR_0_cas_n),
+        .DDR_0_ck_n         (DDR_0_ck_n),
+        .DDR_0_ck_p         (DDR_0_ck_p),
+        .DDR_0_cke          (DDR_0_cke),
+        .DDR_0_cs_n         (DDR_0_cs_n),
+        .DDR_0_dm           (DDR_0_dm),
+        .DDR_0_dq           (DDR_0_dq),
+        .DDR_0_dqs_n        (DDR_0_dqs_n),
+        .DDR_0_dqs_p        (DDR_0_dqs_p),
+        .DDR_0_odt          (DDR_0_odt),
+        .DDR_0_ras_n        (DDR_0_ras_n),
+        .DDR_0_reset_n      (DDR_0_reset_n),
+        .DDR_0_we_n         (DDR_0_we_n),
+        .FIXED_IO_0_ddr_vrn (FIXED_IO_0_ddr_vrn),
+        .FIXED_IO_0_ddr_vrp (FIXED_IO_0_ddr_vrp),
+        .FIXED_IO_0_mio     (FIXED_IO_0_mio),
+        .FIXED_IO_0_ps_clk  (FIXED_IO_0_ps_clk),
+        .FIXED_IO_0_ps_porb (FIXED_IO_0_ps_porb),
+        .FIXED_IO_0_ps_srstb(FIXED_IO_0_ps_srstb)
     );
 
 endmodule

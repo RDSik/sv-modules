@@ -11,6 +11,7 @@ module mac_tx
 ) (
     input logic clk_i,
     input logic rst_i,
+
     input logic s_axis_clk_i,
     input logic s_axis_rst_i,
 

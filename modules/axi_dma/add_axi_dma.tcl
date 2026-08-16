@@ -1,10 +1,13 @@
 set path [file dirname [info script]]
 
 if {$xilinx == 1} {
-    source $path/ip/axi_dma_test.tcl
+    set xci_defaultlib "
+        $path/ip/axil_dma_0/axil_dma_0.xci
+    "
+    add_files -norecurse $xci_defaultlib
 
     set xil_defaultlib "
-        $path/rtl/axi_dma_test_wrap.sv
+        $path/rtl/axi_dma_wrap.sv
         $path/rtl/axi_dma_pkg.svh
     "
 
