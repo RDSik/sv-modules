@@ -41,6 +41,6 @@ jobs:
     steps:
       - name: Run Docker container
         run: |
-          git clone https://github.com/RDSik/sv-modules.git
-          cd sv-modules
+          git clone https://github.com/RDSik/axil-modules.git
+          cd axil-modules
           make BOARD=tangprimer20k project
