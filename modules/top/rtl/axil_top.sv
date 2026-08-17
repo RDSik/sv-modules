@@ -4,6 +4,7 @@ module axil_top #(
     parameter int                                        FIFO_DEPTH      = 128,
     parameter int                                        AXIL_ADDR_WIDTH = 32,
     parameter int                                        AXIL_DATA_WIDTH = 32,
+    parameter int                                        AXIS_DATA_WIDTH = 32,
     parameter int                                        SPI_CS_WIDTH    = 1,
     parameter logic                                      ILA_EN          = 0,
     parameter int                                        MASTER_NUM      = 1,
@@ -28,6 +29,9 @@ module axil_top #(
     output logic sda_pad_o,
     output logic sda_padoen_o,
 
+    output logic s2mm_irq_o,
+    output logic mm2s_irq_o,
+
     eth_if.master m_eth,
 
     spi_if.master m_spi,
@@ -35,8 +39,24 @@ module axil_top #(
     axis_if.slave  s_axis,
     axis_if.master m_axis,
 
+    axi_if.master m_axi,
+
     axil_if.slave s_axil[MASTER_NUM-1:0]
 );
+
+    axis_if #(
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
+    ) m_axis_mm2s (
+        .clk_i  (s_axil.clk_i[0]),
+        .arstn_i(s_axil.arstn_i[0])
+    );
+
+    axis_if #(
+        .DATA_WIDTH(AXIS_DATA_WIDTH)
+    ) s_axis_s2mm (
+        .clk_i  (s_axil.clk_i[0]),
+        .arstn_i(s_axil.arstn_i[0])
+    );
 
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -58,6 +78,19 @@ module axil_top #(
         .m_axil(m_axil)
     );
 
+    if (VENDOR == "xilinx") begin
+        axi_dma_wrap #(
+            .ILA_EN(ILA_EN)
+        ) i_axi_dma_wrap (
+            .s_axil    (m_axil[0]),
+            .m_axi     (m_axi),
+            .m_axis    (m_axis_mm2s),
+            .s_axis    (s_axis_s2mm),
+            .s2mm_irq_o(s2mm_irq_o),
+            .mm2s_irq_o(mm2s_irq_o)
+        );
+    end
+
     axil_uart #(
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
@@ -69,7 +102,7 @@ module axil_top #(
         .arstn_i  (arstn_i),
         .uart_rx_i(uart_rx_i),
         .uart_tx_o(uart_tx_o),
-        .s_axil   (m_axil[0])
+        .s_axil   (m_axil[1])
     );
 
     axil_spi #(
@@ -83,7 +116,7 @@ module axil_top #(
         .clk_i  (clk_i),
         .arstn_i(arstn_i),
         .m_spi  (m_spi),
-        .s_axil (m_axil[1])
+        .s_axil (m_axil[2])
     );
 
     axil_i2c #(
@@ -101,7 +134,7 @@ module axil_top #(
         .sda_pad_i   (sda_pad_i),
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
-        .s_axil      (m_axil[2])
+        .s_axil      (m_axil[3])
     );
 
     axil_rgmii #(
@@ -116,9 +149,9 @@ module axil_top #(
         .clk_i  (clk_i),
         .arstn_i(arstn_i),
         .m_eth  (m_eth),
-        .s_axis (s_axis),
-        .m_axis (m_axis),
-        .s_axil (m_axil[3])
+        .s_axis (m_axis_mm2s),
+        .m_axis (s_axis_s2mm),
+        .s_axil (m_axil[4])
     );
 
 endmodule
