@@ -17,15 +17,15 @@ module axi_dma_wrap #(
     axis_if #(
         .DATA_WIDTH(AXI_DATA_WIDTH)
     ) m_axis_mm2s (
-        .clk_i  (s_axil.clk_i[0]),
-        .arstn_i(s_axil.arstn_i[0])
+        .clk_i  (s_axil.clk_i]),
+        .arstn_i(s_axil.arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXI_DATA_WIDTH)
     ) s_axis_s2mm (
-        .clk_i  (s_axil.clk_i[0]),
-        .arstn_i(s_axil.arstn_i[0])
+        .clk_i  (s_axil.clk_i),
+        .arstn_i(s_axil.arstn_i)
     );
 
     axis_dw_conv #(
