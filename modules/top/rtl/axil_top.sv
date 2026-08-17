@@ -36,9 +36,6 @@ module axil_top #(
 
     spi_if.master m_spi,
 
-    axis_if.slave  s_axis,
-    axis_if.master m_axis,
-
     axi_if.master m_axi,
 
     axil_if.slave s_axil[MASTER_NUM-1:0]
@@ -47,15 +44,15 @@ module axil_top #(
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis_mm2s (
-        .clk_i  (s_axil.clk_i[0]),
-        .arstn_i(s_axil.arstn_i[0])
+        .clk_i  (s_axil[0].clk_i),
+        .arstn_i(s_axil[0].arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis_s2mm (
-        .clk_i  (s_axil.clk_i[0]),
-        .arstn_i(s_axil.arstn_i[0])
+        .clk_i  (s_axil[0].clk_i),
+        .arstn_i(s_axil[0].arstn_i)
     );
 
     axil_if #(
