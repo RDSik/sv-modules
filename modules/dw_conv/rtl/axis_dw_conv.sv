@@ -12,6 +12,9 @@ module axis_dw_conv #(
     localparam int S_DATA_WIDTH = s_axis.DATA_WIDTH;
     localparam int M_DATA_WIDTH = m_axis.DATA_WIDTH;
 
+    localparam int S_KEEP_WIDTH = s_axis.KEEP_WIDTH;
+    localparam int M_KEEP_WIDTH = m_axis.KEEP_WIDTH;
+
     logic s_handshake;
     logic m_handshake;
 
@@ -26,6 +29,7 @@ module axis_dw_conv #(
         logic                                       busy;
         logic                                       m_axis_tlast;
         logic [        RATIO-1:0][M_DATA_WIDTH-1:0] m_axis_tdata;
+        logic [        RATIO-1:0][M_KEEP_WIDTH-1:0] m_axis_tkeep;
 
         assign cnt_done = (cnt == RATIO - 1);
 
@@ -61,8 +65,11 @@ module axis_dw_conv #(
                     m_axis_tlast <= s_axis.tlast;
                 end
             end
+
+            assign m_axis_tkeep = {M_KEEP_WIDTH{1'b1}};
         end else begin : g_tlast_disable
-            assign m_axis_tlast = 1'b0;
+            assign m_axis_tlast = '0;
+            assign m_axis_tkeep = '0;
         end
 
         always_ff @(posedge clk_i) begin
@@ -75,6 +82,7 @@ module axis_dw_conv #(
 
         assign m_axis.tdata  = m_axis_tdata[cnt];
         assign m_axis.tlast  = m_axis_tlast & cnt_done;
+        assign m_axis.tkeep  = m_axis_tkeep;
         assign m_axis.tvalid = busy;
         assign s_axis.tready = ~busy;
     end else if (S_DATA_WIDTH < M_DATA_WIDTH) begin : g_up_size
@@ -87,6 +95,7 @@ module axis_dw_conv #(
         logic                                       flush;
         logic                                       m_axis_tlast;
         logic [        RATIO-1:0][S_DATA_WIDTH-1:0] m_axis_tdata;
+        logic [        RATIO-1:0][S_KEEP_WIDTH-1:0] m_axis_tkeep;
 
         assign flush    = cnt_done | (TLAST_EN & s_axis.tlast);
         assign cnt_done = (cnt == RATIO - 1);
@@ -106,10 +115,12 @@ module axis_dw_conv #(
         always_ff @(posedge clk_i) begin
             if (rst_i) begin
                 done <= 1'b0;
-            end else if (m_handshake) begin
-                done <= 1'b0;
-            end else if (s_handshake & flush) begin
-                done <= 1'b1;
+            end else begin
+                if (m_handshake) begin
+                    done <= 1'b0;
+                end else if (s_handshake & flush) begin
+                    done <= 1'b1;
+                end
             end
         end
 
@@ -117,14 +128,29 @@ module axis_dw_conv #(
             always_ff @(posedge clk_i) begin
                 if (rst_i) begin
                     m_axis_tlast <= 1'b0;
-                end else if (m_handshake) begin
-                    m_axis_tlast <= 1'b0;
-                end else if (~m_axis_tlast & s_handshake) begin
-                    m_axis_tlast <= s_axis.tlast;
+                end else begin
+                    if (m_handshake) begin
+                        m_axis_tlast <= 1'b0;
+                    end else if (~m_axis_tlast & s_handshake) begin
+                        m_axis_tlast <= s_axis.tlast;
+                    end
+                end
+            end
+
+            always_ff @(posedge clk_i) begin
+                if (rst_i) begin
+                    m_axis_tkeep <= '0;
+                end else begin
+                    if (m_handshake) begin
+                        m_axis_tkeep <= '0;
+                    end else if (s_handshake) begin
+                        m_axis_tkeep[cnt] <= {S_KEEP_WIDTH{1'b1}};
+                    end
                 end
             end
         end else begin : g_tlast_disable
-            assign m_axis_tlast = 1'b0;
+            assign m_axis_tlast = '0;
+            assign m_axis_tkeep = '0;
         end
 
         always_ff @(posedge clk_i) begin
@@ -137,6 +163,7 @@ module axis_dw_conv #(
 
         assign m_axis.tdata  = m_axis_tdata;
         assign m_axis.tlast  = m_axis_tlast & done;
+        assign m_axis.tkeep  = m_axis_tkeep;
         assign m_axis.tvalid = done;
         assign s_axis.tready = ~done;
     end else begin : g_bypass
@@ -144,6 +171,7 @@ module axis_dw_conv #(
         assign m_axis.tdata  = s_axis.tdata;
         assign s_axis.tready = m_axis.tready;
         assign m_axis.tlast  = s_axis.tlast;
+        assign m_axis.tkeep  = s_axis.tkeep;
     end
 
 endmodule
