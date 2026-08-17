@@ -17,7 +17,7 @@ module axi_dma_wrap #(
     axis_if #(
         .DATA_WIDTH(AXI_DATA_WIDTH)
     ) m_axis_mm2s (
-        .clk_i  (s_axil.clk_i]),
+        .clk_i  (s_axil.clk_i),
         .arstn_i(s_axil.arstn_i)
     );
 
