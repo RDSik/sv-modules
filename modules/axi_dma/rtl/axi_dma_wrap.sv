@@ -1,4 +1,6 @@
-module axi_dma_wrap (
+module axi_dma_wrap #(
+    parameter logic ILA_EN = 0
+) (
     output logic s2mm_irq_o,
     output logic mm2s_irq_o,
 
@@ -9,6 +11,49 @@ module axi_dma_wrap (
 
     axi_if.master m_axi
 );
+
+    localparam int AXI_DATA_WIDTH = m_axi.DATA_WIDTH;
+
+    axis_if #(
+        .DATA_WIDTH(AXI_DATA_WIDTH)
+    ) m_axis_mm2s (
+        .clk_i  (s_axil.clk_i[0]),
+        .arstn_i(s_axil.arstn_i[0])
+    );
+
+    axis_if #(
+        .DATA_WIDTH(AXI_DATA_WIDTH)
+    ) s_axis_s2mm (
+        .clk_i  (s_axil.clk_i[0]),
+        .arstn_i(s_axil.arstn_i[0])
+    );
+
+    axis_dw_conv #(
+        .TLAST_EN(1)
+    ) i_axis_dw_conv (
+        .clk_i (s_axil.clk_i),
+        .rst_i (~s_axil.arstn_i),
+        .s_axis(s_axis),
+        .m_axis()
+    );
+
+    axis_dw_conv #(
+        .TLAST_EN(1)
+    ) i_axis_dw_conv (
+        .clk_i (s_axil.clk_i),
+        .rst_i (~s_axil.arstn_i),
+        .s_axis(s_axis),
+        .m_axis(s_axis_s2mm)
+    );
+
+    axis_dw_conv #(
+        .TLAST_EN(1)
+    ) i_axis_dw_conv (
+        .clk_i (s_axil.clk_i),
+        .rst_i (~s_axil.arstn_i),
+        .s_axis(m_axis_mm2s),
+        .m_axis(m_axis)
+    );
 
     axi_dma_0 i_axi_dma (
         .s_axi_lite_aclk(s_axil.clk_i),
@@ -49,11 +94,11 @@ module axi_dma_wrap (
 
         .mm2s_prmry_reset_out_n(),
 
-        .m_axis_mm2s_tdata (m_axis.tdata),
-        .m_axis_mm2s_tkeep (m_axis.tkeep),
-        .m_axis_mm2s_tvalid(m_axis.tvalid),
-        .m_axis_mm2s_tready(m_axis.tready),
-        .m_axis_mm2s_tlast (m_axis.tlast),
+        .m_axis_mm2s_tdata (m_axis_mm2s.tdata),
+        .m_axis_mm2s_tkeep (m_axis_mm2s.tkeep),
+        .m_axis_mm2s_tvalid(m_axis_mm2s.tvalid),
+        .m_axis_mm2s_tready(m_axis_mm2s.tready),
+        .m_axis_mm2s_tlast (m_axis_mm2s.tlast),
 
         .m_axi_s2mm_awaddr (m_axi.awaddr),
         .m_axi_s2mm_awlen  (m_axi.awlen),
@@ -74,16 +119,41 @@ module axi_dma_wrap (
 
         .s2mm_prmry_reset_out_n(),
 
-        .s_axis_s2mm_tdata (s_axis.tdata),
-        .s_axis_s2mm_tkeep (s_axis.tkeep),
-        .s_axis_s2mm_tvalid(s_axis.tvalid),
-        .s_axis_s2mm_tready(s_axis.tready),
-        .s_axis_s2mm_tlast (s_axis.tlast),
+        .s_axis_s2mm_tdata (s_axis_s2mm.tdata),
+        .s_axis_s2mm_tkeep (s_axis_s2mm.tkeep),
+        .s_axis_s2mm_tvalid(s_axis_s2mm.tvalid),
+        .s_axis_s2mm_tready(s_axis_s2mm.tready),
+        .s_axis_s2mm_tlast (s_axis_s2mm.tlast),
 
         .mm2s_introut(mm2s_irq_o),
         .s2mm_introut(s2mm_irq_o),
 
         .axi_dma_tstvec()
     );
+
+    if (ILA_EN) begin : g_ila
+        axil_ila i_axil_ila (
+            .clk    (clk_i),
+            .probe0 (s_axil.awvalid),
+            .probe1 (s_axil.awaddr),
+            .probe2 (s_axil.bresp),
+            .probe3 (s_axil.bvalid),
+            .probe4 (s_axil.bready),
+            .probe5 (s_axil.wdata),
+            .probe6 (s_axil.wvalid),
+            .probe7 (s_axil.wready),
+            .probe8 (s_axil.awready),
+            .probe9 (s_axil.rready),
+            .probe10(s_axil.araddr),
+            .probe11(s_axil.arvalid),
+            .probe12(s_axil.arready),
+            .probe13(s_axil.rresp),
+            .probe14(s_axil.rdata),
+            .probe15(s_axil.wstrb),
+            .probe16(s_axil.rvalid),
+            .probe17(s_axil.arprot),
+            .probe18(s_axil.awprot)
+        );
+    end
 
 endmodule
