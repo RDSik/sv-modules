@@ -100,20 +100,6 @@ module ps_pl_top
     logic ps_clk;
     logic ps_arstn;
 
-    axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) m_axis_mm2s (
-        .clk_i  (ps_clk),
-        .arstn_i(ps_arstn)
-    );
-
-    axis_if #(
-        .DATA_WIDTH(AXIS_DATA_WIDTH)
-    ) s_axis_s2mm (
-        .clk_i  (ps_clk),
-        .arstn_i(ps_arstn)
-    );
-
     axil_if #(
         .ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .DATA_WIDTH(AXIL_DATA_WIDTH)
@@ -142,11 +128,15 @@ module ps_pl_top
         .dest_arst(arstn)
     );
 
+    logic s2mm_irq;
+    logic mm2s_irq;
+
     axil_top #(
         .CLK_FREQ       (CLK_FREQ),
         .FIFO_DEPTH     (FIFO_DEPTH),
         .AXIL_ADDR_WIDTH(AXIL_ADDR_WIDTH),
         .AXIL_DATA_WIDTH(AXIL_DATA_WIDTH),
+        .AXIS_DATA_WIDTH(AXIS_DATA_WIDTH),
         .SLAVE_LOW_ADDR (SLAVE_LOW_ADDR),
         .SLAVE_HIGH_ADDR(SLAVE_HIGH_ADDR),
         .SLAVE_NUM      (SLAVE_NUM),
@@ -167,10 +157,11 @@ module ps_pl_top
         .sda_pad_i   (sda_pad_i),
         .sda_pad_o   (sda_pad_o),
         .sda_padoen_o(sda_padoen_o),
+        .s2mm_irq_o  (s2mm_irq),
+        .mm2s_irq_o  (mm2s_irq),
         .m_eth       (m_eth),
         .m_spi       (m_spi),
-        .m_axis      (s_axis_s2mm),
-        .s_axis      (m_axis_mm2s),
+        .m_axi       (axi),
         .s_axil      (axil)
     );
 
@@ -179,8 +170,8 @@ module ps_pl_top
         .s_axi              (axi),
         .ps_clk_o           (ps_clk),
         .ps_arstn_o         (ps_arstn),
-        .s2mm_irq_i         (),
-        .mm2s_irq_i         (),
+        .s2mm_irq_i         (s2mm_irq),
+        .mm2s_irq_i         (mm2s_irq),
         .DDR_0_addr         (DDR_0_addr),
         .DDR_0_ba           (DDR_0_ba),
         .DDR_0_cas_n        (DDR_0_cas_n),
