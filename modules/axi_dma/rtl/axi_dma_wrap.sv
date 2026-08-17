@@ -4,8 +4,8 @@ module axi_dma_wrap #(
     output logic s2mm_irq_o,
     output logic mm2s_irq_o,
 
-    axis_if.slave s_axis,
-    axis_if.slave m_axis,
+    axis_if.slave  s_axis,
+    axis_if.master m_axis,
 
     axil_if.slave s_axil,
 
