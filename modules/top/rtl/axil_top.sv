@@ -78,7 +78,7 @@ module axil_top #(
         .m_axil(m_axil)
     );
 
-    if (VENDOR == "xilinx") begin
+    if (VENDOR == "xilinx") begin : g_axi_dma
         axi_dma_wrap #(
             .ILA_EN(ILA_EN)
         ) i_axi_dma_wrap (
