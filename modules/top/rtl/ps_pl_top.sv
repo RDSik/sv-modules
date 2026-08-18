@@ -73,29 +73,29 @@ module ps_pl_top
         .T (sda_padoen_o)
     );
 
-    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) m_spi ();
+    spi_if #(.CS_WIDTH(SPI_CS_WIDTH)) spi ();
 
-    assign spi_cs_o   = m_spi.cs;
-    assign spi_clk_o  = m_spi.clk;
-    assign spi_mosi_o = m_spi.mosi;
-    assign m_spi.miso = spi_miso_i;
+    assign spi_cs_o   = spi.cs;
+    assign spi_clk_o  = spi.clk;
+    assign spi_mosi_o = spi.mosi;
+    assign spi.miso   = spi_miso_i;
 
-    eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
+    eth_if #(.DATA_WIDTH(RGMII_WIDTH)) eth ();
 
     IOBUF i_mdio_IOBUF (
-        .O (m_eth.mdio_i),
+        .O (eth.mdio_i),
         .IO(eth_mdio_io),
-        .I (m_eth.mdio_o),
-        .T (m_eth.mdio_t)
+        .I (eth.mdio_o),
+        .T (eth.mdio_t)
     );
 
-    assign m_eth.rx_clk = eth_rx_clk_i;
-    assign m_eth.rxd    = eth_rxd_i;
-    assign m_eth.rx_ctl = eth_rx_ctl_i;
-    assign eth_txd_o    = m_eth.txd;
-    assign eth_tx_ctl_o = m_eth.tx_ctl;
-    assign eth_tx_clk_o = m_eth.tx_clk;
-    assign eth_mdc_o    = m_eth.mdc;
+    assign eth.rx_clk = eth_rx_clk_i;
+    assign eth.rxd    = eth_rxd_i;
+    assign eth.rx_ctl = eth_rx_ctl_i;
+    assign eth_txd_o    = eth.txd;
+    assign eth_tx_ctl_o = eth.tx_ctl;
+    assign eth_tx_clk_o = eth.tx_clk;
+    assign eth_mdc_o    = eth.mdc;
 
     logic ps_clk;
     logic ps_arstn;
@@ -159,8 +159,8 @@ module ps_pl_top
         .sda_padoen_o(sda_padoen_o),
         .s2mm_irq_o  (s2mm_irq),
         .mm2s_irq_o  (mm2s_irq),
-        .m_eth       (m_eth),
-        .m_spi       (m_spi),
+        .m_eth       (eth),
+        .m_spi       (spi),
         .m_axi       (axi),
         .s_axil      (axil)
     );
