@@ -15,7 +15,6 @@ set modules_dirs [list \
     ../../modules/top \
     ../../modules/dsp \
     ../../modules/interface \
-    ./ \
 ]
 
 set constrain_dir "../tangprimer20k"
@@ -40,6 +39,7 @@ proc source_scripts {dirs} {
 }
 
 source_scripts $modules_dirs
+add_file top.sv
 
 add_file $constrain_dir/top.sdc
 add_file $constrain_dir/top.cst
