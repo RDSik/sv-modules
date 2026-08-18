@@ -1,14 +1,14 @@
 /* verilator lint_off TIMESCALEMOD */
 /* verilator lint_off WIDTHEXPAND */
 module ram_tdp #(
-    parameter int MEM_DEPTH    = 1024,
-    parameter int BYTE_WIDTH   = 8,
-    parameter int BYTE_NUM     = 4,
-    parameter int READ_LATENCY = 5,
-    parameter     RAM_STYLE    = "block",
-    parameter     MEM_MODE     = "no_change",
-    parameter     MEM_FILE     = "",
-    parameter int MEM_WIDTH    = BYTE_WIDTH * BYTE_NUM
+    parameter int MEM_DEPTH  = 64,
+    parameter int BYTE_WIDTH = 8,
+    parameter int BYTE_NUM   = 4,
+    parameter int PIPE_STAGE = 5,
+    parameter     RAM_STYLE  = "block",
+    parameter     MEM_MODE   = "no_change",
+    parameter     MEM_FILE   = "",
+    parameter int MEM_WIDTH  = BYTE_WIDTH * BYTE_NUM
 ) (
     input  logic                         a_clk_i,
     input  logic                         a_en_i,
@@ -19,7 +19,7 @@ module ram_tdp #(
 
     input  logic                         b_clk_i,
     input  logic                         b_en_i,
-    input  logic [         BYTE_NUM-1:0] b_wr_en_i,
+    input  logic [      MEM_WIDTH/8-1:0] b_wr_en_i,
     input  logic [$clog2(MEM_DEPTH)-1:0] b_addr_i,
     input  logic [        MEM_WIDTH-1:0] b_data_i,
     output logic [        MEM_WIDTH-1:0] b_data_o
@@ -56,7 +56,7 @@ module ram_tdp #(
         end
     end
 
-    if (READ_LATENCY == 0) begin : g_distributed_ram
+    if (RAM_STYLE == "distributed") begin : g_distributed_ram
         assign a_data_o = ram[a_addr_i];
         assign b_data_o = ram[b_addr_i];
     end else begin : g_block_ultram_ram
@@ -112,18 +112,18 @@ module ram_tdp #(
             $error("Only no_change, read_first and write_first MODE is available!");
         end
 
-        if (READ_LATENCY == 1) begin : g_block_ram
+        if (RAM_STYLE == "block") begin : g_block_ram
             assign a_data_o = a_data;
             assign b_data_o = b_data;
-        end else begin : g_ultra_ram
-            logic [MEM_WIDTH-1:0] a_pipe[READ_LATENCY];
-            logic [MEM_WIDTH-1:0] b_pipe[READ_LATENCY];
-            logic a_en_pipe[READ_LATENCY+1];
-            logic b_en_pipe[READ_LATENCY+1];
+        end else if (RAM_STYLE == "ultra") begin : g_ultra_ram
+            logic [MEM_WIDTH-1:0] a_pipe[PIPE_STAGE];
+            logic [MEM_WIDTH-1:0] b_pipe[PIPE_STAGE];
+            logic a_en_pipe[PIPE_STAGE+1];
+            logic b_en_pipe[PIPE_STAGE+1];
 
             always_ff @(posedge a_clk_i) begin
                 a_en_pipe[0] <= a_en_i;
-                for (int i = 0; i < READ_LATENCY; i++) begin
+                for (int i = 0; i < PIPE_STAGE; i++) begin
                     a_en_pipe[i+1] <= a_en_pipe[i];
                 end
             end
@@ -135,7 +135,7 @@ module ram_tdp #(
             end
 
             always_ff @(posedge a_clk_i) begin
-                for (int i = 0; i < READ_LATENCY - 1; i++) begin
+                for (int i = 0; i < PIPE_STAGE - 1; i++) begin
                     if (a_en_pipe[i+1]) begin
                         a_pipe[i+1] <= a_pipe[i];
                     end
@@ -143,14 +143,14 @@ module ram_tdp #(
             end
 
             always_ff @(posedge a_clk_i) begin
-                if (a_en_pipe[READ_LATENCY]) begin
-                    a_data_o <= a_pipe[READ_LATENCY-1];
+                if (a_en_pipe[PIPE_STAGE]) begin
+                    a_data_o <= a_pipe[PIPE_STAGE-1];
                 end
             end
 
             always_ff @(posedge b_clk_i) begin
                 b_en_pipe[0] <= b_en_i;
-                for (int i = 0; i < READ_LATENCY; i++) begin
+                for (int i = 0; i < PIPE_STAGE; i++) begin
                     b_en_pipe[i+1] <= b_en_pipe[i];
                 end
             end
@@ -162,7 +162,7 @@ module ram_tdp #(
             end
 
             always_ff @(posedge b_clk_i) begin
-                for (int i = 0; i < READ_LATENCY - 1; i++) begin
+                for (int i = 0; i < PIPE_STAGE - 1; i++) begin
                     if (b_en_pipe[i+1]) begin
                         b_pipe[i+1] <= b_pipe[i];
                     end
@@ -170,10 +170,12 @@ module ram_tdp #(
             end
 
             always_ff @(posedge b_clk_i) begin
-                if (b_en_pipe[READ_LATENCY]) begin
-                    b_data_o <= b_pipe[READ_LATENCY-1];
+                if (b_en_pipe[PIPE_STAGE]) begin
+                    b_data_o <= b_pipe[PIPE_STAGE-1];
                 end
             end
+        end else begin : g_ram_style_err
+            $error("Only distributed, block and ultra RAM_STYLE is available!");
         end
     end
 
