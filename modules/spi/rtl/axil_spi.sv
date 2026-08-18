@@ -118,7 +118,6 @@ module axil_spi
     );
 
     localparam logic FIFO_ASYNC_MODE = 0;
-    localparam int READ_LATENCY = 1;
     localparam logic TLAST_EN = 1;
     localparam RAM_STYLE = "distributed";
 
@@ -127,7 +126,6 @@ module axil_spi
         .FIFO_WIDTH   (SPI_DATA_WIDTH),
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
         .TLAST_EN     (TLAST_EN),
-        .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_tx (
         .s_clk_i  (clk_i),
@@ -145,7 +143,6 @@ module axil_spi
         .FIFO_WIDTH   (SPI_DATA_WIDTH),
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
         .TLAST_EN     (TLAST_EN),
-        .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_rx (
         .s_clk_i  (clk_i),
