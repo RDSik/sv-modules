@@ -3,7 +3,6 @@ module fifo_wrap #(
     parameter int   FIFO_WIDTH    = 32,
     parameter int   FIFO_DEPTH    = 128,
     parameter int   CDC_REG_NUM   = 2,
-    parameter int   READ_LATENCY  = 1,
     parameter logic ASYNC_MODE_EN = 0,
     parameter       RAM_STYLE     = "block"
 ) (
@@ -31,11 +30,10 @@ module fifo_wrap #(
 
     if (ASYNC_MODE_EN) begin : g_async_fifo
         async_fifo #(
-            .FIFO_WIDTH  (FIFO_WIDTH),
-            .FIFO_DEPTH  (FIFO_DEPTH),
-            .CDC_REG_NUM (CDC_REG_NUM),
-            .READ_LATENCY(READ_LATENCY),
-            .RAM_STYLE   (RAM_STYLE)
+            .FIFO_WIDTH (FIFO_WIDTH),
+            .FIFO_DEPTH (FIFO_DEPTH),
+            .CDC_REG_NUM(CDC_REG_NUM),
+            .RAM_STYLE  (RAM_STYLE)
         ) i_async_fifo (
             .wr_clk_i     (wr_clk_i),
             .wr_rst_i     (wr_rst_i),
@@ -56,10 +54,9 @@ module fifo_wrap #(
         assign data_cnt_o = '0;
     end else begin : g_sync_fifo
         sync_fifo #(
-            .FIFO_WIDTH  (FIFO_WIDTH),
-            .FIFO_DEPTH  (FIFO_DEPTH),
-            .READ_LATENCY(READ_LATENCY),
-            .RAM_STYLE   (RAM_STYLE)
+            .FIFO_WIDTH(FIFO_WIDTH),
+            .FIFO_DEPTH(FIFO_DEPTH),
+            .RAM_STYLE (RAM_STYLE)
         ) i_sync_fifo (
             .clk_i     (wr_clk_i),
             .rst_i     (wr_rst_i),
