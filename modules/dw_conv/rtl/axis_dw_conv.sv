@@ -127,24 +127,17 @@ module axis_dw_conv #(
         if (TLAST_EN) begin : g_tlast_en
             always_ff @(posedge clk_i) begin
                 if (rst_i) begin
-                    m_axis_tlast <= 1'b0;
-                end else begin
-                    if (m_handshake) begin
-                        m_axis_tlast <= 1'b0;
-                    end else if (~m_axis_tlast & s_handshake) begin
-                        m_axis_tlast <= s_axis.tlast;
-                    end
-                end
-            end
-
-            always_ff @(posedge clk_i) begin
-                if (rst_i) begin
+                    m_axis_tlast <= '0;
                     m_axis_tkeep <= '0;
                 end else begin
                     if (m_handshake) begin
+                        m_axis_tlast <= '0;
                         m_axis_tkeep <= '0;
                     end else if (s_handshake) begin
                         m_axis_tkeep[cnt] <= {S_KEEP_WIDTH{1'b1}};
+                        if (~m_axis_tlast) begin
+                            m_axis_tlast <= s_axis.tlast;
+                        end
                     end
                 end
             end
