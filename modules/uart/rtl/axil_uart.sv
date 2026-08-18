@@ -130,14 +130,12 @@ module axil_uart
     );
 
     localparam logic FIFO_ASYNC_MODE = 0;
-    localparam int READ_LATENCY = 1;
     localparam RAM_STYLE = "distributed";
 
     axis_fifo #(
         .FIFO_DEPTH   (FIFO_DEPTH),
         .FIFO_WIDTH   (UART_DATA_WIDTH),
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
-        .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_tx (
         .s_clk_i  (clk_i),
@@ -154,7 +152,6 @@ module axil_uart
         .FIFO_DEPTH   (FIFO_DEPTH),
         .FIFO_WIDTH   (UART_DATA_WIDTH),
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
-        .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_rx (
         .s_clk_i  (clk_i),
