@@ -1,13 +1,14 @@
 /* verilator lint_off TIMESCALEMOD */
 /* verilator lint_off WIDTHEXPAND */
 module ram_sp #(
-    parameter int MEM_DEPTH    = 64,
-    parameter int BYTE_WIDTH   = 8,
-    parameter int BYTE_NUM     = 4,
-    parameter int READ_LATENCY = 5,
-    parameter     RAM_STYLE    = "block",
-    parameter     MEM_FILE     = "",
-    parameter int MEM_WIDTH    = BYTE_WIDTH * BYTE_NUM
+    parameter int MEM_DEPTH  = 64,
+    parameter int BYTE_WIDTH = 8,
+    parameter int BYTE_NUM   = 4,
+    parameter int PIPE_STAGE = 5,
+    parameter     RAM_STYLE  = "block",
+    parameter     MEM_MODE   = "no_change",
+    parameter     MEM_FILE   = "",
+    parameter int MEM_WIDTH  = BYTE_WIDTH * BYTE_NUM
 ) (
     input  logic                         clk_i,
     input  logic                         en_i,
@@ -39,24 +40,46 @@ module ram_sp #(
         end
     end
 
-    if (READ_LATENCY == 0) begin : g_distributed_ram
+    if (RAM_STYLE == "distributed") begin : g_distributed_ram
         assign data_o = ram[addr_i];
-    end else begin : g_block_ultram_ram
-        always_ff @(posedge clk_i) begin
-            if (en_i) begin
-                data <= ram[addr_i];
+    end else begin : g_other_ram
+        if (MEM_MODE == "write_first") begin : g_wr_first
+            always_ff @(posedge clk_i) begin
+                if (en_i) begin
+                    for (int i = 0; i < BYTE_NUM; i++) begin
+                        if (wr_en_i[i]) begin
+                            data[i*BYTE_WIDTH+:BYTE_WIDTH] <= data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
+                        end else begin
+                            data[i*BYTE_WIDTH+:BYTE_WIDTH] <= ram[addr_i][i*BYTE_WIDTH+:BYTE_WIDTH];
+                        end
+                    end
+                end
             end
+        end else if (MEM_MODE == "read_first") begin : g_rd_first
+            always_ff @(posedge clk_i) begin
+                if (en_i) begin
+                    data <= ram[addr_i];
+                end
+            end
+        end else if (MEM_MODE == "no_change") begin : g_no_change
+            always_ff @(posedge clk_i) begin
+                if (en_i & ~|wr_en_i) begin
+                    data <= ram[addr_i];
+                end
+            end
+        end else begin : g_mode_err
+            $error("Only no_change, read_first and write_first MODE is available!");
         end
 
-        if (READ_LATENCY == 1) begin : g_block_ram
+        if (RAM_STYLE == "block") begin : g_block_ram
             assign data_o = data;
-        end else begin : g_ultra_ram
-            logic [MEM_WIDTH-1:0] pipe[READ_LATENCY];
-            logic en_pipe[READ_LATENCY+1];
+        end else if (RAM_STYLE == "ultra") begin : g_ultra_ram
+            logic [MEM_WIDTH-1:0] pipe[PIPE_STAGE];
+            logic en_pipe[PIPE_STAGE+1];
 
             always_ff @(posedge clk_i) begin
                 en_pipe[0] <= en_i;
-                for (int i = 0; i < READ_LATENCY; i++) begin
+                for (int i = 0; i < PIPE_STAGE; i++) begin
                     en_pipe[i+1] <= en_pipe[i];
                 end
             end
@@ -68,7 +91,7 @@ module ram_sp #(
             end
 
             always_ff @(posedge clk_i) begin
-                for (int i = 0; i < READ_LATENCY - 1; i++) begin
+                for (int i = 0; i < PIPE_STAGE - 1; i++) begin
                     if (en_pipe[i+1]) begin
                         pipe[i+1] <= pipe[i];
                     end
@@ -76,10 +99,12 @@ module ram_sp #(
             end
 
             always_ff @(posedge clk_i) begin
-                if (en_pipe[READ_LATENCY]) begin
-                    data_o <= pipe[READ_LATENCY-1];
+                if (en_pipe[PIPE_STAGE]) begin
+                    data_o <= pipe[PIPE_STAGE-1];
                 end
             end
+        end else begin : g_ram_style_err
+            $error("Only distributed, block and ultra RAM_STYLE is available!");
         end
     end
 
