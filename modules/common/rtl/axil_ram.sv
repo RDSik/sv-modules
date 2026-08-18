@@ -1,7 +1,6 @@
 /* verilator lint_off TIMESCALEMOD */
 module axil_ram #(
     parameter int MEM_DEPTH = 128,
-    parameter     RAM_STYLE = "block",
     parameter     MEM_MODE  = "no_change",
     parameter     MEM_FILE  = ""
 ) (
@@ -101,9 +100,8 @@ module axil_ram #(
         .MEM_DEPTH   (MEM_DEPTH),
         .BYTE_WIDTH  (BYTE_WIDTH),
         .BYTE_NUM    (BYTE_NUM),
-        .READ_LATENCY(1),
         .MEM_MODE    (MEM_MODE),
-        .RAM_STYLE   (RAM_STYLE)
+        .RAM_STYLE   ("block")
     ) i_ram_sdp (
         .a_clk_i  (clk_i),
         .a_en_i   (slv_reg_wren),
