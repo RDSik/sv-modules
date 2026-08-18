@@ -190,14 +190,12 @@ module axil_i2c
     );
 
     localparam logic FIFO_ASYNC_MODE = 0;
-    localparam int READ_LATENCY = 1;
     localparam RAM_STYLE = "distributed";
 
     fifo_wrap #(
         .FIFO_WIDTH   (I2C_DATA_WIDTH),
         .FIFO_DEPTH   (FIFO_DEPTH),
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
-        .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_fifo_tx (
         .wr_clk_i     (clk_i),
@@ -221,7 +219,6 @@ module axil_i2c
         .FIFO_WIDTH   (I2C_DATA_WIDTH),
         .FIFO_DEPTH   (FIFO_DEPTH),
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
-        .READ_LATENCY (READ_LATENCY),
         .RAM_STYLE    (RAM_STYLE)
     ) i_fifo_rx (
         .wr_clk_i     (clk_i),
