@@ -89,9 +89,9 @@ module ps_pl_top
         .T (eth.mdio_t)
     );
 
-    assign eth.rx_clk = eth_rx_clk_i;
-    assign eth.rxd    = eth_rxd_i;
-    assign eth.rx_ctl = eth_rx_ctl_i;
+    assign eth.rx_clk   = eth_rx_clk_i;
+    assign eth.rxd      = eth_rxd_i;
+    assign eth.rx_ctl   = eth_rx_ctl_i;
     assign eth_txd_o    = eth.txd;
     assign eth_tx_ctl_o = eth.tx_ctl;
     assign eth_tx_clk_o = eth.tx_clk;
