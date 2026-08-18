@@ -39,8 +39,8 @@ proc source_scripts {dirs} {
 }
 
 source_scripts $modules_dirs
-add_file project/tangprimer20k/top.sv
 
+add_file $constrain_dir/top.sv
 add_file $constrain_dir/top.sdc
 add_file $constrain_dir/top.cst
 
