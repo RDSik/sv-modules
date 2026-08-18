@@ -24,7 +24,7 @@ module axis_fifo #(
     output logic [$clog2(FIFO_DEPTH):0] rd_data_cnt_o
 );
 
-    localparam int FULL_WIDTH = FIFO_WIDTH + (TLAST_EN * (FIFO_WIDTH / 8 + 1));
+    localparam int FULL_WIDTH = FIFO_WIDTH + TLAST_EN;
 
     logic [FULL_WIDTH-1:0] wr_data;
     logic [FULL_WIDTH-1:0] rd_data;
@@ -34,8 +34,8 @@ module axis_fifo #(
     logic                  full;
 
     if (TLAST_EN) begin : g_tlast_en
-        assign wr_data = {s_axis.tkeep, s_axis.tlast, s_axis.tdata};
-        assign {m_axis.tkeep, m_axis.tlast, m_axis.tdata} = rd_data;
+        assign wr_data = {s_axis.tlast, s_axis.tdata};
+        assign {m_axis.tlast, m_axis.tdata} = rd_data;
     end else begin : g_tlast_disable
         assign wr_data = s_axis.tdata;
         assign m_axis.tdata = rd_data;
