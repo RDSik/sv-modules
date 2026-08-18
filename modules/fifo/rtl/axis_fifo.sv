@@ -3,7 +3,6 @@ module axis_fifo #(
     parameter int   FIFO_WIDTH    = 32,
     parameter int   FIFO_DEPTH    = 128,
     parameter int   CDC_REG_NUM   = 2,
-    parameter int   READ_LATENCY  = 1,
     parameter logic TLAST_EN      = 0,
     parameter logic ASYNC_MODE_EN = 0,
     parameter       RAM_STYLE     = "block"
@@ -25,7 +24,7 @@ module axis_fifo #(
     output logic [$clog2(FIFO_DEPTH):0] rd_data_cnt_o
 );
 
-    localparam int FULL_WIDTH = FIFO_WIDTH + TLAST_EN;
+    localparam int FULL_WIDTH = FIFO_WIDTH + (TLAST_EN * (FIFO_WIDTH / 8 + 1));
 
     logic [FULL_WIDTH-1:0] wr_data;
     logic [FULL_WIDTH-1:0] rd_data;
@@ -35,8 +34,8 @@ module axis_fifo #(
     logic                  full;
 
     if (TLAST_EN) begin : g_tlast_en
-        assign wr_data = {s_axis.tlast, s_axis.tdata};
-        assign {m_axis.tlast, m_axis.tdata} = rd_data;
+        assign wr_data = {s_axis.tkeep, s_axis.tlast, s_axis.tdata};
+        assign {m_axis.tkeep, m_axis.tlast, m_axis.tdata} = rd_data;
     end else begin : g_tlast_disable
         assign wr_data = s_axis.tdata;
         assign m_axis.tdata = rd_data;
@@ -50,11 +49,10 @@ module axis_fifo #(
 
     if (ASYNC_MODE_EN) begin : g_async_fifo
         async_fifo #(
-            .FIFO_WIDTH  (FULL_WIDTH),
-            .FIFO_DEPTH  (FIFO_DEPTH),
-            .CDC_REG_NUM (CDC_REG_NUM),
-            .READ_LATENCY(0),
-            .RAM_STYLE   ("distributed")
+            .FIFO_WIDTH (FULL_WIDTH),
+            .FIFO_DEPTH (FIFO_DEPTH),
+            .CDC_REG_NUM(CDC_REG_NUM),
+            .RAM_STYLE  ("distributed")
         ) i_async_fifo (
             .wr_clk_i     (s_clk_i),
             .wr_rst_i     (s_rst_i),
@@ -75,10 +73,9 @@ module axis_fifo #(
         assign data_cnt_o = '0;
     end else begin : g_sync_fifo
         sync_fifo #(
-            .FIFO_WIDTH  (FULL_WIDTH),
-            .FIFO_DEPTH  (FIFO_DEPTH),
-            .READ_LATENCY(READ_LATENCY),
-            .RAM_STYLE   (RAM_STYLE)
+            .FIFO_WIDTH(FULL_WIDTH),
+            .FIFO_DEPTH(FIFO_DEPTH),
+            .RAM_STYLE (RAM_STYLE)
         ) i_sync_fifo (
             .clk_i     (s_clk_i),
             .rst_i     (s_rst_i),
