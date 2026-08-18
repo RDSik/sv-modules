@@ -19,7 +19,7 @@ module ram_tdp #(
 
     input  logic                         b_clk_i,
     input  logic                         b_en_i,
-    input  logic [      MEM_WIDTH/8-1:0] b_wr_en_i,
+    input  logic [         BYTE_NUM-1:0] b_wr_en_i,
     input  logic [$clog2(MEM_DEPTH)-1:0] b_addr_i,
     input  logic [        MEM_WIDTH-1:0] b_data_i,
     output logic [        MEM_WIDTH-1:0] b_data_o
