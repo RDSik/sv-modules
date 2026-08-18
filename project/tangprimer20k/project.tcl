@@ -1,4 +1,4 @@
-set top      "axil_top"
+set top      "top"
 set part     "GW2A-LV18PG256C8/I7"
 set dev_ver  "C"
 set language "sysv2017"
@@ -15,6 +15,7 @@ set modules_dirs [list \
     ../../modules/top \
     ../../modules/dsp \
     ../../modules/interface \
+    ./ \
 ]
 
 set constrain_dir "../tangprimer20k"
