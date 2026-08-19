@@ -11,7 +11,6 @@ if {$xilinx == 1} {
     set xil_defaultlib "
         $path/rtl/bd_top.sv
         $path/rtl/axi_mem.sv
-        $path/rtl/axil_master.sv
     "
 
     add_files -norecurse $xil_defaultlib
