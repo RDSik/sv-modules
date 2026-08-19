@@ -4,7 +4,6 @@ module axi_mem (
 
     localparam int MEM_WIDTH = s_axi.DATA_WIDTH;
     localparam int MEM_DEPTH = 8192;
-    localparam int BYTE_WIDTH = 8;
     localparam MEM_MODE = "write_first";
     localparam RAM_STYLE = "block";
 
@@ -82,8 +81,8 @@ module axi_mem (
 
     ram_tdp #(
         .MEM_DEPTH (MEM_DEPTH),
-        .BYTE_WIDTH(BYTE_WIDTH),
-        .BYTE_NUM  (MEM_WIDTH / BYTE_WIDTH),
+        .BYTE_WIDTH(8),
+        .BYTE_NUM  (MEM_WIDTH / 8),
         .RAM_STYLE (RAM_STYLE),
         .MEM_MODE  (MEM_MODE)
     ) i_ram_tdp (
