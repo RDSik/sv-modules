@@ -125,7 +125,7 @@ module axi_dma_wrap #(
 
     if (ILA_EN) begin : g_ila
         axil_ila i_axil_ila (
-            .clk    (clk_i),
+            .clk    (s_axil.clk_i),
             .probe0 (s_axil.awvalid),
             .probe1 (s_axil.awaddr),
             .probe2 (s_axil.bresp),
