@@ -36,7 +36,6 @@ module bd_top #(
 
     if (SIM_EN) begin : g_axi_mem
         axi_mem i_axi_mem (.s_axi(s_axi));
-        axil_master i_axil_master (.m_axil(m_axil));
     end else begin : g_bd
         zynq_bd zynq_bd_i (
             .M00_AXI_0_araddr (m_axil.araddr),
