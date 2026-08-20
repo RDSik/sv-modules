@@ -60,13 +60,13 @@ module axis_dw_conv #(
         if (TLAST_EN) begin : g_tlast_en
             always_ff @(posedge clk_i) begin
                 if (rst_i) begin
-                    m_axis_tlast <= 1'b0;
+                    m_axis_tlast <= '0;
+                    m_axis_tkeep <= '0;
                 end else if (s_handshake) begin
                     m_axis_tlast <= s_axis.tlast;
+                    m_axis_tkeep <= s_axis.tkeep;
                 end
             end
-
-            assign m_axis_tkeep = {M_KEEP_WIDTH{1'b1}};
         end else begin : g_tlast_disable
             assign m_axis_tlast = '0;
             assign m_axis_tkeep = '0;
@@ -82,7 +82,7 @@ module axis_dw_conv #(
 
         assign m_axis.tdata  = m_axis_tdata[cnt];
         assign m_axis.tlast  = m_axis_tlast & cnt_done;
-        assign m_axis.tkeep  = m_axis_tkeep;
+        assign m_axis.tkeep  = m_axis_tkeep[cnt];
         assign m_axis.tvalid = busy;
         assign s_axis.tready = ~busy;
     end else if (S_DATA_WIDTH < M_DATA_WIDTH) begin : g_up_size
@@ -134,7 +134,7 @@ module axis_dw_conv #(
                         m_axis_tlast <= '0;
                         m_axis_tkeep <= '0;
                     end else if (s_handshake) begin
-                        m_axis_tkeep[cnt] <= {S_KEEP_WIDTH{1'b1}};
+                        m_axis_tkeep[cnt] <= s_axis.tkeep;
                         if (~m_axis_tlast) begin
                             m_axis_tlast <= s_axis.tlast;
                         end
