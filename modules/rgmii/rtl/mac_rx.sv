@@ -260,4 +260,6 @@ module mac_rx
         .m_axis(m_axis)
     );
 
+    assign m_axis.tkeep = '1;
+
 endmodule
