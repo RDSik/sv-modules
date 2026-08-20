@@ -113,12 +113,12 @@ module sfir_even_symmetric_systolic_element #(
     logic signed [        DSIZE:0] preadd;
     logic signed [CSIZE+DSIZE-1:0] product;
 
-    assign cascdata = datatwo;
-
     always_ff @(posedge clk) begin
         data    <= datain;
         datatwo <= data;
     end
+
+    assign cascdata = datatwo;
 
     always_ff @(posedge clk) begin // dsp
         coeff   <= coeffin; // b input reg
