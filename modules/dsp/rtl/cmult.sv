@@ -23,6 +23,7 @@ module cmult #(
     logic signed [AWIDTH+BWIDTH:0] mult0, multr, multi, pr_int, pi_int;
     logic signed [AWIDTH+BWIDTH:0] common, commonr1, commonr2;
 
+    // luts
     always_ff @(posedge clk) begin
         ar_dd   <= ar_d;
         ar_ddd  <= ar_dd;
