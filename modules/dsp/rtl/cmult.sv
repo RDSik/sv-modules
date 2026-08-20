@@ -53,7 +53,7 @@ module cmult #(
         addr     <= br_ddd - bi_ddd;  // pre_adder + reg
         multr    <= addr * ar_dddd;  // mult + reg
         commonr1 <= common;  // c input reg
-        pr_int   <= multr + commonr1;  // post_adder  + reg
+        pr_int   <= multr + commonr1;  // alu + reg
     end
 
     // Imaginary product
@@ -61,7 +61,7 @@ module cmult #(
         addi     <= br_ddd + bi_ddd;  // pre_adder + reg
         multi    <= addi * ai_dddd;  // mult + reg
         commonr2 <= common;  // c input reg
-        pi_int   <= multi + commonr2;  // post_adder  + reg
+        pi_int   <= multi + commonr2;  // alu + reg
     end
 
     assign pr = pr_int;
