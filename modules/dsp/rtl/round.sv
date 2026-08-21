@@ -7,7 +7,7 @@ module round #(
     parameter int   DATA_WIDTH_IN  = 32,
     parameter int   DATA_WIDTH_OUT = 16,
     parameter logic ROUND_TYPE     = 1,     // 1 - even, 0 - odd
-    parameter       USE_DSP        = "yes"
+    parameter       USE_DSP        = "no"
 ) (
     input logic clk_i,
     input logic rst_i,
