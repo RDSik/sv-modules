@@ -19,7 +19,6 @@ class axil_spi_class #(
     localparam logic [SPI_MAX_SLAVE_NUM-1:0] SLAVE_SELECT = 8'b0000_0010;
     localparam logic CPHA = 1;
     localparam logic CPOL = 0;
-    localparam logic LAST = 1;
 
     axil_env #(.ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH))        env;
 
