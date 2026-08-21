@@ -13,9 +13,9 @@ class axil_spi_class #(
 );
 
     localparam int ADDR_OFFSET = DATA_WIDTH / 8;
+    localparam int BYTES_NUM = 8;
     localparam int WAIT_TIME = 9;
     localparam int CLK_DIV = 10;
-    localparam int BYTES_NUM = 8;
     localparam logic [SPI_MAX_SLAVE_NUM-1:0] SLAVE_SELECT = 8'b0000_0001;
     localparam logic CPHA = 1;
     localparam logic CPOL = 0;
