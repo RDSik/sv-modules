@@ -27,7 +27,6 @@ module axil_spi
     logic      [SPI_REG_NUM-1:0] wr_valid;
 
     logic                        reset;
-
     assign reset = wr_regs.control.reset;
 
     axis_if #(
@@ -75,7 +74,6 @@ module axil_spi
     end
 
     logic tx_handshake;
-
     assign tx_handshake = fifo_tx.tvalid & fifo_tx.tready;
 
     logic tx_last;
