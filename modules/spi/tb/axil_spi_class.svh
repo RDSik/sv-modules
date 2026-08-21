@@ -16,9 +16,10 @@ class axil_spi_class #(
     localparam int BYTES_NUM = 8;
     localparam int WAIT_TIME = 9;
     localparam int CLK_DIV = 10;
-    localparam logic [SPI_MAX_SLAVE_NUM-1:0] SLAVE_SELECT = 8'b0000_0010;
+    localparam logic [SPI_MAX_SLAVE_NUM-1:0] SLAVE_SELECT = 8'b0000_0001;
     localparam logic CPHA = 1;
     localparam logic CPOL = 0;
+    localparam logic LAST = 1;
 
     axil_env #(.ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH))        env;
 
@@ -59,6 +60,8 @@ class axil_spi_class #(
             $display("[%0t][SPI]: tx_fifo_empty = %0d", $time, spi_regs.status.tx_fifo_empty);
             $display("[%0t][SPI]: rx_fifo_full  = %0d", $time, spi_regs.status.rx_fifo_full);
             $display("[%0t][SPI]: tx_fifo_full  = %0d", $time, spi_regs.status.tx_fifo_full);
+            $display("[%0t][SPI]: tx_cnt        = %0d", $time, spi_regs.status.tx_cnt);
+            $display("[%0t][SPI]: rx_cnt        = %0d", $time, spi_regs.status.rx_cnt);
             $display("[%0t][SPI]: fifo_depth    = %0d", $time, spi_regs.param.fifo_depth);
             $display("[%0t][SPI]: data_width    = %0d", $time, spi_regs.param.data_width);
             $display("[%0t][SPI]: reg_num       = %0d", $time, spi_regs.param.reg_num);
