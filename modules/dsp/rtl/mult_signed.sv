@@ -34,7 +34,7 @@ module mult_signed #(
     end
 
     always_ff @(posedge clk_i) begin
-        p_d  <= a_dd * b_dd;  // mult reg
+        p_d  <= a_dd * b_dd;  // mult + reg
         p_dd <= p_d;  // p output reg
     end
 
