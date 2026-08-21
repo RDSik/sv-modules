@@ -1,6 +1,6 @@
 /* verilator lint_off TIMESCALEMOD */
 
-// Convergent Rounding (LSB Correction Technique) 3 latency and 1 optional dsp
+// Convergent Rounding (LSB Correction Technique) 3 latency and CH_NUM optional dsp
 
 module round #(
     parameter int   CH_NUM         = 2,
