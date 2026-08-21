@@ -76,7 +76,7 @@ module axis_arbiter_tb ();
     task static valid_gen();
         int delay;
         begin
-            wait (~rst_i);
+            wait (arstn_i);
             forever begin
                 delay = $urandom_range(0, RESET_DELAY);
                 repeat (delay) @(posedge clk_i);
