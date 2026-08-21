@@ -18,7 +18,6 @@ module amplitude #(
     output logic ovf_o
 );
 
-    localparam int MULT_DELAY = 4;
     localparam int MULT_DATA_WIDTH = 2 * DATA_WIDTH + 1;
 
     logic [CH_NUM-1:0][MULT_DATA_WIDTH-1:0] mult_tdata;
