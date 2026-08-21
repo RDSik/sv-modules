@@ -29,7 +29,6 @@ module round_robin_arbiter #(
 
     logic req_detect;
     logic grant_detect;
-    logic indx_detect;
 
     always_comb begin
         grant_shift = '0;
@@ -43,10 +42,12 @@ module round_robin_arbiter #(
     end
 
     always_comb begin
-        grant_detect = 1'b0;
+        grant_detect = '0;
         ptr_next     = ptr;
+        indx_o       = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
             if (grant_o[i] & ~grant_detect) begin
+                indx_o = PTR_WIDTH'(i);
                 if (i == MASTER_NUM - 1) begin
                     ptr_next = '0;
                 end else begin
@@ -62,17 +63,6 @@ module round_robin_arbiter #(
             ptr <= '0;
         end else if (ack_i) begin
             ptr <= ptr_next;
-        end
-    end
-
-    always_comb begin
-        indx_detect = '0;
-        indx_o      = '0;
-        for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant_o[i] & ~indx_detect) begin
-                indx_o      = PTR_WIDTH'(i);
-                indx_detect = 1'b1;
-            end
         end
     end
 
