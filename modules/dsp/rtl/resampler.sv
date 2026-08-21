@@ -119,9 +119,9 @@ module resampler #(
     end
 
     round #(
-        .CH_NUM       (CH_NUM),
-        .IN_DATA_WIDTH(FIR_WIDTH),
-        .OUTDATA_WIDTH(DATA_WIDTH),
+        .CH_NUM        (CH_NUM),
+        .IN_DATA_WIDTH (FIR_WIDTH),
+        .OUT_DATA_WIDTH(DATA_WIDTH),
         .ROUND_TYPE    (1),
         .USE_DSP       ("no")
     ) i_round (
