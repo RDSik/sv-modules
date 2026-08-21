@@ -19,14 +19,17 @@ module axil_spi
     spi_if.master m_spi
 );
 
-    spi_regs_t                   rd_regs;
-    spi_regs_t                   wr_regs;
+    spi_regs_t                          rd_regs;
+    spi_regs_t                          wr_regs;
 
-    logic      [SPI_REG_NUM-1:0] rd_request;
-    logic      [SPI_REG_NUM-1:0] rd_valid;
-    logic      [SPI_REG_NUM-1:0] wr_valid;
+    logic      [       SPI_REG_NUM-1:0] rd_request;
+    logic      [       SPI_REG_NUM-1:0] rd_valid;
+    logic      [       SPI_REG_NUM-1:0] wr_valid;
 
-    logic                        reset;
+    logic      [$clog2(FIFO_DEPTH)-1:0] tx_cnt;
+    logic      [$clog2(FIFO_DEPTH)-1:0] rx_cnt;
+
+    logic                               reset;
     assign reset = wr_regs.control.reset;
 
     axis_if #(
@@ -69,6 +72,8 @@ module axil_spi
         rd_regs.status.tx_fifo_empty = ~spi_tx.tvalid;
         rd_regs.status.rx_fifo_full  = ~spi_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
+        rd_regs.status.rx_cnt        = rx_cnt;
+        rd_regs.status.tx_cnt        = tx_cnt;
 
         rd_regs.rx.data              = fifo_rx.tdata;
     end
@@ -141,14 +146,15 @@ module axil_spi
         .TLAST_EN     (TLAST_EN),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_tx (
-        .s_clk_i  (clk_i),
-        .s_rst_i  (reset),
-        .m_clk_i  (clk_i),
-        .m_rst_i  (reset),
-        .s_axis   (fifo_tx),
-        .m_axis   (spi_tx),
-        .a_full_o (),
-        .a_empty_o()
+        .s_clk_i   (clk_i),
+        .s_rst_i   (reset),
+        .m_clk_i   (clk_i),
+        .m_rst_i   (reset),
+        .s_axis    (fifo_tx),
+        .m_axis    (spi_tx),
+        .data_cnt_o(tx_cnt),
+        .a_full_o  (),
+        .a_empty_o ()
     );
 
     axis_fifo #(
@@ -158,14 +164,15 @@ module axil_spi
         .TLAST_EN     (TLAST_EN),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_rx (
-        .s_clk_i  (clk_i),
-        .s_rst_i  (reset),
-        .m_clk_i  (clk_i),
-        .m_rst_i  (reset),
-        .s_axis   (spi_rx),
-        .m_axis   (fifo_rx),
-        .a_full_o (),
-        .a_empty_o()
+        .s_clk_i   (clk_i),
+        .s_rst_i   (reset),
+        .m_clk_i   (clk_i),
+        .m_rst_i   (reset),
+        .s_axis    (spi_rx),
+        .m_axis    (fifo_rx),
+        .data_cnt_o(rx_cnt),
+        .a_full_o  (),
+        .a_empty_o ()
     );
 
 endmodule
