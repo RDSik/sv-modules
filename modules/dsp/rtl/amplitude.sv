@@ -1,7 +1,7 @@
 module amplitude #(
-    parameter logic ROUND_TYPE = 1
-    parameter int CH_NUM       = 2,
-    parameter int DATA_WIDTH   = 16
+    parameter logic ROUND_TYPE = 1,
+    parameter int   CH_NUM     = 2,
+    parameter int   DATA_WIDTH = 16
 ) (
     input logic clk_i,
     input logic rst_i,
