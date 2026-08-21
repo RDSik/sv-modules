@@ -11,6 +11,7 @@ module ram_tdp #(
     parameter int MEM_WIDTH  = BYTE_WIDTH * BYTE_NUM
 ) (
     input  logic                         a_clk_i,
+    input  logic                         a_rst_i,
     input  logic                         a_en_i,
     input  logic [         BYTE_NUM-1:0] a_wr_en_i,
     input  logic [$clog2(MEM_DEPTH)-1:0] a_addr_i,
@@ -18,6 +19,7 @@ module ram_tdp #(
     output logic [        MEM_WIDTH-1:0] a_data_o,
 
     input  logic                         b_clk_i,
+    input  logic                         b_rst_i,
     input  logic                         b_en_i,
     input  logic [         BYTE_NUM-1:0] b_wr_en_i,
     input  logic [$clog2(MEM_DEPTH)-1:0] b_addr_i,
@@ -62,7 +64,9 @@ module ram_tdp #(
     end else begin : g_block_ultram_ram
         if (MEM_MODE == "write_first") begin : g_wr_first
             always_ff @(posedge a_clk_i) begin
-                if (a_en_i) begin
+                if (a_rst_i) begin
+                    a_data <= '0;
+                end else if (a_en_i) begin
                     for (int i = 0; i < BYTE_NUM; i++) begin
                         if (a_wr_en_i[i]) begin
                             a_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
@@ -74,7 +78,9 @@ module ram_tdp #(
             end
 
             always_ff @(posedge b_clk_i) begin
-                if (b_en_i) begin
+                if (b_rst_i) begin
+                    b_data <= '0;
+                end else if (b_en_i) begin
                     for (int i = 0; i < BYTE_NUM; i++) begin
                         if (b_wr_en_i[i]) begin
                             b_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= b_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
@@ -86,25 +92,33 @@ module ram_tdp #(
             end
         end else if (MEM_MODE == "read_first") begin : g_rd_first
             always_ff @(posedge a_clk_i) begin
-                if (a_en_i) begin
+                if (a_rst_i) begin
+                    a_data <= '0;
+                end else if (a_en_i) begin
                     a_data <= ram[a_addr_i];
                 end
             end
 
             always_ff @(posedge b_clk_i) begin
-                if (b_en_i) begin
+                if (b_rst_i) begin
+                    b_data <= '0;
+                end else if (b_en_i) begin
                     b_data <= ram[b_addr_i];
                 end
             end
         end else if (MEM_MODE == "no_change") begin : g_no_change
             always_ff @(posedge a_clk_i) begin
-                if (a_en_i & ~|a_wr_en_i) begin
+                if (a_rst_i) begin
+                    a_data <= '0;
+                end else if (a_en_i & ~|a_wr_en_i) begin
                     a_data <= ram[a_addr_i];
                 end
             end
 
             always_ff @(posedge b_clk_i) begin
-                if (b_en_i & ~|b_wr_en_i) begin
+                if (b_rst_i) begin
+                    b_data <= '0;
+                end else if (b_en_i & ~|b_wr_en_i) begin
                     b_data <= ram[b_addr_i];
                 end
             end
