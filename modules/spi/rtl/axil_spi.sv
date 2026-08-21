@@ -72,8 +72,8 @@ module axil_spi
         rd_regs.status.tx_fifo_empty = ~spi_tx.tvalid;
         rd_regs.status.rx_fifo_full  = ~spi_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
-        rd_regs.status.rx_cnt        = rx_cnt;
-        rd_regs.status.tx_cnt        = tx_cnt;
+        rd_regs.status.rx_fifoi_cnt  = rx_cnt;
+        rd_regs.status.tx_fifo_cnt   = tx_cnt;
 
         rd_regs.rx.data              = fifo_rx.tdata;
     end
