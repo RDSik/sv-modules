@@ -20,15 +20,14 @@ module axis_arbiter #(
 
     assign m_handshake   = m_axis.tvalid & m_axis.tready;
     assign m_axis.tvalid = |grant;
+    assign m_axis.tdata  = s_axis_tdata[grant_indx];
+    assign m_axis.tuser  = grant_indx;
 
     for (genvar i = 0; i < MASTER_NUM; i++) begin : g_axis
         assign s_axis[i].tready = m_axis.tready & grant[i];
         assign s_axis_tvalid[i] = s_axis[i].tvalid;
         assign s_axis_tdata[i]  = s_axis[i].tdata;
     end
-
-    assign m_axis.tdata = s_axis_tdata[grant_indx];
-    assign m_axis.tuser = grant_indx;
 
     round_robin_arbiter #(
         .MASTER_NUM(MASTER_NUM)
