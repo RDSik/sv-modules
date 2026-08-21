@@ -3,6 +3,7 @@ module resampler #(
     parameter       COE_FILE         = "fir.mem",
     parameter logic INTERPOLATION_EN = 1,
     parameter logic DECIMATION_EN    = 1,
+    parameter logic ROUND_TYPE       = 1,
     parameter int   CH_NUM           = 2,
     parameter int   DATA_WIDTH       = 16,
     parameter int   COEF_WIDTH       = 18,
@@ -122,7 +123,7 @@ module resampler #(
         .CH_NUM        (CH_NUM),
         .IN_DATA_WIDTH (FIR_WIDTH),
         .OUT_DATA_WIDTH(DATA_WIDTH),
-        .ROUND_TYPE    (1),
+        .ROUND_TYPE    (ROUND_TYPE),
         .USE_DSP       ("no")
     ) i_round (
         .clk_i       (clk_i),
