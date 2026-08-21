@@ -17,6 +17,7 @@ module ram_sdp #(
     input logic [        MEM_WIDTH-1:0] a_data_i,
 
     input  logic                         b_clk_i,
+    input  logic                         b_rst_i,
     input  logic                         b_en_i,
     input  logic [$clog2(MEM_DEPTH)-1:0] b_addr_i,
     output logic [        MEM_WIDTH-1:0] b_data_o
@@ -49,7 +50,9 @@ module ram_sdp #(
     end else begin : g_other_ram
         if (MEM_MODE == "write_first") begin : g_wr_first
             always_ff @(posedge b_clk_i) begin
-                if (b_en_i) begin
+                if (rst_i) begin
+                    b_data <= '0;
+                end else if (b_en_i) begin
                     for (int i = 0; i < BYTE_NUM; i++) begin
                         if (a_wr_en_i[i]) begin
                             b_data[i*BYTE_WIDTH+:BYTE_WIDTH] <= a_data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
@@ -61,13 +64,17 @@ module ram_sdp #(
             end
         end else if (MEM_MODE == "read_first") begin : g_rd_first
             always_ff @(posedge b_clk_i) begin
-                if (b_en_i) begin
+                if (rst_i) begin
+                    b_data <= '0;
+                end else if (b_en_i) begin
                     b_data <= ram[b_addr_i];
                 end
             end
         end else if (MEM_MODE == "no_change") begin : g_no_change
             always_ff @(posedge b_clk_i) begin
-                if (b_en_i & ~|a_wr_en_i) begin
+                if (rst_i) begin
+                    b_data <= '0;
+                end else if (b_en_i & ~|a_wr_en_i) begin
                     b_data <= ram[b_addr_i];
                 end
             end
