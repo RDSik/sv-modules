@@ -23,17 +23,17 @@ module mult_signed #(
     logic signed [B_DATA_WIDTH-1:0] b_d, b_dd;
     logic signed [A_DATA_WIDTH+B_DATA_WIDTH:0] p_d, p_dd;
 
-    always_ff @(posedge clk) begin  // a input dual reg
+    always_ff @(posedge clk_i) begin  // a input dual reg
         a_d  <= a_tdata_i;
         a_dd <= a_d;
     end
 
-    always_ff @(posedge clk) begin  // b input dual reg
+    always_ff @(posedge clk_i) begin  // b input dual reg
         b_d  <= b_tdata_i;
         b_dd <= b_d;
     end
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk_i) begin
         p_d  <= a_dd * b_dd;  // mult reg
         p_dd <= p_d;  // p output reg
     end
