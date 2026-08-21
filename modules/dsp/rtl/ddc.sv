@@ -1,11 +1,12 @@
 /* verilator lint_off TIMESCALEMOD */
 module ddc #(
-    parameter     COE_FILE    = "fir.mem",
-    parameter int CH_NUM      = 2,
-    parameter int DATA_WIDTH  = 16,
-    parameter int COEF_WIDTH  = 18,
-    parameter int PHASE_WIDTH = 32,
-    parameter int TAP_NUM     = 16
+    parameter logic ROUND_TYPE = 1,
+    parameter     COE_FILE     = "fir.mem",
+    parameter int CH_NUM       = 2,
+    parameter int DATA_WIDTH   = 16,
+    parameter int COEF_WIDTH   = 18,
+    parameter int PHASE_WIDTH  = 32,
+    parameter int TAP_NUM      = 16
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -29,7 +30,8 @@ module ddc #(
     mixer #(
         .CH_NUM     (CH_NUM),
         .DATA_WIDTH (DATA_WIDTH),
-        .PHASE_WIDTH(PHASE_WIDTH)
+        .PHASE_WIDTH(PHASE_WIDTH),
+        .ROUND_TYPE (ROUND_TYPE)
     ) i_mixer (
         .clk_i       (clk_i),
         .rst_i       (rst_i),
@@ -55,6 +57,7 @@ module ddc #(
     resampler #(
         .INTERPOLATION_EN(0),
         .DECIMATION_EN   (1),
+        .ROUND_TYPE      (ROUND_TYPE),
         .CH_NUM          (CH_NUM),
         .DATA_WIDTH      (DATA_WIDTH),
         .COEF_WIDTH      (COEF_WIDTH),
