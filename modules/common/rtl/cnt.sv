@@ -1,18 +1,20 @@
 module cnt #(
-    parameter int MAX_VAL = 32
+    parameter int CNT_WIDTH = 32
 ) (
     input logic clk_i,
     input logic rst_i,
     input logic en_i,
 
-    output logic [$clog2(MAX_VAL)-1:0] cnt_o,
-    output logic                       cnt_last_o
+    input logic [CNT_WIDTH-1:0] max_val_i,
+
+    output logic [CNT_WIDTH-1:0] cnt_o,
+    output logic                 cnt_last_o
 );
 
-    logic [$clog2(MAX_VAL)-1:0] cnt;
-    logic                       cnt_last;
+    logic [CNT_WIDTH-1:0] cnt;
+    logic                 cnt_last;
 
-    assign cnt_last = (cnt == (MAX_VAL - 1));
+    assign cnt_last = (cnt == (max_val_i - 1));
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
