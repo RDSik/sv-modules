@@ -62,7 +62,7 @@ module round #(
 
         shift_reg #(
             .DATA_WIDTH($bits(tvalid_i)),
-            .DELAY     (ROUND_LATENCY),),),
+            .DELAY     (ROUND_LATENCY),
             .RESET_EN  (1),
             .SRL_STYLE ("register")
         ) i_shift_reg (
