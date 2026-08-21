@@ -13,8 +13,8 @@ module cmult #(
     input logic signed [1:0][B_DATA_WIDTH-1:0] b_tdata_i,  // {q, i} -> {msb, lsb}
     input logic                                tvalid_i,
 
-    output logic signed [1:0][A_WIDTH+B_DATA_WIDTH:0] tdata_o,  // {q, i} -> {msb, lsb}
-    output logic                                      tvalid_o
+    output logic signed [1:0][A_DATA_WIDTH+B_DATA_WIDTH:0] tdata_o,  // {q, i} -> {msb, lsb}
+    output logic                                           tvalid_o
 );
 
     localparam int CMULT_LATENCY = 6;
