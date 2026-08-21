@@ -31,7 +31,7 @@ module sfir #(
         );
     end
 
-     shift_reg #(
+    shift_reg #(
         .DATA_WIDTH($bits(tvalid_i)),
         .DELAY     (DELAY),
         .RESET_EN  (1),
