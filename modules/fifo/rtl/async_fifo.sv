@@ -96,6 +96,7 @@ module async_fifo #(
         .a_addr_i (wr_addr),
         .a_data_i (wr_data_i),
         .b_clk_i  (rd_clk_i),
+        .b_rst_i  (rd_rst_i),
         .b_en_i   (rd_en),
         .b_addr_i (rd_addr),
         .b_data_o (rd_data_o)
