@@ -1,7 +1,7 @@
 module mixer #(
     parameter logic ROUND_TYPE = 1,
-    parameter int PHASE_WIDTH  = 32,
-    parameter int DATA_WIDTH   = 16
+    parameter int  PHASE_WIDTH = 32,
+    parameter int  DATA_WIDTH  = 16
 ) (
     input logic clk_i,
     input logic rst_i,
