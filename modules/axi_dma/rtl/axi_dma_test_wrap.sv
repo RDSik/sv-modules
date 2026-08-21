@@ -35,11 +35,12 @@ module axi_dma_test_wrap #(
     logic                         cnt_ready;
 
     cnt #(
-        .MAX_VAL(TLAST_VAL)
+        .CNT_WIDTH(32)
     ) i_cnt (
         .clk_i     (s_axil.clk_i),
         .rst_i     (~s_axil.arstn_i),
         .en_i      (en_i & ready),
+        .max_val_i (TLAST_VAL),
         .cnt_o     (cnt),
         .cnt_last_o(cnt_last)
     );
