@@ -11,6 +11,7 @@ module ram_sp #(
     parameter int MEM_WIDTH  = BYTE_WIDTH * BYTE_NUM
 ) (
     input  logic                         clk_i,
+    input  logic                         rst_i,
     input  logic                         en_i,
     input  logic [         BYTE_NUM-1:0] wr_en_i,
     input  logic [$clog2(MEM_DEPTH)-1:0] addr_i,
@@ -45,7 +46,9 @@ module ram_sp #(
     end else begin : g_other_ram
         if (MEM_MODE == "write_first") begin : g_wr_first
             always_ff @(posedge clk_i) begin
-                if (en_i) begin
+                if (rst_i) begin
+                    data <= '0;
+                end else if (en_i) begin
                     for (int i = 0; i < BYTE_NUM; i++) begin
                         if (wr_en_i[i]) begin
                             data[i*BYTE_WIDTH+:BYTE_WIDTH] <= data_i[i*BYTE_WIDTH+:BYTE_WIDTH];
@@ -57,13 +60,17 @@ module ram_sp #(
             end
         end else if (MEM_MODE == "read_first") begin : g_rd_first
             always_ff @(posedge clk_i) begin
-                if (en_i) begin
+                if (rst_i) begin
+                    data <= '0;
+                end else if (en_i) begin
                     data <= ram[addr_i];
                 end
             end
         end else if (MEM_MODE == "no_change") begin : g_no_change
             always_ff @(posedge clk_i) begin
-                if (en_i & ~|wr_en_i) begin
+                if (rst_i) begin
+                    data <= '0;
+                end else if (en_i & ~|wr_en_i) begin
                     data <= ram[addr_i];
                 end
             end
