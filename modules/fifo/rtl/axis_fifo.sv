@@ -2,6 +2,7 @@
 module axis_fifo #(
     parameter int   FIFO_WIDTH    = 32,
     parameter int   FIFO_DEPTH    = 128,
+    parameter int   PIPE_STAGE    = 5,
     parameter int   CDC_REG_NUM   = 2,
     parameter logic TLAST_EN      = 0,
     parameter logic ASYNC_MODE_EN = 0,
@@ -46,6 +47,7 @@ module axis_fifo #(
         async_fifo #(
             .FIFO_WIDTH (FULL_WIDTH),
             .FIFO_DEPTH (FIFO_DEPTH),
+            .PIPE_STAGE (PIPE_STAGE),
             .CDC_REG_NUM(CDC_REG_NUM),
             .RAM_STYLE  ("distributed")
         ) i_async_fifo (
@@ -70,6 +72,7 @@ module axis_fifo #(
         sync_fifo #(
             .FIFO_WIDTH(FULL_WIDTH),
             .FIFO_DEPTH(FIFO_DEPTH),
+            .PIPE_STAGE(PIPE_STAGE),
             .RAM_STYLE (RAM_STYLE)
         ) i_sync_fifo (
             .clk_i     (s_axis.clk_i),

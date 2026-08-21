@@ -9,7 +9,7 @@ module axis_rgmii_tb ();
     localparam int AXIS_DATA_WIDTH = 8;
     localparam int PAYLOAD_WIDTH = 11;
     localparam int RGMII_WIDTH = 4;
-    parameter FIFO_MODE = "async";
+    localparam logic ASYNC_MODE_EN = 1;
 
     localparam int ETH_CLK_PER = 2;
     localparam int CLK_PER = 4;
@@ -38,7 +38,7 @@ module axis_rgmii_tb ();
     logic eth_rst_i;
 
     logic clk_i;
-    logic rst_i;
+    logic arstn_i;
 
     eth_if #(.DATA_WIDTH(RGMII_WIDTH)) m_eth ();
 
@@ -49,15 +49,15 @@ module axis_rgmii_tb ();
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) s_axis (
-        .clk_i(clk_i),
-        .arstn_i(~rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(AXIS_DATA_WIDTH)
     ) m_axis (
-        .clk_i(clk_i),
-        .arstn_i(~rst_i)
+        .clk_i  (clk_i),
+        .arstn_i(arstn_i)
     );
 
     initial begin
@@ -75,9 +75,9 @@ module axis_rgmii_tb ();
     end
 
     initial begin
-        rst_i = 1'b1;
+        arstn_i = 1'b0;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rst_i = 1'b0;
+        arstn_i = 1'b1;
         $display("Axis reset done in: %0t ns\n.", $time());
     end
 
@@ -106,7 +106,7 @@ module axis_rgmii_tb ();
     axis_rgmii #(
         .RGMII_WIDTH  (RGMII_WIDTH),
         .PAYLOAD_WIDTH(PAYLOAD_WIDTH),
-        .FIFO_MODE    (FIFO_MODE),
+        .ASYNC_MODE_EN(ASYNC_MODE_EN),
         .VENDOR       ("")
     ) i_axis_rgmii (
         .rx_rst_i           (eth_rst_i),

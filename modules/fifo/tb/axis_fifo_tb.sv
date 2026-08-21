@@ -9,9 +9,10 @@ module axis_fifo_tb ();
     localparam int FIFO_WIDTH = 16;
     localparam int FIFO_DEPTH = 4;
     localparam int CDC_REG_NUM = 3;
-    localparam int READ_LATENCY = 3;
+    localparam int PIPE_STAGE = 3;
     localparam logic TLAST_EN = 1;
     localparam logic ASYNC_MODE_EN = 0;
+    localparam RAM_STYLE = "block";
 
     localparam int M_CLK_PER = 2;
     localparam int S_CLK_PER = 2;
@@ -20,8 +21,8 @@ module axis_fifo_tb ();
 
     logic s_axis_clk;
     logic m_axis_clk;
-    logic s_axis_rst;
-    logic m_axis_rst;
+    logic s_axis_arstn;
+    logic m_axis_arstn;
     logic a_full;
     logic a_empty;
 
@@ -29,20 +30,20 @@ module axis_fifo_tb ();
         .DATA_WIDTH(FIFO_WIDTH)
     ) s_axis (
         .clk_i  (s_axis_clk),
-        .arstn_i(~s_axis_rst)
+        .arstn_i(s_axis_arstn)
     );
 
     axis_if #(
         .DATA_WIDTH(FIFO_WIDTH)
     ) m_axis (
         .clk_i  (m_axis_clk),
-        .arstn_i(~m_axis_rst)
+        .arstn_i(m_axis_arstn)
     );
 
     initial begin
-        s_axis_rst = 1'b1;
+        s_axis_arstn = 1'b0;
         repeat (S_RESET_DELAY) @(posedge s_axis_clk);
-        s_axis_rst = 1'b0;
+        s_axis_arstn = 1'b1;
         $display("Master reset done in: %0t ns\n.", $time());
     end
 
@@ -54,9 +55,9 @@ module axis_fifo_tb ();
     end
 
     initial begin
-        m_axis_rst = 1'b1;
+        m_axis_arstn = 1'b0;
         repeat (M_RESET_DELAY) @(posedge m_axis_clk);
-        m_axis_rst = 1'b0;
+        m_axis_arstn = 1'b1;
         $display("Slave reset done in: %0t ns\n.", $time());
     end
 
@@ -80,9 +81,10 @@ module axis_fifo_tb ();
     axis_fifo #(
         .FIFO_DEPTH   (FIFO_DEPTH),
         .FIFO_WIDTH   (FIFO_WIDTH),
+        .PIPE_STAGE   (PIPE_STAGE),
         .ASYNC_MODE_EN(ASYNC_MODE_EN),
         .CDC_REG_NUM  (CDC_REG_NUM),
-        .READ_LATENCY (READ_LATENCY),
+        .RAM_STYLE    (RAM_STYLE),
         .TLAST_EN     (TLAST_EN)
     ) dut (
         .s_axis   (m_axis),

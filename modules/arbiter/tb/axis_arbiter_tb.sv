@@ -10,7 +10,7 @@ module axis_arbiter_tb ();
     localparam int SIM_TIME = 500;
 
     logic                                  clk_i;
-    logic                                  rst_i;
+    logic                                  arstn_i;
     logic [MASTER_NUM-1:0]                 tvalid;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] seed_i;
     logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] poly_i;
@@ -20,7 +20,7 @@ module axis_arbiter_tb ();
         .USER_WIDTH(USER_WIDTH)
     ) arb_s_axis (
         .clk_i  (clk_i),
-        .arstn_i(~rst_i)
+        .arstn_i(arstn_i)
     );
 
     axis_if #(
@@ -28,7 +28,7 @@ module axis_arbiter_tb ();
         .USER_WIDTH(USER_WIDTH)
     ) lfsr_s_axis[MASTER_NUM-1:0] (
         .clk_i  (clk_i),
-        .arstn_i(~rst_i)
+        .arstn_i(arstn_i)
     );
 
     axis_if #(
@@ -36,13 +36,13 @@ module axis_arbiter_tb ();
         .USER_WIDTH(USER_WIDTH)
     ) lfsr_m_axis[MASTER_NUM-1:0] (
         .clk_i  (clk_i),
-        .arstn_i(~rst_i)
+        .arstn_i(arstn_i)
     );
 
     initial begin
-        rst_i = 1'b1;
+        arstn_i = 1'b0;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rst_i = 1'b0;
+        arstn_i = 1'b1;
         $display("Reset done in: %0t ns\n.", $time());
     end
 

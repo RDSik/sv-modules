@@ -17,7 +17,7 @@ module axis_uart_tb ();
     localparam int CLK_PER_NS = 1_000_000_000 / (CLK_MHZ * 1_000_000);
 
     logic clk_i;
-    logic rst_i;
+    logic arstn_i;
     logic uart_data;
     logic parity_err;
 
@@ -25,20 +25,20 @@ module axis_uart_tb ();
         .DATA_WIDTH(DATA_WIDTH)
     ) s_axis (
         .clk_i  (clk_i),
-        .arstn_i(~rst_i)
+        .arstn_i(arstn_i)
     );
 
     axis_if #(
         .DATA_WIDTH(DATA_WIDTH)
     ) m_axis (
         .clk_i  (clk_i),
-        .arstn_i(~rst_i)
+        .arstn_i(arstn_i)
     );
 
     initial begin
-        rst_i = 1'b1;
+        arstn_i = 1'b0;
         repeat (RESET_DELAY) @(posedge clk_i);
-        rst_i = 1'b0;
+        arstn_i = 1'b1;
         $display("Reset done in: %0t ns\n.", $time());
     end
 

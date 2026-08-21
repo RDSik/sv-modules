@@ -100,7 +100,7 @@ module axis_rgmii #(
         .clk_i         (m_eth.rx_clk),
         .rgmii_rx_ctl_i(m_eth.rx_ctl),
         .rgmii_rxd_i   (m_eth.rxd),
-        .rx_clk_o      (m_eth.tx_clk),
+        .tx_clk_o      (m_eth.tx_clk),
         .gmii_rx_en_o  (rx_dv),
         .gmii_rxd_o    (rx_d)
     );

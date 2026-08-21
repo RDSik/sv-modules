@@ -19,7 +19,7 @@ vlog modules/common/rtl/iddr.sv
 vlog modules/common/rtl/oddr.sv
 vlog modules/common/rtl/axil_reg_file.sv
 vlog modules/common/rtl/axil_reg_file_wrap.sv
-vlog modules/common/rtl/axis_reg.sv
+vlog modules/common/rtl/axis_reg_slice.sv
 
 vlog  modules/rgmii/rtl/rgmii_pkg.svh
 vlog  modules/rgmii/rtl/mac_tx.sv

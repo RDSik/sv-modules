@@ -2,6 +2,7 @@
 module fifo_wrap #(
     parameter int   FIFO_WIDTH    = 32,
     parameter int   FIFO_DEPTH    = 128,
+    parameter int   PIPE_STAGE    = 5,
     parameter int   CDC_REG_NUM   = 2,
     parameter logic ASYNC_MODE_EN = 0,
     parameter       RAM_STYLE     = "block"
@@ -32,6 +33,7 @@ module fifo_wrap #(
         async_fifo #(
             .FIFO_WIDTH (FIFO_WIDTH),
             .FIFO_DEPTH (FIFO_DEPTH),
+            .PIPE_STAGE (PIPE_STAGE),
             .CDC_REG_NUM(CDC_REG_NUM),
             .RAM_STYLE  (RAM_STYLE)
         ) i_async_fifo (
@@ -56,6 +58,7 @@ module fifo_wrap #(
         sync_fifo #(
             .FIFO_WIDTH(FIFO_WIDTH),
             .FIFO_DEPTH(FIFO_DEPTH),
+            .PIPE_STAGE(PIPE_STAGE),
             .RAM_STYLE (RAM_STYLE)
         ) i_sync_fifo (
             .clk_i     (wr_clk_i),
