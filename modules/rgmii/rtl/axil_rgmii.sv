@@ -54,41 +54,13 @@ module axil_rgmii
     logic pll_locked;
 
     always_comb begin
-        rd_valid                  = '1;
-        rd_regs                   = wr_regs;
+        rd_valid                 = '1;
+        rd_regs                  = wr_regs;
 
-        rd_regs.param.reg_num     = RGMII_REG_NUM;
-        rd_regs.param.fifo_depth  = 2 ** PAYLOAD_WIDTH;
+        rd_regs.param.reg_num    = RGMII_REG_NUM;
+        rd_regs.param.fifo_depth = 2 ** PAYLOAD_WIDTH;
 
-        rd_regs.status.crc_err    = crc_err;
-        rd_regs.status.pll_locked = pll_locked;
-    end
-
-    if (VENDOR == "xilinx") begin : g_pll
-        localparam real CLK_MULT = 20;
-        localparam real CLK0_DIVIDE = 8;
-        localparam real CLK1_DIVIDE = 5;
-
-        logic clk_125_m;
-        logic clk_200_m;
-
-        pll #(
-            .CLK_FREQ   (CLK_FREQ),
-            .CLK_MULT   (CLK_MULT),
-            .CLK0_DIVIDE(CLK0_DIVIDE),
-            .CLK1_DIVIDE(CLK1_DIVIDE)
-        ) i_pll (
-            .clk_i   (clk_i),
-            .rst_i   (~arstn_i),
-            .clk0_o  (clk_125_m),
-            .clk1_o  (clk_200_m),
-            .locked_o(pll_locked)
-        );
-
-        assign m_eth.tx_clk = clk_125_m;
-    end else begin : g_other
-        assign pll_locked   = 1'b0;
-        assign m_eth.tx_clk = m_eth.rx_clk;
+        rd_regs.status.crc_err   = crc_err;
     end
 
     axis_rgmii #(

@@ -8,6 +8,8 @@ module rgmii_rx #(
     input logic                   rgmii_rx_ctl_i,
     input logic [RGMII_WIDTH-1:0] rgmii_rxd_i,
 
+    output logic tx_clk_o,
+
     output logic                  gmii_rx_en_o,
     output logic [GMII_WIDTH-1:0] gmii_rxd_o
 );
@@ -15,6 +17,15 @@ module rgmii_rx #(
     logic [1:0] gmii_rxdv_w;
 
     assign gmii_rx_en_o = gmii_rxdv_w[1] & gmii_rxdv_w[0];
+
+    if (VENDOR == "xilinx") begin : g_xilinx
+        BUFG i_BUFG (
+            .I(clk_i),
+            .O(tx_clk_o)
+        );
+    end else begin : g_otrher
+        assign tx_clk_o = clk_i;
+    end
 
     iddr #(
         .VENDOR(VENDOR)
