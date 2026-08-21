@@ -19,19 +19,6 @@ module sfir #(
 
     localparam int DELAY = 2 * TAP_NUM - 1;
 
-    shift_reg #(
-        .DATA_WIDTH($bits(tvalid_i)),
-        .DELAY     (DELAY),
-        .RESET_EN  (1),
-        .SRL_STYLE ("srl")
-    ) i_shift_reg (
-        .clk_i (clk_i),
-        .rst_i (rst_i),
-        .en_i  (en_i),
-        .data_i(tvalid_i),
-        .data_o(tvalid_o)
-    );
-
     for (genvar ch_indx = 0; ch_indx < CH_NUM; ch_indx++) begin : g_ch
         sfir_even_symmetric_systolic_top #(
             .DSIZE   (DATA_WIDTH),
@@ -44,5 +31,18 @@ module sfir #(
             .firout(tdata_o[ch_indx])
         );
     end
+
+     shift_reg #(
+        .DATA_WIDTH($bits(tvalid_i)),
+        .DELAY     (DELAY),
+        .RESET_EN  (1),
+        .SRL_STYLE ("srl")
+    ) i_shift_reg (
+        .clk_i (clk_i),
+        .rst_i (rst_i),
+        .en_i  (en_i),
+        .data_i(tvalid_i),
+        .data_o(tvalid_o)
+    );
 
 endmodule
