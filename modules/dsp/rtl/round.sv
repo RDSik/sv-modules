@@ -3,10 +3,10 @@
 // Convergent Rounding (LSB Correction Technique) 3 latency and CH_NUM optional dsp
 
 module round #(
+    parameter logic ROUND_TYPE     = 1,     // 1 - even, 0 - odd
     parameter int   CH_NUM         = 2,
     parameter int   IN_DATA_WIDTH  = 32,
     parameter int   OUT_DATA_WIDTH = 16,
-    parameter logic ROUND_TYPE     = 1,     // 1 - even, 0 - odd
     parameter       USE_DSP        = "yes"
 ) (
     input logic clk_i,
