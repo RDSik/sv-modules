@@ -9,6 +9,7 @@ if {$xilinx == 1} {
     add_files -norecurse $xci_defaultlib
     
     set xil_defaultlib "
+        $path/rtl/rom.sv
         $path/rtl/ram_sp.sv
         $path/rtl/ram_sdp.sv
         $path/rtl/ram_tdp.sv
@@ -29,6 +30,7 @@ if {$xilinx == 1} {
 
     add_files -norecurse $xil_defaultlib
 } elseif {$gowin == 1} {
+    add_file $path/rtl/rom.sv
     add_file $path/rtl/ram_sp.sv
     add_file $path/rtl/ram_sdp.sv
     add_file $path/rtl/ram_tdp.sv
