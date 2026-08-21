@@ -49,7 +49,7 @@ module resampler #(
                     IDLE: begin
                         if (s_axis.tvalid) begin
                             int_tdata  <= s_axis.tdata;
-                            int_tvalid <= s_axis.tvalid;
+                            int_tvalid <= 1'b1;
                             state      <= INTERP;
                         end
                     end
@@ -60,7 +60,7 @@ module resampler #(
                             int_cnt    <= '0;
                             state      <= IDLE;
                         end else begin
-                            int_tvalid <= '1;
+                            int_tvalid <= 1'b1;
                             int_cnt    <= int_cnt + 1'd1;
                         end
                     end
