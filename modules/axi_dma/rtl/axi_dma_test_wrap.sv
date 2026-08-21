@@ -35,7 +35,7 @@ module axi_dma_test_wrap #(
     logic                         cnt_ready;
 
     cnt #(
-        .CNT_WIDTH(32)
+        .CNT_WIDTH($clog2(TLAST_VAL))
     ) i_cnt (
         .clk_i     (s_axil.clk_i),
         .rst_i     (~s_axil.arstn_i),
