@@ -8,7 +8,6 @@ module sfir #(
 ) (
     input logic clk_i,
     input logic rst_i,
-    input logic en_i,
 
     input logic                                     tvalid_i,
     input logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_i,
@@ -40,7 +39,7 @@ module sfir #(
     ) i_shift_reg (
         .clk_i (clk_i),
         .rst_i (rst_i),
-        .en_i  (en_i),
+         .en_i  (1'b1),
         .data_i(tvalid_i),
         .data_o(tvalid_o)
     );
