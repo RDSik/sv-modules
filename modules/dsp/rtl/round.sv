@@ -36,7 +36,7 @@ module round #(
             (* use_dsp = USE_DSP *) logic signed [IN_DATA_WIDTH-1:0] sum_reg;
             logic signed [IN_DATA_WIDTH-1:0] sum;
             logic signed [IN_DATA_WIDTH-1:0] data_in;
-            logic pattern_detect;
+            logic                            pattern_detect;
 
             assign sum = data_in + {{OUT_DATA_WIDTH{1'b0}}, add}; // pre-adder 
 
