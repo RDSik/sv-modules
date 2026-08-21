@@ -87,6 +87,7 @@ module axi_mem (
         .MEM_MODE  (MEM_MODE)
     ) i_ram_tdp (
         .a_clk_i  (bram_clk_a),
+        .a_rst_i  (bram_rst_a),
         .a_en_i   (bram_en_a),
         .a_wr_en_i(bram_we_a),
         .a_addr_i (bram_addr_a),
@@ -94,6 +95,7 @@ module axi_mem (
         .a_data_o (bram_rddata_a),
 
         .b_clk_i  (bram_clk_b),
+        .b_rst_i  (bram_rst_b),
         .b_en_i   (bram_en_b),
         .b_wr_en_i(bram_we_b),
         .b_addr_i (bram_addr_b),
