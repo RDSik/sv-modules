@@ -33,28 +33,28 @@ module axil_spi
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_tx (
-        .clk_i(clk_i),
+        .clk_i  (clk_i),
         .arstn_i(~reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) fifo_rx (
-        .clk_i(clk_i),
+        .clk_i  (clk_i),
         .arstn_i(~reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_tx (
-        .clk_i(clk_i),
+        .clk_i  (clk_i),
         .arstn_i(~reset)
     );
 
     axis_if #(
         .DATA_WIDTH(SPI_DATA_WIDTH)
     ) spi_rx (
-        .clk_i(clk_i),
+        .clk_i  (clk_i),
         .arstn_i(~reset)
     );
 
@@ -71,12 +71,27 @@ module axil_spi
         rd_regs.status.rx_fifo_full  = ~spi_rx.tready;
         rd_regs.status.tx_fifo_full  = ~fifo_tx.tready;
 
-        rd_regs.rx.last              = fifo_rx.tlast;
         rd_regs.rx.data              = fifo_rx.tdata;
     end
 
+    logic tx_handshake;
+
+    assign tx_handshake = fifo_tx.tvalid & fifo_tx.tready;
+
+    logic tx_last;
+
+    cnt #(
+        .CNT_WIDTH($clog2(FIFO_DEPTH))
+    ) i_cnt (
+        .clk_i     (clk_i),
+        .rst_i     (reset),
+        .en_i      (tx_handshake),
+        .max_val_i (wr_regs.control.bytes_num),
+        .cnt_last_o(tx_last)
+    );
+
+    assign fifo_tx.tlast  = tx_last;
     assign fifo_tx.tdata  = wr_regs.tx.data;
-    assign fifo_tx.tlast  = wr_regs.tx.last & wr_valid[SPI_TX_DATA_REG_POS];
     assign fifo_tx.tvalid = wr_valid[SPI_TX_DATA_REG_POS];
     assign fifo_rx.tready = rd_request[SPI_RX_DATA_REG_POS];
 
