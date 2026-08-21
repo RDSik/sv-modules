@@ -1,6 +1,7 @@
 module mixer #(
-    parameter int PHASE_WIDTH = 32,
-    parameter int DATA_WIDTH  = 16
+    parameter logic ROUND_TYPE = 1,
+    parameter int PHASE_WIDTH  = 32,
+    parameter int DATA_WIDTH   = 16
 ) (
     input logic clk_i,
     input logic rst_i,
@@ -54,7 +55,7 @@ module mixer #(
         .CH_NUM        (2),
         .IN_DATA_WIDTH (CMULT_DATA_WIDTH),
         .OUT_DATA_WIDTH(DATA_WIDTH),
-        .ROUND_TYPE    (1),
+        .ROUND_TYPE    (ROUND_TYPE),
         .USE_DSP       ("no")
     ) i_round (
         .clk_i   (clk_i),
