@@ -8,7 +8,7 @@ package spi_pkg;
     localparam int SPI_DATA_WIDTH = 8;
     localparam int SPI_MAX_SLAVE_NUM = 8;
 
-    typedef struct packed {
+        typedef struct packed {
         logic [7:0] rsrvd;
         logic [7:0] fifo_depth;
         logic [7:0] reg_num;
@@ -16,11 +16,13 @@ package spi_pkg;
     } spi_param_reg_t;
 
     typedef struct packed {
-        logic [27:0] rsrvd;
+        logic [11:0] rsrvd;
         logic        rx_fifo_empty;
         logic        tx_fifo_empty;
         logic        rx_fifo_full;
         logic        tx_fifo_full;
+        logic [7:0]  tx_cnt;
+        logic [7:0]  rx_cnt;
     } spi_status_reg_t;
 
     typedef logic [SPI_DIVIDER_WIDTH-1:0] spi_clk_divider_reg_t;
@@ -33,10 +35,10 @@ package spi_pkg;
 
     typedef struct packed {
         logic [12:0] rsrvd;
-        logic [15:0] bytes_num;
         logic        cpol;
         logic        cpha;
         logic        reset;
+        logic [15:0] bytes_num;
     } spi_control_reg_t;
 
     typedef struct packed {
