@@ -13,8 +13,8 @@ module mult_signed #(
     input logic signed [B_DATA_WIDTH-1:0] b_tdata_i,
     input logic                           tvalid_i,
 
-    output logic signed [A_WIDTH+B_DATA_WIDTH:0] tdata_o,
-    output logic                                 tvalid_o
+    output logic signed [A_DATA_WIDTH+B_DATA_WIDTH:0] tdata_o,
+    output logic                                      tvalid_o
 );
 
     localparam int MULT_LATENCY = 4;
