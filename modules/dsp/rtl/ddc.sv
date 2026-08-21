@@ -1,12 +1,12 @@
 /* verilator lint_off TIMESCALEMOD */
 module ddc #(
     parameter logic ROUND_TYPE = 1,
-    parameter     COE_FILE     = "fir.mem",
-    parameter int CH_NUM       = 2,
-    parameter int DATA_WIDTH   = 16,
-    parameter int COEF_WIDTH   = 18,
-    parameter int PHASE_WIDTH  = 32,
-    parameter int TAP_NUM      = 16
+    parameter      COE_FILE    = "fir.mem",
+    parameter int  CH_NUM      = 2,
+    parameter int  DATA_WIDTH  = 16,
+    parameter int  COEF_WIDTH  = 18,
+    parameter int  PHASE_WIDTH = 32,
+    parameter int  TAP_NUM     = 16
 ) (
     input logic clk_i,
     input logic rst_i,
