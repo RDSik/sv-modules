@@ -16,6 +16,7 @@ vlog modules/common/rtl/ram_sdp.sv
 vlog modules/common/rtl/shift_reg.sv
 vlog modules/common/rtl/axil_reg_file.sv
 vlog modules/common/rtl/axil_reg_file_wrap.sv
+vlog modules/common/rtl/cnt.sv
 
 vlog modules/spi/rtl/axil_spi.sv
 vlog modules/spi/rtl/axis_spi_master.sv
