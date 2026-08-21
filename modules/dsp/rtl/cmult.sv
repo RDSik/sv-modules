@@ -27,7 +27,7 @@ module cmult #(
     logic signed [A_DATA_WIDTH+B_DATA_WIDTH:0] mult0, multr, multi, pr_int, pi_int;
     logic signed [A_DATA_WIDTH+B_DATA_WIDTH:0] common, commonr1, commonr2;
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk_i) begin
         ar_dd <= ar_d;
         ai_dd <= ai_d;
         br_d  <= b_tdata_i[0];
@@ -36,7 +36,7 @@ module cmult #(
         bi_dd <= bi_d;
     end
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk_i) begin
         ar_ddd  <= ar_dd;
         ar_dddd <= ar_ddd;
         ai_ddd  <= ai_dd;
@@ -46,7 +46,7 @@ module cmult #(
     end
 
     // Common factor (ar ai) x bi, shared for the calculations of the real and imaginary final products
-    always_ff @(posedge clk) begin  // first dsp
+    always_ff @(posedge clk_i) begin  // first dsp
         ai_d      <= a_tdata_i[1];  // a input reg
         ar_d      <= a_tdata_i[0];  // b input reg
         addcommon <= ar_d - ai_d;  // pre-adder + reg
@@ -55,7 +55,7 @@ module cmult #(
     end
 
     // Real product
-    always_ff @(posedge clk) begin  // second dsp
+    always_ff @(posedge clk_i) begin  // second dsp
         addr     <= br_ddd - bi_ddd;  // pre-adder + reg
         multr    <= addr * ar_dddd;  // mult + reg
         commonr1 <= common;  // c input reg
@@ -63,7 +63,7 @@ module cmult #(
     end
 
     // Imaginary product
-    always_ff @(posedge clk) begin  // third dsp
+    always_ff @(posedge clk_i) begin  // third dsp
         addi     <= br_ddd + bi_ddd;  // pre-adder + reg
         multi    <= addi * ai_dddd;  // mult + reg
         commonr2 <= common;  // c input reg
