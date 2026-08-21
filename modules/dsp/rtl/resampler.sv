@@ -13,7 +13,6 @@ module resampler #(
 
     axis_if.slave s_axis,
 
-    input logic                  round_type_i,
     input logic [DATA_WIDTH-1:0] decimation_i,
     input logic [DATA_WIDTH-1:0] interpolation_i,
 
@@ -120,13 +119,14 @@ module resampler #(
     end
 
     round #(
-        .CH_NUM        (CH_NUM),
-        .DATA_WIDTH_IN (FIR_WIDTH),
-        .DATA_WIDTH_OUT(DATA_WIDTH)
+        .CH_NUM       (CH_NUM),
+        .IN_DATA_WIDTH(FIR_WIDTH),
+        .OUTDATA_WIDTH(DATA_WIDTH),
+        .ROUND_TYPE    (1),
+        .USE_DSP       ("no")
     ) i_round (
         .clk_i       (clk_i),
         .rst_i       (rst_i),
-        .round_type_i(round_type_i),
         .tvalid_i    (dec_tvalid),
         .tdata_i     (fir_tdata),
         .tvalid_o    (tvalid_o),
