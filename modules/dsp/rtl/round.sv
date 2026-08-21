@@ -32,17 +32,17 @@ module round #(
             logic [FRAC_WIDTH-1:0] pattern;
             assign pattern = (ROUND_TYPE) ? {FRAC_WIDTH{1'b0}} : {FRAC_WIDTH{1'b1}};
 
-            (* use_dsp = USE_DSP *) logic signed [DATA_WIDTH_IN-1:0] sum_reg; // pre_adder reg
-            logic signed [DATA_WIDTH_IN-1:0] sum; // pre_adder 
-            logic signed [DATA_WIDTH_IN-1:0] data_in; // input reg
-            logic pattern_detect; // pattern_detect
+            (* use_dsp = USE_DSP *) logic signed [DATA_WIDTH_IN-1:0] sum_reg;
+            logic signed [DATA_WIDTH_IN-1:0] sum;
+            logic signed [DATA_WIDTH_IN-1:0] data_in;
+            logic pattern_detect;
 
             assign sum = data_in + {{DATA_WIDTH_OUT{1'b0}}, add}; // pre_adder 
             
             always_ff @(posedge clk_i) begin // dsp
-                data_in        <= signed'(tdata_i[i]);
-                sum_reg        <= sum;
-                pattern_detect <= (sum[FRAC_WIDTH-1:0] == pattern);
+                data_in        <= signed'(tdata_i[i]);  // input reg
+                sum_reg        <= sum; // pre_adder reg
+                pattern_detect <= (sum[FRAC_WIDTH-1:0] == pattern); // pattern_detect
             end
 
             logic signed [DATA_WIDTH_OUT-1:0] data_out;
