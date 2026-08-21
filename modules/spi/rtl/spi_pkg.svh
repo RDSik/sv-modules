@@ -40,8 +40,7 @@ package spi_pkg;
     } spi_control_reg_t;
 
     typedef struct packed {
-        logic [22:0]               rsrvd;
-        logic                      last;
+        logic [23:0]               rsrvd;
         logic [SPI_DATA_WIDTH-1:0] data;
     } spi_data_reg_t;
 
