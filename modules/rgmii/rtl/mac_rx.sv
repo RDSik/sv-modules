@@ -260,6 +260,6 @@ module mac_rx
         .m_axis(m_axis)
     );
 
-    assign m_axis.tkeep = {AXIS_DATA_WIDTH/8{1'b1}};
+    assign m_axis.tkeep = {(AXIS_DATA_WIDTH/8){1'b1}};
 
 endmodule
