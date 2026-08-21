@@ -80,7 +80,7 @@ module sfir_shifter #(
     output logic [DSIZE-1:0] dataout
 );
 
-    (* srl_style = "srl_logicister" *) logic [DSIZE-1:0] tmp[0:2*NBTAP-1];
+    (* srl_style = "srl_reg" *) logic [DSIZE-1:0] tmp[0:2*NBTAP-1];
     always_ff @(posedge clk) begin
         tmp[0] <= datain;
         for (integer i = 0; i <= 2 * NBTAP - 2; i = i + 1) begin
