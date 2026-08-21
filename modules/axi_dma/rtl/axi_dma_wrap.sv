@@ -32,8 +32,6 @@ module axi_dma_wrap #(
     axis_dw_conv #(
         .TLAST_EN(TLAST_EN)
     ) i_s2mm_axis_dw_conv (
-        .clk_i (s_axil.clk_i),
-        .rst_i (~s_axil.arstn_i),
         .s_axis(s_axis),
         .m_axis(s_axis_s2mm)
     );
@@ -41,8 +39,6 @@ module axi_dma_wrap #(
     axis_dw_conv #(
         .TLAST_EN(TLAST_EN)
     ) i_mm2s_axis_dw_conv (
-        .clk_i (s_axil.clk_i),
-        .rst_i (~s_axil.arstn_i),
         .s_axis(m_axis_mm2s),
         .m_axis(m_axis)
     );

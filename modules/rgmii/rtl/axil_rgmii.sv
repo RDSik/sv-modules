@@ -99,10 +99,6 @@ module axil_rgmii
     ) i_axis_rgmii (
         .tx_rst_i           (wr_regs.control.tx_reset),
         .rx_rst_i           (wr_regs.control.rx_reset),
-        .s_clk_i            (s_axil.clk_i),
-        .s_rst_i            (~s_axil.arstn_i),
-        .m_clk_i            (s_axil.clk_i),
-        .m_rst_i            (~s_axil.arstn_i),
         .check_destination_i(wr_regs.control.check_destination),
         .payload_bytes_i    (wr_regs.control.payload_bytes),
         .fpga_port_i        (wr_regs.port.fpga),

@@ -62,8 +62,6 @@ module ddc #(
         .TAP_NUM         (TAP_NUM),
         .COE_FILE        (COE_FILE)
     ) i_resampler (
-        .clk_i          (clk_i),
-        .rst_i          (rst_i),
         .s_axis         (s_axis),
         .interpolation_i('0),
         .decimation_i   (decimation_i),

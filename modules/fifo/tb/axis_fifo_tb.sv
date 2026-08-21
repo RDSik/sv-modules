@@ -85,10 +85,6 @@ module axis_fifo_tb ();
         .READ_LATENCY (READ_LATENCY),
         .TLAST_EN     (TLAST_EN)
     ) dut (
-        .s_clk_i  (m_axis_clk),
-        .s_rst_i  (m_axis_rst),
-        .m_clk_i  (s_axis_clk),
-        .m_rst_i  (s_axis_rst),
         .s_axis   (m_axis),
         .m_axis   (s_axis),
         .a_full_o (a_full),

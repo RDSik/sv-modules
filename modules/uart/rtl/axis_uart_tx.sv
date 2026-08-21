@@ -7,8 +7,6 @@ module axis_uart_tx
     parameter int DATA_WIDTH    = 8,
     parameter int DIVIDER_WIDTH = 32
 ) (
-    input  logic                     clk_i,
-    input  logic                     rst_i,
     input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
     input  logic                     parity_odd_i,
     input  logic                     parity_even_i,
@@ -16,6 +14,12 @@ module axis_uart_tx
 
     axis_if.slave s_axis
 );
+
+    logic clk_i;
+    logic arstn_i;
+
+    assign clk_i   = s_axis.clk_i;
+    assign arstn_i = s_axis.arstn_i;
 
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
 
@@ -38,8 +42,8 @@ module axis_uart_tx
 
     uart_state_e state;
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             state     <= IDLE;
             uart_tx_o <= '1;
             bit_cnt   <= '0;
@@ -95,8 +99,8 @@ module axis_uart_tx
         end
     end
 
-    always @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             baud_cnt <= '0;
         end else if (baud_done) begin
             baud_cnt <= '0;
@@ -105,15 +109,15 @@ module axis_uart_tx
         end
     end
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             tx_data <= '0;
         end else if (s_handshake) begin
             tx_data <= s_axis.tdata;
         end
     end
 
-    assign s_axis.tready = (state == IDLE) && ~rst_i;
+    assign s_axis.tready = (state == IDLE) && arstn_i;
     assign s_handshake = s_axis.tvalid & s_axis.tready;
 
     /* verilator lint_off WIDTHEXPAND */

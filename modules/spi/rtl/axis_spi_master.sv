@@ -15,8 +15,6 @@ module axis_spi_master #(
     parameter int WAIT_WIDTH    = 32,
     parameter int SLAVE_NUM     = 1
 ) (
-    input logic                     clk_i,
-    input logic                     rst_i,
     input logic [    SLAVE_NUM-1:0] select_i,
     input logic [   WAIT_WIDTH-1:0] wait_time_i,
     input logic [DIVIDER_WIDTH-1:0] clk_divider_i,
@@ -28,6 +26,12 @@ module axis_spi_master #(
     axis_if.slave  s_axis,
     axis_if.master m_axis
 );
+
+    logic clk_i;
+    logic arstn_i;
+
+    assign clk_i   = s_axis.clk_i;
+    assign arstn_i = s_axis.arstn_i;
 
     localparam int EDGE_NUM = DATA_WIDTH * 2;  // need 16 edges to transmit 8 bits
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
@@ -84,8 +88,8 @@ module axis_spi_master #(
         end
     end
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             state      <= IDLE;
             spi_cs_reg <= '1;
             tlast_flag <= '0;
@@ -126,8 +130,8 @@ module axis_spi_master #(
     assign wait_done = (wait_cnt == wait_time_i - 1);
 
     // SPI clock counters------------------------------------------
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             clk_cnt <= '0;
         end else if (clk_done || (state != DATA)) begin
             clk_cnt <= '0;
@@ -141,8 +145,8 @@ module axis_spi_master #(
     assign half_clk_done = (clk_cnt == (clk_divider_i / 2) - 1);
     /* verilator lint_on WIDTHEXPAND */
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             neg_edge    <= '0;
             pos_edge    <= '0;
             edge_cnt    <= '0;
@@ -169,8 +173,8 @@ module axis_spi_master #(
     // ------------------------------------------------------------
 
     // SPI clock---------------------------------------------------
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             m_spi.clk <= cpol_i;
         end else begin
             m_spi.clk <= spi_clk_reg;
@@ -179,8 +183,8 @@ module axis_spi_master #(
     // ------------------------------------------------------------
 
     // MISO data---------------------------------------------------
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             rx_bit_cnt <= '0;
             rx_data    <= '0;
         end else if (rx_bit_done) begin
@@ -197,8 +201,8 @@ module axis_spi_master #(
     // ------------------------------------------------------------
 
     // MOSI data---------------------------------------------------
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             /* verilator lint_off WIDTHTRUNC */
             tx_bit_cnt <= DATA_WIDTH - 1;
             m_spi.mosi <= 1'b0;
@@ -216,15 +220,15 @@ module axis_spi_master #(
     // ------------------------------------------------------------
 
     // Slave AXI-Stream data---------------------------------------
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             tx_data <= '0;
         end else if (s_handshake) begin
             tx_data <= s_axis.tdata;
         end
     end
 
-    assign s_axis.tready = (state == IDLE) && ~rst_i;
+    assign s_axis.tready = (state == IDLE) && arstn_i;
     assign s_handshake   = s_axis.tvalid & s_axis.tready;
 
     always_ff @(posedge clk_i) begin
@@ -233,8 +237,8 @@ module axis_spi_master #(
     // ------------------------------------------------------------
 
     // Master AXI-Stream data--------------------------------------
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             m_axis.tvalid <= 1'b0;
             m_axis.tlast  <= 1'b0;
         end else if (m_handshake) begin

@@ -7,14 +7,19 @@ module axis_dw_conv_wrap #(
     parameter logic ASYNC_MODE_EN = 0
 
 ) (
-    input logic s_clk_i,
-    input logic s_rst_i,
-    input logic m_clk_i,
-    input logic m_rst_i,
-
     axis_if.master m_axis,
     axis_if.slave  s_axis
 );
+
+    logic s_clk_i;
+    logic s_arstn_i;
+    logic m_clk_i;
+    logic m_arstn_i;
+
+    assign s_clk_i   = s_axis.clk_i;
+    assign s_arstn_i = s_axis.arstn_i;
+    assign m_clk_i   = m_axis.clk_i;
+    assign m_arstn_i = m_axis.arstn_i;
 
     localparam int S_DATA_WIDTH = s_axis.DATA_WIDTH;
     localparam int M_DATA_WIDTH = m_axis.DATA_WIDTH;
@@ -25,7 +30,7 @@ module axis_dw_conv_wrap #(
                 .DATA_WIDTH(S_DATA_WIDTH)
             ) axis (
                 .clk_i  (m_clk_i),
-                .arstn_i(~m_rst_i)
+                .arstn_i(m_arstn_i)
             );
 
             axis_fifo #(
@@ -35,10 +40,6 @@ module axis_dw_conv_wrap #(
                 .TLAST_EN     (TLAST_EN),
                 .ASYNC_MODE_EN(ASYNC_MODE_EN)
             ) i_axis_fifo (
-                .s_clk_i  (s_clk_i),
-                .s_rst_i  (s_rst_i),
-                .m_clk_i  (m_clk_i),
-                .m_rst_i  (m_rst_i),
                 .s_axis   (s_axis),
                 .m_axis   (axis),
                 .a_full_o (),
@@ -48,8 +49,6 @@ module axis_dw_conv_wrap #(
             axis_dw_conv #(
                 .TLAST_EN(TLAST_EN)
             ) i_axis_dw_conv (
-                .clk_i (m_clk_i),
-                .rst_i (m_rst_i),
                 .m_axis(m_axis),
                 .s_axis(axis)
             );
@@ -58,14 +57,12 @@ module axis_dw_conv_wrap #(
                 .DATA_WIDTH(M_DATA_WIDTH)
             ) axis (
                 .clk_i  (s_clk_i),
-                .arstn_i(~s_rst_i)
+                .arstn_i(s_arstn_i)
             );
 
             axis_dw_conv #(
                 .TLAST_EN(TLAST_EN)
             ) i_axis_dw_conv (
-                .clk_i (s_clk_i),
-                .rst_i (s_rst_i),
                 .m_axis(axis),
                 .s_axis(s_axis)
             );
@@ -77,10 +74,6 @@ module axis_dw_conv_wrap #(
                 .TLAST_EN     (TLAST_EN),
                 .ASYNC_MODE_EN(ASYNC_MODE_EN)
             ) i_axis_fifo (
-                .s_clk_i  (s_clk_i),
-                .s_rst_i  (s_rst_i),
-                .m_clk_i  (m_clk_i),
-                .m_rst_i  (m_rst_i),
                 .s_axis   (axis),
                 .m_axis   (m_axis),
                 .a_full_o (),
@@ -91,8 +84,6 @@ module axis_dw_conv_wrap #(
         axis_dw_conv #(
             .TLAST_EN(TLAST_EN)
         ) i_axis_dw_conv (
-            .clk_i (s_clk_i),
-            .rst_i (s_rst_i),
             .m_axis(m_axis),
             .s_axis(s_axis)
         );

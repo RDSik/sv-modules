@@ -2,12 +2,15 @@
 module axis_dw_conv #(
     parameter logic TLAST_EN = 0
 ) (
-    input logic clk_i,
-    input logic rst_i,
-
     axis_if.master m_axis,
     axis_if.slave  s_axis
 );
+
+    logic clk_i;
+    logic arstn_i;
+
+    assign clk_i   = s_axis.clk_i;
+    assign arstn_i = s_axis.arstn_i;
 
     localparam int S_DATA_WIDTH = s_axis.DATA_WIDTH;
     localparam int M_DATA_WIDTH = m_axis.DATA_WIDTH;
@@ -33,8 +36,8 @@ module axis_dw_conv #(
 
         assign cnt_done = (cnt == RATIO - 1);
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 cnt <= '0;
             end else if (m_handshake) begin
                 if (cnt_done) begin
@@ -45,8 +48,8 @@ module axis_dw_conv #(
             end
         end
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 busy <= 1'b0;
             end else begin
                 if (s_handshake) begin
@@ -58,8 +61,8 @@ module axis_dw_conv #(
         end
 
         if (TLAST_EN) begin : g_tlast_en
-            always_ff @(posedge clk_i) begin
-                if (rst_i) begin
+            always_ff @(posedge clk_i or negedge arstn_i) begin
+                if (~arstn_i) begin
                     m_axis_tlast <= '0;
                     m_axis_tkeep <= '0;
                 end else if (s_handshake) begin
@@ -72,8 +75,8 @@ module axis_dw_conv #(
             assign m_axis_tkeep = '0;
         end
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 m_axis_tdata <= '0;
             end else if (s_handshake) begin
                 m_axis_tdata <= s_axis.tdata;
@@ -100,8 +103,8 @@ module axis_dw_conv #(
         assign flush    = cnt_done | (TLAST_EN & s_axis.tlast);
         assign cnt_done = (cnt == RATIO - 1);
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 cnt <= '0;
             end else if (s_handshake) begin
                 if (flush) begin
@@ -112,8 +115,8 @@ module axis_dw_conv #(
             end
         end
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 done <= 1'b0;
             end else begin
                 if (m_handshake) begin
@@ -125,8 +128,8 @@ module axis_dw_conv #(
         end
 
         if (TLAST_EN) begin : g_tlast_en
-            always_ff @(posedge clk_i) begin
-                if (rst_i) begin
+            always_ff @(posedge clk_i or negedge arstn_i) begin
+                if (~arstn_i) begin
                     m_axis_tlast <= '0;
                     m_axis_tkeep <= '0;
                 end else begin
@@ -146,8 +149,8 @@ module axis_dw_conv #(
             assign m_axis_tkeep = '0;
         end
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 m_axis_tdata <= '0;
             end else if (s_handshake) begin
                 m_axis_tdata[cnt] <= s_axis.tdata;

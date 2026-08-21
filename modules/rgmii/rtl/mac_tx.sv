@@ -12,9 +12,6 @@ module mac_tx
     input logic clk_i,
     input logic rst_i,
 
-    input logic s_clk_i,
-    input logic s_rst_i,
-
     output logic                  tx_en_o,
     output logic [GMII_WIDTH-1:0] tx_d_o,
 
@@ -91,8 +88,21 @@ module mac_tx
         .arstn_i(~rst_i)
     );
 
-    logic m_axis_tready;
+    axis_fifo #(
+        .FIFO_DEPTH   (FIFO_DEPTH),
+        .FIFO_WIDTH   (AXIS_DATA_WIDTH),
+        .CDC_REG_NUM  (CDC_REG_NUM),
+        .ASYNC_MODE_EN(ASYNC_MODE_EN),
+        .TLAST_EN     (1)
+    ) i_axis_fifo_rx (
+        .s_axis       (s_axis),
+        .m_axis       (m_axis),
+        .wr_data_cnt_o(fifo_count),
+        .a_full_o     (),
+        .a_empty_o    ()
+    );
 
+    logic m_axis_tready;
     assign m_axis.tready = m_axis_tready;
 
     always_ff @(posedge clk_i) begin
@@ -106,24 +116,6 @@ module mac_tx
             end
         end
     end
-
-    axis_fifo #(
-        .FIFO_DEPTH   (FIFO_DEPTH),
-        .FIFO_WIDTH   (AXIS_DATA_WIDTH),
-        .CDC_REG_NUM  (CDC_REG_NUM),
-        .ASYNC_MODE_EN(ASYNC_MODE_EN),
-        .TLAST_EN     (1)
-    ) i_axis_fifo_rx (
-        .s_clk_i      (s_clk_i),
-        .s_rst_i      (s_rst_i),
-        .m_clk_i      (clk_i),
-        .m_rst_i      (rst_i),
-        .s_axis       (s_axis),
-        .m_axis       (m_axis),
-        .wr_data_cnt_o(fifo_count),
-        .a_full_o     (),
-        .a_empty_o    ()
-    );
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin

@@ -106,8 +106,6 @@ module axil_uart
         .DATA_WIDTH   (UART_DATA_WIDTH),
         .DIVIDER_WIDTH(UART_DIVIDER_WIDTH)
     ) i_axis_uart_tx (
-        .clk_i        (clk_i),
-        .rst_i        (tx_reset),
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
         .parity_even_i(wr_regs.control.parity_even),
@@ -119,8 +117,6 @@ module axil_uart
         .DATA_WIDTH   (UART_DATA_WIDTH),
         .DIVIDER_WIDTH(UART_DIVIDER_WIDTH)
     ) i_axis_uart_rx (
-        .clk_i        (clk_i),
-        .rst_i        (rx_reset),
         .clk_divider_i(wr_regs.clk_divider),
         .parity_odd_i (wr_regs.control.parity_odd),
         .parity_even_i(wr_regs.control.parity_even),
@@ -138,10 +134,6 @@ module axil_uart
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_tx (
-        .s_clk_i  (clk_i),
-        .s_rst_i  (tx_reset),
-        .m_clk_i  (clk_i),
-        .m_rst_i  (tx_reset),
         .s_axis   (fifo_tx),
         .m_axis   (uart_tx),
         .a_full_o (),
@@ -154,10 +146,6 @@ module axil_uart
         .ASYNC_MODE_EN(FIFO_ASYNC_MODE),
         .RAM_STYLE    (RAM_STYLE)
     ) i_axis_fifo_rx (
-        .s_clk_i  (clk_i),
-        .s_rst_i  (rx_reset),
-        .m_clk_i  (clk_i),
-        .m_rst_i  (rx_reset),
         .s_axis   (uart_rx),
         .m_axis   (fifo_rx),
         .a_full_o (),

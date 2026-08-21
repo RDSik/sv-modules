@@ -7,8 +7,6 @@ module axis_uart_rx
     parameter int DATA_WIDTH    = 8,
     parameter int DIVIDER_WIDTH = 32
 ) (
-    input  logic                     clk_i,
-    input  logic                     rst_i,
     input  logic [DIVIDER_WIDTH-1:0] clk_divider_i,
     input  logic                     parity_odd_i,
     input  logic                     parity_even_i,
@@ -17,6 +15,12 @@ module axis_uart_rx
 
     axis_if.master m_axis
 );
+
+    logic clk_i;
+    logic arstn_i;
+
+    assign clk_i   = m_axis.clk_i;
+    assign arstn_i = m_axis.arstn_i;
 
     localparam int DATA_CNT_WIDTH = $clog2(DATA_WIDTH);
 
@@ -41,8 +45,8 @@ module axis_uart_rx
 
     uart_state_e state;
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             state        <= IDLE;
             rx_data      <= '0;
             bit_cnt      <= '0;
@@ -104,8 +108,8 @@ module axis_uart_rx
         end
     end
 
-    always @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             baud_cnt <= '0;
         end else if (baud_done | start_bit_check) begin
             baud_cnt <= '0;
@@ -114,8 +118,8 @@ module axis_uart_rx
         end
     end
 
-    always_ff @(posedge clk_i) begin
-        if (rst_i) begin
+    always_ff @(posedge clk_i or negedge arstn_i) begin
+        if (~arstn_i) begin
             m_axis.tvalid <= 1'b0;
         end else if (m_handshake) begin
             m_axis.tvalid <= 1'b0;

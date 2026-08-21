@@ -4,19 +4,16 @@ module axis_arbiter #(
     parameter int DATA_WIDTH = 16,
     parameter int USER_WIDTH = 2
 ) (
-    input logic clk_i,
-    input logic rst_i,
-
     axis_if.slave  s_axis[MASTER_NUM-1:0],
     axis_if.master m_axis
 );
 
-    logic                                  m_handshake;
-    logic [MASTER_NUM-1:0]                 grant;
-    logic [$clog2(MASTER_NUM)-1:0]         grant_indx;
-    logic [MASTER_NUM-1:0]                 s_axis_tvalid;
-    logic [MASTER_NUM-1:0][DATA_WIDTH-1:0] s_axis_tdata;
-    logic [MASTER_NUM-1:0][USER_WIDTH-1:0] m_axis_tuser;
+    logic                                          m_handshake;
+    logic [        MASTER_NUM-1:0]                 grant;
+    logic [$clog2(MASTER_NUM)-1:0]                 grant_indx;
+    logic [        MASTER_NUM-1:0]                 s_axis_tvalid;
+    logic [        MASTER_NUM-1:0][DATA_WIDTH-1:0] s_axis_tdata;
+    logic [        MASTER_NUM-1:0][USER_WIDTH-1:0] m_axis_tuser;
 
     assign m_handshake   = m_axis.tvalid & m_axis.tready;
     assign m_axis.tvalid = |grant;
@@ -32,8 +29,8 @@ module axis_arbiter #(
     round_robin_arbiter #(
         .MASTER_NUM(MASTER_NUM)
     ) i_round_robin_arbiter (
-        .clk_i  (clk_i),
-        .rst_i  (rst_i),
+        .clk_i  (m_axis.clk_i),
+        .rst_i  (~m_axis.arstn_i),
         .ack_i  (m_handshake),
         .req_i  (s_axis_tvalid),
         .grant_o(grant),

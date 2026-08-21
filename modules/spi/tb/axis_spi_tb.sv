@@ -78,8 +78,6 @@ module axis_spi_tb ();
         .DIVIDER_WIDTH(DIVIDER_WIDTH),
         .DATA_WIDTH   (DATA_WIDTH)
     ) dut (
-        .clk_i        (clk_i),
-        .rst_i        (rst_i),
         .wait_time_i  (WAIT_TIME),
         .clk_divider_i(DIVIDER),
         .cpol_i       (CPHA),

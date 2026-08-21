@@ -91,10 +91,6 @@ module axis_dw_conv_tb ();
         .FIFO_FIRST   (FIFO_FIRST),
         .ASYNC_MODE_EN(ASYNC_MODE_EN)
     ) dut (
-        .s_clk_i(m_axis_clk),
-        .s_rst_i(m_axis_rst),
-        .m_clk_i(s_axis_clk),
-        .m_rst_i(s_axis_rst),
         .m_axis (s_axis),
         .s_axis (m_axis)
     );

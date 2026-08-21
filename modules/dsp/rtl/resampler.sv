@@ -9,9 +9,6 @@ module resampler #(
     parameter int   COEF_WIDTH       = 18,
     parameter int   TAP_NUM          = 16
 ) (
-    input logic clk_i,
-    input logic rst_i,
-
     axis_if.slave s_axis,
 
     input logic [DATA_WIDTH-1:0] decimation_i,
@@ -20,6 +17,12 @@ module resampler #(
     output logic                                     tvalid_o,
     output logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] tdata_o
 );
+
+    logic clk_i;
+    logic arstn_i;
+
+    assign clk_i   = s_axis.clk_i;
+    assign arstn_i = s_axis.arstn_i;
 
     typedef enum logic {
         IDLE   = 1'b0,
@@ -32,15 +35,15 @@ module resampler #(
     logic signed [CH_NUM-1:0][DATA_WIDTH-1:0] int_tdata;
 
     if (INTERPOLATION_EN) begin : g_int_en
-        assign s_axis.tready = (state == IDLE) && ~rst_i;
+        assign s_axis.tready = (state == IDLE) && arstn_i;
 
         logic [DATA_WIDTH-1:0] int_cnt;
         logic                  int_cnt_last;
 
         assign int_cnt_last = (int_cnt == interpolation_i);
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 int_tvalid <= '0;
                 int_cnt    <= '0;
                 state      <= IDLE;
@@ -69,7 +72,7 @@ module resampler #(
             end
         end
     end else begin : g_int_disable
-        assign s_axis.tready = ~rst_i;
+        assign s_axis.tready = arstn_i;
         assign int_tdata     = s_axis.tdata;
         assign int_tvalid    = s_axis.tvalid;
     end
@@ -87,7 +90,7 @@ module resampler #(
         .COE_FILE  (COE_FILE)
     ) i_fir_filter (
         .clk_i   (clk_i),
-        .rst_i   (rst_i),
+        .rst_i   (~arstn_i),
         .tvalid_i(int_tvalid),
         .tdata_i (int_tdata),
         .tvalid_o(fir_tvalid),
@@ -102,8 +105,8 @@ module resampler #(
 
         assign dec_cnt_last = (dec_cnt == decimation_i);
 
-        always_ff @(posedge clk_i) begin
-            if (rst_i) begin
+        always_ff @(posedge clk_i or negedge arstn_i) begin
+            if (~arstn_i) begin
                 dec_cnt <= '0;
             end else if (fir_tvalid) begin
                 if (dec_cnt_last) begin
@@ -127,7 +130,7 @@ module resampler #(
         .USE_DSP       ("no")
     ) i_round (
         .clk_i       (clk_i),
-        .rst_i       (rst_i),
+        .rst_i       (~arstn_i),
         .tvalid_i    (dec_tvalid),
         .tdata_i     (fir_tdata),
         .tvalid_o    (tvalid_o),
