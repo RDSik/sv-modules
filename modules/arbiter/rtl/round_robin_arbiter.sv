@@ -27,26 +27,32 @@ module round_robin_arbiter #(
     assign grant_shift_double = {grant_shift, grant_shift} << ptr;
     assign grant_o            = grant_shift_double[(MASTER_NUM*2)-1:MASTER_NUM];
 
+    logic req_detect;
+    logic grant_detect;
+    logic indx_detect;
+
     always_comb begin
         grant_shift = '0;
+        req_detect  = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
-            if (req_shift[i]) begin
+            if (req_shift[i] & ~req_detect) begin
                 grant_shift[i] = 1'b1;
-                break;
+                req_detect     = 1'b1;
             end
         end
     end
 
     always_comb begin
-        ptr_next = ptr;
+        grant_detect = 1'b0;
+        ptr_next     = ptr;
         for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant_o[i]) begin
+            if (grant_o[i] & ~grant_detect) begin
                 if (i == MASTER_NUM - 1) begin
                     ptr_next = '0;
                 end else begin
                     ptr_next = PTR_WIDTH'(i + 1);
                 end
-                break;
+                grant_detect = 1'b1;
             end
         end
     end
@@ -60,11 +66,12 @@ module round_robin_arbiter #(
     end
 
     always_comb begin
-        indx_o = '0;
+        indx_detect = '0;
+        indx_o      = '0;
         for (int i = 0; i < MASTER_NUM; i++) begin
-            if (grant_o[i]) begin
-                indx_o = PTR_WIDTH'(i);
-                break;
+            if (grant_o[i] & ~indx_detect) begin
+                indx_o      = PTR_WIDTH'(i);
+                indx_detect = 1'b1;
             end
         end
     end
