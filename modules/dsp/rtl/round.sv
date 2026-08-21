@@ -39,8 +39,8 @@ module round #(
 
             assign sum = data_in + {{OUT_DATA_WIDTH{1'b0}}, add};  // pre-adder 
 
-            always_ff @(posedge clk_i) begin  // dsp
-                data_in        <= signed'(tdata_i[i]);  // input reg
+            always_ff @(posedge clk_i) begin // dsp
+                data_in        <= signed'(tdata_i[i]); // input reg
                 sum_reg        <= sum; // pre-adder reg
                 pattern_detect <= (sum[FRAC_WIDTH-1:0] == pattern); // pattern_detect
             end
