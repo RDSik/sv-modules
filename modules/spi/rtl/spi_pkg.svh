@@ -21,8 +21,8 @@ package spi_pkg;
         logic        tx_fifo_empty;
         logic        rx_fifo_full;
         logic        tx_fifo_full;
-        logic [7:0]  tx_cnt;
-        logic [7:0]  rx_cnt;
+        logic [7:0]  tx_fifo_cnt;
+        logic [7:0]  rx_fifo_cnt;
     } spi_status_reg_t;
 
     typedef logic [SPI_DIVIDER_WIDTH-1:0] spi_clk_divider_reg_t;
