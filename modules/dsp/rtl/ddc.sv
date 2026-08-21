@@ -11,8 +11,6 @@ module ddc #(
     input logic rst_i,
     input logic en_i,
 
-    input logic round_type_i,
-
     input logic [DATA_WIDTH-1:0] decimation_i,
 
     input logic [PHASE_WIDTH-1:0] pinc_i,
@@ -36,7 +34,6 @@ module ddc #(
         .clk_i       (clk_i),
         .rst_i       (rst_i),
         .en_i        (en_i),
-        .round_type_i(round_type_i),
         .pinc_i      (pinc_i),
         .poff_i      (poff_i),
         .tvalid_i    (tvalid_i),
@@ -69,7 +66,6 @@ module ddc #(
         .s_axis         (s_axis),
         .interpolation_i('0),
         .decimation_i   (decimation_i),
-        .round_type_i   (round_type_i),
         .tvalid_o       (tvalid_o),
         .tdata_o        (tdata_o)
     );
