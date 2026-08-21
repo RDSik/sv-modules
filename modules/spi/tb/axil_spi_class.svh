@@ -87,6 +87,10 @@ class axil_spi_class #(
                 env.master_write_reg(BASE_ADDR + ADDR_OFFSET * SPI_TX_DATA_REG_POS, spi_regs.tx);
             end
 
+            do begin
+                env.master_read_reg(BASE_ADDR + ADDR_OFFSET * SPI_STATUS_REG_POS, spi_regs.status);
+            end while (spi_regs.status.rx_fifo_empty);
+
             spi_read_regs();
         end
     endtask
