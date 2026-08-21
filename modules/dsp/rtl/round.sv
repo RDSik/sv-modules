@@ -36,14 +36,14 @@ module round #(
             logic signed [DATA_WIDTH_IN-1:0] sum; // pre_adder 
             logic signed [DATA_WIDTH_IN-1:0] data_in; // input reg
             logic pattern_detect; // pattern_detect
+
+            assign sum = data_in + {{DATA_WIDTH_OUT{1'b0}}, add}; // pre_adder 
             
             always_ff @(posedge clk_i) begin // dsp
                 data_in        <= signed'(tdata_i[i]);
                 sum_reg        <= sum;
                 pattern_detect <= (sum[FRAC_WIDTH-1:0] == pattern);
             end
-
-            assign sum = data_in + {{DATA_WIDTH_OUT{1'b0}}, add}; // pre_adder 
 
             logic signed [DATA_WIDTH_OUT-1:0] data_out;
 
