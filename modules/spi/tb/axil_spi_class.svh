@@ -59,8 +59,8 @@ class axil_spi_class #(
             $display("[%0t][SPI]: tx_fifo_empty = %0d", $time, spi_regs.status.tx_fifo_empty);
             $display("[%0t][SPI]: rx_fifo_full  = %0d", $time, spi_regs.status.rx_fifo_full);
             $display("[%0t][SPI]: tx_fifo_full  = %0d", $time, spi_regs.status.tx_fifo_full);
-            $display("[%0t][SPI]: tx_cnt        = %0d", $time, spi_regs.status.tx_cnt);
-            $display("[%0t][SPI]: rx_cnt        = %0d", $time, spi_regs.status.rx_cnt);
+            $display("[%0t][SPI]: tx_fifo_cnt   = %0d", $time, spi_regs.status.tx_fifo_cnt);
+            $display("[%0t][SPI]: rx_fifo_cnt   = %0d", $time, spi_regs.status.rx_fifo_cnt);
             $display("[%0t][SPI]: fifo_depth    = %0d", $time, spi_regs.param.fifo_depth);
             $display("[%0t][SPI]: data_width    = %0d", $time, spi_regs.param.data_width);
             $display("[%0t][SPI]: reg_num       = %0d", $time, spi_regs.param.reg_num);
