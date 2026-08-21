@@ -121,7 +121,8 @@ module sfir_even_symmetric_systolic_element #(
     assign cascdata = datatwo;
 
     always_ff @(posedge clk) begin // dsp
-        coeff   <= coeffin; // b input reg
+        coeff   <= coeffin;  // a input reg
+        dataz   <= datazin;  // b input reg
         preadd  <= datatwo + dataz; // pre_adder reg
         product <= preadd * coeff; // mult reg
         cascout <= product + cascin; // alu reg
