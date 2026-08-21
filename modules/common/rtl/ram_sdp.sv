@@ -50,7 +50,7 @@ module ram_sdp #(
     end else begin : g_other_ram
         if (MEM_MODE == "write_first") begin : g_wr_first
             always_ff @(posedge b_clk_i) begin
-                if (rst_i) begin
+                if (b_rst_i) begin
                     b_data <= '0;
                 end else if (b_en_i) begin
                     for (int i = 0; i < BYTE_NUM; i++) begin
@@ -64,7 +64,7 @@ module ram_sdp #(
             end
         end else if (MEM_MODE == "read_first") begin : g_rd_first
             always_ff @(posedge b_clk_i) begin
-                if (rst_i) begin
+                if (b_rst_i) begin
                     b_data <= '0;
                 end else if (b_en_i) begin
                     b_data <= ram[b_addr_i];
@@ -72,7 +72,7 @@ module ram_sdp #(
             end
         end else if (MEM_MODE == "no_change") begin : g_no_change
             always_ff @(posedge b_clk_i) begin
-                if (rst_i) begin
+                if (b_rst_i) begin
                     b_data <= '0;
                 end else if (b_en_i & ~|a_wr_en_i) begin
                     b_data <= ram[b_addr_i];
