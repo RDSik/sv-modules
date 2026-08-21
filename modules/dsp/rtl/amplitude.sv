@@ -22,32 +22,22 @@ module amplitude #(
     localparam int MULT_DATA_WIDTH = 2 * DATA_WIDTH + 1;
 
     logic [CH_NUM-1:0][MULT_DATA_WIDTH-1:0] mult_tdata;
-    logic                                   mult_tvalid;
+    logic [CH_NUM-1:0]                      mult_tvalid;
 
     for (genvar i = 0; i < CH_NUM; i++) begin : g_ch
         mult_signed #(
-            .AWIDTH(DATA_WIDTH),
-            .BWIDTH(DATA_WIDTH)
+            .A_DATA_WIDTH(DATA_WIDTH),
+            .B_DATA_WIDTH(DATA_WIDTH)
         ) i_mult_signed (
-            .clk(clk_i),
-            .a  (ampl_i),
-            .b  (tdata_i[i]),
-            .p  (mult_tdata[i])
+            .clk_i    (clk_i),
+            .rst_i    (rst_i),
+            .tvalid_o (mult_tvalid[i]),
+            .tdata_o  (mult_tdata[i]),
+            .tvalid_i (tvalid_i),
+            .a_tdata_i(tdata_i[i]),
+            .b_tdata_i(ampl_i)
         );
     end
-
-    shift_reg #(
-        .DATA_WIDTH($bits(tvalid_i)),
-        .DELAY     (MULT_DELAY),
-        .RESET_EN  (1),
-        .SRL_STYLE ("register")
-    ) i_shift_reg (
-        .clk_i (clk_i),
-        .rst_i (rst_i),
-        .en_i  (1'b1),
-        .data_i(tvalid_i),
-        .data_o(mult_tvalid)
-    );
 
     localparam int RADIX = DATA_WIDTH - 2;
     localparam int SAT_DATA_WIDTH = DATA_WIDTH + RADIX;
@@ -63,7 +53,7 @@ module amplitude #(
         .clk_i   (clk_i),
         .rst_i   (rst_i),
         .tdata_i (mult_tdata),
-        .tvalid_i(mult_tvalid),
+        .tvalid_i(mult_tvalid[0]),
         .tdata_o (sat_tdata),
         .tvalid_o(sat_tvalid),
         .ovf_o   (ovf_o)
@@ -71,16 +61,17 @@ module amplitude #(
 
     round #(
         .CH_NUM        (CH_NUM),
-        .DATA_WIDTH_IN (SAT_DATA_WIDTH),
-        .DATA_WIDTH_OUT(DATA_WIDTH)
+        .IN_DATA_WIDTH (SAT_DATA_WIDTH),
+        .OUT_DATA_WIDTH(DATA_WIDTH),
+        .ROUND_TYPE    (1),
+        .USE_DSP       ("no")
     ) i_round (
-        .clk_i       (clk_i),
-        .rst_i       (rst_i),
-        .round_type_i(round_type_i),
-        .tvalid_i    (sat_tvalid),
-        .tdata_i     (sat_tdata),
-        .tvalid_o    (tvalid_o),
-        .tdata_o     (tdata_o)
+        .clk_i   (clk_i),
+        .rst_i   (rst_i),
+        .tvalid_i(sat_tvalid),
+        .tdata_i (sat_tdata),
+        .tvalid_o(tvalid_o),
+        .tdata_o (tdata_o)
     );
 
 endmodule
