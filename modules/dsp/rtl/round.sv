@@ -58,9 +58,11 @@ module round #(
             assign tdata_o[i] = data_out;
         end
 
+        localparam int ROUND_LATENCY = 3;
+
         shift_reg #(
             .DATA_WIDTH($bits(tvalid_i)),
-            .DELAY     (3),
+            .DELAY     (ROUND_LATENCY),),),
             .RESET_EN  (1),
             .SRL_STYLE ("register")
         ) i_shift_reg (
