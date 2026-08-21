@@ -106,6 +106,7 @@ module sync_fifo #(
         .a_addr_i (wr_ptr),
         .a_data_i (data_i),
         .b_clk_i  (clk_i),
+        .b_rst_i  (rst_i),
         .b_en_i   (rd_en),
         .b_addr_i (prefetch_ptr),
         .b_data_o (ram_data)
