@@ -123,9 +123,9 @@ module sfir_even_symmetric_systolic_element #(
     always_ff @(posedge clk) begin // dsp
         coeff   <= coeffin;  // a input reg
         dataz   <= datazin;  // b input reg
-        preadd  <= datatwo + dataz; // pre_adder reg
-        product <= preadd * coeff; // mult reg
-        cascout <= product + cascin; // alu reg
+        preadd  <= datatwo + dataz; // pre-adder + reg
+        product <= preadd * coeff; // mult + reg
+        cascout <= product + cascin; // alu + reg
     end
 
 endmodule
